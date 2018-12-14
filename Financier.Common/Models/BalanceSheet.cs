@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Financier.Common.Models
@@ -13,9 +14,17 @@ namespace Financier.Common.Models
         {
         }
 
-        public decimal GetCost(int monthAfterInception)
+        public decimal ValueAt(int monthAfterInception)
         {
-            return 0.00M;
+            var totalAssetValue = Assets
+                .Select(asset => asset.ValueAt(monthAfterInception))
+                .Aggregate(0.00M, (result, val) => result += val);
+
+            var totalExpenseCost = Liabilities
+                .Select(liability => liability.CostAt(monthAfterInception))
+                .Aggregate(0.00M, (result, val) => result += val);
+
+            return totalAssetValue - totalExpenseCost;
         }
     }
 }
