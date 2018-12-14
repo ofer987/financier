@@ -39,7 +39,6 @@ namespace Financier.Common.Calculations
             return Convert.ToDecimal(Convert.ToDouble(Value) * effectiveInterestRateMonthly / ( 1 - Math.Pow((1 + effectiveInterestRateMonthly), -1 * AmortisationPeriodInMonths)));
         }
 
-        // TODO incomplete
         public decimal GetMonthlyInterestPayment(int monthAfterInception)
         {
             var monthlyPayment = GetMonthlyPayment();

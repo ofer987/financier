@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Financier.Common.Models
 {
-    public class Asset
+    public interface ILiability
     {
     }
 }
