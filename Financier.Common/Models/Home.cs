@@ -5,10 +5,13 @@ using Financier.Common.Models.Expenses;
 
 namespace Financier.Common.Models
 {
-    public class Home : Asset
+    public class Home : IAsset, ILiability
     {
         // TODO: place in configuration file or should be configurable somehow
         public const decimal YearlyInflationRate = 2.00M;
+
+        // TODO place in a configuration file or pass in as constructor parameter
+        public const decimal YearlyValuationRate = 5.00M;
 
         public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0/12) - 1;
 
@@ -53,6 +56,18 @@ namespace Financier.Common.Models
                 result += Expenses.MonthlyTotal + Mortgage.GetMonthlyInterestPayment(i);
             }
             return result;
+        }
+
+        public decimal CostAt(int monthAfterInception)
+        {
+            return Expenses.MonthlyTotal + Mortgage.GetMonthlyInterestPayment(monthAfterInception);
+        }
+
+        public decimal ValueAt(int monthAfterInception)
+        {
+            var effectiveInterestRateMonthly = Math.Pow(((Convert.ToDouble(YearlyValuationRate) / 100) + 1), 1.0/12) - 1;
+
+            return Convert.ToDecimal(Math.Pow(effectiveInterestRateMonthly, monthAfterInception) * Convert.ToDouble(PurchasePrice));
         }
     }
 }
