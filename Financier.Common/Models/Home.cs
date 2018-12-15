@@ -49,6 +49,11 @@ namespace Financier.Common.Models
 
         public decimal GetTotalYearlyExpenses(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             var result = 0.00M;
 
             for (var i = monthAfterInception; i < monthAfterInception + 12; i += 1)
