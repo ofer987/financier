@@ -1,6 +1,6 @@
 namespace Financier.Common.Models
 {
-    public interface ILiability
+    public interface ILiability : IProduct
     {
         decimal CostAt(int monthAfterInception);
 

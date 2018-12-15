@@ -15,6 +15,8 @@ namespace Financier.Common.Models
 
         public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0/12) - 1;
 
+        public DateTime PurchasedAt => RentedAt;
+
         public DateTime RentedAt { get; }
 
         public MonthlyExpenses Expenses { get; }

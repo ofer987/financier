@@ -1,6 +1,6 @@
 namespace Financier.Common.Models
 {
-    public interface IAsset
+    public interface IAsset : IProduct
     {
         decimal ValueAt(int monthAfterInception);
 
