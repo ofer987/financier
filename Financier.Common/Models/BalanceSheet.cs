@@ -14,14 +14,14 @@ namespace Financier.Common.Models
         {
         }
 
-        public decimal ValueAt(int monthAfterInception)
+        public decimal ValueBy(int monthAfterInception)
         {
             var totalAssetValue = Assets
-                .Select(asset => asset.ValueAt(monthAfterInception))
+                .Select(asset => asset.ValueBy(monthAfterInception))
                 .Aggregate(0.00M, (result, val) => result += val);
 
             var totalExpenseCost = Liabilities
-                .Select(liability => liability.CostAt(monthAfterInception))
+                .Select(liability => liability.CostBy(monthAfterInception))
                 .Aggregate(0.00M, (result, val) => result += val);
 
             return totalAssetValue - totalExpenseCost;
