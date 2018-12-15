@@ -57,6 +57,26 @@ namespace Financier.Common.Calculations
             return interestPayment;
         }
 
+        public decimal GetInterestPaymentsBy(int monthAfterInception)
+        {
+            var monthlyPayment = GetMonthlyPayment();
+            var balanceAtMonth = Value;
+            var interestPayment = 0.00M;
+            var totalInterestPayments = 0.00M;
+            var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
+
+            for (var i = 0; i < monthAfterInception; i += 1)
+            {
+                interestPayment = Convert.ToDecimal(Convert.ToDouble(balanceAtMonth) * effectiveInterestRateMonthly / 100);
+                totalInterestPayments += interestPayment;
+                var principalPayment = monthlyPayment - interestPayment;
+
+                balanceAtMonth -= principalPayment;
+            }
+
+            return totalInterestPayments;
+        }
+
         public decimal GetBalance(int monthAfterInception)
         {
             var monthlyPayment = GetMonthlyPayment();

@@ -69,5 +69,10 @@ namespace Financier.Common.Models
 
             return Convert.ToDecimal(Math.Pow(effectiveInterestRateMonthly, monthAfterInception) * Convert.ToDouble(PurchasePrice));
         }
+
+        public decimal ValueBy(int monthAfterInception)
+        {
+            return ValueAt(monthAfterInception);
+        }
     }
 }
