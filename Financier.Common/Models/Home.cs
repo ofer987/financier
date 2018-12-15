@@ -60,6 +60,11 @@ namespace Financier.Common.Models
 
         public decimal CostAt(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             return Expenses.MonthlyTotal + Mortgage.GetMonthlyInterestPayment(monthAfterInception);
         }
 

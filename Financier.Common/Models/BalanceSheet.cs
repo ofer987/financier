@@ -16,6 +16,11 @@ namespace Financier.Common.Models
 
         public decimal ValueBy(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             var totalAssetValue = Assets
                 .Select(asset => asset.ValueBy(monthAfterInception))
                 .Aggregate(0.00M, (result, val) => result += val);
