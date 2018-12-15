@@ -41,6 +41,11 @@ namespace Financier.Common.Calculations
 
         public decimal GetMonthlyInterestPayment(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             var monthlyPayment = GetMonthlyPayment();
             var balanceAtMonth = Value;
             var interestPayment = 0.00M;
@@ -59,6 +64,11 @@ namespace Financier.Common.Calculations
 
         public decimal GetInterestPaymentsBy(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             var monthlyPayment = GetMonthlyPayment();
             var balanceAtMonth = Value;
             var interestPayment = 0.00M;
@@ -76,9 +86,13 @@ namespace Financier.Common.Calculations
 
             return totalInterestPayments;
         }
-
         public decimal GetBalance(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             var monthlyPayment = GetMonthlyPayment();
             var balanceAtMonth = Value;
             var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;

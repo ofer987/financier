@@ -63,8 +63,26 @@ namespace Financier.Common.Models
             return Expenses.MonthlyTotal + Mortgage.GetMonthlyInterestPayment(monthAfterInception);
         }
 
+        public decimal CostBy(int monthAfterInception)
+        {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
+            var totalExpenses = monthAfterInception * Expenses.MonthlyTotal;
+            var interestPayments = Mortgage.GetInterestPaymentsBy(monthAfterInception);
+
+            return Expenses.MonthlyTotal + interestPayments;
+        }
+
         public decimal ValueAt(int monthAfterInception)
         {
+            if (monthAfterInception < 0)
+            {
+                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
+            }
+
             var effectiveInterestRateMonthly = Math.Pow(((Convert.ToDouble(YearlyValuationRate) / 100) + 1), 1.0/12) - 1;
 
             return Convert.ToDecimal(Math.Pow(effectiveInterestRateMonthly, monthAfterInception) * Convert.ToDouble(PurchasePrice));
