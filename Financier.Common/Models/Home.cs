@@ -2,6 +2,7 @@ using System;
 
 using Financier.Common.Calculations;
 using Financier.Common.Models.Expenses;
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Models
 {
@@ -63,6 +64,11 @@ namespace Financier.Common.Models
             return result;
         }
 
+        public decimal CostAt(DateTime at)
+        {
+            return CostAt(at.MonthDifference(PurchasedAt));
+        }
+
         public decimal CostAt(int monthAfterInception)
         {
             if (monthAfterInception < 0)
@@ -71,6 +77,11 @@ namespace Financier.Common.Models
             }
 
             return Expenses.MonthlyTotal + Mortgage.GetMonthlyInterestPayment(monthAfterInception);
+        }
+
+        public decimal CostBy(DateTime at)
+        {
+            return CostBy(at.MonthDifference(PurchasedAt));
         }
 
         public decimal CostBy(int monthAfterInception)
@@ -86,6 +97,11 @@ namespace Financier.Common.Models
             return Expenses.MonthlyTotal + interestPayments;
         }
 
+        public decimal ValueAt(DateTime at)
+        {
+            return ValueAt(PurchasedAt.MonthDifference(at));
+        }
+
         public decimal ValueAt(int monthAfterInception)
         {
             if (monthAfterInception < 0)
@@ -96,6 +112,11 @@ namespace Financier.Common.Models
             var effectiveInterestRateMonthly = Math.Pow(((Convert.ToDouble(YearlyValuationRate) / 100) + 1), 1.0/12) - 1;
 
             return Convert.ToDecimal(Math.Pow(effectiveInterestRateMonthly, monthAfterInception) * Convert.ToDouble(PurchasePrice));
+        }
+
+        public decimal ValueBy(DateTime at)
+        {
+            return ValueBy(PurchasedAt.MonthDifference(at));
         }
 
         public decimal ValueBy(int monthAfterInception)

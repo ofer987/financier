@@ -2,6 +2,7 @@ using System;
 
 using Financier.Common.Calculations;
 using Financier.Common.Models.Expenses;
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Models
 {
@@ -43,6 +44,11 @@ namespace Financier.Common.Models
             return result;
         }
 
+        public decimal CostAt(DateTime at)
+        {
+            return CostAt(at.MonthDifference(PurchasedAt));
+        }
+
         public decimal CostAt(int monthAfterInception)
         {
             if (monthAfterInception < 0)
@@ -51,6 +57,11 @@ namespace Financier.Common.Models
             }
 
             return Expenses.MonthlyTotal;
+        }
+
+        public decimal CostBy(DateTime at)
+        {
+            return CostBy(at.MonthDifference(PurchasedAt));
         }
 
         public decimal CostBy(int monthAfterInception)

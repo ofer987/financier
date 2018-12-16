@@ -2,6 +2,7 @@ using System;
 
 using Financier.Common.Calculations;
 using Financier.Common.Models.Expenses;
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Models
 {
@@ -29,6 +30,11 @@ namespace Financier.Common.Models
             PurchasePrice = purchasePrice;
         }
 
+        public decimal ValueAt(DateTime at)
+        {
+            return ValueAt(PurchasedAt.MonthDifference(at));
+        }
+
         public decimal ValueAt(int monthAfterInception)
         {
             if (monthAfterInception < 0)
@@ -37,6 +43,11 @@ namespace Financier.Common.Models
             }
 
             return PurchasePrice * Convert.ToDecimal(Math.Pow(EffectiveInterestRateMonthly, monthAfterInception));
+        }
+
+        public decimal ValueBy(DateTime at)
+        {
+            return ValueBy(PurchasedAt.MonthDifference(at));
         }
 
         public decimal ValueBy(int monthAfterInception)
