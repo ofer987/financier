@@ -4,13 +4,15 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Actions
 {
-    public abstract class Purchase
+    public abstract class Purchase : IAction
     {
+        public DateTime At => PurchasedAt;
+
         public DateTime PurchasedAt => Product.PurchasedAt;
 
         public IProduct Product { get; }
 
-        public Base(IProduct product)
+        public Purchase(IProduct product)
         {
             Product = product;
         }

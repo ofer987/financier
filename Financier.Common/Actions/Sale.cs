@@ -4,8 +4,10 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Actions
 {
-    public abstract class Sale
+    public abstract class Sale : IAction
     {
+        public DateTime At => SoldAt;
+
         public DateTime SoldAt { get; }
 
         public IProduct Product { get; }
