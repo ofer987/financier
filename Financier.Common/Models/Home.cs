@@ -123,5 +123,10 @@ namespace Financier.Common.Models
         {
             return ValueAt(monthAfterInception);
         }
+
+        public decimal TotalBy(DateTime at)
+        {
+            return ValueBy(at) - CostBy(at);
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace Financier.Common.Actions
             Product = product;
             SoldAt = soldAt;
         }
+
+        public decimal TotalBy(DateTime at)
+        {
+            return Product.TotalBy(at);
+        }
     }
 }

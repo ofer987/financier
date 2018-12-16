@@ -73,5 +73,10 @@ namespace Financier.Common.Models
 
             return monthAfterInception * Expenses.MonthlyTotal;
         }
+
+        public decimal TotalBy(DateTime at)
+        {
+            return -CostBy(at);
+        }
     }
 }
