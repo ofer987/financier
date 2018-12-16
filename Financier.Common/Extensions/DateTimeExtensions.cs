@@ -4,7 +4,7 @@ namespace Financier.Common.Extensions
 {
     public static class DateTimeExtensions
     {
-        public static int MonthDifference(this DateTime datum, DateTime target)
+        public static int WholeMonthDifference(this DateTime datum, DateTime target)
         {
             if (target < datum)
             {
