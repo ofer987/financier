@@ -32,7 +32,7 @@ namespace Financier.Common.Models
 
         public decimal ValueAt(DateTime at)
         {
-            return ValueAt(PurchasedAt.WholeMonthDifference(at));
+            return ValueAt(at.WholeMonthDifference(PurchasedAt));
         }
 
         public decimal ValueAt(int monthAfterInception)
@@ -47,7 +47,7 @@ namespace Financier.Common.Models
 
         public decimal ValueBy(DateTime at)
         {
-            return ValueBy(PurchasedAt.WholeMonthDifference(at));
+            return ValueBy(at.WholeMonthDifference(PurchasedAt));
         }
 
         public decimal ValueBy(int monthAfterInception)
