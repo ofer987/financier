@@ -66,7 +66,7 @@ namespace Financier.Common.Models
 
         public decimal CostAt(DateTime at)
         {
-            return CostAt(at.WholeMonthDifference(PurchasedAt));
+            return CostAt(at.SubtractWholeMonths(PurchasedAt));
         }
 
         public decimal CostAt(int monthAfterInception)
@@ -81,7 +81,7 @@ namespace Financier.Common.Models
 
         public decimal CostBy(DateTime at)
         {
-            return CostBy(at.WholeMonthDifference(PurchasedAt));
+            return CostBy(at.SubtractWholeMonths(PurchasedAt));
         }
 
         public decimal CostBy(int monthAfterInception)
@@ -99,7 +99,7 @@ namespace Financier.Common.Models
 
         public decimal ValueAt(DateTime at)
         {
-            return ValueAt(at.WholeMonthDifference(PurchasedAt));
+            return ValueAt(at.SubtractWholeMonths(PurchasedAt));
         }
 
         public decimal ValueAt(int monthAfterInception)
@@ -116,7 +116,7 @@ namespace Financier.Common.Models
 
         public decimal ValueBy(DateTime at)
         {
-            return ValueBy(at.WholeMonthDifference(PurchasedAt));
+            return ValueBy(at.SubtractWholeMonths(PurchasedAt));
         }
 
         public decimal ValueBy(int monthAfterInception)
