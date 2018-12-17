@@ -4,7 +4,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Actions
 {
-    public abstract class Sale : IAction
+    public abstract class Sell : IAction
     {
         public DateTime At => SoldAt;
 
@@ -12,7 +12,7 @@ namespace Financier.Common.Actions
 
         public IProduct Product { get; }
 
-        public Sale(IProduct product, DateTime soldAt)
+        public Sell(IProduct product, DateTime soldAt)
         {
             Product = product;
             SoldAt = soldAt;

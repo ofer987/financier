@@ -109,9 +109,9 @@ namespace Financier.Common.Models
                 throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
             }
 
-            var effectiveInterestRateMonthly = Math.Pow(((Convert.ToDouble(YearlyValuationRate) / 100) + 1), 1.0/12) - 1;
+            var effectiveValuationInterestRateMonthly = Math.Pow(((Convert.ToDouble(YearlyValuationRate) / 100) + 1), 1.0/12) - 1;
 
-            return Convert.ToDecimal(Math.Pow(effectiveInterestRateMonthly, monthAfterInception) * Convert.ToDouble(PurchasePrice));
+            return Convert.ToDecimal(Math.Pow(effectiveValuationInterestRateMonthly, monthAfterInception) * Convert.ToDouble(PurchasePrice));
         }
 
         public decimal ValueBy(DateTime at)
@@ -126,7 +126,12 @@ namespace Financier.Common.Models
 
         public decimal TotalBy(DateTime at)
         {
-            return ValueBy(at) - CostBy(at);
+            var months = at.SubtractWholeMonths(PurchasedAt);
+            var effectiveValuationInterestRateMonthly = Math.Pow(((Convert.ToDouble(YearlyValuationRate) / 100) + 1), 1.0/12) - 1;
+
+            var priceAt = Convert.ToDecimal(Math.Pow(effectiveValuationInterestRateMonthly, months) * Convert.ToDouble(PurchasePrice));
+            var expenses = CostBy(at);
+            return priceAt - expenses;
         }
     }
 }
