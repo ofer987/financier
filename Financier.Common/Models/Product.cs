@@ -61,6 +61,16 @@ namespace Financier.Common.Models
 
         public DateTime PurchasedAt { get; }
 
+        public decimal PurchasePrice 
+        {
+            get
+            {
+                return Assets
+                    .Select(asset => asset.PurchasePrice)
+                    .Aggregate(0.00M, (total, price) => total += price);
+            }
+        }
+
         public List<IAsset> Assets { get; } = new List<IAsset>();
 
         public List<ILiability> Liabilities { get; } = new List<ILiability>();

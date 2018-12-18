@@ -7,6 +7,8 @@ namespace Financier.Common.Models
     {
         DateTime PurchasedAt { get; }
 
+        decimal PurchasePrice { get; }
+
         List<IAsset> Assets { get; }
 
         List<ILiability> Liabilities { get; }
