@@ -12,95 +12,56 @@ namespace Financier.Common.Models
 
         public List<ILiability> Liabilities { get; }
 
-        public List<IAction> Actions { get; }
-
-        public List<IProduct> Products { get; }
-
         public decimal Cash { get; }
 
-        public decimal InceptionCash { get; }
+        public DateTime From { get; }
 
-        public DateTime InceptionAt { get; }
+        public DateTime To { get; }
 
-        public BalanceSheet()
+        public BalanceSheet(IEnumerable<IProduct> products, DateTime from, DateTime to)
         {
-        }
+            if (to < from)
+            {
+                throw new Exception($"Balance Sheet cannot be computed in reverse order from ({from}) to ({to})");
+            }
 
-        // public BalanceSheet GetBalanceSheet(DateTime at)
-        // {
-        //     // TODO should at be verified compared to InceptionAt????
-        //     var cash = InceptionCash;
-        //     var sortedActions = Actions
-        //         .Where(action => action.Product.PurchasedAt <= at)
-        //         .OrderBy(action => action.At);
-        //
-        //     var sortedActionsByProduct = Actions.GroupBy(
-        //         action => action.Product,
-        //         (product, actions) => new 
-        //         {
-        //             Key = product,
-        //             Values = actions.OrderBy(action => action.At)
-        //         }
-        //     );
-        //     foreach (var productActions in sortedActionsByProduct)
-        //     {
-        //         foreach (var action in productActions.Values)
-        //         {
-        //             cash -= action.Product.PurchasePrice;
-        //             var valueBy = action.Product.ValueBy(at);
-        //             var costBy = action.Product.CostBy(at);
-        //         }
-        //         actions.Values
-        //     }
-        // }
+            From = from;
+            To = to;
 
-        public BalanceSheet(IEnumerable<IProduct> products, DateTime at)
-        {
-            // TODO should at be verified compared to InceptionAt????
-            var assets = new List<IProduct>();
-            var liabilities = new List<IProduct>();
-            var cash = InceptionCash;
-
-            var sortedSoldProducts = Products
+            var sortedSoldProducts = products
                 .Where(product => product.IsSold)
-                .Where(product => product.PurchasedAt <= at)
-                .Where(product => product.SoldAt <= at)
+                .Where(product => product.PurchasedAt >= from)
+                .Where(product => product.PurchasedAt <= to)
+                .Where(product => product.SoldAt <= to)
                 .OrderBy(product => product.PurchasedAt);
 
-            var sortedUnsoldProducts = Products
+            var sortedUnsoldProducts = products
                 .Where(product => !product.IsSold)
-                .Where(product => product.PurchasedAt <= at)
+                .Where(product => product.PurchasedAt >= from)
+                .Where(product => product.PurchasedAt <= to)
                 .OrderBy(product => product.PurchasedAt);
 
-            var sortedYetToBeSoldProducts = Products
+            var sortedYetToBeSoldProducts = products
                 .Where(product => product.IsSold)
-                .Where(product => product.PurchasedAt <= at)
-                .Where(product => product.SoldAt > at)
+                .Where(product => product.PurchasedAt >= from)
+                .Where(product => product.PurchasedAt <= to)
+                .Where(product => product.SoldAt > to)
                 .OrderBy(product => product.PurchasedAt);
 
             // TODO Figure out how to factor in inflation!
             foreach (var product in sortedSoldProducts)
             {
-                cash -= product.PurchasePrice;
-                cash += product.Sell(product.SoldAt);
+                Cash -= product.PurchasePrice;
+                Cash += product.ValueBy(to);
+                Cash -= product.CostBy(to);
             }
 
             foreach (var product in sortedUnsoldProducts.Concat(sortedYetToBeSoldProducts))
             {
-                cash -= product.PurchasePrice;
-                if (product is IAsset)
-                {
-                    assets.Add(product);
-                }
-                if (product is ILiability)
-                {
-                    liabilities.Add(product);
-                }
+                Cash -= product.PurchasePrice;
+                Assets.AddRange(product.Assets);
+                Liabilities.AddRange(product.Liabilities);
             }
-
-            Assets = assets;
-            Liabilities = liabilities;
-            Cash = cash;
         }
 
         public decimal ValueBy(int monthAfterInception)
