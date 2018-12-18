@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Financier.Common.Models
 {
@@ -6,16 +7,18 @@ namespace Financier.Common.Models
     {
         DateTime PurchasedAt { get; }
 
-        decimal PurchasePrice { get; }
+        List<IAsset> Assets { get; }
+
+        List<ILiability> Liabilities { get; }
+
+        void Sell(decimal price, DateTime at);
 
         bool IsSold { get; }
 
         DateTime SoldAt { get; }
 
-        decimal TotalBy(DateTime at);
-
         decimal ValueBy(DateTime at);
 
-        decimal Sell(DateTime soldAt);
+        decimal CostBy(DateTime at);
     }
 }

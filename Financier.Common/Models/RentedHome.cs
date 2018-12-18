@@ -1,89 +1,17 @@
 using System;
+using System.Collections.Generic;
 
-using Financier.Common.Calculations;
 using Financier.Common.Models.Expenses;
-using Financier.Common.Extensions;
 
 namespace Financier.Common.Models
 {
-    public class RentedHome : ILiability
+    public class RentedHome : Product
     {
-        // TODO: place in configuration file or should be configurable somehow
-        public const decimal YearlyInflationRate = 2.00M;
+        public DateTime RentedAt => PurchasedAt;
 
-        // TODO place in a configuration file or pass in as constructor parameter
-        public const decimal YearlyValuationRate = 5.00M;
-
-        public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0/12) - 1;
-
-        public DateTime PurchasedAt => RentedAt;
-
-        public DateTime SoldAt { get; set; }
-
-        public DateTime RentedAt { get; }
-
-        public MonthlyExpenses Expenses { get; }
-
-        public RentedHome(DateTime rentedAt, MonthlyExpenses expenses)
+        public RentedHome(DateTime rentedAt, IDictionary<string, decimal> expenses) : base(rentedAt)
         {
-            RentedAt = rentedAt;
-            Expenses = expenses;
-        }
-
-        public decimal GetTotalYearlyExpenses(int monthAfterInception)
-        {
-            if (monthAfterInception < 0)
-            {
-                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
-            }
-
-            var result = 0.00M;
-
-            for (var i = monthAfterInception; i < monthAfterInception + 12; i += 1)
-            {
-                result += Expenses.MonthlyTotal;
-            }
-            return result;
-        }
-
-        public decimal ValueBy(DateTime at)
-        {
-            return 0.00M;
-        }
-
-        public decimal CostAt(DateTime at)
-        {
-            return CostAt(at.SubtractWholeMonths(PurchasedAt));
-        }
-
-        public decimal CostAt(int monthAfterInception)
-        {
-            if (monthAfterInception < 0)
-            {
-                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
-            }
-
-            return Expenses.MonthlyTotal;
-        }
-
-        public decimal CostBy(DateTime at)
-        {
-            return CostBy(at.SubtractWholeMonths(PurchasedAt));
-        }
-
-        public decimal CostBy(int monthAfterInception)
-        {
-            if (monthAfterInception < 0)
-            {
-                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
-            }
-
-            return monthAfterInception * Expenses.MonthlyTotal;
-        }
-
-        public decimal TotalBy(DateTime at)
-        {
-            return -CostBy(at);
+            Liabilities.Add(new MonthlyExpenses(this, expenses));
         }
     }
 }

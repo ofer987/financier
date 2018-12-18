@@ -2,7 +2,7 @@ using System;
 
 namespace Financier.Common.Models
 {
-    public interface ILiability : IProduct
+    public interface ILiability
     {
         decimal CostAt(int monthAfterInception);
 

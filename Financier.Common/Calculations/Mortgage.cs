@@ -4,7 +4,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Calculations
 {
-    public class Mortgage
+    public class Mortgage : Liability
     {
         public decimal DownPayment { get; }
 
@@ -22,7 +22,7 @@ namespace Financier.Common.Calculations
 
         public double AnnualPercentageRateAnnual => EffectiveInterestRateMonthly * 12;
 
-        public Mortgage(decimal downPayment, decimal baseValue, int amortisationPeriodInMonths, decimal interestRate)
+        public Mortgage(IProduct product, decimal downPayment, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
         {
             DownPayment = DownPayment;
             BaseValue = baseValue;
@@ -86,6 +86,7 @@ namespace Financier.Common.Calculations
 
             return totalInterestPayments;
         }
+
         public decimal GetBalance(int monthAfterInception)
         {
             if (monthAfterInception < 0)
@@ -106,6 +107,16 @@ namespace Financier.Common.Calculations
             }
 
             return balanceAtMonth;
+        }
+
+        public override decimal CostAt(int monthAfterInception)
+        {
+            return GetMonthlyPayment();
+        }
+
+        public override decimal CostBy(int monthAfterInception)
+        {
+            return GetMonthlyPayment() * monthAfterInception;
         }
     }
 }

@@ -1,12 +1,8 @@
 using System;
 
-using Financier.Common.Calculations;
-using Financier.Common.Models.Expenses;
-using Financier.Common.Extensions;
-
 namespace Financier.Common.Models
 {
-    public abstract class Savings : IAsset
+    public abstract class Savings : Asset
     {
         // TODO: place in configuration file or should be configurable somehow
         public const decimal YearlyInflationRate = 2.00M;
@@ -14,30 +10,23 @@ namespace Financier.Common.Models
         // TODO place in a configuration file or pass in as constructor parameter
         public const decimal YearlyValuationRate = 5.00M;
 
+        // TODO define amortisation period, or is that what it is called ??
+        // TODO maybe it is called the compounding period; not sure.
         public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0/12) - 1;
 
         public DateTime PurchasedAt { get; }
 
         public DateTime SoldAt { get; set; }
 
-        public decimal PurchasePrice { get; }
-
         public virtual decimal QuotedInterestRate => 3.00M;
 
         public double EffectiveInterestRateMonthly => Math.Pow((Convert.ToDouble(QuotedInterestRate) / 100 + 1), 1.0/12) - 1;
 
-        public Savings(DateTime purchasedAt, decimal purchasePrice)
+        public Savings(IProduct product, decimal purchasePrice) : base(product, purchasePrice)
         {
-            PurchasedAt = purchasedAt;
-            PurchasePrice = purchasePrice;
         }
 
-        public decimal ValueAt(DateTime at)
-        {
-            return ValueAt(at.SubtractWholeMonths(PurchasedAt));
-        }
-
-        public decimal ValueAt(int monthAfterInception)
+        public override decimal ValueAt(int monthAfterInception)
         {
             if (monthAfterInception < 0)
             {
@@ -47,12 +36,7 @@ namespace Financier.Common.Models
             return PurchasePrice * Convert.ToDecimal(Math.Pow(EffectiveInterestRateMonthly, monthAfterInception));
         }
 
-        public decimal ValueBy(DateTime at)
-        {
-            return ValueBy(at.SubtractWholeMonths(PurchasedAt));
-        }
-
-        public decimal ValueBy(int monthAfterInception)
+        public override decimal ValueBy(int monthAfterInception)
         {
             return ValueAt(monthAfterInception);
         }
