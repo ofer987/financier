@@ -64,22 +64,19 @@ namespace Financier.Common.Models
             }
         }
 
-        public decimal ValueBy(int monthAfterInception)
+        public decimal TotalValue()
         {
-            if (monthAfterInception < 0)
-            {
-                throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
-            }
+            var result = Cash;
 
-            var totalAssetValue = Assets
-                .Select(asset => asset.ValueBy(monthAfterInception))
-                .Aggregate(0.00M, (result, val) => result += val);
+            var assetValue = Assets
+                .Select(asset => asset.ValueBy(To))
+                .Aggregate(0.00M, (total, val) => total += val);
 
-            var totalExpenseCost = Liabilities
-                .Select(liability => liability.CostBy(monthAfterInception))
-                .Aggregate(0.00M, (result, val) => result += val);
+            var liabilityCost = Liabilities
+                .Select(liability => liability.CostBy(To))
+                .Aggregate(0.00M, (total, val) => total += val);
 
-            return totalAssetValue - totalExpenseCost;
+            return Cash + assetValue + liabilityCost;
         }
     }
 }
