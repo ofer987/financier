@@ -2,11 +2,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Financier.Common.Actions;
-
 namespace Financier.Common.Models
 {
-    public class BalanceSheet
+    public class IncomeStatement
     {
         public List<IAsset> Assets { get; }
 
@@ -18,13 +16,17 @@ namespace Financier.Common.Models
 
         public DateTime To { get; }
 
-        public BalanceSheet(IEnumerable<IProduct> products, DateTime from, DateTime to)
+        public IncomeStatement(decimal inceptionCash, IEnumerable<Income> incomeSource, IEnumerable<IProduct> products, DateTime from, DateTime to)
         {
             if (to < from)
             {
-                throw new Exception($"Balance Sheet cannot be computed in reverse order from ({from}) to ({to})");
+                throw new Exception($"Income Statement cannot be computed in reverse order from ({from}) to ({to})");
             }
 
+            Cash = inceptionCash;
+            Cash += incomeSource
+                .Select(income => income.Value(from, to))
+                .Aggregate(0.00M, (total, val) => total += val);
             From = from;
             To = to;
 
