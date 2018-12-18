@@ -18,9 +18,10 @@ namespace Financier.Common.Actions
             SoldAt = soldAt;
         }
 
-        public decimal TotalBy(DateTime at)
+        // TODO rename to ConvertToCash ?????
+        public decimal ConvertToCash(DateTime soldAt)
         {
-            return Product.TotalBy(at);
+            return Product.Sell(soldAt);
         }
     }
 }

@@ -20,6 +20,30 @@ namespace Financier.Common.Models
 
         public DateTime PurchasedAt { get; }
 
+        private DateTime? soldAt = null;
+        public DateTime SoldAt
+        {
+            get
+            {
+                if (!soldAt.HasValue)
+                {
+                    throw new Exception("Product has not been sold yet");
+                }
+
+                return soldAt.Value;
+            }
+
+            set
+            {
+                if (value < PurchasedAt)
+                {
+                    throw new Exception($"Product (insert identifier) cannot be sold at ({value}) before it was purchased at ({PurchasedAt})");
+                }
+
+                SoldAt = value;
+            }
+        }
+
         public MonthlyExpenses Expenses { get; }
 
         public Mortgage Mortgage { get; }
@@ -132,6 +156,11 @@ namespace Financier.Common.Models
             var priceAt = Convert.ToDecimal(Math.Pow(effectiveValuationInterestRateMonthly, months) * Convert.ToDouble(PurchasePrice));
             var expenses = CostBy(at);
             return priceAt - expenses;
+        }
+
+        public decimal Sell(DateTime soldAt)
+        {
+            return TotalBy(soldAt);
         }
     }
 }

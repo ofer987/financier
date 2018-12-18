@@ -18,6 +18,8 @@ namespace Financier.Common.Models
 
         public DateTime PurchasedAt => RentedAt;
 
+        public DateTime SoldAt { get; set; }
+
         public DateTime RentedAt { get; }
 
         public MonthlyExpenses Expenses { get; }
@@ -42,6 +44,11 @@ namespace Financier.Common.Models
                 result += Expenses.MonthlyTotal;
             }
             return result;
+        }
+
+        public decimal ValueBy(DateTime at)
+        {
+            return 0.00M;
         }
 
         public decimal CostAt(DateTime at)

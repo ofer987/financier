@@ -18,6 +18,8 @@ namespace Financier.Common.Models
 
         public DateTime PurchasedAt { get; }
 
+        public DateTime SoldAt { get; set; }
+
         public decimal PurchasePrice { get; }
 
         public virtual decimal QuotedInterestRate => 3.00M;
