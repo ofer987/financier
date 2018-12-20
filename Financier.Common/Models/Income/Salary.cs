@@ -1,11 +1,10 @@
 using System;
 
-using Financier.Common.Models;
 using Financier.Common.Extensions;
 
-namespace Financier.Common.Models.IncomeSources
+namespace Financier.Common.Models.Income
 {
-    public class Salary : Income
+    public class Salary : Base
     {
         public decimal Yearly { get; }
 

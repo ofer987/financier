@@ -16,7 +16,7 @@ namespace Financier.Common.Models
 
         public DateTime To { get; }
 
-        public IncomeStatement(decimal inceptionCash, IEnumerable<Income> incomeSource, IEnumerable<IProduct> products, DateTime from, DateTime to)
+        public IncomeStatement(decimal inceptionCash, IEnumerable<Income.Base> incomeSource, IEnumerable<IProduct> products, DateTime from, DateTime to)
         {
             if (to < from)
             {
