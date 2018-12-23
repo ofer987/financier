@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Financier.Common.Calculations;
 using Financier.Common.Models.Expenses;
@@ -9,14 +8,28 @@ namespace Financier.Common.Models
 {
     public class Home : Product
     {
-        public HomeValue Value => (HomeValue)Assets.First();
+        public HomeValue Value { get; }
+
+        public MonthlyExpenses Expenses { get; }
+
+        public Mortgage Mortgage { get; }
+
+        public decimal TaxesByMonth => Expenses.Values["taxes"];
 
         public Home(decimal purchasePrice, IDictionary<string, decimal> expenses, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(purchasedAt)
         {
-            Assets.Add(new HomeValue(this, purchasePrice));
+            Assets.Add(Value = new HomeValue(this, purchasePrice));
+            Liabilities.Add(Expenses = new MonthlyExpenses(this, expenses));
+            Liabilities.Add(Mortgage = new Mortgage(this, downPayment, purchasePrice, interestRate, amortisationPeriodInMonths));
+        }
 
-            Liabilities.Add(new MonthlyExpenses(this, expenses));
-            Liabilities.Add(new Mortgage(this, downPayment, purchasePrice, interestRate, amortisationPeriodInMonths));
+        public Home(Home source, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(purchasedAt)
+        {
+            var currentPurchasePrice = source.GetPriceAtYear(purchasedAt.Year);
+
+            Assets.Add(Value = new HomeValue(this, currentPurchasePrice));
+            Liabilities.Add(Expenses = new MonthlyExpenses(this, source.Expenses.Values));
+            Liabilities.Add(Mortgage = new Mortgage(this, downPayment, currentPurchasePrice, interestRate, amortisationPeriodInMonths));
         }
 
         public decimal GetPriceAtYear(int year)
@@ -32,7 +45,7 @@ namespace Financier.Common.Models
                 return Value.PurchasePrice;
             }
 
-            return Convert.ToDecimal(Math.Pow(Convert.ToDouble(MonthlyInflationRate), year - purchasedAtYear) * Convert.ToDouble(Value.PurchasePrice));
+            return Convert.ToDecimal(Math.Pow(Convert.ToDouble(MonthlyValuationRate), year - purchasedAtYear) * Convert.ToDouble(Value.PurchasePrice));
         }
     }
 }
