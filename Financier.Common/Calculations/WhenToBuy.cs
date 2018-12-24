@@ -16,7 +16,7 @@ namespace Financier.Common.Calculations
         // TODO: place in configuration file or should be configurable somehow
         public const decimal YearlyMortgageRate = 3.19M;
 
-        public DateTime AHouse(Person person, DateTime from, DateTime to, Home desiredHome)
+        public DateTime AHome(Person person, DateTime from, DateTime to, Home desiredHome)
         {
             var incomeStatementDoingNothing = new IncomeStatement(0, person.IncomeSources, person.Products, from, to);
 
@@ -37,7 +37,7 @@ namespace Financier.Common.Calculations
             for (var i = 0; i < to.SubtractWholeMonths(from); i += 1)
             {
                 var purchasedAt = from.AddMonths(i);
-                var expenses = AHouseAt(person, from, to, desiredHome, purchasedAt);
+                var expenses = AHomeAt(person, from, to, desiredHome, purchasedAt);
                 if (expenses > highestValue)
                 {
                     highestValue = expenses;
@@ -48,7 +48,7 @@ namespace Financier.Common.Calculations
             return highestValueAt;
         }
 
-        public decimal AHouseAt(Person person, DateTime from, DateTime to, Home desiredHome, DateTime purchasedAt)
+        public decimal AHomeAt(Person person, DateTime from, DateTime to, Home desiredHome, DateTime purchasedAt)
         {
             var incomeStatementDoingNothing = new IncomeStatement(0, person.IncomeSources, person.Products, from, to);
 
