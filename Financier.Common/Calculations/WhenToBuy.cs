@@ -18,26 +18,12 @@ namespace Financier.Common.Calculations
 
         public DateTime AHome(Person person, DateTime from, DateTime to, Home desiredHome)
         {
-            var incomeStatementDoingNothing = new IncomeStatement(0, person.IncomeSources, person.Products, from, to);
-
-            var currentTaxes = desiredHome.TaxesByMonth;
-            person.Products.Add(new Home(desiredHome));
-            // return DateTime.Now;
-
-            // Home Value: desiredHome.GetPriceAtYear() // This is a constant
-            // So the thing that changes is the expenses
-            //
-            // Expenses:
-            //  Taxes: currentTaxes * Inflation(to.Year, purchasedAt)
-            //  Mortgage Payment = GetMonthlyMortgagePayment(purchasedAt - DateTime.Now) * (to.Year - purchasedAt)
-            //  Mortgage payments = Mortgage Payments * (to.Year - purchasedAt)
-
             var highestValue = Decimal.MinValue;
             var highestValueAt = from;
             for (var i = 0; i < to.SubtractWholeMonths(from); i += 1)
             {
                 var purchasedAt = from.AddMonths(i);
-                var expenses = AHomeAt(person, from, to, desiredHome, purchasedAt);
+                var expenses = HomeValue(person, from, to, desiredHome, purchasedAt);
                 if (expenses > highestValue)
                 {
                     highestValue = expenses;
@@ -48,14 +34,8 @@ namespace Financier.Common.Calculations
             return highestValueAt;
         }
 
-        public decimal AHomeAt(Person person, DateTime from, DateTime to, Home desiredHome, DateTime purchasedAt)
+        public decimal HomeValue(Person person, DateTime from, DateTime to, Home desiredHome, DateTime purchasedAt)
         {
-            var incomeStatementDoingNothing = new IncomeStatement(0, person.IncomeSources, person.Products, from, to);
-
-            var currentTaxes = desiredHome.TaxesByMonth;
-            person.Products.Add(new Home(desiredHome));
-            // return DateTime.Now;
-
             // Home Value: desiredHome.GetPriceAtYear() // This is a constant
             // So the thing that changes is the expenses
             //
@@ -63,7 +43,6 @@ namespace Financier.Common.Calculations
             //  Taxes: currentTaxes * Inflation(to.Year, purchasedAt)
             //  Mortgage Payment = GetMonthlyMortgagePayment(purchasedAt - DateTime.Now) * (to.Year - purchasedAt)
             //  Mortgage payments = Mortgage Payments * (to.Year - purchasedAt)
-
             var monthlyValuationRate = GetEffectiveMonthlyRate(Convert.ToDouble(YearlyValuationRate));
             var monthlyInterestRate = GetEffectiveMonthlyRate(Convert.ToDouble(YearlyInflationRate));
             var monthlyMorgageRate = GetEffectiveMonthlyRate(Convert.ToDouble(YearlyMortgageRate));
@@ -105,22 +84,6 @@ namespace Financier.Common.Calculations
             for (var i = 0; i < totalMonths; i += 1)
             {
                 result += GetMonthlyExpense(priceAtInceptionMonth, interest, i);
-            }
-
-            return result;
-        }
-
-        public override decimal CostAt(int monthAfterInception)
-        {
-            return MonthlyTotal * Convert.ToDecimal(EffectiveInterestRateMonthly) * monthAfterInception;
-        }
-
-        public override decimal CostBy(int monthAfterInception)
-        {
-            var result = 0.00M;
-            for (var i = 0; i < monthAfterInception; i += 1)
-            {
-                result += MonthlyTotal * monthAfterInception;
             }
 
             return result;
