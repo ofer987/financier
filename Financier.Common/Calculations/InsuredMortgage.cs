@@ -13,7 +13,7 @@ namespace Financier.Common.Calculations
 
         public override decimal Value => BaseValue + Insurance;
 
-        public InsuredMortgage(decimal downPayment, decimal baseValue, int amortisationPeriodInMonths, decimal interestRate) : base(downPayment, baseValue, amortisationPeriodInMonths, interestRate)
+        public InsuredMortgage(IProduct product, decimal downPayment, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product, downPayment, baseValue, interestRate, amortisationPeriodInMonths)
         {
         }
     }
