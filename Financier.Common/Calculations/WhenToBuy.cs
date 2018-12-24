@@ -32,23 +32,23 @@ namespace Financier.Common.Calculations
             //  Mortgage Payment = GetMonthlyMortgagePayment(purchasedAt - DateTime.Now) * (to.Year - purchasedAt)
             //  Mortgage payments = Mortgage Payments * (to.Year - purchasedAt)
 
-            var bestExpenses = Decimal.MinValue;
-            var bestExpensesAt = from;
+            var highestValue = Decimal.MinValue;
+            var highestValueAt = from;
             for (var i = 0; i < to.SubtractWholeMonths(from); i += 1)
             {
                 var purchasedAt = from.AddMonths(i);
                 var expenses = AHouseAt(person, from, to, desiredHome, purchasedAt);
-                if (expenses > bestExpenses)
+                if (expenses > highestValue)
                 {
-                    bestExpenses = expenses;
-                    bestExpensesAt = purchasedAt;
+                    highestValue = expenses;
+                    highestValueAt = purchasedAt;
                 }
             }
 
-            return bestExpensesAt;
+            return highestValueAt;
         }
 
-        public DateTime AHouseAt(Person person, DateTime from, DateTime to, Home desiredHome, DateTime purchasedAt)
+        public decimal AHouseAt(Person person, DateTime from, DateTime to, Home desiredHome, DateTime purchasedAt)
         {
             var incomeStatementDoingNothing = new IncomeStatement(0, person.IncomeSources, person.Products, from, to);
 
@@ -74,9 +74,9 @@ namespace Financier.Common.Calculations
 
             var taxes = GetTotalExpenses(desiredHome.TaxesByMonth, monthlyInterestRate, to.SubtractWholeMonths(purchasedAt));
 
-            var total = mortgagePayaments + taxes;
+            var total = 0 - priceAt - mortgagePayaments - taxes;
 
-            return DateTime.Now;
+            return total;
         }
 
         public decimal GetMonthlyMortgagePayment(decimal purchasePrice, double effectiveInterestRateMonthly, int amortisationPeriodInMonths = 300)
