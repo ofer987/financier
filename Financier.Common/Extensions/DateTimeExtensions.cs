@@ -4,24 +4,24 @@ namespace Financier.Common.Extensions
 {
     public static class DateTimeExtensions
     {
-        public static int SubtractWholeMonths(this DateTime datum, DateTime target)
+        public static int SubtractWholeMonths(this DateTime target, DateTime datum)
         {
-            if (datum > target)
+            if (target > datum)
             {
-                // Target is in the past
+                // Target is in the future
                 var i = 0;
-                for (; datum.AddMonths(i) > target; i -= 1);
+                for (; datum.AddMonths(i) < target; i += 1);
 
                 return i;
             }
             else
             {
-                // Target is in the future
+                // Target is in the past
                 // Return 0 if target is the exact same date
                 var i = 0;
                 for (; target.AddMonths(i) < datum; i += 1);
 
-                return i;
+                return 0 - i;
             }
         }
     }

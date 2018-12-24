@@ -6,9 +6,9 @@ namespace Financier.Common.Models
 {
     public class IncomeStatement
     {
-        public List<IAsset> Assets { get; }
+        public List<IAsset> Assets { get; } = new List<IAsset>();
 
-        public List<ILiability> Liabilities { get; }
+        public List<ILiability> Liabilities { get; } = new List<ILiability>();
 
         public decimal Cash { get; }
 
