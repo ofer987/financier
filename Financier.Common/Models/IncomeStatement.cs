@@ -7,6 +7,8 @@ namespace Financier.Common.Models
 {
     public class IncomeStatement
     {
+        public List<Income.Base> IncomeSources { get; } = new List<Income.Base>();
+
         public List<IAsset> Assets { get; } = new List<IAsset>();
 
         public List<ILiability> Liabilities { get; } = new List<ILiability>();
@@ -17,7 +19,7 @@ namespace Financier.Common.Models
 
         public DateTime To { get; }
 
-        public IncomeStatement(decimal inceptionCash, IEnumerable<Income.Base> incomeSource, IEnumerable<IProduct> products, DateTime from, DateTime to)
+        public IncomeStatement(decimal inceptionCash, IEnumerable<Income.Base> incomeSources, IEnumerable<IProduct> products, DateTime from, DateTime to)
         {
             if (to < from)
             {
@@ -25,9 +27,8 @@ namespace Financier.Common.Models
             }
 
             Cash = inceptionCash;
-            Cash += incomeSource
-                .Select(income => income.Value(from, to))
-                .Aggregate(0.00M, (total, val) => total += val);
+            IncomeSources = incomeSources.ToList();
+
             From = from;
             To = to;
 
@@ -54,14 +55,14 @@ namespace Financier.Common.Models
             // TODO Figure out how to factor in inflation!
             foreach (var product in sortedSoldProducts)
             {
-                Cash -= product.PurchasePrice;
+                // Cash -= product.PurchasePrice;
                 Cash += product.ValueBy(to);
                 Cash -= product.CostBy(to);
             }
 
             foreach (var product in sortedUnsoldProducts.Concat(sortedYetToBeSoldProducts))
             {
-                Cash -= product.PurchasePrice;
+                // Cash -= product.PurchasePrice;
                 Assets.AddRange(product.Assets);
                 Liabilities.AddRange(product.Liabilities);
             }
@@ -86,7 +87,8 @@ namespace Financier.Common.Models
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Cash\t\t\t\t{Cash:C2}");
+            var cash = IncomeSources.Aggregate(Cash, (total, val) => total += val.Value(From, To));
+            sb.AppendLine($"Cash\t\t\t\t{cash:C2}");
 
             sb.AppendLine("Revenue:");
             foreach (var asset in Assets)

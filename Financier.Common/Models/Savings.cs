@@ -20,7 +20,7 @@ namespace Financier.Common.Models
 
         public virtual decimal QuotedInterestRate => 3.00M;
 
-        public double EffectiveInterestRateMonthly => Math.Pow((Convert.ToDouble(QuotedInterestRate) / 100 + 1), 1.0/12) - 1;
+        public double EffectiveInterestRateMonthly => Math.Pow((1.0 + Convert.ToDouble(QuotedInterestRate / 100)), 1.0/12) - 1.0;
 
         public Savings(IProduct product, decimal purchasePrice) : base(product, purchasePrice)
         {
@@ -33,7 +33,7 @@ namespace Financier.Common.Models
                 throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
             }
 
-            return PurchasePrice * Convert.ToDecimal(Math.Pow(EffectiveInterestRateMonthly, monthAfterInception));
+            return PurchasePrice * Convert.ToDecimal(Math.Pow(1 + EffectiveInterestRateMonthly, monthAfterInception));
         }
 
         public override decimal ValueBy(int monthAfterInception)
