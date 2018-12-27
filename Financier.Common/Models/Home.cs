@@ -16,14 +16,14 @@ namespace Financier.Common.Models
 
         public decimal TaxesByMonth => Expenses.Values["taxes"];
 
-        public Home(decimal purchasePrice, IDictionary<string, decimal> expenses, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(purchasedAt)
+        public Home(string name, decimal purchasePrice, IDictionary<string, decimal> expenses, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(name, purchasedAt)
         {
             Assets.Add(Value = new HomeValue(this, purchasePrice));
             Liabilities.Add(Expenses = new MonthlyExpenses(this, expenses));
             Liabilities.Add(Mortgage = new Mortgage(this, downPayment, purchasePrice, interestRate, amortisationPeriodInMonths));
         }
 
-        public Home(Home source, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(purchasedAt)
+        public Home(Home source, string name, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(name, purchasedAt)
         {
             var currentPurchasePrice = source.GetPriceAtYear(purchasedAt.Year);
 

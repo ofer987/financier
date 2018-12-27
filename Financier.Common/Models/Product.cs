@@ -16,6 +16,8 @@ namespace Financier.Common.Models
 
         public double MonthlyValuationRate => Math.Pow(Convert.ToDouble(YearlyValuationRate) / 100, 1.0/12) - 1;
 
+        public string Name { get; }
+
         private DateTime? soldAt = null;
         public DateTime SoldAt
         {
@@ -77,8 +79,9 @@ namespace Financier.Common.Models
 
         public List<ILiability> Liabilities { get; } = new List<ILiability>();
 
-        public Product(DateTime purchasedAt)
+        public Product(string name, DateTime purchasedAt)
         {
+            Name = name;
             PurchasedAt = purchasedAt;
         }
 

@@ -9,7 +9,7 @@ namespace Financier.Common.Models
     {
         public DateTime RentedAt => PurchasedAt;
 
-        public RentedHome(DateTime rentedAt, IDictionary<string, decimal> expenses) : base(rentedAt)
+        public RentedHome(string name, DateTime rentedAt, IDictionary<string, decimal> expenses) : base(name, rentedAt)
         {
             Liabilities.Add(new MonthlyExpenses(this, expenses));
         }

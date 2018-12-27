@@ -5,6 +5,8 @@ namespace Financier.Common.Models
 {
     public interface IProduct
     {
+        string Name { get; }
+
         DateTime PurchasedAt { get; }
 
         decimal PurchasePrice { get; }

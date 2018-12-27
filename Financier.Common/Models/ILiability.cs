@@ -4,6 +4,8 @@ namespace Financier.Common.Models
 {
     public interface ILiability
     {
+        IProduct Product { get; }
+
         decimal CostAt(int monthAfterInception);
 
         decimal CostAt(DateTime at);

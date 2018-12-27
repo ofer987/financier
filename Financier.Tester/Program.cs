@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Financier.Common.Models;
@@ -14,7 +15,7 @@ namespace Financier.Tester
 
             var incomeStatement = CalculateIncomeStatement(GetPerson());
 
-            Console.WriteLine($"Person has a net worth of ({incomeStatement.TotalValue()})");
+            Console.WriteLine(incomeStatement.ToString());
         }
 
         private static Person GetPerson()
@@ -27,10 +28,10 @@ namespace Financier.Tester
                     { "taxes", 100.00M },
                     { "electricity", 50.00M }
                 };
-                home = new Home(200000, expenses, 40000, purchasedAt, 3.19M);
+                home = new Home("Where-we-live", 200000, expenses, 40000, purchasedAt, 3.19M);
             }
-            var products = new[] { home };
-            var income = new[] { new Salary(100000.00M) };
+            var products = new [] { home };
+            var income = new[] { new Salary(200000.00M) };
             var person = new Person(products, income);
 
             return person;

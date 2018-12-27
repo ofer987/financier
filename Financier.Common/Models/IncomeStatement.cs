@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -78,7 +79,30 @@ namespace Financier.Common.Models
                 .Select(liability => liability.CostBy(To))
                 .Aggregate(0.00M, (total, val) => total += val);
 
-            return Cash + assetValue + liabilityCost;
+            return Cash + assetValue - liabilityCost;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"Cash\t\t\t\t{Cash:C2}");
+
+            sb.AppendLine("Revenue:");
+            foreach (var asset in Assets)
+            {
+                sb.AppendLine($"\t{asset.Product.Name}\t\t{asset.ValueBy(To):C2}");
+            }
+
+            sb.AppendLine("Expenses:");
+            foreach (var liability in Liabilities)
+            {
+                sb.AppendLine($"\t{liability.Product.Name}\t\t{liability.CostBy(To):C2}");
+            }
+
+            sb.AppendLine($"Net Worth\t\t\t{TotalValue():C2}");
+
+            return sb.ToString();
         }
     }
 }
