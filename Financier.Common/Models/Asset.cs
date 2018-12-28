@@ -10,6 +10,8 @@ namespace Financier.Common.Models
 
         public decimal PurchasePrice { get; }
 
+        public virtual decimal InvestmentPrice => PurchasePrice;
+
         public virtual bool IsSold => Product.IsSold;
 
         private decimal? sellPrice = null;

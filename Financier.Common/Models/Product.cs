@@ -18,6 +18,8 @@ namespace Financier.Common.Models
 
         public string Name { get; }
 
+        public decimal InvestmentPrice => Assets.Aggregate(0.00M, (total, asset) => total += asset.InvestmentPrice);
+
         private DateTime? soldAt = null;
         public DateTime SoldAt
         {

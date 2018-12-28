@@ -10,6 +10,8 @@ namespace Financier.Common.Models
 
         bool IsSold { get; }
 
+        decimal InvestmentPrice { get; }
+
         decimal SellPrice { get; }
 
         decimal ValueAt(int monthAfterInception);

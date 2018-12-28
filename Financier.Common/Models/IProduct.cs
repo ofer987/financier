@@ -11,6 +11,8 @@ namespace Financier.Common.Models
 
         decimal PurchasePrice { get; }
 
+        decimal InvestmentPrice { get; }
+
         List<IAsset> Assets { get; }
 
         List<ILiability> Liabilities { get; }

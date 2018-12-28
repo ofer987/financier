@@ -18,7 +18,7 @@ namespace Financier.Common.Models
 
         public Home(string name, decimal purchasePrice, IDictionary<string, decimal> expenses, decimal downPayment, DateTime purchasedAt, decimal interestRate, int amortisationPeriodInMonths = 300) : base(name, purchasedAt)
         {
-            Assets.Add(Value = new HomeValue(this, purchasePrice));
+            Assets.Add(Value = new HomeValue(this, purchasePrice, downPayment));
             Liabilities.Add(Expenses = new MonthlyExpenses(this, expenses));
             Liabilities.Add(Mortgage = new Mortgage(this, downPayment, purchasePrice, interestRate, amortisationPeriodInMonths));
         }
@@ -27,7 +27,7 @@ namespace Financier.Common.Models
         {
             var currentPurchasePrice = source.GetPriceAtYear(purchasedAt.Year);
 
-            Assets.Add(Value = new HomeValue(this, currentPurchasePrice));
+            Assets.Add(Value = new HomeValue(this, currentPurchasePrice, downPayment));
             Liabilities.Add(Expenses = new MonthlyExpenses(this, source.Expenses.Values));
             Liabilities.Add(Mortgage = new Mortgage(this, downPayment, currentPurchasePrice, interestRate, amortisationPeriodInMonths));
         }

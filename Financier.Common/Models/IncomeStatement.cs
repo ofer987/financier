@@ -55,14 +55,14 @@ namespace Financier.Common.Models
             // TODO Figure out how to factor in inflation!
             foreach (var product in sortedSoldProducts)
             {
-                // Cash -= product.PurchasePrice;
+                Cash -= product.InvestmentPrice;
                 Cash += product.ValueBy(to);
                 Cash -= product.CostBy(to);
             }
 
             foreach (var product in sortedUnsoldProducts.Concat(sortedYetToBeSoldProducts))
             {
-                // Cash -= product.PurchasePrice;
+                Cash -= product.InvestmentPrice;
                 Assets.AddRange(product.Assets);
                 Liabilities.AddRange(product.Liabilities);
             }
