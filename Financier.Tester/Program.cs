@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 
 using Financier.Common.Models;
@@ -7,8 +6,12 @@ using Financier.Common.Models.Income;
 
 namespace Financier.Tester
 {
+    public enum Environments { Development }
+
     public class Program
     {
+        public static Environments Environment = Environments.Development;
+
         public static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");

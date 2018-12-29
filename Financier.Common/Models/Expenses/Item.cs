@@ -4,23 +4,30 @@ namespace Financier.Common.Models.Expenses
 {
     public class Item
     {
-        public string CardId { get; }
+        public Guid Id { get; set; }
 
-        public string Description { get; }
+        public Guid StatementId { get; set; }
 
-        public decimal Amount { get; }
+        public Statement Statement { get; set; }
 
-        public DateTime TransactedAt { get; }
+        public string Description { get; set; }
 
-        public DateTime PostedAt { get; }
+        public decimal Amount { get; set; }
 
-        public Item(string cardId, string description, DateTime transactedAt, DateTime postedAt, decimal amount)
+        public DateTime TransactedAt { get; set; }
+
+        public DateTime PostedAt { get; set; }
+
+        public Item(string description, DateTime transactedAt, DateTime postedAt, decimal amount)
         {
-            CardId = cardId;
             Description = description;
             TransactedAt = transactedAt;
             PostedAt = postedAt;
             Amount = amount;
+        }
+
+        public Item()
+        {
         }
     }
 }
