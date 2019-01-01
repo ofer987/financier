@@ -7,7 +7,7 @@ namespace Financier.Common.Models.Expenses
     {
         public Guid Id { get; set; }
 
-        public string RealId { get; set; }
+        public string Number { get; set; }
 
         public ICollection<Statement> Statements { get; set; }
     }

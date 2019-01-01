@@ -1,11 +1,11 @@
 using Financier.Common.Models.Expenses;
 using Microsoft.EntityFrameworkCore;
 
-namespace Financier.Tester
+namespace Financier.Common
 {
     public class ExpensesContext : DbContext
     {
-        public DbSet<Item> Items { get; }
+        public DbSet<Card> Cards { get; }
 
         // public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options)
         // {
