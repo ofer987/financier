@@ -24,9 +24,9 @@ namespace Financier.Common
 
     public class StatementImporter
     {
-        public static void Import(Guid statementId, DateTime postedAt, string path)
+        public static Statement Import(Guid statementId, DateTime postedAt, Stream stream)
         {
-            using (var reader = new StreamReader(path))
+            using (var reader = new StreamReader(stream))
             using (var csv = new CsvReader(reader))
             {
                 var records = csv.GetRecords<StatementRecord>();
@@ -62,6 +62,20 @@ namespace Financier.Common
                     }
                 }
             }
+
+            return statement;
+        }
+
+        // TODO: Rename
+        private static Card card = null;
+        public static Card GetCard(string cardNumber)
+        {
+            if (card != null)
+            {
+                return card;
+            }
+
+            return (card = FindOrCreateCard(cardNumber));
         }
 
         // TODO: Rename

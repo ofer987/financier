@@ -7,10 +7,6 @@ namespace Financier.Common
     {
         public DbSet<Card> Cards { get; }
 
-        // public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options)
-        // {
-        // }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Item>()
@@ -35,13 +31,7 @@ namespace Financier.Common
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            switch(Program.Environment)
-            {
-                case Environments.Development:
-                default:
-                    optionsBuilder.UseSqlite("Data Source=Financier.db");
-                    break;
-            }
+            optionsBuilder.UseSqlite("Data Source=Financier.db");
         }
     }
 }
