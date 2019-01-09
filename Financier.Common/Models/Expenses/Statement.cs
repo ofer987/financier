@@ -13,7 +13,7 @@ namespace Financier.Common.Models.Expenses
 
         public DateTime PostedAt { get; set; }
 
-        public ICollection<Item> Items { get; set; }
+        public List<Item> Items { get; set; }
 
         public int Year => PostedAt.Year;
 

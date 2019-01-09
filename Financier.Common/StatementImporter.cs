@@ -1,25 +1,38 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 using CsvHelper;
+using CsvHelper.Configuration.Attributes;
 using Financier.Common.Models.Expenses;
 
 namespace Financier.Common
 {
     public class StatementRecord
     {
+        [Name("Item #")]
         public string ItemId { get; set; }
 
+        [Name("Card #")]
         public string CardNumber { get; set; }
 
+        [Name("Transaction Date")]
         public string TransactedAt { get; set; }
 
+        [Name("Posting Date")]
         public string PostedAt { get; set; }
 
+        [Name("Transaction Amount")]
         public string Amount { get; set; }
 
+        [Name("Description")]
         public string Description { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(ItemId)}: ({ItemId})\n{nameof(CardNumber)}: ({CardNumber})\n{nameof(TransactedAt)}: ({TransactedAt})\n{nameof(PostedAt)}: ({PostedAt})\n{nameof(Amount)}: ({Amount})\n{nameof(Description)}: ({Description})";
+        }
     }
 
     public class StatementImporter
@@ -31,16 +44,20 @@ namespace Financier.Common
             {
                 var records = csv.GetRecords<StatementRecord>();
 
-                var first = records.First();
+                // Console.WriteLine(records.Count());
+                var first = records.FirstOrDefault();
                 try
                 {
+                    Console.WriteLine(first);
                     var card = FindOrCreateCard(first.CardNumber);
                     var statement = GetStatement(statementId, postedAt, card);
                     var item = CreateItem(first, statement);
                     statement.CardId = card.Id;
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
+                    Console.WriteLine("Error!");
+                    Console.WriteLine(exception);
                     // Continue to next record
                     // TODO: Record error in logger
                 }
@@ -50,13 +67,16 @@ namespace Financier.Common
                 {
                     try
                     {
+                        Console.WriteLine(record);
                         var card = FindOrCreateCard(first.CardNumber);
                         var statement = GetStatement(statementId, postedAt, card);
                         var item = CreateItem(first, statement);
                         statement.CardId = card.Id;
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
+                        Console.WriteLine("Error!");
+                        Console.WriteLine(exception);
                         // Continue to next record
                         // TODO: Record error in logger
                     }
@@ -98,11 +118,21 @@ namespace Financier.Common
                 {
                     Id = id,
                     PostedAt = postedAt,
-                    Card = card
+                    Card = card,
+                    Items = new List<Item>()
                 };
+                if (card.Statements == null)
+                {
+                    Console.WriteLine($"NOW card.Statements is null");
+                }
+                else
+                {
+                    Console.WriteLine($"NOW Has {card.Statements.Count} statements");
+                }
                 var statement = card.Statements
+                    .Where(stmt => stmt.Id == id)
                     .DefaultIfEmpty(null)
-                    .FirstOrDefault(stmt => stmt.Id == id);
+                    .First();
 
                 if (statement == null)
                 {
@@ -122,7 +152,8 @@ namespace Financier.Common
                 var newCard = new Card 
                 {
                         Id = Guid.NewGuid(),
-                        Number = cardNumber
+                        Number = cardNumber,
+                        Statements = new List<Statement>()
                 };
                 var card = db.Cards
                     .DefaultIfEmpty(null)
@@ -130,9 +161,14 @@ namespace Financier.Common
 
                 if (card == null)
                 {
+                    Console.WriteLine("Creating a new card");
                     card = newCard;
                     db.Cards.Add(newCard);
                     db.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("using existing card");
                 }
 
                 return card;
@@ -147,12 +183,21 @@ namespace Financier.Common
                 Statement = statement,
                 Description = record.Description,
                 Amount = Convert.ToDecimal(record.Amount),
-                TransactedAt = Convert.ToDateTime(record.TransactedAt),
-                PostedAt = Convert.ToDateTime(record.PostedAt)
+                TransactedAt = ToDateTime(record.TransactedAt),
+                PostedAt = ToDateTime(record.PostedAt)
             };
 
+            if (statement == null)
+            {
+                Console.WriteLine("statment is null");
+            }
             statement.Items.Add(newItem);
             return newItem;
+        }
+
+        public static DateTime ToDateTime(string str)
+        {
+            return DateTime.ParseExact(str, "yyyyMMdd", null);
         }
     }
 }

@@ -9,6 +9,6 @@ namespace Financier.Common.Models.Expenses
 
         public string Number { get; set; }
 
-        public ICollection<Statement> Statements { get; set; }
+        public List<Statement> Statements { get; set; }
     }
 }
