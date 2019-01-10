@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
@@ -42,9 +43,9 @@ namespace Financier.Common
             using (var reader = new StreamReader(stream))
             using (var csv = new CsvReader(reader))
             {
-                var records = csv.GetRecords<StatementRecord>();
+                var records = csv.GetRecords<StatementRecord>().ToList();
 
-                // Console.WriteLine(records.Count());
+                Console.WriteLine(records.Count());
                 var first = records.FirstOrDefault();
                 try
                 {
@@ -118,7 +119,7 @@ namespace Financier.Common
                 {
                     Id = id,
                     PostedAt = postedAt,
-                    Card = card,
+                    CardId = card.Id,
                     Items = new List<Item>()
                 };
                 if (card.Statements == null)
@@ -129,14 +130,15 @@ namespace Financier.Common
                 {
                     Console.WriteLine($"NOW Has {card.Statements.Count} statements");
                 }
-                var statement = card.Statements
+                var statement = db.Statements
+                    .Include(stmt => stmt.Items)
                     .Where(stmt => stmt.Id == id)
-                    .DefaultIfEmpty(null)
-                    .First();
+                    .FirstOrDefault();
 
                 if (statement == null)
                 {
                     card.Statements.Add(newStatement);
+                    db.Statements.Add(newStatement);
                     db.SaveChanges();
                     statement = newStatement;
                 }
@@ -156,7 +158,8 @@ namespace Financier.Common
                         Statements = new List<Statement>()
                 };
                 var card = db.Cards
-                    .DefaultIfEmpty(null)
+                    .Include(cd => cd.Statements)
+                    .ThenInclude(stmt => stmt.Items)
                     .FirstOrDefault(cd => cd.Number == cardNumber);
 
                 if (card == null)
@@ -169,6 +172,8 @@ namespace Financier.Common
                 else
                 {
                     Console.WriteLine("using existing card");
+                    Console.WriteLine($"There are ({db.Statements.Where(stmt => stmt.CardId == card.Id).Count()}) statements");
+                    Console.WriteLine($"There are ({card.Statements.Count()}) card.Statements");
                 }
 
                 return card;
@@ -180,7 +185,7 @@ namespace Financier.Common
             var newItem = new Item
             {
                 Id = Guid.NewGuid(),
-                Statement = statement,
+                StatementId = statement.Id,
                 Description = record.Description,
                 Amount = Convert.ToDecimal(record.Amount),
                 TransactedAt = ToDateTime(record.TransactedAt),
@@ -189,9 +194,15 @@ namespace Financier.Common
 
             if (statement == null)
             {
+                // NOTE: should never come here
                 Console.WriteLine("statment is null");
             }
-            statement.Items.Add(newItem);
+            using (var db = new ExpensesContext())
+            {
+                statement.Items.Add(newItem);
+                db.Items.Add(newItem);
+                db.SaveChanges();
+            }
             return newItem;
         }
 

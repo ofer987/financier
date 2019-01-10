@@ -20,6 +20,8 @@ namespace Financier.Tests
 
                 db.Cards.ToList();
                 Console.WriteLine(db.Cards.Count());
+                Console.WriteLine(db.Statements.Count());
+                Console.WriteLine(db.Items.Count());
                 // Console.WriteLine($"Has {db.Cards.First().Statements.Count} statements");
                 // Delete all entities in db
                 // if (db.Cards != null)
@@ -62,7 +64,7 @@ namespace Financier.Tests
 
                 var statement = StatementImporter.Import(Guid.NewGuid(), new DateTime(2018, 12, 1), reader);
 
-                Assert.IsTrue(statement.Items.Count() == 1);
+                Assert.IsTrue(statement.Items.Count() == 2);
             }
             catch (Exception)
             {
