@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 using Financier.Common;
+using Financier.Common.Models.Expenses;
 
 namespace Financier.Tests
 {
@@ -31,8 +34,51 @@ namespace Financier.Tests
             }
         }
 
+        public static IEnumerable TestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new DateTime(2018, 11, 1),
+                    @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
+1,'5191230192755321',20181101,20181105,13.37,EMA TEI TORONTO ON
+        2,'5191230192755321',20181103,20181105,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
+                    new Card
+                      {
+                          Id = Guid.NewGuid(),
+                          Number = "5191230192755321",
+                          Statements = new List<Statement>
+                          {
+                              new Statement
+                              {
+                                  Id = Guid.NewGuid(),
+                                  PostedAt = new DateTime(2018, 11, 1),
+                                  Items = new List<Item>
+                                  {
+                                      new Item
+                                      {
+                                          Amount = 13.37M,
+                                          Description = "EMA TEI TORONTO ON",
+                                          TransactedAt = new DateTime(2018, 11, 1),
+                                          PostedAt = new DateTime(2018, 11, 5),
+                                      },
+                                      new Item
+                                      {
+                                          Amount = 1.46M,
+                                          Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
+                                          TransactedAt = new DateTime(2018, 11, 3),
+                                          PostedAt = new DateTime(2018, 11, 5),
+                                      },
+                                  }
+                              }
+                          }
+                      });
+            }
+        }
+
         [Test]
-        public void TestImport()
+        [TestCaseSource(nameof(TestCases))]
+        public void TestImport(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             // var connection = new SqliteConnection("DataSource=:memory:");
             // connection.Open();
@@ -51,20 +97,39 @@ namespace Financier.Tests
                     db.SaveChanges();
                 }
 
-                var data = @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
-                    1,'5191230192755321',20181101,20181105,13.37,EMA TEI TORONTO ON
-                    2,'5191230192755321',20181103,20181105,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON";
-
-                var buffer = data.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
+                var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
                 // foreach (var by in buffer)
                 // {
                 //     Console.WriteLine(by);
                 // }
 
-                var statement = StatementImporter.Import(Guid.NewGuid(), new DateTime(2018, 12, 1), reader);
+                var result = StatementImporter.Import(Guid.NewGuid(), statementPostedAt, reader);
 
-                Assert.IsTrue(statement.Items.Count() == 2);
+                Assert.AreEqual(2, result.Items.Count());
+                Assert.AreEqual(expectedCard.Number, result.Card.Number);
+                Assert.AreEqual(expectedCard.Statements.Count, result.Card.Statements.Count);
+
+                for (var i = 0; i < result.Card.Statements.Count; i += 1)
+                {
+                    var resultStatement = result.Card.Statements[i];
+                    var expectedStatement = expectedCard.Statements[i];
+
+                    Assert.AreEqual(expectedStatement.PostedAt, resultStatement.PostedAt);
+                    Assert.AreEqual(expectedStatement.Items.Count, resultStatement.Items.Count);
+
+                    for (var j = 0; j < resultStatement.Items.Count; j += 1)
+                    {
+                        var resultItem = resultStatement.Items[j];
+                        var expectedItem = expectedStatement.Items[j];
+
+                        Assert.AreEqual(expectedItem.Amount, resultItem.Amount);
+                        Assert.AreEqual(expectedItem.Description, resultItem.Description);
+                        Assert.AreEqual(expectedItem.PostedAt, resultItem.PostedAt);
+                        Assert.AreEqual(expectedItem.TransactedAt, resultItem.TransactedAt);
+
+                    }
+                }
             }
             catch (Exception)
             {

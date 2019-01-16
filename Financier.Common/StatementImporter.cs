@@ -45,34 +45,15 @@ namespace Financier.Common
             {
                 var records = csv.GetRecords<StatementRecord>().ToList();
 
-                Console.WriteLine(records.Count());
-                var first = records.FirstOrDefault();
-                try
-                {
-                    Console.WriteLine(first);
-                    var card = FindOrCreateCard(first.CardNumber);
-                    var statement = GetStatement(statementId, postedAt, card);
-                    var item = CreateItem(first, statement);
-                    statement.CardId = card.Id;
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine("Error!");
-                    Console.WriteLine(exception);
-                    // Continue to next record
-                    // TODO: Record error in logger
-                }
-
-                var rest = records.Skip(1);
-                foreach (var record in rest)
+                Console.WriteLine(records.Count);
+                foreach (var record in records)
                 {
                     try
                     {
                         Console.WriteLine(record);
-                        var card = FindOrCreateCard(first.CardNumber);
+                        var card = FindOrCreateCard(record.CardNumber);
                         var statement = GetStatement(statementId, postedAt, card);
-                        var item = CreateItem(first, statement);
-                        statement.CardId = card.Id;
+                        CreateItem(record, statement);
                     }
                     catch (Exception exception)
                     {
@@ -84,7 +65,14 @@ namespace Financier.Common
                 }
             }
 
-            return statement;
+            using (var db = new ExpensesContext())
+            {
+                return db.Statements
+                    .Include(stmt => stmt.Card)
+                    .ThenInclude(card => card.Statements)
+                    .ThenInclude(stmt => stmt.Items)
+                    .First(stmt => stmt.Id == statementId);
+            }
         }
 
         // TODO: Rename
@@ -154,7 +142,7 @@ namespace Financier.Common
                 var newCard = new Card 
                 {
                         Id = Guid.NewGuid(),
-                        Number = cardNumber,
+                        Number = CleanCardNumber(cardNumber),
                         Statements = new List<Statement>()
                 };
                 var card = db.Cards
@@ -209,6 +197,11 @@ namespace Financier.Common
         public static DateTime ToDateTime(string str)
         {
             return DateTime.ParseExact(str, "yyyyMMdd", null);
+        }
+
+        public static string CleanCardNumber(string val)
+        {
+            return val;
         }
     }
 }
