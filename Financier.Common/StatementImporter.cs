@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 
 using CsvHelper;
@@ -137,13 +138,14 @@ namespace Financier.Common
 
         public static Card FindOrCreateCard(string cardNumber)
         {
+            cardNumber = CleanCardNumber(cardNumber);
             using (var db = new ExpensesContext())
             {
                 var newCard = new Card 
                 {
-                        Id = Guid.NewGuid(),
-                        Number = CleanCardNumber(cardNumber),
-                        Statements = new List<Statement>()
+                    Id = Guid.NewGuid(),
+                    Number = CleanCardNumber(cardNumber),
+                    Statements = new List<Statement>()
                 };
                 var card = db.Cards
                     .Include(cd => cd.Statements)
@@ -201,7 +203,14 @@ namespace Financier.Common
 
         public static string CleanCardNumber(string val)
         {
-            return val;
+            var regex = new Regex(@"^\s*'?\s*(\w+)\s*'?\s*$");
+
+            if (!regex.Match(val).Success || regex.Match(val).Groups.Count < 2)
+            {
+                throw new Exception($"Could not get card number from ({val})");
+            }
+
+            return regex.Match(val).Groups[1].Value;
         }
     }
 }

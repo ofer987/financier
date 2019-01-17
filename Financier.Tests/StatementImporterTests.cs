@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
+// using Microsoft.Data.Sqlite;
+// using Microsoft.EntityFrameworkCore;
 
 using Financier.Common;
 using Financier.Common.Models.Expenses;
@@ -20,6 +20,9 @@ namespace Financier.Tests
             {
                 Console.WriteLine(db.Database.EnsureCreated());
                 Console.WriteLine(db.Database.CanConnect());
+
+                db.Cards.RemoveRange(db.Cards);
+                db.SaveChanges();
 
                 db.Cards.ToList();
                 Console.WriteLine(db.Cards.Count());
@@ -73,6 +76,30 @@ namespace Financier.Tests
                               }
                           }
                       });
+            }
+        }
+
+        public static IEnumerable CardNumbers
+        {
+            get
+            {
+                yield return new TestCaseData("'123456'").Returns("123456");
+                yield return new TestCaseData("123456").Returns("123456");
+                yield return new TestCaseData("'1234567'").Returns("1234567");
+                yield return new TestCaseData("1234567").Returns("1234567");
+                yield return new TestCaseData("  '   1234567 \t' ").Returns("1234567");
+                yield return new TestCaseData("  '   123dan1234 \t' ").Returns("123dan1234");
+            }
+        }
+
+        public static IEnumerable FailureCardNumbers
+        {
+            get
+            {
+                yield return new TestCaseData("");
+                yield return new TestCaseData(string.Empty);
+                yield return new TestCaseData(" '    '    ");
+                yield return new TestCaseData(" '  '''  '    ");
             }
         }
 
@@ -139,6 +166,20 @@ namespace Financier.Tests
             {
                 // connection.Close();
             }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(CardNumbers))]
+        public string TestCleanCardNumber_Success(string unclean)
+        {
+            return StatementImporter.CleanCardNumber(unclean);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FailureCardNumbers))]
+        public void TestCleanCardNumber_Fail(string unclean)
+        {
+            Assert.Throws<Exception>(() => StatementImporter.CleanCardNumber(unclean));
         }
     }
 }
