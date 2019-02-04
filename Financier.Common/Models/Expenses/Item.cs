@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Financier.Common.Models.Expenses
 {
@@ -67,6 +68,19 @@ namespace Financier.Common.Models.Expenses
         public static bool operator !=(Item x, Item y)
         {
             return !(x == y);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"{nameof(Id)}: ({Id})");
+            sb.AppendLine($"{nameof(Description)}: ({Description ?? string.Empty})");
+            sb.AppendLine($"{nameof(Amount)}: ({Amount})");
+            sb.AppendLine($"{nameof(PostedAt)}: ({PostedAt})");
+            sb.AppendLine($"{nameof(TransactedAt)}: ({TransactedAt})");
+
+            return sb.ToString();
         }
     }
 }

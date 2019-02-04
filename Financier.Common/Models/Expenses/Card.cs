@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Financier.Common.Models.Expenses
 {
@@ -37,13 +38,28 @@ namespace Financier.Common.Models.Expenses
 
             foreach (var statement in Statements)
             {
-                if (!other.Statements.Any(yState => yState.Id == statement.Id))
+                if (!other.Statements.Any(yState => yState == statement))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"{nameof(Id)}: ({Id})");
+            sb.AppendLine($"{nameof(Number)}: ({Number ?? string.Empty})");
+            sb.AppendLine($"Statements:");
+            foreach (var statement in Statements ?? new List<Statement>())
+            {
+                sb.AppendLine($"\t{statement}");
+            }
+
+            return sb.ToString();
         }
 
         public static bool operator ==(Card x, Card y)

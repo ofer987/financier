@@ -18,22 +18,8 @@ namespace Financier.Tests
         {
             using (var db = new ExpensesContext())
             {
-                Console.WriteLine(db.Database.EnsureCreated());
-                Console.WriteLine(db.Database.CanConnect());
-
                 db.Cards.RemoveRange(db.Cards);
                 db.SaveChanges();
-
-                db.Cards.ToList();
-                Console.WriteLine(db.Cards.Count());
-                Console.WriteLine(db.Statements.Count());
-                Console.WriteLine(db.Items.Count());
-                // Console.WriteLine($"Has {db.Cards.First().Statements.Count} statements");
-                // Delete all entities in db
-                // if (db.Cards != null)
-                // {
-                //     db.RemoveRange(db.Cards);
-                // }
             }
         }
 
@@ -112,15 +98,8 @@ namespace Financier.Tests
         [TestCaseSource(nameof(TestCases))]
         public void TestImport(DateTime statementPostedAt, string statement, Card expectedCard)
         {
-            // var connection = new SqliteConnection("DataSource=:memory:");
-            // connection.Open();
-
             try
             {
-                // var options = new DbContextOptionsBuilder<ExpensesContext>()
-                //     .UseSqlite(connection)
-                //     .Options;
-
                 using (var db = new ExpensesContext())
                 {
                     db.Database.EnsureCreated();
@@ -131,45 +110,14 @@ namespace Financier.Tests
 
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
-                // foreach (var by in buffer)
-                // {
-                //     Console.WriteLine(by);
-                // }
 
-                var result = StatementImporter.Import(Guid.NewGuid(), statementPostedAt, reader);
+                var actualStatement = StatementImporter.Import(Guid.NewGuid(), statementPostedAt, reader);
 
-                Assert.AreEqual(2, result.Items.Count());
-                Assert.AreEqual(expectedCard.Number, result.Card.Number);
-                Assert.AreEqual(expectedCard.Statements.Count, result.Card.Statements.Count);
-
-                for (var i = 0; i < result.Card.Statements.Count; i += 1)
-                {
-                    var resultStatement = result.Card.Statements[i];
-                    var expectedStatement = expectedCard.Statements[i];
-
-                    Assert.AreEqual(expectedStatement.PostedAt, resultStatement.PostedAt);
-                    Assert.AreEqual(expectedStatement.Items.Count, resultStatement.Items.Count);
-
-                    for (var j = 0; j < resultStatement.Items.Count; j += 1)
-                    {
-                        var resultItem = resultStatement.Items[j];
-                        var expectedItem = expectedStatement.Items[j];
-
-                        Assert.AreEqual(expectedItem.Amount, resultItem.Amount);
-                        Assert.AreEqual(expectedItem.Description, resultItem.Description);
-                        Assert.AreEqual(expectedItem.PostedAt, resultItem.PostedAt);
-                        Assert.AreEqual(expectedItem.TransactedAt, resultItem.TransactedAt);
-
-                    }
-                }
+                Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
             }
             catch (Exception)
             {
                 throw;
-            }
-            finally
-            {
-                // connection.Close();
             }
         }
 

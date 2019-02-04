@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Financier.Common.Models.Expenses
 {
@@ -33,7 +34,7 @@ namespace Financier.Common.Models.Expenses
                 return false;
             }
 
-            if (Id != other.Id || PostedAt != other.PostedAt)
+            if (PostedAt != other.PostedAt)
             {
                 return false;
             }
@@ -67,6 +68,21 @@ namespace Financier.Common.Models.Expenses
         public static bool operator !=(Statement x, Statement y)
         {
             return !(x == y);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"{nameof(Id)}: ({Id})");
+            sb.AppendLine($"{nameof(PostedAt)}: ({PostedAt})");
+            sb.AppendLine($"Items:");
+            foreach (var item in Items ?? new List<Item>())
+            {
+                sb.AppendLine($"\t{item}");
+            }
+
+            return sb.ToString();
         }
     }
 }
