@@ -29,5 +29,44 @@ namespace Financier.Common.Models.Expenses
         public Item()
         {
         }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Item;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if ((Description ?? string.Empty) != (other.Description ?? string.Empty)
+                    || Amount != other.Amount 
+                    || TransactedAt != other.TransactedAt 
+                    || PostedAt != other.PostedAt)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool operator ==(Item x, Item y)
+        {
+            if (object.ReferenceEquals(x, null))
+            {
+                return (object.ReferenceEquals(y, null));
+            }
+
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(Item x, Item y)
+        {
+            return !(x == y);
+        }
     }
 }

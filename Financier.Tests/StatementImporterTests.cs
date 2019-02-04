@@ -14,7 +14,7 @@ namespace Financier.Tests
     public class StatementImporterTests
     {
         [SetUp]
-        public void Setup()
+        public void Init()
         {
             using (var db = new ExpensesContext())
             {
@@ -35,6 +35,11 @@ namespace Financier.Tests
                 //     db.RemoveRange(db.Cards);
                 // }
             }
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
         }
 
         public static IEnumerable TestCases
