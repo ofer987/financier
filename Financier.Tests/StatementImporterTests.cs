@@ -18,9 +18,9 @@ namespace Financier.Tests
         {
             using (var db = new ExpensesContext())
             {
-                db.Cards.RemoveRange(db.Cards);
-                db.Statements.RemoveRange(db.Statements);
                 db.Items.RemoveRange(db.Items);
+                db.Statements.RemoveRange(db.Statements);
+                db.Cards.RemoveRange(db.Cards);
                 db.SaveChanges();
             }
         }
@@ -28,6 +28,13 @@ namespace Financier.Tests
         [TearDown]
         public void Cleanup()
         {
+            using (var db = new ExpensesContext())
+            {
+                db.Items.RemoveRange(db.Items);
+                db.Statements.RemoveRange(db.Statements);
+                db.Cards.RemoveRange(db.Cards);
+                db.SaveChanges();
+            }
         }
 
         public static IEnumerable TestCases
@@ -69,6 +76,42 @@ namespace Financier.Tests
                               }
                           }
                       });
+
+                yield return new TestCaseData(
+                        new DateTime(2019, 1, 1),
+                        @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
+                        1,'6171230192725321',20180601,20180601,13.37,EMA TEI TORONTO ON
+                        2,'6171230192725321',20180602,20180602,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
+                        new Card
+                        {
+                        Id = Guid.NewGuid(),
+                        Number = "6171230192725321",
+                        Statements = new List<Statement>
+                        {
+                        new Statement
+                        {
+                        Id = Guid.NewGuid(),
+                        PostedAt = new DateTime(2019, 1, 1),
+                        Items = new List<Item>
+                        {
+                        new Item
+                        {
+                        Amount = 13.37M,
+                        Description = "EMA TEI TORONTO ON",
+                        TransactedAt = new DateTime(2018, 6, 1),
+                        PostedAt = new DateTime(2018, 6, 2),
+                        },
+                        new Item
+                        {
+                            Amount = 1.46M,
+                            Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
+                            TransactedAt = new DateTime(2018, 11, 3),
+                            PostedAt = new DateTime(2018, 11, 5),
+                        },
+                        }
+                        }
+                        }
+                        });
             }
         }
 
@@ -104,7 +147,12 @@ namespace Financier.Tests
             {
                 using (var db = new ExpensesContext())
                 {
-                    db.Database.EnsureCreated();
+                    // db.Database.EnsureCreated();
+                    // db.Items.RemoveRange(db.Items);
+                    // db.Statements.RemoveRange(db.Statements);
+                    // db.Cards.RemoveRange(db.Cards);
+                    // db.SaveChanges();
+
                     db.Cards.Add(new Financier.Common.Models.Expenses.Card { Id = Guid.NewGuid(), Number = "1234" });
                     db.SaveChanges();
                 }
@@ -112,7 +160,43 @@ namespace Financier.Tests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = StatementImporter.Import(Guid.NewGuid(), statementPostedAt, reader);
+                var actualStatement = new StatementImporter().Import(Guid.NewGuid(), statementPostedAt, reader);
+
+                Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(TestCases))]
+        public void TestImport_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
+        {
+            try
+            {
+                using (var db = new ExpensesContext())
+                {
+                    db.Database.EnsureCreated();
+                    db.Items.RemoveRange(db.Items);
+                    db.Statements.RemoveRange(db.Statements);
+                    db.Cards.RemoveRange(db.Cards);
+                    db.SaveChanges();
+
+                    db.Database.EnsureCreated();
+                    db.Cards.Add(new Financier.Common.Models.Expenses.Card {
+                        Id = Guid.NewGuid(),
+                        Number = "5191230192755321"
+                    });
+                    Console.WriteLine("saved one card");
+                    db.SaveChanges();
+                }
+
+                var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
+                var reader = new System.IO.MemoryStream(buffer);
+
+                var actualStatement = new StatementImporter().Import(Guid.NewGuid(), statementPostedAt, reader);
 
                 Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
             }
@@ -126,14 +210,14 @@ namespace Financier.Tests
         [TestCaseSource(nameof(CardNumbers))]
         public string TestCleanCardNumber_Success(string unclean)
         {
-            return StatementImporter.CleanCardNumber(unclean);
+            return new StatementImporter().CleanCardNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
         public void TestCleanCardNumber_Fail(string unclean)
         {
-            Assert.Throws<Exception>(() => StatementImporter.CleanCardNumber(unclean));
+            Assert.Throws<Exception>(() => new StatementImporter().CleanCardNumber(unclean));
         }
 
         [Test]
@@ -302,7 +386,7 @@ namespace Financier.Tests
                         PostedAt = "20181103",
                         TransactedAt = "20181104"
                     };
-                    var item = StatementImporter.CreateItem(record, newStatement);
+                    var item = new StatementImporter().CreateItem(record, newStatement);
 
                     var dbItem = db.Items.First(i => i.Amount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));

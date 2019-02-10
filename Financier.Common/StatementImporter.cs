@@ -39,18 +39,16 @@ namespace Financier.Common
 
     public class StatementImporter
     {
-        public static Statement Import(Guid statementId, DateTime postedAt, Stream stream)
+        public Statement Import(Guid statementId, DateTime postedAt, Stream stream)
         {
             using (var reader = new StreamReader(stream))
             using (var csv = new CsvReader(reader))
             {
                 var records = csv.GetRecords<StatementRecord>().ToList();
 
-                Console.WriteLine(records.Count);
                 foreach (var record in records)
                 {
-                    Console.WriteLine(record);
-                    var card = FindOrCreateCard(record.CardNumber);
+                    var card = GetCard(record.CardNumber);
                     var statement = GetStatement(statementId, postedAt, card);
                     try
                     {
@@ -58,6 +56,7 @@ namespace Financier.Common
                     }
                     catch (Exception exception)
                     {
+                        // TODO Record somewhere else
                         Console.WriteLine("Error creating item");
                         Console.WriteLine(exception);
                         // Continue to next record
@@ -76,8 +75,8 @@ namespace Financier.Common
             }
         }
 
-        private static Card _card = null;
-        public static Card GetCard(string cardNumber)
+        private Card _card = null;
+        public Card GetCard(string cardNumber)
         {
             if (_card != null)
             {
@@ -87,8 +86,8 @@ namespace Financier.Common
             return (_card = FindOrCreateCard(cardNumber));
         }
 
-        private static Statement _statement = null;
-        public static Statement GetStatement(Guid id, DateTime postedAt, Card card)
+        private Statement _statement = null;
+        public Statement GetStatement(Guid id, DateTime postedAt, Card card)
         {
             if (_statement != null)
             {
@@ -98,7 +97,7 @@ namespace Financier.Common
             return (_statement = FindOrCreateStatement(id, postedAt, card));
         }
 
-        public static Statement FindOrCreateStatement(Guid id, DateTime postedAt, Card card)
+        public Statement FindOrCreateStatement(Guid id, DateTime postedAt, Card card)
         {
             using (var db = new ExpensesContext())
             {
@@ -129,7 +128,7 @@ namespace Financier.Common
             }
         }
 
-        public static Card FindOrCreateCard(string cardNumber)
+        public Card FindOrCreateCard(string cardNumber)
         {
             cardNumber = CleanCardNumber(cardNumber);
             using (var db = new ExpensesContext())
@@ -161,7 +160,7 @@ namespace Financier.Common
             }
         }
 
-        public static Item CreateItem(StatementRecord record, Statement statement)
+        public Item CreateItem(StatementRecord record, Statement statement)
         {
             using (var db = new ExpensesContext())
             {
@@ -182,12 +181,12 @@ namespace Financier.Common
             }
         }
 
-        public static DateTime ToDateTime(string str)
+        public DateTime ToDateTime(string str)
         {
             return DateTime.ParseExact(str, "yyyyMMdd", null);
         }
 
-        public static string CleanCardNumber(string val)
+        public string CleanCardNumber(string val)
         {
             var regex = new Regex(@"^\s*'?\s*(\w+)\s*'?\s*$");
 
