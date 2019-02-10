@@ -19,6 +19,8 @@ namespace Financier.Tests
             using (var db = new ExpensesContext())
             {
                 db.Cards.RemoveRange(db.Cards);
+                db.Statements.RemoveRange(db.Statements);
+                db.Items.RemoveRange(db.Items);
                 db.SaveChanges();
             }
         }
@@ -96,7 +98,7 @@ namespace Financier.Tests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void TestImport(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void TestImport_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
@@ -104,7 +106,6 @@ namespace Financier.Tests
                 {
                     db.Database.EnsureCreated();
                     db.Cards.Add(new Financier.Common.Models.Expenses.Card { Id = Guid.NewGuid(), Number = "1234" });
-                    Console.WriteLine("saved one card");
                     db.SaveChanges();
                 }
 
@@ -133,6 +134,227 @@ namespace Financier.Tests
         public void TestCleanCardNumber_Fail(string unclean)
         {
             Assert.Throws<Exception>(() => StatementImporter.CleanCardNumber(unclean));
+        }
+
+        [Test]
+        public void Test_SaveItem_TwoContexts_OutOfSync()
+        {
+            try
+            {
+                using (var db = new ExpensesContext())
+                {
+                    db.Database.EnsureCreated();
+                    var card = new Financier.Common.Models.Expenses.Card 
+                    { 
+                        Id = Guid.NewGuid(),
+                        Number = "1234",
+                        Statements = new List<Statement>() 
+                    };
+                    db.Cards.Add(card);
+
+                    var statement = new Statement
+                    {
+                        Card = card,
+                        Id = Guid.NewGuid(),
+                        PostedAt = DateTime.Now,
+                        Items = new List<Item>()
+                    };
+                    card.Statements.Add(statement);
+                    db.Statements.Add(statement);
+                    db.SaveChanges();
+
+                    var item1 = new Item
+                    {
+                        Amount = 10.0M,
+                        Description = "Transaction 1",
+                        Statement = statement,
+                        TransactedAt = new DateTime(2018, 1, 1),
+                        PostedAt = new DateTime(2018, 1, 2),
+                        Id = Guid.NewGuid()
+                    };
+                    using (var db2 = new ExpensesContext())
+                    {
+                        db2.Items.Add(item1);
+                        Assert.Throws<Microsoft.EntityFrameworkCore.DbUpdateException>(() => db2.SaveChanges());
+                    }
+
+                    var item2 = new Item
+                    {
+                        Amount = 10.0M,
+                        Description = "Transaction 2",
+                        Statement = statement,
+                        TransactedAt = new DateTime(2018, 1, 1),
+                        PostedAt = new DateTime(2018, 1, 2),
+                        Id = Guid.NewGuid()
+                    };
+                    statement.Items.Add(item2);
+
+                    db.SaveChanges();
+
+                    var newCard = new Financier.Common.Models.Expenses.Card 
+                    { 
+                        Id = Guid.NewGuid(),
+                        Number = "1235",
+                        Statements = new List<Statement>() 
+                    };
+                    db.Cards.Add(newCard);
+
+                    var newStatement = new Statement
+                    {
+                        Card = card,
+                        Id = Guid.NewGuid(),
+                        PostedAt = new DateTime(2019, 2, 1),
+                        Items = new List<Item>()
+                    };
+                    newCard.Statements.Add(newStatement);
+
+                    db.SaveChanges();
+                    Assert.IsTrue(true);
+                }
+            }
+            catch (Exception exception)
+            {
+                Assert.Fail(exception.Message);
+            }
+        }
+
+        [Test]
+        public void Test_SaveCard()
+        {
+            try
+            {
+                using (var db = new ExpensesContext())
+                {
+                    db.Database.EnsureCreated();
+                    var card = new Financier.Common.Models.Expenses.Card 
+                    { 
+                        Id = Guid.NewGuid(),
+                           Number = "1234",
+                           Statements = new List<Statement>() 
+                    };
+                    db.Cards.Add(card);
+                    db.SaveChanges();
+
+                    {
+                        var newStatement = new Statement
+                        {
+                            Card = card,
+                                 Id = Guid.NewGuid(),
+                                 PostedAt = new DateTime(2019, 2, 1),
+                                 Items = new List<Item>()
+                        };
+                        db.Statements.Add(newStatement);
+                        db.SaveChanges();
+                    }
+
+                    {
+                        var newStatement = new Statement
+                        {
+                            Card = card,
+                                 Id = Guid.NewGuid(),
+                                 PostedAt = new DateTime(2019, 2, 2),
+                                 Items = new List<Item>()
+                        };
+                        db.Statements.Add(newStatement);
+                        db.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Assert.Fail(exception.Message);
+            }
+        }
+
+        [Test]
+        public void Test_CreateItem()
+        {
+            try
+            {
+                using (var db = new ExpensesContext())
+                {
+                    db.Database.EnsureCreated();
+                    var card = new Financier.Common.Models.Expenses.Card 
+                    { 
+                        Id = Guid.NewGuid(),
+                           Number = "1234",
+                           Statements = new List<Statement>() 
+                    };
+                    db.Cards.Add(card);
+                    db.SaveChanges();
+
+                    var newStatement = new Statement
+                    {
+                        Card = card,
+                             Id = Guid.NewGuid(),
+                             PostedAt = new DateTime(2019, 2, 1),
+                             Items = new List<Item>()
+                    };
+                    db.Statements.Add(newStatement);
+                    db.SaveChanges();
+
+                    var record = new StatementRecord
+                    {
+                        Amount = "10.00",
+                        CardNumber = "1234",
+                        Description = "Some new item",
+                        ItemId = "123",
+                        PostedAt = "20181103",
+                        TransactedAt = "20181104"
+                    };
+                    var item = StatementImporter.CreateItem(record, newStatement);
+
+                    var dbItem = db.Items.First(i => i.Amount == 10.00M);
+                    Assert.That(dbItem.Statement, Is.EqualTo(newStatement));
+                }
+            }
+            catch (Exception exception)
+            {
+                Assert.Fail(exception.StackTrace);
+                Assert.Fail(exception.Message);
+            }
+        }
+
+        [Test]
+        public void Test_SaveCardAndStatement()
+        {
+            try
+            {
+                using (var db = new ExpensesContext())
+                {
+                    db.Database.EnsureCreated();
+                    var card = new Financier.Common.Models.Expenses.Card 
+                    { 
+                        Id = Guid.NewGuid(),
+                           Number = "1234",
+                           Statements = new List<Statement>() 
+                    };
+                    db.Cards.Add(card);
+                    db.SaveChanges();
+
+                    {
+                        var newStatement = new Statement
+                        {
+                            Card = card,
+                            Id = Guid.NewGuid(),
+                            PostedAt = new DateTime(2019, 2, 1),
+                            Items = new List<Item>()
+                        };
+
+                        card.Statements.Add(newStatement);
+                        db.Statements.Add(newStatement);
+                        Assert.That(db.Statements.Count, Is.EqualTo(0));
+                        db.SaveChanges();
+                    }
+
+                    Assert.That(db.Cards.Count, Is.EqualTo(1));
+                    Assert.That(db.Statements.Count, Is.EqualTo(1));
+                }
+            }
+            catch (Exception exception)
+            {
+                Assert.Fail(exception.Message);
+            }
         }
     }
 }

@@ -49,16 +49,16 @@ namespace Financier.Common
                 Console.WriteLine(records.Count);
                 foreach (var record in records)
                 {
+                    Console.WriteLine(record);
+                    var card = FindOrCreateCard(record.CardNumber);
+                    var statement = GetStatement(statementId, postedAt, card);
                     try
                     {
-                        Console.WriteLine(record);
-                        var card = FindOrCreateCard(record.CardNumber);
-                        var statement = GetStatement(statementId, postedAt, card);
                         CreateItem(record, statement);
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine("Error!");
+                        Console.WriteLine("Error creating item");
                         Console.WriteLine(exception);
                         // Continue to next record
                         // TODO: Record error in logger
@@ -72,53 +72,36 @@ namespace Financier.Common
                     .Include(stmt => stmt.Card)
                     .ThenInclude(card => card.Statements)
                     .ThenInclude(stmt => stmt.Items)
-                    .First(stmt => stmt.Id == statementId);
+                    .FirstOrDefault(stmt => stmt.Id == statementId);
             }
         }
 
-        // TODO: Rename
-        private static Card card = null;
+        private static Card _card = null;
         public static Card GetCard(string cardNumber)
         {
-            if (card != null)
+            if (_card != null)
             {
-                return card;
+                return _card;
             }
 
-            return (card = FindOrCreateCard(cardNumber));
+            return (_card = FindOrCreateCard(cardNumber));
         }
 
-        // TODO: Rename
-        private static Statement statement = null;
+        private static Statement _statement = null;
         public static Statement GetStatement(Guid id, DateTime postedAt, Card card)
         {
-            if (statement != null)
+            if (_statement != null)
             {
-                return statement;
+                return _statement;
             }
 
-            return (statement = FindOrCreateStatement(id, postedAt, card));
+            return (_statement = FindOrCreateStatement(id, postedAt, card));
         }
 
         public static Statement FindOrCreateStatement(Guid id, DateTime postedAt, Card card)
         {
             using (var db = new ExpensesContext())
             {
-                var newStatement = new Statement
-                {
-                    Id = id,
-                    PostedAt = postedAt,
-                    CardId = card.Id,
-                    Items = new List<Item>()
-                };
-                if (card.Statements == null)
-                {
-                    Console.WriteLine($"NOW card.Statements is null");
-                }
-                else
-                {
-                    Console.WriteLine($"NOW Has {card.Statements.Count} statements");
-                }
                 var statement = db.Statements
                     .Include(stmt => stmt.Items)
                     .Where(stmt => stmt.Id == id)
@@ -126,10 +109,20 @@ namespace Financier.Common
 
                 if (statement == null)
                 {
+                    var newStatement = new Statement
+                    {
+                        Id = id,
+                        PostedAt = postedAt,
+                        CardId = card.Id,
+                        Items = new List<Item>(),
+                    };
                     card.Statements.Add(newStatement);
                     db.Statements.Add(newStatement);
                     db.SaveChanges();
-                    statement = newStatement;
+
+                    statement = db.Statements
+                        .Include(stmt => stmt.Items)
+                        .First(st => st.Id == id);
                 }
 
                 return statement;
@@ -141,12 +134,6 @@ namespace Financier.Common
             cardNumber = CleanCardNumber(cardNumber);
             using (var db = new ExpensesContext())
             {
-                var newCard = new Card 
-                {
-                    Id = Guid.NewGuid(),
-                    Number = CleanCardNumber(cardNumber),
-                    Statements = new List<Statement>()
-                };
                 var card = db.Cards
                     .Include(cd => cd.Statements)
                     .ThenInclude(stmt => stmt.Items)
@@ -154,16 +141,20 @@ namespace Financier.Common
 
                 if (card == null)
                 {
-                    Console.WriteLine("Creating a new card");
-                    card = newCard;
+                    var newCard = new Card
+                    {
+                        Id = Guid.NewGuid(),
+                        Number = CleanCardNumber(cardNumber),
+                        Statements = new List<Statement>()
+                    };
                     db.Cards.Add(newCard);
                     db.SaveChanges();
-                }
-                else
-                {
-                    Console.WriteLine("using existing card");
-                    Console.WriteLine($"There are ({db.Statements.Where(stmt => stmt.CardId == card.Id).Count()}) statements");
-                    Console.WriteLine($"There are ({card.Statements.Count()}) card.Statements");
+
+                    // Reload the card
+                    card = db.Cards
+                        .Include(cd => cd.Statements)
+                        .ThenInclude(stmt => stmt.Items)
+                        .FirstOrDefault(cd => cd.Number == cardNumber);
                 }
 
                 return card;
@@ -172,28 +163,23 @@ namespace Financier.Common
 
         public static Item CreateItem(StatementRecord record, Statement statement)
         {
-            var newItem = new Item
-            {
-                Id = Guid.NewGuid(),
-                StatementId = statement.Id,
-                Description = record.Description,
-                Amount = Convert.ToDecimal(record.Amount),
-                TransactedAt = ToDateTime(record.TransactedAt),
-                PostedAt = ToDateTime(record.PostedAt)
-            };
-
-            if (statement == null)
-            {
-                // NOTE: should never come here
-                Console.WriteLine("statment is null");
-            }
             using (var db = new ExpensesContext())
             {
-                statement.Items.Add(newItem);
+                var newItem = new Item
+                {
+                    Id = Guid.NewGuid(),
+                    // Statement = statement,
+                    StatementId = statement.Id,
+                    Description = record.Description,
+                    Amount = Convert.ToDecimal(record.Amount),
+                    TransactedAt = ToDateTime(record.TransactedAt),
+                    PostedAt = ToDateTime(record.PostedAt)
+                };
                 db.Items.Add(newItem);
                 db.SaveChanges();
+
+                return newItem;
             }
-            return newItem;
         }
 
         public static DateTime ToDateTime(string str)

@@ -2,17 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace Financier.Common.Models.Expenses
 {
     public class Statement
     {
+        [Key]
+        [Required]
         public Guid Id { get; set; }
 
         public Card Card { get; set; }
 
         public Guid CardId { get; set; }
 
+        [Required]
         public DateTime PostedAt { get; set; }
 
         public List<Item> Items { get; set; }

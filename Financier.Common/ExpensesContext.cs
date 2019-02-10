@@ -1,18 +1,28 @@
 using Financier.Common.Models.Expenses;
 using Microsoft.EntityFrameworkCore;
+// using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Financier.Common
 {
+    public enum Environments { Dev = 0, Test, Production }
+
     public class ExpensesContext : DbContext
     {
+        public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory(new ILoggerProvider[] { new ConsoleLoggerProvider((_, __) => true, true )});
+
         public DbSet<Card> Cards { get; set; }
 
         public DbSet<Statement> Statements { get; set; }
 
         public DbSet<Item> Items { get; set; }
 
+        public static Environments Environment = Environments.Test;
+
         public ExpensesContext()
         {
+            System.Console.WriteLine("foobar");
         }
 
         public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options)
@@ -44,18 +54,40 @@ namespace Financier.Common
                 .HasOne(statement => statement.Card)
                 .WithMany(card => card.Statements)
                 .HasForeignKey(statement => statement.CardId);
-
-            modelBuilder.Entity<Statement>()
-                .HasMany(statement => statement.Items)
-                .WithOne(item => item.Statement)
-                .HasForeignKey(item => item.StatementId);
+            //
+            // modelBuilder.Entity<Statement>()
+            //     .HasMany(statement => statement.Items)
+            //     .WithOne(item => item.Statement)
+            //     .HasForeignKey(item => item.StatementId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            // switch (Environment)
+            // {
+            //     case Environments.Test:
+            //         var connection = new SqliteConnection("DataSource=:memory:");
+            //         connection.Open();
+            //         optionsBuilder.UseSqlite("DataSource=:memory:");
+            //         break;
+            //     default:
+            //         break;
+            // }
+
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite("Data Source=/Users/ofer987/work/Financier/Financier.Tests/Financier.db");
+                System.Console.WriteLine("true");
+                optionsBuilder
+                    .UseLoggerFactory(MyLoggerFactory)
+                    .EnableSensitiveDataLogging()
+                    // .UseSqlite("Data Source=/Users/ofer987/work/Financier/Financier.Tests/Financier.db");
+                    .UseNpgsql("Host=localhost;Database=financier_tests;Username=ofer987");
+            }
+            else
+            {
+                System.Console.WriteLine("false");
+                optionsBuilder
+                    .UseLoggerFactory(MyLoggerFactory);
             }
         }
     }

@@ -1,22 +1,29 @@
 using System;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace Financier.Common.Models.Expenses
 {
     public class Item
     {
+        [Key]
+        [Required]
         public Guid Id { get; set; }
 
         public Guid StatementId { get; set; }
 
         public Statement Statement { get; set; }
 
+        [Required]
         public string Description { get; set; }
 
+        [Required]
         public decimal Amount { get; set; }
 
+        [Required]
         public DateTime TransactedAt { get; set; }
 
+        [Required]
         public DateTime PostedAt { get; set; }
 
         public Item(string description, DateTime transactedAt, DateTime postedAt, decimal amount)
