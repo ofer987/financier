@@ -18,11 +18,10 @@ namespace Financier.Common
 
         public DbSet<Item> Items { get; set; }
 
-        public static Environments Environment = Environments.Test;
+        public static Environments Environment = Environments.Dev;
 
         public ExpensesContext()
         {
-            System.Console.WriteLine("foobar");
         }
 
         public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options)
@@ -76,18 +75,29 @@ namespace Financier.Common
 
             if (!optionsBuilder.IsConfigured)
             {
-                System.Console.WriteLine("true");
-                optionsBuilder
-                    .UseLoggerFactory(MyLoggerFactory)
-                    .EnableSensitiveDataLogging()
+                // optionsBuilder
+                //     .UseLoggerFactory(MyLoggerFactory)
+                //     .EnableSensitiveDataLogging();
                     // .UseSqlite("Data Source=/Users/ofer987/work/Financier/Financier.Tests/Financier.db");
-                    .UseNpgsql("Host=localhost;Database=financier_tests;Username=ofer987");
+
+                switch (Environment)
+                {
+                    case Environments.Dev:
+                        optionsBuilder.UseNpgsql("Host=localhost;Database=financier;Username=ofer987");
+                        break;
+                    case Environments.Test:
+                        optionsBuilder.UseNpgsql("Host=localhost;Database=financier_tests;Username=ofer987");
+                        break;
+                    case Environments.Production:
+                        optionsBuilder.UseNpgsql("Host=localhost;Database=financier;Username=ofer987");
+                        break;
+                }
+
             }
             else
             {
-                System.Console.WriteLine("false");
-                optionsBuilder
-                    .UseLoggerFactory(MyLoggerFactory);
+                // optionsBuilder
+                //     .UseLoggerFactory(MyLoggerFactory);
             }
         }
     }

@@ -9,6 +9,8 @@ namespace Financier.Cli
     {
         public static void Main(string[] args)
         {
+            ExpensesContext.Environment = Environments.Dev;
+
             var postedAt = GetPostedAt(args);
             var stream = System.IO.File.OpenRead(GetStatementPath(args));
 

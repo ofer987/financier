@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using Financier.Common.Models.Expenses;
+using Financier.Common.Extensions;
 
 namespace Financier.Common
 {
@@ -44,10 +45,18 @@ namespace Financier.Common
             using (var reader = new StreamReader(stream))
             using (var csv = new CsvReader(reader))
             {
+                // Do nothing if record is faulty
+                csv.Configuration.BadDataFound = (context) =>
+                {
+                    // TODO: log this to an error log
+                    Console.WriteLine($"This line is faulty {context.Record.Join()}");
+                };
+
                 var records = csv.GetRecords<StatementRecord>().ToList();
 
                 foreach (var record in records)
                 {
+                    Console.WriteLine(record);
                     var card = GetCard(record.CardNumber);
                     var statement = GetStatement(statementId, postedAt, card);
                     try
@@ -56,11 +65,11 @@ namespace Financier.Common
                     }
                     catch (Exception exception)
                     {
-                        // TODO Record somewhere else
+                        // TODO: Record error in logger
                         Console.WriteLine("Error creating item");
                         Console.WriteLine(exception);
+
                         // Continue to next record
-                        // TODO: Record error in logger
                     }
                 }
             }
