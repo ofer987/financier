@@ -18,6 +18,8 @@ namespace Financier.Common
 
         public DbSet<Item> Items { get; set; }
 
+        public DbSet<Tag> Tags { get; set; }
+
         public static Environments Environment = Environments.Dev;
 
         public ExpensesContext()
@@ -53,6 +55,11 @@ namespace Financier.Common
                 .HasOne(statement => statement.Card)
                 .WithMany(card => card.Statements)
                 .HasForeignKey(statement => statement.CardId);
+
+            modelBuilder.Entity<Tag>()
+                .HasIndex(tag => tag.Name)
+                .IsUnique();
+
             //
             // modelBuilder.Entity<Statement>()
             //     .HasMany(statement => statement.Items)

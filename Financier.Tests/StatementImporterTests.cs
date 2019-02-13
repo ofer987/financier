@@ -13,6 +13,12 @@ namespace Financier.Tests
 {
     public class StatementImporterTests
     {
+        [OneTimeSetUp]
+        public void InitAll()
+        {
+            ExpensesContext.Environment = Environments.Test;
+        }
+
         [SetUp]
         public void Init()
         {
@@ -21,6 +27,7 @@ namespace Financier.Tests
                 db.Items.RemoveRange(db.Items);
                 db.Statements.RemoveRange(db.Statements);
                 db.Cards.RemoveRange(db.Cards);
+                db.Tags.RemoveRange(db.Tags);
                 db.SaveChanges();
             }
         }
@@ -33,6 +40,7 @@ namespace Financier.Tests
                 db.Items.RemoveRange(db.Items);
                 db.Statements.RemoveRange(db.Statements);
                 db.Cards.RemoveRange(db.Cards);
+                db.Tags.RemoveRange(db.Tags);
                 db.SaveChanges();
             }
         }
@@ -439,6 +447,66 @@ namespace Financier.Tests
             {
                 Assert.Fail(exception.Message);
             }
+        }
+
+        public static IEnumerable TestCases_Tags
+        {
+            get
+            {
+                yield return new TestCaseData("hello, dan, ron").Returns(new [] 
+                            {
+                new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "hello"
+                },
+                new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "dan"
+                },
+                new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "ron"
+                }
+                            });
+                yield return new TestCaseData(", hello  , dan,ron, ron  , ").Returns(new [] 
+                        {
+                        new Tag
+                        {
+                        Id = Guid.NewGuid(),
+                        Name = "hello"
+                        },
+                        new Tag
+                        {
+                        Id = Guid.NewGuid(),
+                        Name = "dan"
+                        },
+                        new Tag
+                        {
+                        Id = Guid.NewGuid(),
+                        Name = "ron"
+                        }
+                        });
+                yield return new TestCaseData(string.Empty).Returns(new Tag[] { });
+                yield return new TestCaseData("  ,   ,    ,").Returns(new Tag[] { });
+                yield return new TestCaseData("Dan, dan, DAN, dAN").Returns(new [] 
+                        {
+                        new Tag
+                        {
+                        Id = Guid.NewGuid(),
+                        Name = "dan"
+                        }
+                        });
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(TestCases_Tags))]
+        public List<Tag> Test_FindOrCreateTags(string list)
+        {
+            return new StatementImporter().FindOrCreateTags(list);
         }
     }
 }

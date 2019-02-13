@@ -27,5 +27,10 @@ namespace Financier.Common.Extensions
 
             return sb.ToString();
         }
+
+        public static IEnumerable<T> Reject<T>(this IEnumerable<T> self, Func<T, bool> filter)
+        {
+            return self.Where(item => !filter(item));
+        }
     }
 }
