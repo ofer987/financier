@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Financier.Common.Models.Expenses
 {
@@ -22,6 +24,15 @@ namespace Financier.Common.Models.Expenses
             {
                 _name = value.Trim().ToLower();
             }
+        }
+
+        public List<ItemTag> ItemTags { get; set; }
+
+        public IEnumerable<Item> Items => ItemTags.Select(it => it.Item);
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
 
         public override bool Equals(object obj)

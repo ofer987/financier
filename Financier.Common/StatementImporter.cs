@@ -206,43 +206,5 @@ namespace Financier.Common
 
             return regex.Match(val).Groups[1].Value;
         }
-
-        public List<Tag> FindOrCreateTags(string list)
-        {
-            var tags = new List<Tag>();
-
-            var names = list
-                .Split(',')
-                .Select(item => item.Trim().ToLower())
-                .Reject(item => item.IsNullOrEmpty())
-                .Distinct();
-
-            using (var db = new ExpensesContext())
-            {
-                foreach (var name in names)
-                {
-                    var tag = db.Tags
-                        .DefaultIfEmpty(null)
-                        .FirstOrDefault(t => t.Name == name);
-
-                    if (tag == null)
-                    {
-                        var newTag = new Tag
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = name
-                        };
-
-                        tag = newTag;
-                    }
-
-                    tags.Add(tag);
-                }
-
-                db.SaveChanges();
-            }
-
-            return tags;
-        }
     }
 }

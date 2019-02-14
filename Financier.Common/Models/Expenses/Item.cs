@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Financier.Common.Models.Expenses
 {
@@ -25,6 +27,10 @@ namespace Financier.Common.Models.Expenses
 
         [Required]
         public DateTime PostedAt { get; set; }
+
+        public List<ItemTag> ItemTags { get; set; }
+
+        public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
 
         public Item(string description, DateTime transactedAt, DateTime postedAt, decimal amount)
         {
