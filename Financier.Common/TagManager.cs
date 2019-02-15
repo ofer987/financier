@@ -55,22 +55,38 @@ namespace Financier.Common
             Item = item;
         }
 
-        public bool TryAddTags(IEnumerable<Tag> newTags, out List<Tag> itemTags)
+        public List<Tag> AddTags(IEnumerable<Tag> newTags)
         {
-            // Or should represent only the tags that have been added
-            itemTags = new List<Tag>();
-
             using (var db = new ExpensesContext())
             {
-                db.Tags
-                    .Include(tag => tag.ItemTags)
-                    .ThenInclude(it => it.Item)
-                    .Where(Expression<Func<Tag, bool>> predicate)
-                    .Include(tag => tag.)
-                    .Where(tag => tag.)
-                db.
+                var existingItemTags = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.ItemId == Item.Id);
+                var existingTags = existingItemTags.Select(it => it.Tag);
+
+                foreach (var newTag in newTags)
+                {
+                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
+                    {
+                        Console.WriteLine("does not have tag");
+                        var itemTag = new ItemTag
+                        {
+                            ItemId = Item.Id,
+                            TagId = newTag.Id
+                        };
+
+                        db.ItemTags.Add(itemTag);
+                    }
+                }
+
+                db.SaveChanges();
+
+                // Or should represent only the tags that have been added
+                return (from tags in db.Tags
+                        join itemTags in db.ItemTags on tags.Id equals itemTags.TagId
+                        where itemTags.ItemId == Item.Id
+                        select tags).ToList();
             }
-            return true;
         }
     }
 }

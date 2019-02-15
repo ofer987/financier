@@ -100,92 +100,106 @@ namespace Financier.Tests
             }
         }
 
-        public static Card MyCard => new Card
+        public static Card MyCard = new Card
         {
             Id = Guid.NewGuid(),
             Number = "1234",
-            Statements = new List<Statement> { MyStatement }
+            Statements = new List<Statement>()
         };
 
-        public static Statement MyStatement => new Statement
+        public static Statement MyStatement = new Statement
         {
             Id = Guid.NewGuid(),
-            PostedAt = new DateTime(2019, 1, 1)
+            CardId = MyCard.Id,
+            PostedAt = new DateTime(2019, 1, 1),
+            Items = new List<Item>()
         };
 
-        public static Item ItemWithoutTags => new Item
+        public static Item ItemWithoutTags = new Item
         {
             Id = Guid.NewGuid(),
+            StatementId = MyStatement.Id,
             Amount = 10.00M,
             Description = "Item-Without-Tags",
-            TransactedAt = new DateTime(2019, 1, 2)
+            TransactedAt = new DateTime(2019, 1, 2),
+            ItemTags = new List<ItemTag>()
         };
 
-        public static Item ItemWithRonAndDanTags => new Item
+        public static Item ItemWithRonAndDanTags = new Item
         {
             Id = Guid.NewGuid(),
+            StatementId = MyStatement.Id,
             Amount = 20.00M,
             Description = "Item that has Dan and Ron tags",
             TransactedAt = new DateTime(2019, 1, 3),
-            ItemTags = new List<ItemTag>
-            {
-                new ItemTag
-                {
-                    Tag = DanTag
-                },
-                new ItemTag
-                {
-                    Tag = RonTag
-                }
-            }
+            ItemTags = new List<ItemTag>()
         };
 
-        public static Tag DanTag => new Tag
+        public static Tag DanTag = new Tag
         {
             Id = Guid.NewGuid(),
             Name = "dan"
         };
 
-        public static Tag RonTag => new Tag
+        public static Tag RonTag = new Tag
         {
             Id = Guid.NewGuid(),
             Name = "ron"
         };
 
-        public static Tag KerenTag => new Tag
+        public static Tag KerenTag = new Tag
         {
             Id = Guid.NewGuid(),
             Name = "keren"
+        };
+
+        public static ItemTag[] ItemTags = new ItemTag[]
+        {
+            new ItemTag
+            {
+                ItemId = ItemWithRonAndDanTags.Id,
+                TagId = DanTag.Id
+            },
+            new ItemTag
+            {
+                ItemId = ItemWithRonAndDanTags.Id,
+                TagId = RonTag.Id
+            }
         };
 
         public static IEnumerable TestCases_Tags
         {
             get
             {
-                yield return new TestCaseData(
-                    ItemWithoutTags,
-                    new List<Tag> { DanTag }
-                ).Returns(new List<Tag> { DanTag });
+                // yield return new TestCaseData(
+                //     ItemWithoutTags,
+                //     new List<Tag> { DanTag }
+                // ).Returns(new List<Tag> { DanTag });
 
-                yield return new TestCaseData(
-                    ItemWithoutTags,
-                    new List<Tag> { DanTag, RonTag }
-                ).Returns(new List<Tag> { DanTag, RonTag });
-
+                // yield return new TestCaseData(
+                //     ItemWithoutTags,
+                //     new List<Tag> { DanTag, RonTag }
+                // ).Returns(new List<Tag> { DanTag, RonTag });
+                //
+                // yield return new TestCaseData(
+                //     ItemWithRonAndDanTags,
+                //     new List<Tag> { DanTag }
+                // ).Returns(new List<Tag> { DanTag, RonTag });
+                //
+                // yield return new TestCaseData(
+                //     ItemWithRonAndDanTags,
+                //     new List<Tag> { DanTag, RonTag }
+                // ).Returns(new List<Tag> { DanTag, RonTag });
+                //
                 yield return new TestCaseData(
                     ItemWithRonAndDanTags,
-                    new List<Tag> { DanTag }
-                ).Returns(new List<Tag> { DanTag, RonTag });
-
-                yield return new TestCaseData(
-                    ItemWithRonAndDanTags,
-                    new List<Tag> { DanTag, RonTag }
-                ).Returns(new List<Tag> { DanTag, RonTag });
-
-                yield return new TestCaseData(
-                    ItemWithRonAndDanTags,
-                    new List<Tag> { DanTag, RonTag, KerenTag }
+                    new List<Tag> { KerenTag }
                 ).Returns(new List<Tag> { DanTag, RonTag, KerenTag });
+                //
+                // yield return new TestCaseData(
+                //     ItemWithRonAndDanTags,
+                //     new List<Tag> { DanTag, RonTag, KerenTag }
+                // ).Returns(new List<Tag> { DanTag, RonTag, KerenTag });
             }
         }
 
@@ -200,12 +214,29 @@ namespace Financier.Tests
         [TestCaseSource(nameof(TestCases_Tags))]
         public List<Tag> Test_AddNewTags(Item item, List<Tag> tags)
         {
-            if (new TagManager(item).TryAddTags(tags, out List<Tag> itemTags))
+            using (var db = new ExpensesContext())
             {
-                return null;
+                db.Tags.Add(DanTag);
+                db.Tags.Add(RonTag);
+                db.Tags.Add(KerenTag);
+                db.SaveChanges();
+
+                db.Cards.Add(MyCard);
+                db.SaveChanges();
+                Console.WriteLine($"MyCard.Id is {MyCard.Id}");
+
+                db.Statements.Add(MyStatement);
+                Console.WriteLine($"MyStatement.CardId is {MyStatement.CardId}");
+                db.SaveChanges();
+
+                db.Items.Add(item);
+                db.SaveChanges();
+
+                db.ItemTags.AddRange(ItemTags);
+                db.SaveChanges();
             }
 
-            return itemTags;
+            return new TagManager(item).AddTags(tags).ToList();
         }
     }
 }
