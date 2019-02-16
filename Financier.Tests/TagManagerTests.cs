@@ -11,8 +11,64 @@ using Financier.Common.Models.Expenses;
 
 namespace Financier.Tests
 {
+    [TestFixtureSource(typeof(TagManagerTests), nameof(TestCaseFixtures))]
     public class TagManagerTests
     {
+        public Card MyCard1 { get; set; }
+
+        public Statement MyStatement1 { get; set; }
+
+        public Item MyItem1 { get; set; }
+
+        public Tag DanTag1 { get; set; }
+
+        public Tag RonTag1 { get; set; }
+
+        public Tag KerenTag1 { get; set; }
+
+        public List<Tag> ExistingTags { get; set; }
+
+        public List<Tag> AddedTags { get; set; }
+
+        public List<Tag> ExpectedTags { get; set; }
+
+        public TagManagerTests(string[] existingTags, string[] addedTags, string[] expectedTags)
+        {
+            ExpensesContext.Environment = Environments.Test;
+            ExpensesContext.Clean();
+
+            MyCard1 = Fixtures.Cards.SimpleCard;
+            MyStatement1 = Fixtures.Statements.GetSimpleStatement(MyCard1);
+
+            DanTag1 = Fixtures.Tags.DanTag();
+            RonTag1 = Fixtures.Tags.RonTag();
+            KerenTag1 = Fixtures.Tags.KerenTag();
+
+            var allTags = new Dictionary<string, Tag>
+            {
+                { "dan", DanTag1 },
+                { "ron", RonTag1 },
+                { "keren", KerenTag1 }
+            };
+
+            ExistingTags = allTags
+                .Where(pair => existingTags.Any(at => at == pair.Key))
+                .Select(pair => pair.Value)
+                .ToList();
+
+            AddedTags = allTags
+                .Where(pair => addedTags.Any(at => at == pair.Key))
+                .Select(pair => pair.Value)
+                .ToList();
+
+            ExpectedTags = allTags
+                .Where(pair => expectedTags.Any(at => at == pair.Key))
+                .Select(pair => pair.Value)
+                .ToList();
+
+            MyItem1 = Fixtures.Items.ItemWithTags(MyStatement1, ExistingTags);
+        }
+
         [OneTimeSetUp]
         public void InitAll()
         {
@@ -22,29 +78,14 @@ namespace Financier.Tests
         [SetUp]
         public void Init()
         {
-            using (var db = new ExpensesContext())
-            {
-                db.Items.RemoveRange(db.Items);
-                db.Statements.RemoveRange(db.Statements);
-                db.Cards.RemoveRange(db.Cards);
-                db.Tags.RemoveRange(db.Tags);
-                db.ItemTags.RemoveRange(db.ItemTags);
-                db.SaveChanges();
-            }
+            ExpensesContext.Clean();
+            InitDb1();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void Cleanup()
         {
-            using (var db = new ExpensesContext())
-            {
-                db.Items.RemoveRange(db.Items);
-                db.Statements.RemoveRange(db.Statements);
-                db.Cards.RemoveRange(db.Cards);
-                db.Tags.RemoveRange(db.Tags);
-                db.ItemTags.RemoveRange(db.ItemTags);
-                db.SaveChanges();
-            }
+            ExpensesContext.Clean();
         }
 
         public static IEnumerable TestCases
@@ -100,109 +141,6 @@ namespace Financier.Tests
             }
         }
 
-        public static Card MyCard = new Card
-        {
-            Id = Guid.NewGuid(),
-            Number = "1234",
-            Statements = new List<Statement>()
-        };
-
-        public static Statement MyStatement = new Statement
-        {
-            Id = Guid.NewGuid(),
-            CardId = MyCard.Id,
-            PostedAt = new DateTime(2019, 1, 1),
-            Items = new List<Item>()
-        };
-
-        public static Item ItemWithoutTags = new Item
-        {
-            Id = Guid.NewGuid(),
-            StatementId = MyStatement.Id,
-            Amount = 10.00M,
-            Description = "Item-Without-Tags",
-            TransactedAt = new DateTime(2019, 1, 2),
-            ItemTags = new List<ItemTag>()
-        };
-
-        public static Item ItemWithRonAndDanTags = new Item
-        {
-            Id = Guid.NewGuid(),
-            StatementId = MyStatement.Id,
-            Amount = 20.00M,
-            Description = "Item that has Dan and Ron tags",
-            TransactedAt = new DateTime(2019, 1, 3),
-            ItemTags = new List<ItemTag>()
-        };
-
-        public static Tag DanTag = new Tag
-        {
-            Id = Guid.NewGuid(),
-            Name = "dan"
-        };
-
-        public static Tag RonTag = new Tag
-        {
-            Id = Guid.NewGuid(),
-            Name = "ron"
-        };
-
-        public static Tag KerenTag = new Tag
-        {
-            Id = Guid.NewGuid(),
-            Name = "keren"
-        };
-
-        public static ItemTag[] ItemTags = new ItemTag[]
-        {
-            new ItemTag
-            {
-                ItemId = ItemWithRonAndDanTags.Id,
-                TagId = DanTag.Id
-            },
-            new ItemTag
-            {
-                ItemId = ItemWithRonAndDanTags.Id,
-                TagId = RonTag.Id
-            }
-        };
-
-        public static IEnumerable TestCases_Tags
-        {
-            get
-            {
-                // yield return new TestCaseData(
-                //     ItemWithoutTags,
-                //     new List<Tag> { DanTag }
-                // ).Returns(new List<Tag> { DanTag });
-
-                // yield return new TestCaseData(
-                //     ItemWithoutTags,
-                //     new List<Tag> { DanTag, RonTag }
-                // ).Returns(new List<Tag> { DanTag, RonTag });
-                //
-                // yield return new TestCaseData(
-                //     ItemWithRonAndDanTags,
-                //     new List<Tag> { DanTag }
-                // ).Returns(new List<Tag> { DanTag, RonTag });
-                //
-                // yield return new TestCaseData(
-                //     ItemWithRonAndDanTags,
-                //     new List<Tag> { DanTag, RonTag }
-                // ).Returns(new List<Tag> { DanTag, RonTag });
-                //
-                yield return new TestCaseData(
-                    ItemWithRonAndDanTags,
-                    new List<Tag> { KerenTag }
-                ).Returns(new List<Tag> { DanTag, RonTag, KerenTag });
-                //
-                // yield return new TestCaseData(
-                //     ItemWithRonAndDanTags,
-                //     new List<Tag> { DanTag, RonTag, KerenTag }
-                // ).Returns(new List<Tag> { DanTag, RonTag, KerenTag });
-            }
-        }
-
         [Test]
         [TestCaseSource(nameof(TestCases))]
         public List<Tag> Test_FindOrCreateTags(string list)
@@ -211,32 +149,115 @@ namespace Financier.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(TestCases_Tags))]
-        public List<Tag> Test_AddNewTags(Item item, List<Tag> tags)
+        // [TestCaseSource(nameof(TestCases_Tags))]
+        public void Test_AddNewTags()
         {
-            using (var db = new ExpensesContext())
+            Console.WriteLine("foo");
+            var actualTags = new TagManager(MyItem1).AddTags(AddedTags).ToList();
+
+            // Actual Tags are
+            Console.WriteLine("Actual Tags");
+            foreach (var tag in actualTags)
             {
-                db.Tags.Add(DanTag);
-                db.Tags.Add(RonTag);
-                db.Tags.Add(KerenTag);
-                db.SaveChanges();
-
-                db.Cards.Add(MyCard);
-                db.SaveChanges();
-                Console.WriteLine($"MyCard.Id is {MyCard.Id}");
-
-                db.Statements.Add(MyStatement);
-                Console.WriteLine($"MyStatement.CardId is {MyStatement.CardId}");
-                db.SaveChanges();
-
-                db.Items.Add(item);
-                db.SaveChanges();
-
-                db.ItemTags.AddRange(ItemTags);
-                db.SaveChanges();
+                Console.WriteLine($"\thas tag.Name ({tag.Name})");
             }
 
-            return new TagManager(item).AddTags(tags).ToList();
+            Console.WriteLine("MyItem1.Tags");
+            foreach (var tag in MyItem1.Tags)
+            {
+                Console.WriteLine($"\thas tag.Name ({tag.Name})");
+            }
+
+            Assert.That(actualTags, Is.EqualTo(ExpectedTags));
+        }
+
+        private void InitDb1()
+        {
+            Console.WriteLine("init");
+            using (var db = new ExpensesContext())
+            {
+                Console.WriteLine($"2Has ({db.Cards.Count()}) cards");
+                db.Tags.Add(DanTag1);
+                db.Tags.Add(RonTag1);
+                db.Tags.Add(KerenTag1);
+                db.SaveChanges();
+
+                Console.WriteLine($"2Has ({db.Cards.Count()}) cards");
+                Console.WriteLine($"2Has ({db.Statements.Count()}) statements");
+                Console.WriteLine($"2Has ({db.Items.Count()}) items");
+                Console.WriteLine($"2Has ({db.ItemTags.Count()}) item_tags");
+                Console.WriteLine($"2Has ({db.Tags.Count()}) tags");
+                db.Cards.Add(MyCard1);
+                db.SaveChanges();
+                Console.WriteLine($"MyCard.Id is {MyCard1.Id}");
+
+                db.Statements.Add(MyStatement1);
+                Console.WriteLine($"MyStatement1.CardId is {MyStatement1.CardId}");
+                db.SaveChanges();
+
+                db.Items.Add(MyItem1);
+                // db.Items.Add(ItemWithRonAndDanTags);
+                db.SaveChanges();
+
+                // {
+                //     var itemTags = new[]
+                //     {
+                //         new ItemTag
+                //         {
+                //             ItemId = ItemWithRonAndDanTags.Id,
+                //                    TagId = DanTag.Id
+                //         },
+                //             new ItemTag
+                //             {
+                //                 ItemId = ItemWithRonAndDanTags.Id,
+                //                 TagId = RonTag.Id
+                //             }
+                //     };
+                //
+                //     db.ItemTags.AddRange(itemTags);
+                //     db.SaveChanges();
+                //
+                //     ItemWithRonAndDanTags.ItemTags.AddRange(itemTags);
+                //     db.SaveChanges();
+                // }
+            }
+        }
+
+        public static IEnumerable TestCaseFixtures
+        {
+            get
+            {
+                yield return new TestFixtureData(
+                    new string[] {},
+                    new[] {"dan"},
+                    new[] {"dan"}
+                );
+                yield return new TestFixtureData(
+                    new string[] {},
+                    new[] {"dan", "ron"},
+                    new[] {"dan", "ron"}
+                );
+                yield return new TestFixtureData(
+                    new string[] {"dan", "ron"},
+                    new[] {"dan"},
+                    new[] {"dan", "ron"}
+                );
+                yield return new TestFixtureData(
+                    new string[] {"dan", "ron"},
+                    new[] {"dan", "ron"},
+                    new[] {"dan", "ron"}
+                );
+                yield return new TestFixtureData(
+                    new string[] {"dan", "ron"},
+                    new[] {"keren"},
+                    new[] {"dan", "ron", "keren"}
+                );
+                yield return new TestFixtureData(
+                    new string[] {"dan", "ron"},
+                    new[] {"dan", "ron", "keren"},
+                    new[] {"dan", "ron", "keren"}
+                );
+            }
         }
     }
 }

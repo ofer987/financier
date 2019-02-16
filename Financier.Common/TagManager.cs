@@ -57,6 +57,7 @@ namespace Financier.Common
 
         public List<Tag> AddTags(IEnumerable<Tag> newTags)
         {
+            Console.WriteLine(Item);
             using (var db = new ExpensesContext())
             {
                 var existingItemTags = db.ItemTags
@@ -66,6 +67,7 @@ namespace Financier.Common
 
                 foreach (var newTag in newTags)
                 {
+                    Console.WriteLine(newTag);
                     if (!existingTags.Any(tag => tag.Name == newTag.Name))
                     {
                         Console.WriteLine("does not have tag");

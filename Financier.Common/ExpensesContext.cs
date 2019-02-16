@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 // using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using System.Linq;
+using System;
 
 namespace Financier.Common
 {
@@ -23,6 +25,34 @@ namespace Financier.Common
         public DbSet<ItemTag> ItemTags { get; set; }
 
         public static Environments Environment = Environments.Dev;
+
+        public static void Clean()
+        {
+            using (var db = new ExpensesContext())
+            {
+                Console.WriteLine("clean");
+                Console.WriteLine($"Has ({db.Cards.Count()}) cards");
+                Console.WriteLine($"Has ({db.Statements.Count()}) statements");
+                Console.WriteLine($"Has ({db.Items.Count()}) items");
+                Console.WriteLine($"Has ({db.ItemTags.Count()}) item_tags");
+                Console.WriteLine($"Has ({db.Tags.Count()}) tags");
+
+                db.Items.RemoveRange(db.Items);
+                db.Statements.RemoveRange(db.Statements);
+                db.Cards.RemoveRange(db.Cards);
+                db.Tags.RemoveRange(db.Tags);
+                db.ItemTags.RemoveRange(db.ItemTags);
+
+                db.SaveChanges();
+
+                Console.WriteLine("cleaned");
+                Console.WriteLine($"Has ({db.Cards.Count()}) cards");
+                Console.WriteLine($"Has ({db.Statements.Count()}) statements");
+                Console.WriteLine($"Has ({db.Items.Count()}) items");
+                Console.WriteLine($"Has ({db.ItemTags.Count()}) item_tags");
+                Console.WriteLine($"Has ({db.Tags.Count()}) tags");
+            }
+        }
 
         public ExpensesContext()
         {
@@ -97,9 +127,9 @@ namespace Financier.Common
 
             if (!optionsBuilder.IsConfigured)
             {
-                // optionsBuilder
-                //     .UseLoggerFactory(MyLoggerFactory)
-                //     .EnableSensitiveDataLogging();
+                optionsBuilder
+                    .UseLoggerFactory(MyLoggerFactory)
+                    .EnableSensitiveDataLogging();
                     // .UseSqlite("Data Source=/Users/ofer987/work/Financier/Financier.Tests/Financier.db");
 
                 switch (Environment)
