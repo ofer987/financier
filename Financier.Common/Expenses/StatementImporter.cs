@@ -56,7 +56,7 @@ namespace Financier.Common.Expenses
 
                 foreach (var record in records)
                 {
-                    Console.WriteLine(record);
+                    // Console.WriteLine(record);
                     var card = GetCard(record.CardNumber);
                     var statement = GetStatement(statementId, postedAt, card);
                     try

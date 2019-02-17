@@ -35,12 +35,13 @@ namespace Financier.Common.Expenses
                         var newTag = new Tag
                         {
                             Id = Guid.NewGuid(),
-                               Name = name
+                            Name = name
                         };
 
                         tag = newTag;
                     }
 
+                    db.Tags.Add(tag);
                     tags.Add(tag);
                 }
 
