@@ -92,12 +92,6 @@ namespace Financier.Common.Expenses
         {
             using (var db = new Context())
             {
-                // foreach (var item in db.Items)
-                // {
-                //     Console.WriteLine($"Item ({item})");
-                // }
-                // Console.WriteLine(Item.Description);
-
                 var itemsWithSameDescription =
                     (from items in db.Items
                      where
