@@ -4,9 +4,9 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Extensions;
-using Financier.Common.Models.Expenses;
+using Financier.Common.Expenses.Models;
 
-namespace Financier.Common
+namespace Financier.Common.Expenses
 {
     public class TagManager
     {
@@ -22,7 +22,7 @@ namespace Financier.Common
                 .Reject(item => item.IsNullOrEmpty())
                 .Distinct();
 
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
                 foreach (var name in names)
                 {
@@ -57,8 +57,7 @@ namespace Financier.Common
 
         public List<Tag> AddTags(IEnumerable<Tag> newTags)
         {
-            Console.WriteLine(Item);
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
                 var existingItemTags = db.ItemTags
                     .Include(it => it.Tag)
@@ -67,10 +66,8 @@ namespace Financier.Common
 
                 foreach (var newTag in newTags)
                 {
-                    Console.WriteLine(newTag);
                     if (!existingTags.Any(tag => tag.Name == newTag.Name))
                     {
-                        Console.WriteLine("does not have tag");
                         var itemTag = new ItemTag
                         {
                             ItemId = Item.Id,

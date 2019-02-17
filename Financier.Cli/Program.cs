@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Financier.Common;
+using Financier.Common.Expenses;
 
 namespace Financier.Cli
 {
@@ -9,12 +10,19 @@ namespace Financier.Cli
     {
         public static void Main(string[] args)
         {
-            ExpensesContext.Environment = Environments.Dev;
+            Context.Environment = Environments.Dev;
 
             var postedAt = GetPostedAt(args);
             var stream = System.IO.File.OpenRead(GetStatementPath(args));
 
-            new StatementImporter().Import(Guid.NewGuid(), postedAt, stream);
+            var importer = new StatementImporter();
+            var statement = importer.Import(Guid.NewGuid(), postedAt, stream);
+
+            foreach (var item in statement.Items)
+            {
+                Console.WriteLine($"Input Tags for {item}");
+                // importer.FindOrCreateTags(Console.ReadLine());
+            }
         }
 
         public static DateTime GetPostedAt(IReadOnlyList<string> args)

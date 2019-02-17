@@ -1,16 +1,14 @@
-using Financier.Common.Models.Expenses;
 using Microsoft.EntityFrameworkCore;
-// using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using System.Linq;
-using System;
+
+using Financier.Common.Expenses.Models;
 
 namespace Financier.Common
 {
     public enum Environments { Dev = 0, Test, Production }
 
-    public class ExpensesContext : DbContext
+    public class Context : DbContext
     {
         public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory(new ILoggerProvider[] { new ConsoleLoggerProvider((_, __) => true, true )});
 
@@ -28,15 +26,8 @@ namespace Financier.Common
 
         public static void Clean()
         {
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
-                Console.WriteLine("clean");
-                Console.WriteLine($"Has ({db.Cards.Count()}) cards");
-                Console.WriteLine($"Has ({db.Statements.Count()}) statements");
-                Console.WriteLine($"Has ({db.Items.Count()}) items");
-                Console.WriteLine($"Has ({db.ItemTags.Count()}) item_tags");
-                Console.WriteLine($"Has ({db.Tags.Count()}) tags");
-
                 db.Items.RemoveRange(db.Items);
                 db.Statements.RemoveRange(db.Statements);
                 db.Cards.RemoveRange(db.Cards);
@@ -44,21 +35,14 @@ namespace Financier.Common
                 db.ItemTags.RemoveRange(db.ItemTags);
 
                 db.SaveChanges();
-
-                Console.WriteLine("cleaned");
-                Console.WriteLine($"Has ({db.Cards.Count()}) cards");
-                Console.WriteLine($"Has ({db.Statements.Count()}) statements");
-                Console.WriteLine($"Has ({db.Items.Count()}) items");
-                Console.WriteLine($"Has ({db.ItemTags.Count()}) item_tags");
-                Console.WriteLine($"Has ({db.Tags.Count()}) tags");
             }
         }
 
-        public ExpensesContext()
+        public Context()
         {
         }
 
-        public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options)
+        public Context(DbContextOptions<Context> options) : base(options)
         {
         }
 
@@ -104,33 +88,15 @@ namespace Financier.Common
 
             modelBuilder.Entity<ItemTag>()
                 .HasKey(it => new { it.ItemId, it.TagId });
-
-            //
-            // modelBuilder.Entity<Statement>()
-            //     .HasMany(statement => statement.Items)
-            //     .WithOne(item => item.Statement)
-            //     .HasForeignKey(item => item.StatementId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // switch (Environment)
-            // {
-            //     case Environments.Test:
-            //         var connection = new SqliteConnection("DataSource=:memory:");
-            //         connection.Open();
-            //         optionsBuilder.UseSqlite("DataSource=:memory:");
-            //         break;
-            //     default:
-            //         break;
-            // }
-
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder
                     .UseLoggerFactory(MyLoggerFactory)
                     .EnableSensitiveDataLogging();
-                    // .UseSqlite("Data Source=/Users/ofer987/work/Financier/Financier.Tests/Financier.db");
 
                 switch (Environment)
                 {
@@ -148,8 +114,6 @@ namespace Financier.Common
             }
             else
             {
-                // optionsBuilder
-                //     .UseLoggerFactory(MyLoggerFactory);
             }
         }
     }

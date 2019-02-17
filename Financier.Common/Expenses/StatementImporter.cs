@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
-using Financier.Common.Models.Expenses;
+using Financier.Common.Expenses.Models;
 using Financier.Common.Extensions;
 
-namespace Financier.Common
+namespace Financier.Common.Expenses
 {
     public class StatementRecord
     {
@@ -61,7 +61,8 @@ namespace Financier.Common
                     var statement = GetStatement(statementId, postedAt, card);
                     try
                     {
-                        CreateItem(record, statement);
+                        var item = CreateItem(record, statement);
+                        // FindOrCreateTags(string.Empty);
                     }
                     catch (Exception exception)
                     {
@@ -74,7 +75,7 @@ namespace Financier.Common
                 }
             }
 
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
                 return db.Statements
                     .Include(stmt => stmt.Card)
@@ -108,7 +109,7 @@ namespace Financier.Common
 
         public Statement FindOrCreateStatement(Guid id, DateTime postedAt, Card card)
         {
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
                 var statement = db.Statements
                     .Include(stmt => stmt.Items)
@@ -140,7 +141,7 @@ namespace Financier.Common
         public Card FindOrCreateCard(string cardNumber)
         {
             cardNumber = CleanCardNumber(cardNumber);
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
                 var card = db.Cards
                     .Include(cd => cd.Statements)
@@ -171,7 +172,7 @@ namespace Financier.Common
 
         public Item CreateItem(StatementRecord record, Statement statement)
         {
-            using (var db = new ExpensesContext())
+            using (var db = new Context())
             {
                 var newItem = new Item
                 {

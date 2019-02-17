@@ -3,46 +3,31 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-// using Microsoft.Data.Sqlite;
-// using Microsoft.EntityFrameworkCore;
 
 using Financier.Common;
-using Financier.Common.Models.Expenses;
+using Financier.Common.Expenses;
+using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests
+namespace Financier.Tests.Expenses.StatementImporterTests
 {
-    public class StatementImporterTests
+    public class Base
     {
         [OneTimeSetUp]
         public void InitAll()
         {
-            ExpensesContext.Environment = Environments.Test;
+            Context.Environment = Environments.Test;
         }
 
         [SetUp]
         public void Init()
         {
-            using (var db = new ExpensesContext())
-            {
-                db.Items.RemoveRange(db.Items);
-                db.Statements.RemoveRange(db.Statements);
-                db.Cards.RemoveRange(db.Cards);
-                db.Tags.RemoveRange(db.Tags);
-                db.SaveChanges();
-            }
+            Context.Clean();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void Cleanup()
         {
-            using (var db = new ExpensesContext())
-            {
-                db.Items.RemoveRange(db.Items);
-                db.Statements.RemoveRange(db.Statements);
-                db.Cards.RemoveRange(db.Cards);
-                db.Tags.RemoveRange(db.Tags);
-                db.SaveChanges();
-            }
+            Context.Clean();
         }
 
         public static IEnumerable TestCases
@@ -147,21 +132,17 @@ namespace Financier.Tests
             }
         }
 
+        // TODO: this test is broken.
+        // TODO: fix it (maybe Models.Statement too)
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void TestImport_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_StatementImporter_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
-                using (var db = new ExpensesContext())
+                using (var db = new Context())
                 {
-                    // db.Database.EnsureCreated();
-                    // db.Items.RemoveRange(db.Items);
-                    // db.Statements.RemoveRange(db.Statements);
-                    // db.Cards.RemoveRange(db.Cards);
-                    // db.SaveChanges();
-
-                    db.Cards.Add(new Financier.Common.Models.Expenses.Card { Id = Guid.NewGuid(), Number = "1234" });
+                    db.Cards.Add(new Financier.Common.Expenses.Models.Card { Id = Guid.NewGuid(), Number = "1234" });
                     db.SaveChanges();
                 }
 
@@ -180,11 +161,11 @@ namespace Financier.Tests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void TestImport_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_StatementImporter_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
-                using (var db = new ExpensesContext())
+                using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
                     db.Items.RemoveRange(db.Items);
@@ -193,11 +174,11 @@ namespace Financier.Tests
                     db.SaveChanges();
 
                     db.Database.EnsureCreated();
-                    db.Cards.Add(new Financier.Common.Models.Expenses.Card {
+                    db.Cards.Add(new Financier.Common.Expenses.Models.Card 
+                    {
                         Id = Guid.NewGuid(),
                         Number = "5191230192755321"
                     });
-                    Console.WriteLine("saved one card");
                     db.SaveChanges();
                 }
 
@@ -216,27 +197,27 @@ namespace Financier.Tests
 
         [Test]
         [TestCaseSource(nameof(CardNumbers))]
-        public string TestCleanCardNumber_Success(string unclean)
+        public string Test_Expenses_StatementImporter_CleanCardNumber_Success(string unclean)
         {
             return new StatementImporter().CleanCardNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
-        public void TestCleanCardNumber_Fail(string unclean)
+        public void Test_Expenses_StatementImporter_CleanCardNumber_Fail(string unclean)
         {
             Assert.Throws<Exception>(() => new StatementImporter().CleanCardNumber(unclean));
         }
 
         [Test]
-        public void Test_SaveItem_TwoContexts_OutOfSync()
+        public void Test_Expenses_StatementImporter_SaveItem_TwoContexts_OutOfSync()
         {
             try
             {
-                using (var db = new ExpensesContext())
+                using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Models.Expenses.Card 
+                    var card = new Financier.Common.Expenses.Models.Card 
                     { 
                         Id = Guid.NewGuid(),
                         Number = "1234",
@@ -264,7 +245,7 @@ namespace Financier.Tests
                         PostedAt = new DateTime(2018, 1, 2),
                         Id = Guid.NewGuid()
                     };
-                    using (var db2 = new ExpensesContext())
+                    using (var db2 = new Context())
                     {
                         db2.Items.Add(item1);
                         Assert.Throws<Microsoft.EntityFrameworkCore.DbUpdateException>(() => db2.SaveChanges());
@@ -283,7 +264,7 @@ namespace Financier.Tests
 
                     db.SaveChanges();
 
-                    var newCard = new Financier.Common.Models.Expenses.Card 
+                    var newCard = new Financier.Common.Expenses.Models.Card 
                     { 
                         Id = Guid.NewGuid(),
                         Number = "1235",
@@ -311,14 +292,14 @@ namespace Financier.Tests
         }
 
         [Test]
-        public void Test_SaveCard()
+        public void Test_Expenses_StatementImporter_SaveCard()
         {
             try
             {
-                using (var db = new ExpensesContext())
+                using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Models.Expenses.Card 
+                    var card = new Financier.Common.Expenses.Models.Card 
                     { 
                         Id = Guid.NewGuid(),
                            Number = "1234",
@@ -359,14 +340,14 @@ namespace Financier.Tests
         }
 
         [Test]
-        public void Test_CreateItem()
+        public void Test_Expenses_StatementImporter_CreateItem()
         {
             try
             {
-                using (var db = new ExpensesContext())
+                using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Models.Expenses.Card 
+                    var card = new Financier.Common.Expenses.Models.Card 
                     { 
                         Id = Guid.NewGuid(),
                            Number = "1234",
@@ -408,14 +389,14 @@ namespace Financier.Tests
         }
 
         [Test]
-        public void Test_SaveCardAndStatement()
+        public void Test_Expenses_StatementImporter_SaveCardAndStatement()
         {
             try
             {
-                using (var db = new ExpensesContext())
+                using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Models.Expenses.Card 
+                    var card = new Financier.Common.Expenses.Models.Card 
                     { 
                         Id = Guid.NewGuid(),
                            Number = "1234",

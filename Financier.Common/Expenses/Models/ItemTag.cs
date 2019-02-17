@@ -1,7 +1,9 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Financier.Common.Models.Expenses
+namespace Financier.Common.Expenses.Models
 {
+    [Table("ItemTags")]
     public class ItemTag
     {
         public Guid ItemId { get; set; }

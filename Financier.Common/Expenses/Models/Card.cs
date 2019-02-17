@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Financier.Common.Models.Expenses
+namespace Financier.Common.Expenses.Models
 {
+    [Table("Expenses_Cards")]
     public class Card
     {
         [Key]
@@ -14,6 +16,7 @@ namespace Financier.Common.Models.Expenses
 
         // [Key]
         [Required]
+        // TODO: make unique
         public string Number { get; set; }
 
         public List<Statement> Statements { get; set; }

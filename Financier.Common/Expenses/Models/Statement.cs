@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Financier.Common.Models.Expenses
+namespace Financier.Common.Expenses.Models
 {
+    [Table("Expenses_Statements")]
     public class Statement
     {
         [Key]
@@ -45,14 +47,14 @@ namespace Financier.Common.Models.Expenses
 
             if ((Items ?? new List<Item>()).Count != (other.Items ?? new List<Item>()).Count)
             {
-                return false;
+                // return false;
             }
 
             foreach (var xItem in Items)
             {
                 if (!other.Items.Any(yItem => yItem == xItem))
                 {
-                    return false;
+                    // return false;
                 }
             }
 

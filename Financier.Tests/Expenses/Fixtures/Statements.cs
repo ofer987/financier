@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Financier.Common.Models.Expenses;
+using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Fixtures
+namespace Financier.Tests.Expenses.Fixtures
 {
     public static class Statements
     {

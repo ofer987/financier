@@ -1,10 +1,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Financier.Common.Models.Expenses
+namespace Financier.Common.Expenses.Models
 {
+    [Table("Expenses_Tags")]
     public class Tag
     {
         [Key]
@@ -64,6 +66,11 @@ namespace Financier.Common.Models.Expenses
         public static bool operator !=(Tag x, Tag y)
         {
             return !(x == y);
+        }
+
+        public override string ToString()
+        {
+            return $"Id = ({Id})\nName = (#{Name})";
         }
     }
 }
