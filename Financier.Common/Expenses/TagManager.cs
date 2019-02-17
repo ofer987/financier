@@ -87,5 +87,37 @@ namespace Financier.Common.Expenses
                         select tags).ToList();
             }
         }
+
+        public Tag[] GetSimilarTagsByDescription()
+        {
+            using (var db = new Context())
+            {
+                // foreach (var item in db.Items)
+                // {
+                //     Console.WriteLine($"Item ({item})");
+                // }
+                // Console.WriteLine(Item.Description);
+
+                var itemsWithSameDescription =
+                    (from items in db.Items
+                     where
+                        1 == 1
+                        && items.Id != Item.Id
+                        && items.Description == Item.Description
+                     orderby items.PostedAt descending
+                     select items);
+
+                if (!itemsWithSameDescription.Any())
+                {
+                    return new Tag[0];
+                }
+
+                return (from tags in db.Tags
+                        join itemTags in db.ItemTags on tags.Id equals itemTags.TagId
+                        where itemTags.ItemId == itemsWithSameDescription.First().Id
+                        select tags).ToArray();
+
+            }
+        }
     }
 }
