@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Financier.Common.Expenses.Models
 {
-    [Table("ItemTags")]
+    [Table("Expenses_ItemTags")]
     public class ItemTag
     {
         public Guid ItemId { get; set; }

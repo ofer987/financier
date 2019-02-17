@@ -16,7 +16,7 @@ namespace Financier.Common.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Card", b =>
@@ -65,7 +65,7 @@ namespace Financier.Common.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("ItemTags");
+                    b.ToTable("Expenses_ItemTags");
                 });
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Statement", b =>

@@ -73,7 +73,7 @@ namespace Financier.Common.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemTags",
+                name: "Expenses_ItemTags",
                 columns: table => new
                 {
                     ItemId = table.Column<Guid>(nullable: false),
@@ -81,15 +81,15 @@ namespace Financier.Common.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemTags", x => new { x.ItemId, x.TagId });
+                    table.PrimaryKey("PK_Expenses_ItemTags", x => new { x.ItemId, x.TagId });
                     table.ForeignKey(
-                        name: "FK_ItemTags_Expenses_Items_ItemId",
+                        name: "FK_Expenses_ItemTags_Expenses_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Expenses_Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemTags_Expenses_Tags_TagId",
+                        name: "FK_Expenses_ItemTags_Expenses_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Expenses_Tags",
                         principalColumn: "Id",
@@ -102,6 +102,11 @@ namespace Financier.Common.Migrations
                 column: "StatementId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Expenses_ItemTags_TagId",
+                table: "Expenses_ItemTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Expenses_Statements_CardId",
                 table: "Expenses_Statements",
                 column: "CardId");
@@ -111,17 +116,12 @@ namespace Financier.Common.Migrations
                 table: "Expenses_Tags",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemTags_TagId",
-                table: "ItemTags",
-                column: "TagId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ItemTags");
+                name: "Expenses_ItemTags");
 
             migrationBuilder.DropTable(
                 name: "Expenses_Items");
