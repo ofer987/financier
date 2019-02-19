@@ -114,8 +114,7 @@ namespace Financier.Common.Expenses
                 var statement = db.Statements
                     .Include(stmt => stmt.Items)
                     .Where(stmt => stmt.CardId == cardId)
-                    .ToArray()
-                    .Where(stmt => stmt.PostedAt.Year == postedAt.Year && stmt.PostedAt.Month == postedAt.Month)
+                    .Where(stmt => stmt.PostedAt == postedAt)
                     .FirstOrDefault();
 
                 if (statement == null)
