@@ -78,6 +78,13 @@ namespace Financier.Tests.Expenses.TagManagerTests
                 Items.Add(item);
             }
 
+            {
+                var item = Fixtures.Items.ItemWithoutTags(myStatement2);
+                item.Description = Descriptions.Statement2Item;
+                item.PostedAt = new DateTime(2018, 1, 3);
+                Items.Add(item);
+            }
+
             ExpectedTagNames = expectedTags;
             Description = description;
         }

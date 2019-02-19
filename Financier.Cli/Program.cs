@@ -15,11 +15,11 @@ namespace Financier.Cli
             Context.Environment = Environments.Dev;
             Context.Clean();
 
-            var postedAt = GetPostedAt(args);
+            var postedAt = GetPostedAt(args[0]);
             var stream = System.IO.File.OpenRead(GetStatementPath(args));
 
             var importer = new StatementImporter();
-            var statement = importer.Import(Guid.NewGuid(), postedAt, stream);
+            var statement = importer.Import(postedAt, stream);
 
             Console.WriteLine(statement.Items.Count);
             foreach (var item in statement.Items)
@@ -72,9 +72,9 @@ namespace Financier.Cli
             }
         }
 
-        public static DateTime GetPostedAt(IReadOnlyList<string> args)
+        public static DateTime GetPostedAt(string fileName)
         {
-            return DateTime.ParseExact(args[0], "yyyyMMdd", null);
+            return DateTime.ParseExact(fileName, "yyyyMMdd", null);
         }
 
         public static string GetStatementPath(IReadOnlyList<string> args)

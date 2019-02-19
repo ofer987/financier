@@ -40,8 +40,10 @@ namespace Financier.Common.Expenses
 
     public class StatementImporter
     {
-        public Statement Import(Guid statementId, DateTime postedAt, Stream stream)
+        public Statement Import(DateTime postedAt, Stream stream)
         {
+            Card card = null;
+
             using (var reader = new StreamReader(stream))
             using (var csv = new CsvReader(reader))
             {
@@ -57,8 +59,8 @@ namespace Financier.Common.Expenses
                 foreach (var record in records)
                 {
                     // Console.WriteLine(record);
-                    var card = GetCard(record.CardNumber);
-                    var statement = GetStatement(statementId, postedAt, card);
+                    card = GetCard(record.CardNumber);
+                    var statement = GetStatement(postedAt, card);
                     try
                     {
                         var item = CreateItem(record, statement);
@@ -75,14 +77,7 @@ namespace Financier.Common.Expenses
                 }
             }
 
-            using (var db = new Context())
-            {
-                return db.Statements
-                    .Include(stmt => stmt.Card)
-                    .ThenInclude(card => card.Statements)
-                    .ThenInclude(stmt => stmt.Items)
-                    .FirstOrDefault(stmt => stmt.Id == statementId);
-            }
+            return FindOrCreateStatement(postedAt, card.Id);
         }
 
         private Card _card = null;
@@ -97,17 +92,17 @@ namespace Financier.Common.Expenses
         }
 
         private Statement _statement = null;
-        public Statement GetStatement(Guid id, DateTime postedAt, Card card)
+        public Statement GetStatement(DateTime postedAt, Card card)
         {
             if (_statement != null)
             {
                 return _statement;
             }
 
-            return (_statement = FindOrCreateStatement(id, postedAt, card.Id));
+            return (_statement = FindOrCreateStatement(postedAt, card.Id));
         }
 
-        public Statement FindOrCreateStatement(Guid id, DateTime postedAt, Guid cardId)
+        public Statement FindOrCreateStatement(DateTime postedAt, Guid cardId)
         {
             using (var db = new Context())
             {
@@ -119,19 +114,20 @@ namespace Financier.Common.Expenses
 
                 if (statement == null)
                 {
-                    var newStatement = new Statement
                     {
-                        Id = id,
+                        Console.WriteLine(card);
+                    }
+                    statement = new Statement
+                    {
+                        Id = Guid.NewGuid(),
                         PostedAt = postedAt,
                         CardId = cardId,
                         Items = new List<Item>(),
                     };
-                    db.Statements.Add(newStatement);
+                    db.Statements.Add(statement);
                     db.SaveChanges();
 
-                    statement = db.Statements
-                        .Include(stmt => stmt.Items)
-                        .First(st => st.Id == id);
+                    return statement;
                 }
 
                 return statement;

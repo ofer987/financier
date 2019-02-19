@@ -172,17 +172,15 @@ namespace Financier.Tests.Expenses.StatementImporterTests
             [Test]
             public void Test_Expenses_StatementImporter_FindOrCreateStatement_Creates_New_Statement()
             {
-                var newStatementId = Guid.NewGuid();
-
                 int previousStatementCount;
                 using (var db = new Context())
                 {
                     previousStatementCount = db.Statements.Count();
                 }
 
-                var createdStatement = new StatementImporter().FindOrCreateStatement(newStatementId, PostedAt, AllCards[CardIdentifier].Id);
+                var createdStatement = new StatementImporter().FindOrCreateStatement(PostedAt, AllCards[CardIdentifier].Id);
 
-                Assert.That(createdStatement.Id, Is.EqualTo(newStatementId));
+                Assert.That(createdStatement.Id, Is.Not.AnyOf(AllCards.Select(card => card.Value.Id)));
 
                 int newStatementCount;
                 using (var db = new Context())
@@ -246,7 +244,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
                     previousStatementCount = db.Statements.Count();
                 }
 
-                var createdStatement = new StatementImporter().FindOrCreateStatement(newStatementId, PostedAt, AllCards[CardIdentifier].Id);
+                var createdStatement = new StatementImporter().FindOrCreateStatement(PostedAt, AllCards[CardIdentifier].Id);
 
                 Assert.That(createdStatement.Id, Is.EqualTo(ExpectedStatementId));
 
