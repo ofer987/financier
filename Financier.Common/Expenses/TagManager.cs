@@ -39,9 +39,9 @@ namespace Financier.Common.Expenses
                         };
 
                         tag = newTag;
+                        db.Tags.Add(tag);
                     }
 
-                    db.Tags.Add(tag);
                     tags.Add(tag);
                 }
 
@@ -95,9 +95,13 @@ namespace Financier.Common.Expenses
             {
                 var itemsWithSameDescription =
                     (from items in db.Items
+                     // filter items that have tags
+                     join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
                      where
                         1 == 1
+                        // Not the same item
                         && items.Id != Item.Id
+                        // but same description
                         && items.Description == Item.Description
                      orderby items.PostedAt descending
                      select items);
