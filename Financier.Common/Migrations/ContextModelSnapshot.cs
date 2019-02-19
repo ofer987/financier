@@ -79,7 +79,8 @@ namespace Financier.Common.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CardId");
+                    b.HasIndex("CardId", "PostedAt")
+                        .IsUnique();
 
                     b.ToTable("Expenses_Statements");
                 });

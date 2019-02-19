@@ -104,16 +104,18 @@ namespace Financier.Common.Expenses
                 return _statement;
             }
 
-            return (_statement = FindOrCreateStatement(id, postedAt, card));
+            return (_statement = FindOrCreateStatement(id, postedAt, card.Id));
         }
 
-        public Statement FindOrCreateStatement(Guid id, DateTime postedAt, Card card)
+        public Statement FindOrCreateStatement(Guid id, DateTime postedAt, Guid cardId)
         {
             using (var db = new Context())
             {
                 var statement = db.Statements
                     .Include(stmt => stmt.Items)
-                    .Where(stmt => stmt.Id == id)
+                    .Where(stmt => stmt.CardId == cardId)
+                    .ToArray()
+                    .Where(stmt => stmt.PostedAt.Year == postedAt.Year && stmt.PostedAt.Month == postedAt.Month)
                     .FirstOrDefault();
 
                 if (statement == null)
@@ -122,10 +124,9 @@ namespace Financier.Common.Expenses
                     {
                         Id = id,
                         PostedAt = postedAt,
-                        CardId = card.Id,
+                        CardId = cardId,
                         Items = new List<Item>(),
                     };
-                    card.Statements.Add(newStatement);
                     db.Statements.Add(newStatement);
                     db.SaveChanges();
 

@@ -77,6 +77,10 @@ namespace Financier.Common
                 .WithMany(card => card.Statements)
                 .HasForeignKey(statement => statement.CardId);
 
+            modelBuilder.Entity<Statement>()
+                .HasIndex(statement => new { statement.CardId, statement.PostedAt })
+                .IsUnique();
+
             modelBuilder.Entity<Tag>()
                 .HasIndex(tag => tag.Name)
                 .IsUnique();
