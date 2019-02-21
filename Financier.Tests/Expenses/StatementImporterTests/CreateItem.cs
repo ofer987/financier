@@ -10,29 +10,23 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Tests.Expenses.StatementImporterTests
 {
-    public static class Values
+    public class Values
     {
         public static Guid DanCardId = Guid.NewGuid();
-        public static Func<string, Card> GetDanCard = (number) => 
+        public static Func<string, Card> GetDanCard = (number) => new Card
         {
-            return new Card
-            {
-                Id = DanCardId,
-                Number = number,
-                Statements = new List<Statement>()
-            };
+            Id = DanCardId,
+            Number = number,
+            Statements = new List<Statement>()
         };
 
         public static Guid JuneStatementId = Guid.NewGuid();
-        public static Func<Statement> GetJuneStatement = () =>
-        { 
-            return new Statement
-            {
-                Id = JuneStatementId,
-                CardId = DanCardId,
-                Items = new List<Item>(),
-                PostedAt = new DateTime(2025, 7, 1)
-            };
+        public static Func<Statement> GetJuneStatement = () => new Statement
+        {
+            Id = JuneStatementId,
+            CardId = DanCardId,
+            Items = new List<Item>(),
+            PostedAt = new DateTime(2025, 7, 1)
         };
 
         public const string PorscheItemId = "1234";
@@ -88,7 +82,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
                 var danCard = Values.GetDanCard(Guid.NewGuid().ToString());
                 db.Cards.Add(danCard);
                 db.SaveChanges();
-                
+
                 var juneStatement = Values.GetJuneStatement();
                 juneStatement.Items.Add(Values.GetPorscheItem(Values.PorscheItemId));
 
