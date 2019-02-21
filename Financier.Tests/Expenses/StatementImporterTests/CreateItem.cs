@@ -12,10 +12,9 @@ namespace Financier.Tests.Expenses.StatementImporterTests
 {
     public static class Values
     {
-        public static Guid DanCardId { get; private set; }
+        public static Guid DanCardId = Guid.NewGuid();
         public static Func<string, Card> GetDanCard = (number) => 
         {
-            DanCardId = Guid.NewGuid();
             return new Card
             {
                 Id = DanCardId,
@@ -24,10 +23,9 @@ namespace Financier.Tests.Expenses.StatementImporterTests
             };
         };
 
-        public static Guid JuneStatementId { get; private set; }
+        public static Guid JuneStatementId = Guid.NewGuid();
         public static Func<Statement> GetJuneStatement = () =>
         { 
-            JuneStatementId = Guid.NewGuid();
             return new Statement
             {
                 Id = JuneStatementId,
@@ -38,9 +36,10 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         };
 
         public const string PorscheItemId = "1234";
+        public static Guid PorscheId = Guid.NewGuid();
         public static Func<string, Item> GetPorscheItem = (itemId) => new Item
         {
-            Id = Guid.NewGuid(),
+            Id = PorscheId,
             Amount = 300000.00M,
             Description = "Porsche 911",
             ItemId = itemId,
@@ -93,10 +92,6 @@ namespace Financier.Tests.Expenses.StatementImporterTests
                 var juneStatement = Values.GetJuneStatement();
                 juneStatement.Items.Add(Values.GetPorscheItem(Values.PorscheItemId));
 
-                Console.WriteLine($"CardId = ({Values.DanCardId})");
-                Console.WriteLine($"DanCard.Id = ({danCard.Id})");
-                Console.WriteLine($"StatementId = ({Values.JuneStatementId})");
-                Console.WriteLine($"JuneStatement.Id = ({juneStatement.Id})");
                 db.Statements.Add(juneStatement);
                 db.SaveChanges();
             }
@@ -107,22 +102,19 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         [TestCase("New_item_Id")]
         public void Test_Expenses_StatementImporter_CreateItem_Succeeds_If_Different_ItemId(string itemId)
         {
-            var statementId = Values.JuneStatementId;
-            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), statementId));
+            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), Values.JuneStatementId));
         }
 
         [Test]
         [TestCase(Values.PorscheItemId)]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Same_ItemId(string itemId)
         {
-            var statementId = Values.JuneStatementId;
-
             int previousCount;
             using (var db = new Context())
             {
                 previousCount = db.Items.Count();
             }
-            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), statementId));
+            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), Values.JuneStatementId));
 
             using (var db = new Context())
             {
@@ -135,10 +127,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         [TestCase("     ")]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Invalid_ItemId(string itemId)
         {
-            var statementId = Values.JuneStatementId;
-            Console.WriteLine("value is " + statementId);
-
-            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), statementId));
+            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), Values.JuneStatementId));
         }
     }
 }
