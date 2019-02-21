@@ -3,20 +3,22 @@ using System;
 using Financier.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Financier.Common.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20190219003052_Add_CardId_And_PostedAt_UniqueIndex_To_Statement")]
+    partial class Add_CardId_And_PostedAt_UniqueIndex_To_Statement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Card", b =>
@@ -42,9 +44,6 @@ namespace Financier.Common.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
-                    b.Property<string>("ItemId")
-                        .IsRequired();
-
                     b.Property<DateTime>("PostedAt");
 
                     b.Property<Guid>("StatementId");
@@ -53,8 +52,7 @@ namespace Financier.Common.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StatementId", "ItemId")
-                        .IsUnique();
+                    b.HasIndex("StatementId");
 
                     b.ToTable("Expenses_Items");
                 });
