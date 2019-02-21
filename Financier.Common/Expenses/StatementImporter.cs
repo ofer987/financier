@@ -63,7 +63,7 @@ namespace Financier.Common.Expenses
                     var statement = GetStatement(postedAt, card);
                     try
                     {
-                        var item = CreateItem(record, statement);
+                        var item = CreateItem(record, statement.Id);
                         // FindOrCreateTags(string.Empty);
                     }
                     catch (Exception exception)
@@ -163,7 +163,7 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public Item CreateItem(StatementRecord record, Statement statement)
+        public Item CreateItem(StatementRecord record, Guid statementId)
         {
             if (record.ItemId.Trim().IsNullOrEmpty())
             {
@@ -175,7 +175,7 @@ namespace Financier.Common.Expenses
                 var newItem = new Item
                 {
                     Id = Guid.NewGuid(),
-                    StatementId = statement.Id,
+                    StatementId = statementId,
                     ItemId = record.ItemId.Trim(),
                     Description = record.Description,
                     Amount = Convert.ToDecimal(record.Amount),

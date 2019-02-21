@@ -375,7 +375,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
                         PostedAt = "20181103",
                         TransactedAt = "20181104"
                     };
-                    var item = new StatementImporter().CreateItem(record, newStatement);
+                    var item = new StatementImporter().CreateItem(record, newStatement.Id);
 
                     var dbItem = db.Items.First(i => i.Amount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));

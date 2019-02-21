@@ -10,102 +10,58 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Tests.Expenses.StatementImporterTests
 {
-    public static class Cards
+    public static class Values
     {
-        public static class One
+        public static Guid DanCardId { get; private set; }
+        public static Func<string, Card> GetDanCard = (number) => 
         {
-            public static Guid Id = Guid.NewGuid();
-            public const string Number = "1234";
-
-            public static class Statements
+            DanCardId = Guid.NewGuid();
+            return new Card
             {
-                public static class One
-                {
-                    public static Guid Id = Guid.NewGuid();
-                    public static DateTime PostedAt = new DateTime(2017, 1, 1);
+                Id = DanCardId,
+                Number = number,
+                Statements = new List<Statement>()
+            };
+        };
 
-                    public static class Items
-                    {
-                        public static class One
-                        {
-                            public static Guid Id = Guid.NewGuid();
-                            public const string ItemId = "1";
-                            public static decimal Amount = 200000.00M;
-                            public static string Description = "Porsche 911";
-                            public static DateTime TransactedAt = new DateTime(2025, 6, 5);
-                            public static DateTime PostedAt = new DateTime(2025, 6, 5);
-                        }
-                    }
-                }
+        public static Guid JuneStatementId { get; private set; }
+        public static Func<Statement> GetJuneStatement = () =>
+        { 
+            JuneStatementId = Guid.NewGuid();
+            return new Statement
+            {
+                Id = JuneStatementId,
+                CardId = DanCardId,
+                Items = new List<Item>(),
+                PostedAt = new DateTime(2025, 7, 1)
+            };
+        };
 
-                public static class Two
-                {
-                    public static Guid Id = Guid.NewGuid();
-                    public static DateTime PostedAt = new DateTime(2017, 2, 1);
-                }
-            }
-        }
+        public const string PorscheItemId = "1234";
+        public static Func<string, Item> GetPorscheItem = (itemId) => new Item
+        {
+            Id = Guid.NewGuid(),
+            Amount = 300000.00M,
+            Description = "Porsche 911",
+            ItemId = itemId,
+            ItemTags = new List<ItemTag>(),
+            PostedAt = new DateTime(2025, 6, 5),
+            TransactedAt = new DateTime(2025, 6, 5),
+        };
+
+        public static Func<string, StatementRecord> GetStatementRecord = (itemId) => new StatementRecord
+        {
+            Amount = "10.00",
+            CardNumber = "Q32",
+            Description = "fd",
+            ItemId = itemId,
+            PostedAt = "20190801",
+            TransactedAt = "20190801"
+        };
     }
 
     public class CreateItem
     {
-        public Card Card1 { get; set; }
-
-        public Dictionary<Guid, Card> AllCards = new Dictionary<Guid, Card>();
-
-        public Dictionary<Guid, Statement> Card1_Statements { get; set; } = new Dictionary<Guid, Statement>();
-
-        public Func<string, StatementRecord> GivenStatementRecordFunc { get; set; }
-
-        public void CleanProperties()
-        {
-            Card1 = null;
-            AllCards = new Dictionary<Guid, Card>();
-            Card1_Statements = new Dictionary<Guid, Statement>();
-        }
-
-        public void InitProperties()
-        {
-            Card1 = Fixtures.Cards.SimpleCard;
-            Card1.Number = Cards.One.Number;
-            AllCards.Add(Cards.One.Id, Card1);
-
-            {
-                var statement = Fixtures.Statements.GetSimpleStatement(Card1);
-                statement.PostedAt = Cards.One.Statements.One.PostedAt;
-                Card1_Statements.Add(Cards.One.Statements.One.Id, statement);
-
-                {
-                    var item = Fixtures.Items.ItemWithoutTags(statement);
-                    item.ItemId = Cards.One.Statements.One.Items.One.ItemId;
-                    item.Amount = Cards.One.Statements.One.Items.One.Amount;
-                    item.Description = Cards.One.Statements.One.Items.One.Description;
-                    item.PostedAt = Cards.One.Statements.One.Items.One.PostedAt;
-                    item.TransactedAt = Cards.One.Statements.One.Items.One.TransactedAt;
-
-                    statement.Items.Add(item);
-                }
-            }
-            {
-                var statement = Fixtures.Statements.GetSimpleStatement(Card1);
-                statement.PostedAt = Cards.One.Statements.Two.PostedAt;
-                Card1_Statements.Add(Cards.One.Statements.Two.Id, statement);
-            }
-
-            GivenStatementRecordFunc = (itemId) => 
-            {
-                return new StatementRecord
-                {
-                    Amount = "10.00",
-                    CardNumber = "Q32",
-                    Description = "fd",
-                    ItemId = itemId,
-                    PostedAt = "20190801",
-                    TransactedAt = "20190801"
-                };
-            };
-        }
-
         [OneTimeSetUp]
         public void InitAll()
         {
@@ -115,10 +71,8 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         [SetUp]
         public void Init()
         {
-            CleanProperties();
-            InitProperties();
-
             Context.Clean();
+
             InitDb();
         }
 
@@ -132,35 +86,43 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         {
             using (var db = new Context())
             {
-                db.Cards.Add(Card1);
+                var danCard = Values.GetDanCard(Guid.NewGuid().ToString());
+                db.Cards.Add(danCard);
                 db.SaveChanges();
+                
+                var juneStatement = Values.GetJuneStatement();
+                juneStatement.Items.Add(Values.GetPorscheItem(Values.PorscheItemId));
 
-                foreach (var statement in Card1_Statements.Select(st => st.Value))
-                {
-                    db.Statements.Add(statement);
-                    db.SaveChanges();
-                }
+                Console.WriteLine($"CardId = ({Values.DanCardId})");
+                Console.WriteLine($"DanCard.Id = ({danCard.Id})");
+                Console.WriteLine($"StatementId = ({Values.JuneStatementId})");
+                Console.WriteLine($"JuneStatement.Id = ({juneStatement.Id})");
+                db.Statements.Add(juneStatement);
+                db.SaveChanges();
             }
         }
 
         [Test]
-        [TestCase(Cards.One.Statements.One.Items.One.ItemId + "2")]
+        [TestCase(Values.PorscheItemId + "additionaldata")]
         [TestCase("New_item_Id")]
         public void Test_Expenses_StatementImporter_CreateItem_Succeeds_If_Different_ItemId(string itemId)
         {
-            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(GivenStatementRecordFunc(itemId), Card1_Statements.Select(st => st.Value).First()));
+            var statementId = Values.JuneStatementId;
+            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), statementId));
         }
 
         [Test]
-        [TestCase(Cards.One.Statements.One.Items.One.ItemId)]
+        [TestCase(Values.PorscheItemId)]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Same_ItemId(string itemId)
         {
+            var statementId = Values.JuneStatementId;
+
             int previousCount;
             using (var db = new Context())
             {
                 previousCount = db.Items.Count();
             }
-            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(GivenStatementRecordFunc(itemId), Card1_Statements.Select(st => st.Value).First()));
+            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), statementId));
 
             using (var db = new Context())
             {
@@ -173,9 +135,10 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         [TestCase("     ")]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Invalid_ItemId(string itemId)
         {
-            var statement = new Statement();
+            var statementId = Values.JuneStatementId;
+            Console.WriteLine("value is " + statementId);
 
-            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(GivenStatementRecordFunc(itemId), Card1_Statements.Select(st => st.Value).First()));
+            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), statementId));
         }
     }
 }
