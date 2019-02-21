@@ -59,7 +59,6 @@ namespace Financier.Common.Expenses
 
                 foreach (var record in records)
                 {
-                    // Console.WriteLine(record);
                     card = GetCard(record.CardNumber);
                     var statement = GetStatement(postedAt, card);
                     try
@@ -115,9 +114,6 @@ namespace Financier.Common.Expenses
 
                 if (statement == null)
                 {
-                    {
-                        Console.WriteLine(card);
-                    }
                     statement = new Statement
                     {
                         Id = Guid.NewGuid(),
