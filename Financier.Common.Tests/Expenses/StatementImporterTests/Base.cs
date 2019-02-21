@@ -8,7 +8,7 @@ using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.StatementImporterTests
+namespace Financier.Common.Tests.Expenses.StatementImporterTests
 {
     public class Base
     {

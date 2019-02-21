@@ -4,11 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.StatementImporterTests
+namespace Financier.Common.Tests.Expenses.StatementImporterTests
 {
     public class FindOrCreateStatement
     {
@@ -79,36 +78,36 @@ namespace Financier.Tests.Expenses.StatementImporterTests
 
             public Base(int cardIdentifier, DateTime postedAt, Guid expectedStatementId)
             {
-                Card1 = Fixtures.Cards.SimpleCard;
+                Card1 = Factories.SimpleCard;
                 Card1.Id = Cards.One.Id;
                 Card1.Number = Cards.One.Number;
                 AllCards.Add(Cards.One.Identifier, Card1);
 
-                Card2 = Fixtures.Cards.SimpleCard;
+                Card2 = Factories.SimpleCard;
                 Card2.Id = Cards.Two.Id;
                 Card2.Number = Cards.Two.Number;
                 AllCards.Add(Cards.Two.Identifier, Card2);
 
                 {
-                    var statement = Fixtures.Statements.GetSimpleStatement(Card1);
+                    var statement = Factories.GetSimpleStatement(Card1);
                     statement.Id = Cards.One.Statements.One.Id;
                     statement.PostedAt = Cards.One.Statements.One.PostedAt;
                     Card1_Statements.Add(Cards.One.Statements.One.Identifier, statement);
                 }
                 {
-                    var statement = Fixtures.Statements.GetSimpleStatement(Card1);
+                    var statement = Factories.GetSimpleStatement(Card1);
                     statement.Id = Cards.One.Statements.Two.Id;
                     statement.PostedAt = Cards.One.Statements.Two.PostedAt;
                     Card1_Statements.Add(Cards.One.Statements.Two.Identifier, statement);
                 }
                 {
-                    var statement = Fixtures.Statements.GetSimpleStatement(Card2);
+                    var statement = Factories.GetSimpleStatement(Card2);
                     statement.Id = Cards.Two.Statements.One.Id;
                     statement.PostedAt = Cards.Two.Statements.One.PostedAt;
                     Card2_Statements.Add(Cards.Two.Statements.One.Identifier, statement);
                 }
                 {
-                    var statement = Fixtures.Statements.GetSimpleStatement(Card2);
+                    var statement = Factories.GetSimpleStatement(Card2);
                     statement.Id = Cards.Two.Statements.Two.Id;
                     statement.PostedAt = Cards.Two.Statements.Two.PostedAt;
                     Card2_Statements.Add(Cards.Two.Statements.Two.Identifier, statement);

@@ -4,9 +4,9 @@ using System.Linq;
 
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses
+namespace Financier.Common
 {
-    public partial class Fixtures
+    public partial class Factories
     {
         public static Item ItemWithoutTags(Statement statement)
         {

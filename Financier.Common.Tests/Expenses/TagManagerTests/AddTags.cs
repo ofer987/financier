@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.TagManagerTests
+namespace Financier.Common.Tests.Expenses.TagManagerTests
 {
     [TestFixtureSource(typeof(AddTags), nameof(TestCaseFixtures))]
     public class AddTags
@@ -35,12 +34,12 @@ namespace Financier.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            MyCard1 = Fixtures.Cards.SimpleCard;
-            MyStatement1 = Fixtures.Statements.GetSimpleStatement(MyCard1);
+            MyCard1 = Factories.SimpleCard;
+            MyStatement1 = Factories.GetSimpleStatement(MyCard1);
 
-            DanTag1 = Fixtures.Tags.DanTag();
-            RonTag1 = Fixtures.Tags.RonTag();
-            KerenTag1 = Fixtures.Tags.KerenTag();
+            DanTag1 = Factories.DanTag();
+            RonTag1 = Factories.RonTag();
+            KerenTag1 = Factories.KerenTag();
 
             var allTags = new Dictionary<string, Tag>
             {
@@ -64,7 +63,7 @@ namespace Financier.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Fixtures.Items.ItemWithTags(MyStatement1, ExistingTags);
+            MyItem1 = Factories.ItemWithTags(MyStatement1, ExistingTags);
         }
 
         [OneTimeSetUp]

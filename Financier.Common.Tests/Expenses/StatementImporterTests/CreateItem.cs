@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Microsoft.EntityFrameworkCore;
 
-using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.StatementImporterTests
+namespace Financier.Common.Tests.Expenses.StatementImporterTests
 {
-    public class MyFixtures : Fixtures
+    public class MyFactories : Factories
     {
         public static Guid DanCardId = Guid.NewGuid();
-        public static Func<string, Card> GetDanCard = (number) => new Card
+        public const string DanCardNumber = "1234567";
+        public static Func<Card> GetDanCard = () => new Card
         {
             Id = DanCardId,
-            Number = number,
+            Number = DanCardNumber,
             Statements = new List<Statement>()
         };
 
@@ -53,7 +53,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         };
     }
 
-    public class CreateItem : MyFixtures
+    public class CreateItem : MyFactories
     {
         [OneTimeSetUp]
         public void InitAll()
@@ -79,7 +79,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         {
             using (var db = new Context())
             {
-                var danCard = GetDanCard(Guid.NewGuid().ToString());
+                var danCard = GetDanCard();
                 db.Cards.Add(danCard);
                 db.SaveChanges();
 

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Financier.Common\Financier.Common.csproj" />
+    <ProjectReference Include="..\Financier.Common.Factories\Financier.Common.Factories.csproj" />
   </ItemGroup>
 
 </Project>

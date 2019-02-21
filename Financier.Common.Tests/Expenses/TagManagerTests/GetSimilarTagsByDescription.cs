@@ -4,11 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.TagManagerTests
+namespace Financier.Common.Tests.Expenses.TagManagerTests
 {
     [TestFixtureSource(nameof(TestCaseFixtures))]
     public class GetSimilarTagsByDescription
@@ -37,49 +36,49 @@ namespace Financier.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            var myCard1 = Fixtures.Cards.SimpleCard;
+            var myCard1 = Factories.SimpleCard;
             Cards.Add(myCard1);
 
-            var myStatement1 = Fixtures.Statements.GetSimpleStatement(myCard1);
-            var myStatement2 = Fixtures.Statements.GetSimpleStatement(myCard1);
+            var myStatement1 = Factories.GetSimpleStatement(myCard1);
+            var myStatement2 = Factories.GetSimpleStatement(myCard1);
             Statements.AddRange(new[] { myStatement1, myStatement2 });
 
 
-            DanTag1 = Fixtures.Tags.DanTag();
-            RonTag1 = Fixtures.Tags.RonTag();
-            KerenTag1 = Fixtures.Tags.KerenTag();
+            DanTag1 = Factories.DanTag();
+            RonTag1 = Factories.RonTag();
+            KerenTag1 = Factories.KerenTag();
 
-            NewItem = Fixtures.Items.ItemWithoutTags(myStatement1);
+            NewItem = Factories.ItemWithoutTags(myStatement1);
             NewItem.Description = description;
 
             {
-                var item = Fixtures.Items.ItemWithTags(myStatement1, new[] { DanTag1, RonTag1 });
+                var item = Factories.ItemWithTags(myStatement1, new[] { DanTag1, RonTag1 });
                 item.Description = Descriptions.OnlyDesc;
                 Items.Add(item);
             }
             {
-                var item = Fixtures.Items.ItemWithTags(myStatement1, new[] { DanTag1, RonTag1 });
+                var item = Factories.ItemWithTags(myStatement1, new[] { DanTag1, RonTag1 });
                 item.Description = Descriptions.Twice;
                 item.PostedAt = new DateTime(2018, 1, 1);
                 Items.Add(item);
             }
 
             {
-                var item = Fixtures.Items.ItemWithTags(myStatement2, new[] { DanTag1, RonTag1, KerenTag1 });
+                var item = Factories.ItemWithTags(myStatement2, new[] { DanTag1, RonTag1, KerenTag1 });
                 item.Description = Descriptions.Twice;
                 item.PostedAt = new DateTime(2018, 2, 1);
                 Items.Add(item);
             }
 
             {
-                var item = Fixtures.Items.ItemWithTags(myStatement2, new[] { DanTag1 });
+                var item = Factories.ItemWithTags(myStatement2, new[] { DanTag1 });
                 item.Description = Descriptions.Statement2Item;
                 item.PostedAt = new DateTime(2018, 1, 1);
                 Items.Add(item);
             }
 
             {
-                var item = Fixtures.Items.ItemWithoutTags(myStatement2);
+                var item = Factories.ItemWithoutTags(myStatement2);
                 item.Description = Descriptions.Statement2Item;
                 item.PostedAt = new DateTime(2018, 1, 3);
                 Items.Add(item);
