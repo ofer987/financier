@@ -1,9 +1,9 @@
 using System;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.Fixtures
+namespace Financier.Tests.Expenses
 {
-    public static class Tags
+    public partial class Fixtures
     {
         public static Tag DanTag()
         {

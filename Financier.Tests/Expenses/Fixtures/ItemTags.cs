@@ -1,6 +1,6 @@
-namespace Financier.Tests.Expenses.Fixtures
+namespace Financier.Tests.Expenses
 {
-    public static class ItemTags
+    public partial class Fixtures
     {
     }
 }

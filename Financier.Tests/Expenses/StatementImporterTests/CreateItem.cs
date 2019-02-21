@@ -10,7 +10,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Tests.Expenses.StatementImporterTests
 {
-    public class Values
+    public class MyFixtures : Fixtures
     {
         public static Guid DanCardId = Guid.NewGuid();
         public static Func<string, Card> GetDanCard = (number) => new Card
@@ -53,7 +53,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         };
     }
 
-    public class CreateItem
+    public class CreateItem : MyFixtures
     {
         [OneTimeSetUp]
         public void InitAll()
@@ -79,12 +79,12 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         {
             using (var db = new Context())
             {
-                var danCard = Values.GetDanCard(Guid.NewGuid().ToString());
+                var danCard = GetDanCard(Guid.NewGuid().ToString());
                 db.Cards.Add(danCard);
                 db.SaveChanges();
 
-                var juneStatement = Values.GetJuneStatement();
-                juneStatement.Items.Add(Values.GetPorscheItem(Values.PorscheItemId));
+                var juneStatement = GetJuneStatement();
+                juneStatement.Items.Add(GetPorscheItem(PorscheItemId));
 
                 db.Statements.Add(juneStatement);
                 db.SaveChanges();
@@ -92,15 +92,15 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         }
 
         [Test]
-        [TestCase(Values.PorscheItemId + "additionaldata")]
+        [TestCase(PorscheItemId + "additionaldata")]
         [TestCase("New_item_Id")]
         public void Test_Expenses_StatementImporter_CreateItem_Succeeds_If_Different_ItemId(string itemId)
         {
-            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), Values.JuneStatementId));
+            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(GetStatementRecord(itemId), JuneStatementId));
         }
 
         [Test]
-        [TestCase(Values.PorscheItemId)]
+        [TestCase(PorscheItemId)]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Same_ItemId(string itemId)
         {
             int previousCount;
@@ -108,7 +108,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
             {
                 previousCount = db.Items.Count();
             }
-            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), Values.JuneStatementId));
+            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(GetStatementRecord(itemId), JuneStatementId));
 
             using (var db = new Context())
             {
@@ -121,7 +121,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
         [TestCase("     ")]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Invalid_ItemId(string itemId)
         {
-            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(Values.GetStatementRecord(itemId), Values.JuneStatementId));
+            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(GetStatementRecord(itemId), JuneStatementId));
         }
     }
 }

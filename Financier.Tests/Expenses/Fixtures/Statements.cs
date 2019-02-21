@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.Fixtures
+namespace Financier.Tests.Expenses
 {
-    public static class Statements
+    public partial class Fixtures
     {
         public static Statement GetSimpleStatement(Card card)
         {

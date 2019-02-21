@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Tests.Expenses.Fixtures
+namespace Financier.Tests.Expenses
 {
-    public static class Cards
+    public partial class Fixtures
     {
         public static Card SimpleCard => new Card
         {
