@@ -81,6 +81,10 @@ namespace Financier.Common
                 .HasIndex(statement => new { statement.CardId, statement.PostedAt })
                 .IsUnique();
 
+            modelBuilder.Entity<Item>()
+                .HasIndex(item => new { item.StatementId, item.ItemId })
+                .IsUnique();
+
             modelBuilder.Entity<Tag>()
                 .HasIndex(tag => tag.Name)
                 .IsUnique();

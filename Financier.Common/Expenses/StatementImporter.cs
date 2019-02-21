@@ -12,6 +12,7 @@ using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses
 {
+    // TODO: Trim values and set Valid function
     public class StatementRecord
     {
         [Name("Item #")]
@@ -168,13 +169,18 @@ namespace Financier.Common.Expenses
 
         public Item CreateItem(StatementRecord record, Statement statement)
         {
+            if (record.ItemId.Trim().IsNullOrEmpty())
+            {
+                throw new ArgumentException("cannot be blank or whitespace", nameof(record.ItemId));
+            }
+
             using (var db = new Context())
             {
                 var newItem = new Item
                 {
                     Id = Guid.NewGuid(),
-                    // Statement = statement,
                     StatementId = statement.Id,
+                    ItemId = record.ItemId.Trim(),
                     Description = record.Description,
                     Amount = Convert.ToDecimal(record.Amount),
                     TransactedAt = ToDateTime(record.TransactedAt),

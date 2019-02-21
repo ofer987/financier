@@ -149,7 +149,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = new StatementImporter().Import(Guid.NewGuid(), statementPostedAt, reader);
+                var actualStatement = new StatementImporter().Import(statementPostedAt, reader);
 
                 Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
             }
@@ -185,7 +185,7 @@ namespace Financier.Tests.Expenses.StatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = new StatementImporter().Import(Guid.NewGuid(), statementPostedAt, reader);
+                var actualStatement = new StatementImporter().Import(statementPostedAt, reader);
 
                 Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
             }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Financier.Common;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Tests.Expenses.Fixtures
@@ -14,6 +13,7 @@ namespace Financier.Tests.Expenses.Fixtures
             return new Item
             {
                 Id = Guid.NewGuid(),
+                ItemId = Guid.NewGuid().ToString(),
                 StatementId = statement.Id,
                 Amount = 10.00M,
                 Description = "Item-Without-Tags",
@@ -29,6 +29,7 @@ namespace Financier.Tests.Expenses.Fixtures
             return new Item
             {
                 Id = itemId,
+                ItemId = Guid.NewGuid().ToString(),
                 StatementId = statement.Id,
                 Amount = 20.00M,
                 Description = "Item that has tags",

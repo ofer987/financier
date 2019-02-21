@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 
 using Financier.Common;
 using Financier.Common.Extensions;
@@ -28,44 +30,45 @@ namespace Financier.Cli
 
                 var tagManager = new TagManager(item);
                 var similarTags = tagManager.GetSimilarTagsByDescription();
-                var newTagsString = string.Empty;
 
-                Tag[] selectedTags;
                 if (similarTags.Length > 0)
                 {
                     // TODO: Place in its own function
-                    var repeat = false;
-                    while (!repeat)
+                    var repeat = true;
+                    do
                     {
-                        repeat = false;
                         Console.WriteLine($"Found similar tags: {similarTags.Join(", ")}");
                         Console.WriteLine("Use them? (Y[es]/n[o])");
                         var response = Console.ReadLine();
 
-                        switch (response.ToLower())
+                        repeat = false;
+                        switch (response.ToLower().Trim())
                         {
                             case "y":
                             case "yes":
-                                selectedTags = similarTags;
+                                tagManager.AddTags(similarTags);
                                 break;
                             case "n":
                             case "no":
-                                newTagsString = ReadNewTags();
+                                Console.WriteLine("Input tags:");
+                                var newTagsString = ReadNewTags();
+                                var newTags = TagManager.FindOrCreateTags(newTagsString);
+                                tagManager.AddTags(newTags);
                                 break;
                             default:
                                 repeat = true;
                                 break;
                         }
-                    }
+                    } while (repeat);
                 }
                 else
                 {
                     Console.WriteLine("Input tags:");
-                    newTagsString = ReadNewTags();
+                    var newTagsString = ReadNewTags();
+                    var newTags = TagManager.FindOrCreateTags(newTagsString);
+                    tagManager.AddTags(newTags);
                 }
 
-                var newTags = TagManager.FindOrCreateTags(newTagsString);
-                tagManager.AddTags(newTags);
 
                 // Console.WriteLine($"Input Tags for {item}");
                 // importer.FindOrCreateTags(Console.ReadLine());

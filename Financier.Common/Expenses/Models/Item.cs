@@ -16,9 +16,8 @@ namespace Financier.Common.Expenses.Models
 
         public Guid StatementId { get; set; }
 
-        // TODO: Add another identifier that together
-        // TODO: with StatementId constitute a unique identifer across 
-        // TODO: the Item table
+        [Required]
+        public string ItemId { get; set; }
 
         public Statement Statement { get; set; }
 
