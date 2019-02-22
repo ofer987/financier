@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
@@ -53,6 +52,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                                   {
                                       new Item
                                       {
+                                          ItemId = Guid.NewGuid().ToString(),
                                           Amount = 13.37M,
                                           Description = "EMA TEI TORONTO ON",
                                           TransactedAt = new DateTime(2018, 11, 1),
@@ -60,6 +60,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                                       },
                                       new Item
                                       {
+                                          ItemId = Guid.NewGuid().ToString(),
                                           Amount = 1.46M,
                                           Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
                                           TransactedAt = new DateTime(2018, 11, 3),
@@ -89,6 +90,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                         {
                         new Item
                         {
+                        ItemId = Guid.NewGuid().ToString(),
                         Amount = 13.37M,
                         Description = "EMA TEI TORONTO ON",
                         TransactedAt = new DateTime(2018, 6, 1),
@@ -96,6 +98,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                         },
                         new Item
                         {
+                            ItemId = Guid.NewGuid().ToString(),
                             Amount = 1.46M,
                             Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
                             TransactedAt = new DateTime(2018, 11, 3),
@@ -238,6 +241,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
 
                     var item1 = new Item
                     {
+                        ItemId = Guid.NewGuid().ToString(),
                         Amount = 10.0M,
                         Description = "Transaction 1",
                         Statement = statement,
@@ -258,6 +262,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                         Statement = statement,
                         TransactedAt = new DateTime(2018, 1, 1),
                         PostedAt = new DateTime(2018, 1, 2),
+                        ItemId = Guid.NewGuid().ToString(),
                         Id = Guid.NewGuid()
                     };
                     statement.Items.Add(item2);

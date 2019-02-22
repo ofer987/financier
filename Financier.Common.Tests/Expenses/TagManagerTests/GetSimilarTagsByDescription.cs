@@ -40,7 +40,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Cards.Add(myCard1);
 
             var myStatement1 = Factories.GetSimpleStatement(myCard1);
+            myStatement1.PostedAt = new DateTime(2018, 1, 1);
             var myStatement2 = Factories.GetSimpleStatement(myCard1);
+            myStatement2.PostedAt = new DateTime(2018, 2, 1);
             Statements.AddRange(new[] { myStatement1, myStatement2 });
 
 
