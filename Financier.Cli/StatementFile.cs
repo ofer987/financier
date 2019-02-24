@@ -12,12 +12,13 @@ namespace Financier.Cli
     {
         private static Regex DateRegex = new Regex(@"\d{8}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public static FileInfo[] GetCsvFiles(string path)
+        public static StatementFile[] GetCsvFiles(string path)
         {
             return new DirectoryInfo(path)
                 .GetFiles("*.csv", SearchOption.AllDirectories)
                 .Where(IsStatement)
                 .OrderBy(file => file.Name)
+                .Select(file => new StatementFile(file))
                 .ToArray();
         }
 
@@ -31,6 +32,11 @@ namespace Financier.Cli
         public StatementFile(FileInfo file)
         {
             File = file;
+        }
+
+        public StatementFile(string path)
+        {
+            File = new FileInfo(path);
         }
 
         public DateTime GetPostedAt()

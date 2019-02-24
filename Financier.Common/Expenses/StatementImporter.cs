@@ -45,6 +45,7 @@ namespace Financier.Common.Expenses
         {
             Card card = null;
 
+            StatementRecord[] records;
             using (var reader = new StreamReader(stream))
             using (var csv = new CsvReader(reader))
             {
@@ -55,28 +56,37 @@ namespace Financier.Common.Expenses
                     Console.WriteLine($"This line is faulty {context.Record.Join()}");
                 };
 
-                var records = csv.GetRecords<StatementRecord>().ToList();
+                records = csv.GetRecords<StatementRecord>().ToArray();
+            }
 
-                foreach (var record in records)
+            if (records.Length == 0)
+            {
+                // TODO: change to null-object pattern NulLStatement
+                return null;
+            }
+
+            foreach (var record in records)
+            {
+                card = GetCard(record.CardNumber);
+                var statement = GetStatement(postedAt, card);
+                try
                 {
-                    card = GetCard(record.CardNumber);
-                    var statement = GetStatement(postedAt, card);
-                    try
-                    {
-                        var item = CreateItem(record, statement.Id);
-                        // FindOrCreateTags(string.Empty);
-                    }
-                    catch (Exception exception)
-                    {
-                        // TODO: Record error in logger
-                        Console.WriteLine("Error creating item");
-                        Console.WriteLine(exception);
+                    CreateItem(record, statement.Id);
+                }
+                catch (DbUpdateException)
+                {
+                }
+                catch (Exception exception)
+                {
+                    // TODO: Record error in logger
+                    Console.WriteLine("Error creating item");
+                    Console.WriteLine(exception);
 
-                        // Continue to next record
-                    }
+                    // Continue to next record
                 }
             }
 
+            // reload the statement
             return FindOrCreateStatement(postedAt, card.Id);
         }
 
@@ -107,6 +117,7 @@ namespace Financier.Common.Expenses
             using (var db = new Context())
             {
                 var statement = db.Statements
+                    .Include(stmt => stmt.Card)
                     .Include(stmt => stmt.Items)
                     .Where(stmt => stmt.CardId == cardId)
                     .Where(stmt => stmt.PostedAt == postedAt)
@@ -204,6 +215,17 @@ namespace Financier.Common.Expenses
             }
 
             return regex.Match(val).Groups[1].Value;
+        }
+
+        public static Item[] GetItems()
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                    .Reject(item => item.ItemTags.Any())
+                    .ToArray();
+            }
         }
     }
 }

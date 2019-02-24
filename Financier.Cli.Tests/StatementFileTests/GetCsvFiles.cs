@@ -25,7 +25,7 @@ namespace Financier.Cli.Tests.StatementFileTests
                 new FileInfo(Path.Join(Path.Join(path, "123345"), "20181203.csv"))
             };
             Assert.That(
-                files.Select(file => file.Name),
+                files.Select(file => file.File.Name),
                 Is.EqualTo(expected.Select(file => file.Name))
             );
         }

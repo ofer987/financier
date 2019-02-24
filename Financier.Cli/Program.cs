@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 
 using Financier.Common;
 using Financier.Common.Extensions;
@@ -15,16 +14,27 @@ namespace Financier.Cli
         public static void Main(string[] args)
         {
             Context.Environment = Environments.Dev;
-            Context.Clean();
+            var csvPath = GetCsvPath(args);
+            
+            // Context.Clean();
 
-            var postedAt = GetPostedAt(args[0]);
-            var stream = System.IO.File.OpenRead(GetStatementPath(args));
+            // var statements = new StatementFile(args[0]).GetAll();
 
-            var importer = new StatementImporter();
-            var statement = importer.Import(postedAt, stream);
 
-            Console.WriteLine(statement.Items.Count);
-            foreach (var item in statement.Items)
+            // var postedAt = GetPostedAt(args[0]);
+            // var stream = System.IO.File.OpenRead(GetStatementPath(args));
+
+            // var importer = new StatementImporter();
+            // var statement = importer.Import(postedAt, stream);
+            //
+            // Console.WriteLine(statement.Items.Count);
+            var files = StatementFile.GetCsvFiles(csvPath);
+            foreach (var file in files)
+            {
+                file.Import();
+            }
+
+            foreach (var item in StatementImporter.GetItems())
             {
                 Console.WriteLine(item);
 
@@ -68,26 +78,35 @@ namespace Financier.Cli
                     var newTags = TagManager.FindOrCreateTags(newTagsString);
                     tagManager.AddTags(newTags);
                 }
-
-
-                // Console.WriteLine($"Input Tags for {item}");
-                // importer.FindOrCreateTags(Console.ReadLine());
             }
         }
 
-        public static DateTime GetPostedAt(string fileName)
+        public static string GetCsvPath(IReadOnlyList<string> args)
         {
-            return DateTime.ParseExact(fileName, "yyyyMMdd", null);
-        }
-
-        public static string GetStatementPath(IReadOnlyList<string> args)
-        {
-            return args[1];
+            return args[0];
         }
 
         public static string ReadNewTags()
         {
             return Console.ReadLine();
         }
+
+        // public FileInfo[] GetStatements(string path)
+        // {
+        //     return new DirectoryInfo(path).GetFiles("*.csv");
+        // }
+        //
+        // public Statement ParseStatement(FileInfo file)
+        // {
+        //     return new StatementImporter().Import(
+        //         Guid.NewGuid(),
+        //         GetPostedAt(file.Name),
+        //         file.OpenRead()
+        //     );
+        // }
+        //
+        // public void SetTagsForItem(Item item)
+        // {
+        // }
     }
 }
