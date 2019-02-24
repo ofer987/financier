@@ -58,7 +58,7 @@ namespace Financier.Cli.Tests.StatementFileTests
             path = Path.Join(path, "..");
             path = Path.Join(path, "..");
 
-            return Path.Join(path, "StatementsTests");
+            return Path.Join(path, "StatementFileTests");
         }
     }
 }
