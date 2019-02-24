@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 
@@ -13,11 +12,11 @@ namespace Financier.Cli
             Path = path;
         }
 
-        public string[] GetAll()
+        public FileInfo[] GetAll()
         {
             return new DirectoryInfo(Path)
-                .GetFiles("*.csv")
-                .Select(file => file.FullName)
+                .GetFiles("*.csv", SearchOption.AllDirectories)
+                .OrderBy(file => file.Name)
                 .ToArray();
         }
 

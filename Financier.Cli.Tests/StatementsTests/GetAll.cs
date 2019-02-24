@@ -1,6 +1,7 @@
+using System.Reflection;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
-
-using Financier.Cli;
 
 namespace Financier.Cli.Tests.StatementTests
 {
@@ -13,16 +14,52 @@ namespace Financier.Cli.Tests.StatementTests
         }
 
         [Test]
-        public void Test1()
+        public void Test_Statements_GetAll_ValidPath()
         {
-            var path = "/Users/ofer987/work/Financier/Financier.Cli.Tests/StatementsTests";
+            var path = GetCsvPath();
             var statements = new Statements(path);
             var files = statements.GetAll();
 
-            // Assert.That(files.Count, Is.EqualTo(2));
+            var expected = new [] 
+            { 
+                new FileInfo(Path.Join(Path.Join(path, "123345"), "20181103.csv")),
+                new FileInfo(Path.Join(Path.Join(path, "123345"), "20181203.csv"))
+            };
+            Assert.That(
+                files.Select(file => file.Name),
+                Is.EqualTo(expected.Select(file => file.Name))
+            );
+        }
 
-            var expected = new [] { $"{path}/123345/20181103.csv", $"{path}/123345/20181203.csv"};
-            Assert.That(files, Is.EqualTo(expected));
+        [Test]
+        [TestCase("/")]
+        public void Test_Statements_GetAll_UnauthorizedAccess(string path)
+        {
+            Assert.Throws<System.UnauthorizedAccessException>(() => new Statements(path).GetAll());
+        }
+
+        [Test]
+        [TestCase("/foobar")]
+        [TestCase("   ")]
+        public void Test_Statements_GetAll_DirectoryNotFound(string path)
+        {
+            Assert.Throws<System.IO.DirectoryNotFoundException>(() => new Statements(path).GetAll());
+        }
+
+        [TestCase("")]
+        public void Test_Statements_GetAll_EmptyPath(string path)
+        {
+            Assert.Throws<System.ArgumentException>(() => new Statements(path).GetAll());
+        }
+
+        private string GetCsvPath()
+        {
+            var path = Path.Join(Assembly.GetExecutingAssembly().Location, "..");
+            path = Path.Join(path, "..");
+            path = Path.Join(path, "..");
+            path = Path.Join(path, "..");
+
+            return Path.Join(path, "StatementsTests");
         }
     }
 }
