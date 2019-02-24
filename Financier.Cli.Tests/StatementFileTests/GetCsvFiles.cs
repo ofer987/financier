@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 
-namespace Financier.Cli.Tests.StatementTests
+namespace Financier.Cli.Tests.StatementFileTests
 {
-    public class GetAll
+    public class GetCsvFiles
     {
         [SetUp]
         public void Setup()
@@ -14,11 +14,10 @@ namespace Financier.Cli.Tests.StatementTests
         }
 
         [Test]
-        public void Test_Statements_GetAll_ValidPath()
+        public void Test_Statements_GetCsvFiles_ValidPath()
         {
             var path = GetCsvPath();
-            var statements = new Statements(path);
-            var files = statements.GetAll();
+            var files = StatementFile.GetCsvFiles(path);
 
             var expected = new [] 
             { 
@@ -35,7 +34,7 @@ namespace Financier.Cli.Tests.StatementTests
         [TestCase("/")]
         public void Test_Statements_GetAll_UnauthorizedAccess(string path)
         {
-            Assert.Throws<System.UnauthorizedAccessException>(() => new Statements(path).GetAll());
+            Assert.Throws<System.UnauthorizedAccessException>(() => StatementFile.GetCsvFiles(path));
         }
 
         [Test]
@@ -43,13 +42,13 @@ namespace Financier.Cli.Tests.StatementTests
         [TestCase("   ")]
         public void Test_Statements_GetAll_DirectoryNotFound(string path)
         {
-            Assert.Throws<System.IO.DirectoryNotFoundException>(() => new Statements(path).GetAll());
+            Assert.Throws<System.IO.DirectoryNotFoundException>(() => StatementFile.GetCsvFiles(path));
         }
 
         [TestCase("")]
         public void Test_Statements_GetAll_EmptyPath(string path)
         {
-            Assert.Throws<System.ArgumentException>(() => new Statements(path).GetAll());
+            Assert.Throws<System.ArgumentException>(() => StatementFile.GetCsvFiles(path));
         }
 
         private string GetCsvPath()
