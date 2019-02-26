@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
@@ -152,9 +153,17 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = new CreditCardStatementImporter().Import(statementPostedAt, reader);
+                new CreditCardStatementImporter().Import(statementPostedAt, reader);
 
-                Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
+                using (var db = new Context())
+                {
+                    var actual = db.Statements
+                        .Include(stmt => stmt.Card)
+                        .Include(stmt => stmt.Items)
+                        .First();
+
+                    Assert.That(actual.Card, Is.EqualTo(expectedCard));
+                }
             }
             catch (Exception)
             {
@@ -188,9 +197,17 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = new CreditCardStatementImporter().Import(statementPostedAt, reader);
+                new CreditCardStatementImporter().Import(statementPostedAt, reader);
 
-                Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
+                using (var db = new Context())
+                {
+                    var actual = db.Statements
+                        .Include(stmt => stmt.Card)
+                        .Include(stmt => stmt.Items)
+                        .First();
+
+                    Assert.That(actual.Card, Is.EqualTo(expectedCard));
+                }
             }
             catch (Exception)
             {
@@ -202,14 +219,14 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
         [TestCaseSource(nameof(CardNumbers))]
         public string Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Success(string unclean)
         {
-            return new CreditCardStatementImporter().CleanCardNumber(unclean);
+            return new CreditCardStatementImporter().CleanNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
         public void Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Fail(string unclean)
         {
-            Assert.Throws<Exception>(() => new CreditCardStatementImporter().CleanCardNumber(unclean));
+            Assert.Throws<Exception>(() => new CreditCardStatementImporter().CleanNumber(unclean));
         }
 
         [Test]
@@ -374,7 +391,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
                     var record = new CreditCardStatementRecord
                     {
                         Amount = "10.00",
-                        CardNumber = "1234",
+                        Number = "1234",
                         Description = "Some new item",
                         ItemId = "123",
                         PostedAt = "20181103",

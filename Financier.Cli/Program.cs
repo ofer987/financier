@@ -39,7 +39,7 @@ namespace Financier.Cli
                 new BankStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
             }
 
-            foreach (var item in CreditCardStatementImporter.GetItems())
+            foreach (var item in Item.GetAll())
             {
                 Console.WriteLine(item);
 

@@ -45,7 +45,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         public static Func<string, CreditCardStatementRecord> GetStatementRecord = (itemId) => new CreditCardStatementRecord
         {
             Amount = "10.00",
-            CardNumber = "Q32",
+            Number = "Q32",
             Description = "fd",
             ItemId = itemId,
             PostedAt = "20190801",

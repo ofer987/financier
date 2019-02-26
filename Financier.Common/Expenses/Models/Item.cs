@@ -4,12 +4,26 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses.Models
 {
     [Table("Expenses_Items")]
     public class Item
     {
+        public static Item[] GetAll()
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                    .Reject(item => item.ItemTags.Any())
+                    .ToArray();
+            }
+        }
+
         [Key]
         [Required]
         public Guid Id { get; set; }
