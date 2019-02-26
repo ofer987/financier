@@ -42,7 +42,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             TransactedAt = new DateTime(2025, 6, 5),
         };
 
-        public static Func<string, StatementRecord> GetStatementRecord = (itemId) => new StatementRecord
+        public static Func<string, CreditCardStatementRecord> GetStatementRecord = (itemId) => new CreditCardStatementRecord
         {
             Amount = "10.00",
             CardNumber = "Q32",
@@ -76,7 +76,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         [TestCase("New_item_Id")]
         public void Test_Expenses_StatementImporter_CreateItem_Succeeds_If_Different_ItemId(string itemId)
         {
-            Assert.DoesNotThrow(() => new StatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
+            Assert.DoesNotThrow(() => new CreditCardStatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             {
                 previousCount = db.Items.Count();
             }
-            Assert.Throws<DbUpdateException>(() => new StatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
+            Assert.Throws<DbUpdateException>(() => new CreditCardStatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
 
             using (var db = new Context())
             {
@@ -101,7 +101,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         [TestCase("     ")]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Invalid_ItemId(string itemId)
         {
-            Assert.Throws<ArgumentException>(() => new StatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
+            Assert.Throws<ArgumentException>(() => new CreditCardStatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
         }
     }
 }

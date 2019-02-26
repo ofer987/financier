@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.StatementImporterTests
+namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
 {
     public class Base
     {
@@ -139,7 +139,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         // TODO: fix it (maybe Models.Statement too)
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void Test_Expenses_StatementImporter_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_CreditCardStatementImporter_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = new StatementImporter().Import(statementPostedAt, reader);
+                var actualStatement = new CreditCardStatementImporter().Import(statementPostedAt, reader);
 
                 Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
             }
@@ -164,7 +164,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void Test_Expenses_StatementImporter_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_CreditCardStatementImporter_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
@@ -188,7 +188,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                var actualStatement = new StatementImporter().Import(statementPostedAt, reader);
+                var actualStatement = new CreditCardStatementImporter().Import(statementPostedAt, reader);
 
                 Assert.That(actualStatement.Card, Is.EqualTo(expectedCard));
             }
@@ -200,20 +200,20 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
 
         [Test]
         [TestCaseSource(nameof(CardNumbers))]
-        public string Test_Expenses_StatementImporter_CleanCardNumber_Success(string unclean)
+        public string Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Success(string unclean)
         {
-            return new StatementImporter().CleanCardNumber(unclean);
+            return new CreditCardStatementImporter().CleanCardNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
-        public void Test_Expenses_StatementImporter_CleanCardNumber_Fail(string unclean)
+        public void Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Fail(string unclean)
         {
-            Assert.Throws<Exception>(() => new StatementImporter().CleanCardNumber(unclean));
+            Assert.Throws<Exception>(() => new CreditCardStatementImporter().CleanCardNumber(unclean));
         }
 
         [Test]
-        public void Test_Expenses_StatementImporter_SaveItem_TwoContexts_OutOfSync()
+        public void Test_Expenses_CreditCardStatementImporter_SaveItem_TwoContexts_OutOfSync()
         {
             try
             {
@@ -297,7 +297,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         }
 
         [Test]
-        public void Test_Expenses_StatementImporter_SaveCard()
+        public void Test_Expenses_CreditCardStatementImporter_SaveCard()
         {
             try
             {
@@ -345,7 +345,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         }
 
         [Test]
-        public void Test_Expenses_StatementImporter_CreateItem()
+        public void Test_Expenses_CreditCardStatementImporter_CreateItem()
         {
             try
             {
@@ -371,7 +371,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                     db.Statements.Add(newStatement);
                     db.SaveChanges();
 
-                    var record = new StatementRecord
+                    var record = new CreditCardStatementRecord
                     {
                         Amount = "10.00",
                         CardNumber = "1234",
@@ -380,7 +380,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                         PostedAt = "20181103",
                         TransactedAt = "20181104"
                     };
-                    var item = new StatementImporter().CreateItem(record, newStatement.Id);
+                    var item = new CreditCardStatementImporter().CreateItem(record, newStatement.Id);
 
                     var dbItem = db.Items.First(i => i.Amount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));
@@ -394,7 +394,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         }
 
         [Test]
-        public void Test_Expenses_StatementImporter_SaveCardAndStatement()
+        public void Test_Expenses_CreditCardStatementImporter_SaveCardAndStatement()
         {
             try
             {
