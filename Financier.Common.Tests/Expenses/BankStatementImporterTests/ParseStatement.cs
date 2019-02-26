@@ -5,6 +5,7 @@ using System.IO;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
+using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
 {

@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace Financier.Common.Expenses
+namespace Financier.Common.Expenses.Models
 {
     // TODO: Trim values and set Valid function
     public class BankStatementRecord
