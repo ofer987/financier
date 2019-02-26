@@ -14,7 +14,7 @@ namespace Financier.Cli
         public static void Main(string[] args)
         {
             Context.Environment = Environments.Dev;
-            var csvPath = GetCsvPath(args);
+            var csvPath = GetCreditCardStatementsPath(args);
             
             // Context.Clean();
 
@@ -28,13 +28,18 @@ namespace Financier.Cli
             // var statement = importer.Import(postedAt, stream);
             //
             // Console.WriteLine(statement.Items.Count);
-            var files = StatementFile.GetCsvFiles(csvPath);
+            var files = StatementFile.GetCsvFiles(GetCreditCardStatementsPath(args));
             foreach (var file in files)
             {
-                file.Import();
+                new CreditCardStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
             }
 
-            foreach (var item in StatementImporter.GetItems())
+            foreach (var file in StatementFile.GetCsvFiles(GetBankStatementsPath(args)))
+            {
+                new BankStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
+            }
+
+            foreach (var item in CreditCardStatementImporter.GetItems())
             {
                 Console.WriteLine(item);
 
@@ -81,9 +86,14 @@ namespace Financier.Cli
             }
         }
 
-        public static string GetCsvPath(IReadOnlyList<string> args)
+        public static string GetCreditCardStatementsPath(IReadOnlyList<string> args)
         {
             return args[0];
+        }
+
+        public static string GetBankStatementsPath(IReadOnlyList<string> args)
+        {
+            return args[1];
         }
 
         public static string ReadNewTags()

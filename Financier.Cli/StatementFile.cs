@@ -3,9 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using Financier.Common.Expenses;
-using Financier.Common.Expenses.Models;
-
 namespace Financier.Cli
 {
     public class StatementFile
@@ -49,11 +46,6 @@ namespace Financier.Cli
         public FileStream GetFileStream()
         {
             return File.OpenRead();
-        }
-
-        public Statement Import()
-        {
-            return new StatementImporter().Import(GetPostedAt(), GetFileStream());
         }
     }
 }
