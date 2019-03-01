@@ -41,6 +41,8 @@ namespace Financier.Cli
 
             foreach (var item in Item.GetAll())
             {
+                Console.WriteLine();
+                Console.WriteLine("Processing Item:");
                 Console.WriteLine(item);
 
                 var tagManager = new TagManager(item);
@@ -52,7 +54,9 @@ namespace Financier.Cli
                     var repeat = true;
                     do
                     {
-                        Console.WriteLine($"Found similar tags: {similarTags.Join(", ")}");
+                        Console.WriteLine($"Found similar tags:");
+                        Console.WriteLine(similarTags.Join("\n"));
+                        Console.WriteLine();
                         Console.WriteLine("Use them? (Y[es]/n[o])");
                         var response = Console.ReadLine();
 
