@@ -108,11 +108,21 @@ namespace Financier.Common.Expenses.Models
 
             sb.AppendLine($"{nameof(Id)}: ({Id})");
             sb.AppendLine($"{nameof(Description)}: ({Description ?? string.Empty})");
-            sb.AppendLine($"{nameof(Amount)}: ({Amount})");
+            sb.AppendLine($"{nameof(Amount)}: ({AmountString()})");
             sb.AppendLine($"{nameof(PostedAt)}: ({PostedAt})");
             sb.AppendLine($"{nameof(TransactedAt)}: ({TransactedAt})");
 
             return sb.ToString();
+        }
+
+        private string AmountString()
+        {
+            if (Amount < 0.00M)
+            {
+                return $"Credit of {(0.00M - Amount).ToString("C")}";
+            }
+
+            return Amount.ToString("C");
         }
     }
 }
