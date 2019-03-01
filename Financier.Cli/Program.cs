@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using McMaster.Extensions.CommandLineUtils;
 
 using Financier.Common;
 using Financier.Common.Extensions;
@@ -11,34 +12,29 @@ namespace Financier.Cli
 {
     public class Program
     {
-        public static void Main(string[] args)
+        [OptionAttribute("-c|--credit-cards", CommandOptionType.SingleOrNoValue)]
+        public (bool HasValue, string Value) CreditCardStatementsPath { get; }
+
+        [OptionAttribute("-b|--bank-cards", CommandOptionType.SingleOrNoValue)]
+        public (bool HasValue, string Value) BankStatementsPath { get; }
+
+        public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+
+        private void OnExecute()
         {
             Context.Environment = Environments.Dev;
-            var csvPath = GetCreditCardStatementsPath(args);
-            
-            // Context.Clean();
 
-            // var statements = new StatementFile(args[0]).GetAll();
-
-
-            // var postedAt = GetPostedAt(args[0]);
-            // var stream = System.IO.File.OpenRead(GetStatementPath(args));
-
-            // var importer = new StatementImporter();
-            // var statement = importer.Import(postedAt, stream);
-            //
-            // Console.WriteLine(statement.Items.Count);
-            var files = StatementFile.GetCsvFiles(GetCreditCardStatementsPath(args));
-            foreach (var file in files)
+            foreach (var file in GetCreditCardStatements())
             {
                 new CreditCardStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
             }
 
-            foreach (var file in StatementFile.GetCsvFiles(GetBankStatementsPath(args)))
+            foreach (var file in GetBankStatements())
             {
                 new BankStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
             }
 
+            Console.WriteLine("Processing Items");
             foreach (var item in Item.GetAll())
             {
                 Console.WriteLine();
@@ -96,32 +92,31 @@ namespace Financier.Cli
             return args[0];
         }
 
-        public static string GetBankStatementsPath(IReadOnlyList<string> args)
+        public StatementFile[] GetBankStatements()
         {
-            return args[1];
+            if (!BankStatementsPath.HasValue)
+            {
+                return new StatementFile[0];
+            }
+
+            Console.WriteLine("Getting Bank Statements");
+            return StatementFile.GetCsvFiles(BankStatementsPath.Value);
+        }
+
+        public StatementFile[] GetCreditCardStatements()
+        {
+            if (!CreditCardStatementsPath.HasValue)
+            {
+                return new StatementFile[0];
+            }
+
+            Console.WriteLine("Getting Credit Card Statements");
+            return StatementFile.GetCsvFiles(CreditCardStatementsPath.Value);
         }
 
         public static string ReadNewTags()
         {
             return Console.ReadLine();
         }
-
-        // public FileInfo[] GetStatements(string path)
-        // {
-        //     return new DirectoryInfo(path).GetFiles("*.csv");
-        // }
-        //
-        // public Statement ParseStatement(FileInfo file)
-        // {
-        //     return new StatementImporter().Import(
-        //         Guid.NewGuid(),
-        //         GetPostedAt(file.Name),
-        //         file.OpenRead()
-        //     );
-        // }
-        //
-        // public void SetTagsForItem(Item item)
-        // {
-        // }
     }
 }
