@@ -63,6 +63,7 @@ namespace Financier.Cli
                         repeat = false;
                         switch (response.ToLower().Trim())
                         {
+                            case "":
                             case "y":
                             case "yes":
                                 tagManager.AddTags(similarTags);
