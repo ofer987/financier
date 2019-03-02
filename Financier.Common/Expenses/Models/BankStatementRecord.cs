@@ -7,6 +7,9 @@ namespace Financier.Common.Expenses.Models
     {
         public enum TransactionTypes { Debit, Credit }
 
+        [Ignore]
+        public string ItemId { get; set; }
+
         [Name("Account")]
         public string Number { get; set; }
 
@@ -48,6 +51,7 @@ namespace Financier.Common.Expenses.Models
         public override int GetHashCode()
         {
             return Number.GetHashCode() 
+                + ItemId.GetHashCode()
                 + FirstBankCardNumber.GetHashCode()
                 + TransactionTypeString.GetHashCode()
                 + PostedAt.GetHashCode()
@@ -64,6 +68,7 @@ namespace Financier.Common.Expenses.Models
             }
 
             if (Number != other.Number
+                || ItemId != other.ItemId
                 || FirstBankCardNumber != other.FirstBankCardNumber
                 || TransactionTypeString != other.TransactionTypeString
                 || PostedAt != other.PostedAt
@@ -78,7 +83,7 @@ namespace Financier.Common.Expenses.Models
 
         public override string ToString()
         {
-            return $"{nameof(Number)}: ({Number})\n{nameof(FirstBankCardNumber)}: ({FirstBankCardNumber})\n{nameof(TransactionType)}: ({TransactionType})\n{nameof(PostedAt)}: ({PostedAt})\n{nameof(Amount)}: ({Amount})\n{nameof(Description)}: ({Description})";
+            return $"{nameof(ItemId)}: ({ItemId})\n{nameof(Number)}: ({Number})\n{nameof(FirstBankCardNumber)}: ({FirstBankCardNumber})\n{nameof(TransactionType)}: ({TransactionType})\n{nameof(PostedAt)}: ({PostedAt})\n{nameof(Amount)}: ({Amount})\n{nameof(Description)}: ({Description})";
         }
     }
 }

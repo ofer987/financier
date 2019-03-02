@@ -25,6 +25,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
                     {
                         new BankStatementRecord
                         {
+                            ItemId = "1",
                             Number = "'04183988880'",
                             FirstBankCardNumber = "'5007660790617248'",
                             TransactionTypeString = "DEBIT",
@@ -34,6 +35,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
                         },
                         new BankStatementRecord
                         {
+                            ItemId = "2",
                             Number = "'04183988880'",
                             FirstBankCardNumber = "'5007660790617248'",
                             TransactionTypeString = "DEBIT",
@@ -43,6 +45,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
                         },
                         new BankStatementRecord
                         {
+                            ItemId = "3",
                             Number = "'04183988880'",
                             FirstBankCardNumber = "'5007660790617248'",
                             TransactionTypeString = "CREDIT",

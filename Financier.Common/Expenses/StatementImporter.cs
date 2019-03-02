@@ -72,7 +72,7 @@ namespace Financier.Common.Expenses
                     Console.WriteLine($"This line is faulty {context.Record.Join()}");
                 };
 
-                return csv.GetRecords<T>().ToArray();
+                return ProcessRecords(csv.GetRecords<T>()).ToArray();
             }
         }
 
@@ -155,6 +155,11 @@ namespace Financier.Common.Expenses
             }
 
             return regex.Match(val).Groups[1].Value;
+        }
+
+        protected virtual IEnumerable<T> ProcessRecords(IEnumerable<T> records)
+        {
+            return records;
         }
     }
 }
