@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.StatementImporterTests
+namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
 {
     public class FindOrCreateStatement
     {
@@ -168,7 +168,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             }
 
             [Test]
-            public void Test_Expenses_StatementImporter_FindOrCreateStatement_Creates_New_Statement()
+            public void Test_Expenses_CreditCardStatementRecord_FindOrCreateStatement_Creates_New_Statement()
             {
                 int previousStatementCount;
                 using (var db = new Context())
@@ -190,7 +190,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             }
 
             // [Test]
-            // public void Test_Expenses_StatementImporter_FindOrCreateStatement_New_Record()
+            // public void Test_Expenses_CreditCardStatementRecord_FindOrCreateStatement_New_Record()
             // {
             //     var newStatementId = Guid.NewGuid();
             //
@@ -201,7 +201,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             //     }
             //
             //     Console.WriteLine($"PostedAt = {PostedAt}, cardId = {AllCards[CardIdentifier].Id}");
-            //     var createdStatement = new StatementImporter().FindOrCreateStatement(newStatementId, PostedAt, AllCards[CardIdentifier].Id);
+            //     var createdStatement = new CreditCardStatementRecord().FindOrCreateStatement(newStatementId, PostedAt, AllCards[CardIdentifier].Id);
             //
             //     int newStatementCount;
             //     using (var db = new Context())
@@ -232,7 +232,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             }
 
             [Test]
-            public void Test_Expenses_StatementImporter_FindOrCreateStatement_Creates_Same_Statement()
+            public void Test_Expenses_CreditCardStatementRecord_FindOrCreateStatement_Creates_Same_Statement()
             {
                 var newStatementId = Guid.NewGuid();
 
@@ -256,7 +256,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             }
 
             // [Test]
-            // public void Test_Expenses_StatementImporter_FindOrCreateStatement_New_Record()
+            // public void Test_Expenses_CreditCardStatementRecord_FindOrCreateStatement_New_Record()
             // {
             //     var newStatementId = Guid.NewGuid();
             //
@@ -266,7 +266,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             //         previousStatementCount = db.Statements.Count();
             //     }
             //
-            //     var createdStatement = new StatementImporter().FindOrCreateStatement(newStatementId, PostedAt, AllCards[CardIdentifier].Id);
+            //     var createdStatement = new CreditCardStatementRecord().FindOrCreateStatement(newStatementId, PostedAt, AllCards[CardIdentifier].Id);
             //
             //     int newStatementCount;
             //     using (var db = new Context())

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
+namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 {
     public class Base
     {
@@ -140,7 +140,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
         // TODO: fix it (maybe Models.Statement too)
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void Test_Expenses_CreditCardStatementImporter_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_CreditCardStatementFile_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void Test_Expenses_CreditCardStatementImporter_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_CreditCardStatementFile_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
@@ -217,20 +217,20 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
 
         [Test]
         [TestCaseSource(nameof(CardNumbers))]
-        public string Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Success(string unclean)
+        public string Test_Expenses_CreditCardStatementRecord_CleanCardNumber_Success(string unclean)
         {
             return new CreditCardStatementRecord().CleanNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
-        public void Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Fail(string unclean)
+        public void Test_Expenses_CreditCardStatementRecord_CleanCardNumber_Fail(string unclean)
         {
             Assert.Throws<Exception>(() => new CreditCardStatementRecord().CleanNumber(unclean));
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementImporter_SaveItem_TwoContexts_OutOfSync()
+        public void Test_Expenses_CreditCardStatementFile_SaveItem_TwoContexts_OutOfSync()
         {
             try
             {
@@ -314,7 +314,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementImporter_SaveCard()
+        public void Test_Expenses_CreditCardStatementFile_SaveCard()
         {
             try
             {
@@ -362,7 +362,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementImporter_CreateItem()
+        public void Test_Expenses_CreditCardStatementFile_CreateItem()
         {
             try
             {
@@ -411,7 +411,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementImporter_SaveCardAndStatement()
+        public void Test_Expenses_CreditCardStatementFile_SaveCardAndStatement()
         {
             try
             {

@@ -7,9 +7,9 @@ using NUnit.Framework;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
+namespace Financier.Common.Tests.Expenses.BankStatementFileTests
 {
-    public class ParseStatement : DatabaseAbstractFixture
+    public class GetRecords : DatabaseAbstractFixture
     {
         public static IEnumerable ValidTestCases
         {
@@ -66,7 +66,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
 
         [Test]
         [TestCaseSource(nameof(ValidTestCases))]
-        public BankStatementRecord[] Test_Expenses_BankStatementImporter_ParseStatement_ValidRecords(string input)
+        public BankStatementRecord[] Test_Expenses_BankStatementFile_ParseStatement_ValidRecords(string input)
         {
             return new BankStatementFile(GetStream(input), new DateTime(2019, 1, 1)).GetRecords();
         }
@@ -96,7 +96,7 @@ Account,First Bank Card,Transaction Type,Date Posted,Transaction Amount,Descript
 
         [Test]
         [TestCaseSource(nameof(InvalidTestCases))]
-        public void Test_Expenses_BankStatementImporter_ParseStatement_InvalidRecords(string input)
+        public void Test_Expenses_BankStatementFile_ParseStatement_InvalidRecords(string input)
         {
             Assert.Throws<CsvHelper.HeaderValidationException>(() => new BankStatementFile(GetStream(input), new DateTime(2019, 1, 1)).GetRecords());
         }

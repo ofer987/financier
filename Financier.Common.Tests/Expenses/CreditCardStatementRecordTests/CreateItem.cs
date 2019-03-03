@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.StatementImporterTests
+namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
 {
     public class MyFactories : Factories
     {
@@ -73,14 +73,14 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         [Test]
         [TestCase(MyFactories.PorscheItemId + "additionaldata")]
         [TestCase("New_item_Id")]
-        public void Test_Expenses_StatementImporter_CreateItem_Succeeds_If_Different_ItemId(string itemId)
+        public void Test_Expenses_CreditCardStatementRecord_CreateItem_Succeeds_If_Different_ItemId(string itemId)
         {
             Assert.DoesNotThrow(() => MyFactories.GetStatementRecord(itemId).CreateItem(MyFactories.JuneStatementId));
         }
 
         [Test]
         [TestCase(MyFactories.PorscheItemId)]
-        public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Same_ItemId(string itemId)
+        public void Test_Expenses_CreditCardStatementRecord_CreateItem_Fails_If_Same_ItemId(string itemId)
         {
             int previousCount;
             using (var db = new Context())
@@ -98,7 +98,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         [Test]
         [TestCase("")]
         [TestCase("     ")]
-        public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Invalid_ItemId(string itemId)
+        public void Test_Expenses_CreditCardStatementRecord_CreateItem_Fails_If_Invalid_ItemId(string itemId)
         {
             Assert.Throws<ArgumentException>(() => MyFactories.GetStatementRecord(itemId).CreateItem(MyFactories.JuneStatementId));
         }
