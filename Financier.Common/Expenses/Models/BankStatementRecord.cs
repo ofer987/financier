@@ -1,17 +1,19 @@
+using System;
+
 using CsvHelper.Configuration.Attributes;
 
 namespace Financier.Common.Expenses.Models
 {
     // TODO: Trim values and set Valid function
-    public class BankStatementRecord : IStatementRecord
+    public class BankStatementRecord : StatementRecord
     {
         public enum TransactionTypes { Debit, Credit }
 
         [Ignore]
-        public string ItemId { get; set; }
+        public override string ItemId { get; set; }
 
         [Name("Account")]
-        public string Number { get; set; }
+        public override string Number { get; set; }
 
         [Name("First Bank Card")]
         public string FirstBankCardNumber { get; set; }
@@ -43,9 +45,29 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
-        public virtual bool IsValid()
+        public override Item CreateItem(Guid statementId)
         {
-            return true;
+            Validate();
+
+            using (var db = new Context())
+            {
+                var newItem = new Item
+                {
+                    Id = Guid.NewGuid(),
+                    StatementId = statementId,
+                    ItemId = ItemId.Trim(),
+                    Description = Description,
+                    // Credit values appear as increases to account, while
+                    // debits appear
+                    Amount = 0.00M - Convert.ToDecimal(Amount),
+                    TransactedAt = ToDateTime(PostedAt),
+                    PostedAt = ToDateTime(PostedAt)
+                };
+                db.Items.Add(newItem);
+                db.SaveChanges();
+
+                return newItem;
+            }
         }
 
         public override int GetHashCode()

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Microsoft.EntityFrameworkCore;
 
-using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.StatementImporterTests
@@ -76,7 +75,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         [TestCase("New_item_Id")]
         public void Test_Expenses_StatementImporter_CreateItem_Succeeds_If_Different_ItemId(string itemId)
         {
-            Assert.DoesNotThrow(() => new CreditCardStatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
+            Assert.DoesNotThrow(() => MyFactories.GetStatementRecord(itemId).CreateItem(MyFactories.JuneStatementId));
         }
 
         [Test]
@@ -88,7 +87,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
             {
                 previousCount = db.Items.Count();
             }
-            Assert.Throws<DbUpdateException>(() => new CreditCardStatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
+            Assert.Throws<DbUpdateException>(() => MyFactories.GetStatementRecord(itemId).CreateItem(MyFactories.JuneStatementId));
 
             using (var db = new Context())
             {
@@ -101,7 +100,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
         [TestCase("     ")]
         public void Test_Expenses_StatementImporter_CreateItem_Fails_If_Invalid_ItemId(string itemId)
         {
-            Assert.Throws<ArgumentException>(() => new CreditCardStatementImporter().CreateItem(MyFactories.GetStatementRecord(itemId), MyFactories.JuneStatementId));
+            Assert.Throws<ArgumentException>(() => MyFactories.GetStatementRecord(itemId).CreateItem(MyFactories.JuneStatementId));
         }
     }
 }

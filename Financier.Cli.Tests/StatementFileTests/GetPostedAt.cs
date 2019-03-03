@@ -3,6 +3,9 @@ using System.Reflection;
 using System.IO;
 using NUnit.Framework;
 
+using Financier.Common.Expenses;
+
+// TODO: move to Financier.Common.Tests
 namespace Financier.Cli.Tests.StatementFileTests
 {
     public class GetPostedAt
@@ -10,7 +13,6 @@ namespace Financier.Cli.Tests.StatementFileTests
         [SetUp]
         public void Setup()
         {
-            
         }
 
         [Test]
@@ -22,16 +24,16 @@ namespace Financier.Cli.Tests.StatementFileTests
             var expectedDate = new DateTime(year, month, day);
             var path = GetCsvPath(relativePath);
 
-            Assert.That(new StatementFile(path).GetPostedAt(), Is.EqualTo(expectedDate));
+            Assert.That(new CreditCardStatementFile(path).PostedAt, Is.EqualTo(expectedDate));
         }
 
         [Test]
         [TestCase("123345/file_does_not_exist31432.csv")]
-        public void Test_Statements_GetPostedAt_NegativeTest(string relativePath)
+        public void Test_Statements_SetPostedAt_NegativeTest(string relativePath)
         {
             var path = GetCsvPath(relativePath);
 
-            Assert.Throws<FormatException>(() => new StatementFile(path).GetPostedAt());
+            Assert.Throws<FormatException>(() => new CreditCardStatementFile(path));
         }
 
         private string GetCsvPath(string relativePath)

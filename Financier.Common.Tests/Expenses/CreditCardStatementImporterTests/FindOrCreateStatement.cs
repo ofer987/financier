@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.StatementImporterTests
@@ -177,7 +176,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                     previousStatementCount = db.Statements.Count();
                 }
 
-                var createdStatement = new CreditCardStatementImporter().FindOrCreateStatement(PostedAt, AllCards[CardIdentifier].Id);
+                var createdStatement = new CreditCardStatementRecord().FindOrCreateStatement(AllCards[CardIdentifier].Id, PostedAt);
 
                 Assert.That(createdStatement.Id, Is.Not.AnyOf(AllCards.Select(card => card.Value.Id)));
 
@@ -243,7 +242,7 @@ namespace Financier.Common.Tests.Expenses.StatementImporterTests
                     previousStatementCount = db.Statements.Count();
                 }
 
-                var createdStatement = new CreditCardStatementImporter().FindOrCreateStatement(PostedAt, AllCards[CardIdentifier].Id);
+                var createdStatement = new CreditCardStatementRecord().FindOrCreateStatement(AllCards[CardIdentifier].Id, PostedAt);
 
                 Assert.That(createdStatement.Id, Is.EqualTo(ExpectedStatementId));
 

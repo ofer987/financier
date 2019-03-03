@@ -153,7 +153,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementImporter().Import(statementPostedAt, reader);
+                new CreditCardStatementFile(reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {
@@ -197,7 +197,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementImporter().Import(statementPostedAt, reader);
+                new CreditCardStatementFile(reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {
@@ -219,14 +219,14 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
         [TestCaseSource(nameof(CardNumbers))]
         public string Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Success(string unclean)
         {
-            return new CreditCardStatementImporter().CleanNumber(unclean);
+            return new CreditCardStatementRecord().CleanNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
         public void Test_Expenses_CreditCardStatementImporter_CleanCardNumber_Fail(string unclean)
         {
-            Assert.Throws<Exception>(() => new CreditCardStatementImporter().CleanNumber(unclean));
+            Assert.Throws<Exception>(() => new CreditCardStatementRecord().CleanNumber(unclean));
         }
 
         [Test]
@@ -397,7 +397,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementImporterTests
                         PostedAt = "20181103",
                         TransactedAt = "20181104"
                     };
-                    var item = new CreditCardStatementImporter().CreateItem(record, newStatement.Id);
+                    record.CreateItem(newStatement.Id);
 
                     var dbItem = db.Items.First(i => i.Amount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));

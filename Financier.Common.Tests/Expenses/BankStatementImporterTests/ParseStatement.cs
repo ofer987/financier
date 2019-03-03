@@ -16,7 +16,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
             get
             {
                 {
-                    const string input = 
+                    const string input =
 @"Account,First Bank Card,Transaction Type,Date Posted,Transaction Amount,Description
 '04183988880','5007660790617248',DEBIT,20190104,-4.25,[PR]SAM JAMES COFFE
 '04183988880','5007660790617248',DEBIT,20190107,-14.0,[PR]ALMINZ KAKANIN
@@ -68,7 +68,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
         [TestCaseSource(nameof(ValidTestCases))]
         public BankStatementRecord[] Test_Expenses_BankStatementImporter_ParseStatement_ValidRecords(string input)
         {
-            return new BankStatementImporter().ParseStatement(GetStream(input));
+            return new BankStatementFile(GetStream(input), new DateTime(2019, 1, 1)).GetRecords();
         }
 
         public static IEnumerable InvalidTestCases
@@ -76,7 +76,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementImporterTests
             get
             {
                 {
-                    const string input = 
+                    const string input =
 @"Some data retrieved from my bank
 Account,First Bank Card,Transaction Type,Date Posted,Transaction Amount,Description
 '04183988880','5007660790617248',DEBIT,20190104,-4.25,[PR]SAM JAMES COFFE";
@@ -85,7 +85,7 @@ Account,First Bank Card,Transaction Type,Date Posted,Transaction Amount,Descript
                 }
 
                 {
-                    const string input = 
+                    const string input =
 @"Account, First Bank Card,Transaction Type ,Date Posted,Transaction Amount,Description
 '04183988880','5007660790617248',DEBIT,20190104,-4.25,[PR]SAM JAMES COFFE";
 
@@ -98,7 +98,7 @@ Account,First Bank Card,Transaction Type,Date Posted,Transaction Amount,Descript
         [TestCaseSource(nameof(InvalidTestCases))]
         public void Test_Expenses_BankStatementImporter_ParseStatement_InvalidRecords(string input)
         {
-            Assert.Throws<CsvHelper.HeaderValidationException>(() => new BankStatementImporter().ParseStatement(GetStream(input)));
+            Assert.Throws<CsvHelper.HeaderValidationException>(() => new BankStatementFile(GetStream(input), new DateTime(2019, 1, 1)).GetRecords());
         }
 
         private Stream GetStream(string str)

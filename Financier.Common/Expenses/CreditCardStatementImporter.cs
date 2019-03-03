@@ -1,36 +1,22 @@
 using System;
+using System.IO;
 
 using Financier.Common.Expenses.Models;
-using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses
 {
-    public class CreditCardStatementImporter : StatementImporter<CreditCardStatementRecord>
+    public class CreditCardStatementFile : StatementFile<CreditCardStatementRecord>
     {
-        public override Item CreateItem(CreditCardStatementRecord record, Guid statementId)
+        public CreditCardStatementFile(Stream stream, DateTime postedAt) : base(stream, postedAt)
         {
-            if (record.ItemId.Trim().IsNullOrEmpty())
-            {
-                throw new ArgumentException("cannot be blank or whitespace", nameof(record.ItemId));
-            }
+        }
 
-            using (var db = new Context())
-            {
-                var newItem = new Item
-                {
-                    Id = Guid.NewGuid(),
-                    StatementId = statementId,
-                    ItemId = record.ItemId.Trim(),
-                    Description = record.Description,
-                    Amount = Convert.ToDecimal(record.Amount),
-                    TransactedAt = ToDateTime(record.TransactedAt),
-                    PostedAt = ToDateTime(record.PostedAt)
-                };
-                db.Items.Add(newItem);
-                db.SaveChanges();
+        public CreditCardStatementFile(FileInfo file) : base(file)
+        {
+        }
 
-                return newItem;
-            }
+        public CreditCardStatementFile(string path) : base(path)
+        {
         }
     }
 }

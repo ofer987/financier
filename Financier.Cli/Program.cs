@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 
 using Financier.Common;
@@ -26,12 +27,12 @@ namespace Financier.Cli
 
             foreach (var file in GetCreditCardStatements())
             {
-                new CreditCardStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
+                new CreditCardStatementFile(file).Import();
             }
 
             foreach (var file in GetBankStatements())
             {
-                new BankStatementImporter().Import(file.GetPostedAt(), file.GetFileStream());
+                new BankStatementFile(file).Import();
             }
 
             Console.WriteLine("Processing Items");
@@ -92,26 +93,26 @@ namespace Financier.Cli
             return args[0];
         }
 
-        public StatementFile[] GetBankStatements()
+        public FileInfo[] GetBankStatements()
         {
             if (!BankStatementsPath.HasValue)
             {
-                return new StatementFile[0];
+                return new FileInfo[0];
             }
 
             Console.WriteLine("Getting Bank Statements");
-            return StatementFile.GetCsvFiles(BankStatementsPath.Value);
+            return Statements.GetCsvFiles(BankStatementsPath.Value);
         }
 
-        public StatementFile[] GetCreditCardStatements()
+        public FileInfo[] GetCreditCardStatements()
         {
             if (!CreditCardStatementsPath.HasValue)
             {
-                return new StatementFile[0];
+                return new FileInfo[0];
             }
 
             Console.WriteLine("Getting Credit Card Statements");
-            return StatementFile.GetCsvFiles(CreditCardStatementsPath.Value);
+            return Statements.GetCsvFiles(CreditCardStatementsPath.Value);
         }
 
         public static string ReadNewTags()

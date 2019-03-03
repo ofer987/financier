@@ -10,14 +10,13 @@ namespace Financier.Cli.Tests.StatementFileTests
         [SetUp]
         public void Setup()
         {
-            
         }
 
         [Test]
         public void Test_Statements_GetCsvFiles_ValidPath()
         {
             var path = GetCsvPath();
-            var files = StatementFile.GetCsvFiles(path);
+            var files = Statements.GetCsvFiles(path);
 
             var expected = new [] 
             { 
@@ -25,7 +24,7 @@ namespace Financier.Cli.Tests.StatementFileTests
                 new FileInfo(Path.Join(Path.Join(path, "123345"), "20181203.csv"))
             };
             Assert.That(
-                files.Select(file => file.File.Name),
+                files.Select(file => file.Name),
                 Is.EqualTo(expected.Select(file => file.Name))
             );
         }
@@ -34,7 +33,7 @@ namespace Financier.Cli.Tests.StatementFileTests
         [TestCase("/")]
         public void Test_Statements_GetAll_UnauthorizedAccess(string path)
         {
-            Assert.Throws<System.UnauthorizedAccessException>(() => StatementFile.GetCsvFiles(path));
+            Assert.Throws<System.UnauthorizedAccessException>(() => Statements.GetCsvFiles(path));
         }
 
         [Test]
@@ -42,13 +41,13 @@ namespace Financier.Cli.Tests.StatementFileTests
         [TestCase("   ")]
         public void Test_Statements_GetAll_DirectoryNotFound(string path)
         {
-            Assert.Throws<System.IO.DirectoryNotFoundException>(() => StatementFile.GetCsvFiles(path));
+            Assert.Throws<System.IO.DirectoryNotFoundException>(() => Statements.GetCsvFiles(path));
         }
 
         [TestCase("")]
         public void Test_Statements_GetAll_EmptyPath(string path)
         {
-            Assert.Throws<System.ArgumentException>(() => StatementFile.GetCsvFiles(path));
+            Assert.Throws<System.ArgumentException>(() => Statements.GetCsvFiles(path));
         }
 
         private string GetCsvPath()
