@@ -25,10 +25,6 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                foreach (var statement in Statements)
-                {
-                    statement.Delete();
-                }
                 db.Cards.Remove(this);
                 db.SaveChanges();
             }

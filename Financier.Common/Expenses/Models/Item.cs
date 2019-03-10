@@ -67,10 +67,6 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                foreach (var itemTag in ItemTags)
-                {
-                    itemTag.Delete();
-                }
                 db.Items.Remove(this);
                 db.SaveChanges();
             }
