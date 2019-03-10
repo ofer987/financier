@@ -41,6 +41,37 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public void Rename(string newName)
+        {
+            var newTag = new Tag { Name = newName };
+            using (var db = new Context())
+            {
+                var existingNewTag = db.Tags.First(tag => tag.Name == newTag.Name);
+                if (existingNewTag == null)
+                {
+                    Name = newTag.Name;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    // Transfer existing ItemTags of this Tag to the other one
+                    var existingItemTags = 
+                        from itemTags in db.ItemTags
+                        join tags in db.Tags on itemTags.TagId equals tags.Id
+                        where tags.Name == Name
+                        select itemTags;
+
+                    foreach (var itemTag in existingItemTags)
+                    {
+                        itemTag.TagId = existingNewTag.Id;
+                    }
+
+                    db.SaveChanges();
+                    Delete();
+                }
+            }
+        }
+
         public override int GetHashCode()
         {
             return Id.GetHashCode();
