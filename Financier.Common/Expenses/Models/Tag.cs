@@ -32,6 +32,15 @@ namespace Financier.Common.Expenses.Models
 
         public IEnumerable<Item> Items => ItemTags.Select(it => it.Item);
 
+        public void Delete()
+        {
+            using (var db = new Context())
+            {
+                db.Tags.Remove(this);
+                db.SaveChanges();
+            }
+        }
+
         public override int GetHashCode()
         {
             return Id.GetHashCode();

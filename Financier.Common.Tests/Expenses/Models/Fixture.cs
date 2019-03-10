@@ -115,6 +115,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 var fastTag = MyFactories.GetFastTag();
                 db.Tags.Add(funTag);
                 db.Tags.Add(fastTag);
+
                 var danCard = MyFactories.GetDanCard();
                 var ronCard = MyFactories.GetRonCard();
                 db.Cards.Add(danCard);
