@@ -13,5 +13,14 @@ namespace Financier.Common.Expenses.Models
         public Guid TagId { get; set; }
 
         public Tag Tag { get; set; }
+
+        public void Delete()
+        {
+            using (var db = new Context())
+            {
+                db.ItemTags.Remove(this);
+                db.SaveChanges();
+            }
+        }
     }
 }

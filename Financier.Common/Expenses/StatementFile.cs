@@ -38,8 +38,7 @@ namespace Financier.Common.Expenses
         public void Import()
         {
             var records = GetRecords();
-
-            if (records.Count() == 0)
+            if (records.Length == 0)
             {
                 return;
             }

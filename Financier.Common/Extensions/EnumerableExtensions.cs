@@ -32,5 +32,14 @@ namespace Financier.Common.Extensions
         {
             return self.Where(item => !filter(item));
         }
+
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> execute)
+        {
+            foreach (var item in self)
+            {
+                execute(item);
+                yield return item;
+            }
+        }
     }
 }

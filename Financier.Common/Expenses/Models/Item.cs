@@ -47,7 +47,7 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public DateTime PostedAt { get; set; }
 
-        public List<ItemTag> ItemTags { get; set; }
+        public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 
         public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
 
@@ -61,6 +61,19 @@ namespace Financier.Common.Expenses.Models
 
         public Item()
         {
+        }
+
+        public void Delete()
+        {
+            using (var db = new Context())
+            {
+                foreach (var itemTag in ItemTags)
+                {
+                    itemTag.Delete();
+                }
+                db.Items.Remove(this);
+                db.SaveChanges();
+            }
         }
 
         public override int GetHashCode()

@@ -19,7 +19,20 @@ namespace Financier.Common.Expenses.Models
         // TODO: make unique
         public string Number { get; set; }
 
-        public List<Statement> Statements { get; set; }
+        public List<Statement> Statements { get; set; } = new List<Statement>();
+
+        public void Delete()
+        {
+            using (var db = new Context())
+            {
+                foreach (var statement in Statements)
+                {
+                    statement.Delete();
+                }
+                db.Cards.Remove(this);
+                db.SaveChanges();
+            }
+        }
 
         public override int GetHashCode()
         {

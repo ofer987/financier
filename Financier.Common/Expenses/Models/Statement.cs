@@ -21,11 +21,24 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public DateTime PostedAt { get; set; }
 
-        public List<Item> Items { get; set; }
+        public List<Item> Items { get; set; } = new List<Item>();
 
         public int Year => PostedAt.Year;
 
         public int Month => PostedAt.Month;
+
+        public void Delete()
+        {
+            using (var db = new Context())
+            {
+                foreach (var item in Items)
+                {
+                    item.Delete();
+                }
+                db.Statements.Remove(this);
+                db.SaveChanges();
+            }
+        }
 
         public override int GetHashCode()
         {

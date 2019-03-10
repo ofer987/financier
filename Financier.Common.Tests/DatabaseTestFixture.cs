@@ -1,7 +1,5 @@
 using NUnit.Framework;
 
-using Financier.Common;
-
 namespace Financier.Common.Tests
 {
     [TestFixture]
