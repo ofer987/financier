@@ -21,7 +21,7 @@ by Dan Jakob Ofer
 - Known as specifications or specs
 - Allows programmers to codify business requirements
 - Reduces time to develop new features
-- Increase design quality
+- Increases design quality
 - Promotes good design
 
 ---
@@ -42,14 +42,15 @@ by Dan Jakob Ofer
 
 ---
 
-### Setup Tests
+### RSpec Setup
 
-Clean the database before and each test is run
+Clean the database before each test is run
 
 ```ruby
 RSpec.configure do |config|
   config.before(:example) do
     DatabaseCleaner.strategy = :deletion, { except: NO_TRUNCATE_TABLES }
+    DatabaseCleaner.start
   end
 
   config.after(:example) do
@@ -60,11 +61,7 @@ end
 
 ---
 
-### RSpec Tests
-
----
-
-#### Set Up
+### Spec Setup
 
 ```ruby
 describe CreditCardStatementRecord do
@@ -82,13 +79,13 @@ describe CreditCardStatementRecord do
 
 ---
 
-#### Positive Tests
+### Positive Tests
 
 ```ruby
     context 'item_id is valid when only numbers are used' do
       let(:item_id) { '1234' }
 
-      it 'does not error' do
+      it 'does not raise error' do
         expect(subject.create_item!).not_to raise_error
       end
 
@@ -102,13 +99,13 @@ describe CreditCardStatementRecord do
 
 ---
 
-#### Negative Tests
+### Negative Tests
 
 ```ruby
     context 'when item_id is invalid when letters are used' do
       let(:item_id) { 'ABCD' }
 
-      it 'throws exception' do
+      it 'throws error' do
         expect(subject.create_item!).to raise_error(DbUpdateError)
       end
 
@@ -127,13 +124,13 @@ describe CreditCardStatementRecord do
 
 ---
 
-#### The Power Level is Over 9000!
+### The Power Level is Over 9000!
 
 RSpec is great and this is why:
 
 1. Lazily _create_ database records using `let` and `subject` variables, which are
 2. Then wiped clean _after_ each test is run
-3. Test against multiple values of `item_id`
+3. `context` blocks are used to test against multiple values of `item_id`
 
 ---
 
@@ -144,6 +141,19 @@ So how can we write database integration tests in C#?
 - Use NUnit (vs RSpec)
 - Programmed in C# 7 (vs Ruby) and runs on .NET Core 2.2 (vs Matz's Ruby Interpreter)
 - Use Entity Framework Core (vs ActiveRecord) against any database
+
+---
+
+### Terminology
+
+Ruby / RSpec | C# / NUnit
+------------ | ----------
+`let`/`subject` variables | Functions
+`FactoryGirl` | `Factories` class with static members
+`context` block | `TestCase` attribute
+`it` / `spec` block | `Test` attribute
+before block to seed database | Seed method
+Clean database before/after a spec | `Init`/`Cleanup` methods in `DatabaseFixture`
 
 ---
 
@@ -195,7 +205,7 @@ public abstract class DatabaseFixture
 
 ---
 
-#### Factories
+### Factories
 
 ```csharp
 public class Factories
@@ -213,7 +223,7 @@ public class Factories
 
 ---
 
-#### Seed the Database
+### Seed the Database
 
 ```csharp
 public class CreateItem : DatabaseFixture
@@ -230,7 +240,7 @@ public class CreateItem : DatabaseFixture
 
 ---
 
-#### Positive Tests
+### Positive Tests
 
 ```csharp
   [Test]
@@ -262,7 +272,7 @@ public class CreateItem : DatabaseFixture
 
 ---
 
-#### Negative Tests
+### Negative Tests
 
 ```csharp
   [Test]
@@ -294,7 +304,7 @@ public class CreateItem : DatabaseFixture
 
 ---
 
-#### Easily Add Multiple Negative Tests
+### Easily Add Multiple Negative Tests
 
 ```csharp
   [Test]
@@ -310,7 +320,7 @@ public class CreateItem : DatabaseFixture
 
 ---
 
-#### In RSpec
+### In RSpec
 
 ```ruby
 describe CreditCardStatementRecord do
