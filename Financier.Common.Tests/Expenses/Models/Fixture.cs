@@ -103,6 +103,12 @@ namespace Financier.Common.Tests.Expenses.Models
             Id = Guid.NewGuid(),
             Name = "Fast"
         };
+
+        public static Func<Tag> GetDogTag = () => new Tag
+        {
+            Id = Guid.NewGuid(),
+            Name = "like-a-dog"
+        };
     }
 
     public abstract class Fixture : DatabaseAbstractFixture
@@ -113,6 +119,7 @@ namespace Financier.Common.Tests.Expenses.Models
             {
                 var funTag = MyFactories.GetFunTag();
                 var fastTag = MyFactories.GetFastTag();
+                var dogTag = MyFactories.GetDogTag();
                 db.Tags.Add(funTag);
                 db.Tags.Add(fastTag);
 
@@ -127,7 +134,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 var ronsCrazyStatement = MyFactories.GetRonsCrazyStatement();
                 juneStatement.Items.Add(MyFactories.GetPorscheItem(new[] { funTag, fastTag }));
                 juneStatement.Items.Add(MyFactories.GetFerrariItem(new[] { funTag }));
-                ronsCrazyStatement.Items.Add(MyFactories.GetLamboItem(new[] { fastTag }));
+                ronsCrazyStatement.Items.Add(MyFactories.GetLamboItem(new[] { fastTag, dogTag }));
 
                 db.Statements.Add(juneStatement);
                 db.Statements.Add(julyStatement);

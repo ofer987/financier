@@ -15,7 +15,7 @@ namespace Financier.Common.Expenses.Models
 
         private string _name;
         [Required]
-        public string Name 
+        public string Name
         {
             get
             {
@@ -43,30 +43,46 @@ namespace Financier.Common.Expenses.Models
 
         public void Rename(string newName)
         {
-            var newTag = new Tag { Name = newName };
+            var renamedTag = new Tag { Name = newName };
             using (var db = new Context())
             {
-                var existingNewTag = db.Tags.First(tag => tag.Name == newTag.Name);
-                if (existingNewTag == null)
+                var existingRenamedTag = db.Tags
+                    .DefaultIfEmpty(null)
+                    .FirstOrDefault(tag => tag.Name == renamedTag.Name);
+                if (existingRenamedTag == null)
                 {
-                    Name = newTag.Name;
+                    db.Tags
+                        .First(t => t.Name == Name)
+                        .Name = newName;
                     db.SaveChanges();
                 }
                 else
                 {
                     // Transfer existing ItemTags of this Tag to the other one
-                    var existingItemTags = 
+                    // TODO: can we use the `ItemTags` property?
+                    var existingItemTags =
                         from itemTags in db.ItemTags
                         join tags in db.Tags on itemTags.TagId equals tags.Id
                         where tags.Name == Name
                         select itemTags;
-
                     foreach (var itemTag in existingItemTags)
                     {
-                        itemTag.TagId = existingNewTag.Id;
-                    }
+                        // Can I just use existingRenamedTag?
+                        var itemsThatHaveNewName =
+                            from itemTags in db.ItemTags
+                            join tags in db.Tags on itemTags.TagId equals tags.Id
+                            join items in db.Items on itemTags.ItemId equals items.Id
+                            where tags.Name == renamedTag.Name
+                            select items;
+                        if (itemsThatHaveNewName.Select(item => item.Id).Contains(itemTag.ItemId))
+                        {
+                            continue;
+                        }
 
+                        db.ItemTags.Add(new ItemTag { ItemId = itemTag.ItemId, TagId = existingRenamedTag.Id });
+                    }
                     db.SaveChanges();
+
                     Delete();
                 }
             }
