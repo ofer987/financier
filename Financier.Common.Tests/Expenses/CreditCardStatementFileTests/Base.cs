@@ -43,6 +43,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                       {
                           Id = Guid.NewGuid(),
                           Number = "5191230192755321",
+                          CardType = CardTypes.Credit,
                           Statements = new List<Statement>
                           {
                               new Statement
@@ -81,6 +82,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                         {
                         Id = Guid.NewGuid(),
                         Number = "6171230192725321",
+                        CardType = CardTypes.Credit,
                         Statements = new List<Statement>
                         {
                         new Statement
@@ -189,6 +191,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     db.Cards.Add(new Financier.Common.Expenses.Models.Card 
                     {
                         Id = Guid.NewGuid(),
+                        CardType = CardTypes.Credit,
                         Number = "5191230192755321"
                     });
                     db.SaveChanges();
