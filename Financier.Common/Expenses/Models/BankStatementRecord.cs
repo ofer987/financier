@@ -9,6 +9,8 @@ namespace Financier.Common.Expenses.Models
     {
         public enum TransactionTypes { Debit, Credit }
 
+        public override CardTypes CardType => CardTypes.Bank;
+
         [Ignore]
         public override string ItemId { get; set; }
 

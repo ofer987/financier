@@ -6,6 +6,8 @@ namespace Financier.Common.Expenses.Models
     // TODO: Trim values and set Valid function
     public class CreditCardStatementRecord : StatementRecord
     {
+        public override CardTypes CardType => CardTypes.Credit;
+
         [Name("Item #")]
         public override string ItemId { get; set; }
 

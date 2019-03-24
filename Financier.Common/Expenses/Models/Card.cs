@@ -19,6 +19,9 @@ namespace Financier.Common.Expenses.Models
         // TODO: make unique
         public string Number { get; set; }
 
+        [Required]
+        public CardTypes CardType { get; set; }
+
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public void Delete()
@@ -48,6 +51,11 @@ namespace Financier.Common.Expenses.Models
                 return false;
             }
 
+            if (CardType != other.CardType)
+            {
+                return false;
+            }
+
             if (Statements.Count != other.Statements.Count)
             {
                 return false;
@@ -70,6 +78,7 @@ namespace Financier.Common.Expenses.Models
 
             sb.AppendLine($"{nameof(Id)}: ({Id})");
             sb.AppendLine($"{nameof(Number)}: ({Number ?? string.Empty})");
+            sb.AppendLine($"{nameof(CardType)}: ({CardType})");
             sb.AppendLine($"Statements:");
             foreach (var statement in Statements ?? new List<Statement>())
             {

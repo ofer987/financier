@@ -13,6 +13,8 @@ namespace Financier.Common.Expenses.Models
         public virtual string ItemId { get; set; }
         public virtual string Number { get; set; }
 
+        public abstract CardTypes CardType { get; }
+
         private Card _card = null;
         public Card GetCard()
         {
@@ -81,8 +83,9 @@ namespace Financier.Common.Expenses.Models
                     var newCard = new Card
                     {
                         Id = Guid.NewGuid(),
-                           Number = CleanNumber(cardNumber),
-                           Statements = new List<Statement>()
+                        Number = CleanNumber(cardNumber),
+                        CardType = CardType,
+                        Statements = new List<Statement>()
                     };
                     db.Cards.Add(newCard);
                     db.SaveChanges();
