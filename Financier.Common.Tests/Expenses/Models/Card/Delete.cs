@@ -6,8 +6,8 @@ namespace Financier.Common.Tests.Expenses.Models.CardTests
     public class Delete : Fixture
     {
         [Test]
-        [TestCase(MyFactories.DanCardNumber, 1)]
-        [TestCase(MyFactories.RonCardNumber, 1)]
+        [TestCase(MyFactories.DanCard.DanCardNumber, 1)]
+        [TestCase(MyFactories.RonCard.RonCardNumber, 1)]
         public void Test_Expenses_Models_Card_Delete_RemovesCard(string cardNumber, int expectedCardsRemoved)
         {
             using (var db = new Context())
@@ -25,8 +25,8 @@ namespace Financier.Common.Tests.Expenses.Models.CardTests
         }
 
         [Test]
-        [TestCase(MyFactories.DanCardNumber, 2)]
-        [TestCase(MyFactories.RonCardNumber, 1)]
+        [TestCase(MyFactories.DanCard.DanCardNumber, 2)]
+        [TestCase(MyFactories.RonCard.RonCardNumber, 1)]
         public void Test_Expenses_Models_Card_Delete_RemovesStatements(string cardNumber, int expectedStatementsRemoved)
         {
             using (var db = new Context())

@@ -10,9 +10,10 @@ namespace Financier.Common.Tests.Expenses.Models
     {
         public static class SavingsCard
         {
+            public static Guid CardId = Guid.NewGuid();
             public static Func<Card> GetCard = () => new Card
             {
-                Id = Guid.NewGuid(),
+                Id = CardId,
                 Number = "123485753492",
                 CardType = CardTypes.Bank,
                 Statements = new List<Statement>()
@@ -23,7 +24,8 @@ namespace Financier.Common.Tests.Expenses.Models
                 public static Func<Statement> GetStatement = () => new Statement
                 {
                     Id = Guid.NewGuid(),
-                       PostedAt = new DateTime(2019, 6, 31)
+                    CardId = CardId,
+                    PostedAt = new DateTime(2019, 6, 30)
                 };
 
                 public static class Items
@@ -79,6 +81,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 public static Func<Statement> GetStatement = () => new Statement
                 {
                     Id = Guid.NewGuid(),
+                    CardId = CardId,
                     PostedAt = new DateTime(2019, 7, 31)
                 };
 
@@ -127,9 +130,9 @@ namespace Financier.Common.Tests.Expenses.Models
             public static Func<Card> GetRonCard = () => new Card
             {
                 Id = RonCardId,
-                   Number = RonCardNumber,
-                   CardType = CardTypes.Credit,
-                   Statements = new List<Statement>()
+                Number = RonCardNumber,
+                CardType = CardTypes.Credit,
+                Statements = new List<Statement>()
             };
 
             public static Guid RonsCrazyStatementId = Guid.NewGuid();
@@ -326,6 +329,12 @@ namespace Financier.Common.Tests.Expenses.Models
                 var creditCardPaymentTag = MyFactories.Tags.GetCreditCardPayment();
                 db.Tags.Add(funTag);
                 db.Tags.Add(fastTag);
+                db.Tags.Add(dogTag);
+                db.Tags.Add(groceriesTag);
+                db.Tags.Add(coffeeTag);
+                db.Tags.Add(lunchTag);
+                db.Tags.Add(creditCardPaymentTag);
+                db.SaveChanges();
 
                 // Credit Cards
                 {

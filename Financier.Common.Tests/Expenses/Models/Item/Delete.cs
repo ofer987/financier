@@ -26,7 +26,8 @@ namespace Financier.Common.Tests.Expenses.Models.ItemTests
 
         [Test]
         [TestCase(MyFactories.PorscheItemId, 2)]
-        [TestCase(MyFactories.LamboItemId, 1)]
+        [TestCase(MyFactories.LamboItemId, 2)]
+        [TestCase(MyFactories.FerrariItemId, 1)]
         public void Test_Expenses_Models_Item_Delete_RemovesItemTags(string itemId, int expectedTagsRemoved)
         {
             using (var db = new Context())

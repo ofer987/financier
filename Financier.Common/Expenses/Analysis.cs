@@ -110,7 +110,7 @@ namespace Financier.Common.Expenses
                         && items.TransactedAt < EndAt
                     select items;
 
-                var bankStatementExpenses =
+                var bankStatementExpenses = db.Items
                     .Where(item => !bankStatementPayments.Any(payment => payment.Id == item.Id));
 
                 var creditCardPayments =
@@ -141,6 +141,8 @@ namespace Financier.Common.Expenses
                 var creditCardExpenses = creditCardItems
                     .Where(item => !creditCardPayments.Any(payment => payment.Id == item.Id));
             }
+
+            return 0.00M;
         }
     }
 }
