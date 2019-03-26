@@ -68,8 +68,10 @@ namespace Financier.Common.Expenses
             using (var db = new Context())
             {
                 return db.Items
+                    .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
                     .Where(item => item.TransactedAt >= StartAt)
                     .Where(item => item.TransactedAt < EndAt)
+                    .ToList()
                     .Aggregate(0.00M, (result, item) => result + item.Amount);
             }
         }

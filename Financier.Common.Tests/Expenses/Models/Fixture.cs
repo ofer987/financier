@@ -11,10 +11,11 @@ namespace Financier.Common.Tests.Expenses.Models
         public static class SavingsCard
         {
             public static Guid CardId = Guid.NewGuid();
+            public const string CardNumber = "123143287999";
             public static Func<Card> GetCard = () => new Card
             {
                 Id = CardId,
-                Number = "123485753492",
+                Number = CardNumber,
                 CardType = CardTypes.Bank,
                 Statements = new List<Statement>()
             };
@@ -30,6 +31,28 @@ namespace Financier.Common.Tests.Expenses.Models
 
                 public static class Items
                 {
+                    public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = -2000.00M,
+                           Description = "Dan Salary",
+                           ItemId = Guid.NewGuid().ToString(),
+                           PostedAt = new DateTime(2019, 6, 6),
+                           TransactedAt = new DateTime(2019, 6, 5),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                    };
+
+                    public static Func<IEnumerable<Tag>, Item> GetEdithSalary = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = -1000.00M,
+                           Description = "Edith Salary",
+                           ItemId = Guid.NewGuid().ToString(),
+                           PostedAt = new DateTime(2019, 6, 23),
+                           TransactedAt = new DateTime(2019, 6, 23),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                    };
+
                     public static Func<IEnumerable<Tag>, Item> GetGroceries = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
@@ -55,7 +78,7 @@ namespace Financier.Common.Tests.Expenses.Models
                     public static Func<IEnumerable<Tag>, Item> GetDanCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                        Amount = -967.15M,
+                        Amount = 967.15M,
                         Description = "Transfer to Dan Credit Card",
                         ItemId = Guid.NewGuid().ToString(),
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
@@ -66,7 +89,7 @@ namespace Financier.Common.Tests.Expenses.Models
                     public static Func<IEnumerable<Tag>, Item> GetCrazyCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -35000.00M,
+                           Amount = 35000.00M,
                            Description = "Transfer to Crazy Credit Card",
                            ItemId = Guid.NewGuid().ToString(),
                            ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
@@ -87,6 +110,17 @@ namespace Financier.Common.Tests.Expenses.Models
 
                 public static class Items
                 {
+                    public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = -2000.00M,
+                           Description = "Dan Salary",
+                           ItemId = Guid.NewGuid().ToString(),
+                           PostedAt = new DateTime(2019, 7, 6),
+                           TransactedAt = new DateTime(2019, 7, 5),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                    };
+
                     public static Func<IEnumerable<Tag>, Item> GetGroceries = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
@@ -112,7 +146,7 @@ namespace Financier.Common.Tests.Expenses.Models
                     public static Func<IEnumerable<Tag>, Item> GetDanCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -600000.00M,
+                           Amount = 600000.00M,
                            Description = "Transfer to Dan Credit Card",
                            ItemId = Guid.NewGuid().ToString(),
                            ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
@@ -141,7 +175,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 Id = RonsCrazyStatementId,
                    CardId = RonCardId,
                    Items = new List<Item>(),
-                   PostedAt = new DateTime(2025, 7, 1)
+                   PostedAt = new DateTime(2019, 7, 1)
             };
 
             public static class CrazyStatement
@@ -153,8 +187,8 @@ namespace Financier.Common.Tests.Expenses.Models
                    Description = "Thank you!",
                    ItemId = Guid.NewGuid().ToString(),
                    ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                   PostedAt = new DateTime(2025, 6, 22),
-                   TransactedAt = new DateTime(2025, 6, 22),
+                   PostedAt = new DateTime(2019, 6, 22),
+                   TransactedAt = new DateTime(2019, 6, 22),
                 };
             }
         }
@@ -177,7 +211,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 Id = JuneStatementId,
                    CardId = DanCardId,
                    Items = new List<Item>(),
-                   PostedAt = new DateTime(2025, 7, 1)
+                   PostedAt = new DateTime(2019, 7, 1)
             };
 
             public static Guid JulyStatementId = Guid.NewGuid();
@@ -186,7 +220,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 Id = JulyStatementId,
                    CardId = DanCardId,
                    Items = new List<Item>(),
-                   PostedAt = new DateTime(2025, 8, 1)
+                   PostedAt = new DateTime(2019, 8, 1)
             };
 
             public static class June
@@ -198,8 +232,8 @@ namespace Financier.Common.Tests.Expenses.Models
                        Description = "Thank you!",
                        ItemId = Guid.NewGuid().ToString(),
                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                       PostedAt = new DateTime(2025, 6, 22),
-                       TransactedAt = new DateTime(2025, 6, 22),
+                       PostedAt = new DateTime(2019, 6, 22),
+                       TransactedAt = new DateTime(2019, 6, 22),
                 };
             }
 
@@ -212,8 +246,8 @@ namespace Financier.Common.Tests.Expenses.Models
                        Description = "Golden Star",
                        ItemId = Guid.NewGuid().ToString(),
                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                       PostedAt = new DateTime(2025, 7, 17),
-                       TransactedAt = new DateTime(2025, 7, 17),
+                       PostedAt = new DateTime(2019, 7, 17),
+                       TransactedAt = new DateTime(2019, 7, 17),
                 };
 
                 public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
@@ -223,8 +257,8 @@ namespace Financier.Common.Tests.Expenses.Models
                        Description = "Thank you!",
                        ItemId = Guid.NewGuid().ToString(),
                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                       PostedAt = new DateTime(2025, 7, 22),
-                       TransactedAt = new DateTime(2025, 7, 22),
+                       PostedAt = new DateTime(2019, 7, 22),
+                       TransactedAt = new DateTime(2019, 7, 22),
                 };
             }
         }
@@ -238,8 +272,8 @@ namespace Financier.Common.Tests.Expenses.Models
             Description = "Porsche 911",
             ItemId = PorscheItemId,
             ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-            PostedAt = new DateTime(2025, 6, 5),
-            TransactedAt = new DateTime(2025, 6, 5),
+            PostedAt = new DateTime(2019, 6, 5),
+            TransactedAt = new DateTime(2019, 6, 5),
         };
 
         public const string LamboItemId = "9481";
@@ -251,8 +285,8 @@ namespace Financier.Common.Tests.Expenses.Models
             Description = "Lambo",
             ItemId = LamboItemId,
             ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-            PostedAt = new DateTime(2025, 6, 5),
-            TransactedAt = new DateTime(2025, 6, 5),
+            PostedAt = new DateTime(2019, 6, 5),
+            TransactedAt = new DateTime(2019, 6, 5),
         };
 
         public const string FerrariItemId = "458487";
@@ -264,8 +298,8 @@ namespace Financier.Common.Tests.Expenses.Models
             Description = "Ferrari",
             ItemId = FerrariItemId,
             ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-            PostedAt = new DateTime(2025, 6, 5),
-            TransactedAt = new DateTime(2025, 6, 5),
+            PostedAt = new DateTime(2019, 6, 5),
+            TransactedAt = new DateTime(2019, 6, 5),
         };
 
         public static class Tags
@@ -311,6 +345,12 @@ namespace Financier.Common.Tests.Expenses.Models
                 Id = Guid.NewGuid(),
                 Name = "credit-card-payment"
             };
+
+            public static Func<Tag> GetSalary = () => new Tag
+            {
+                Id = Guid.NewGuid(),
+                Name = "salary"
+            };
         }
     }
 
@@ -327,6 +367,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 var coffeeTag = MyFactories.Tags.GetCoffee();
                 var lunchTag = MyFactories.Tags.GetLunch();
                 var creditCardPaymentTag = MyFactories.Tags.GetCreditCardPayment();
+                var salaryTag = MyFactories.Tags.GetSalary();
                 db.Tags.Add(funTag);
                 db.Tags.Add(fastTag);
                 db.Tags.Add(dogTag);
@@ -334,6 +375,7 @@ namespace Financier.Common.Tests.Expenses.Models
                 db.Tags.Add(coffeeTag);
                 db.Tags.Add(lunchTag);
                 db.Tags.Add(creditCardPaymentTag);
+                db.Tags.Add(salaryTag);
                 db.SaveChanges();
 
                 // Credit Cards
@@ -363,8 +405,10 @@ namespace Financier.Common.Tests.Expenses.Models
                     {
                         var juneStatement = MyFactories.SavingsCard.June.GetStatement();
                         juneStatement.Items.AddRange(new[] {
+                            MyFactories.SavingsCard.June.Items.GetDanSalary(new[] { salaryTag }),
+                            MyFactories.SavingsCard.June.Items.GetEdithSalary(new[] { salaryTag }),
                             MyFactories.SavingsCard.June.Items.GetGroceries(new[] { groceriesTag }),
-                            MyFactories.SavingsCard.June.Items.GetGroceries(new[] { groceriesTag }),
+                            MyFactories.SavingsCard.June.Items.GetCoffee(new[] { groceriesTag }),
                             MyFactories.SavingsCard.June.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag }),
                             MyFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag })
                         });
@@ -372,6 +416,7 @@ namespace Financier.Common.Tests.Expenses.Models
 
                         var julyStatement = MyFactories.SavingsCard.July.GetStatement();
                         julyStatement.Items.AddRange(new[] {
+                            MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
                             MyFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
                             MyFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
                             MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag } )
