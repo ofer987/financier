@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.Models
+namespace Financier.Common.Tests.Expenses
 {
     public class MyFactories : Factories
     {

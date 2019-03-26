@@ -2,11 +2,10 @@ using System;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
-using Financier.Common.Tests.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.AnalysisTests
 {
-    public class GetEarnings : Fixture
+    public class GetExpenses : Fixture
     {
         [Test]
         [TestCase(2019, 6, 33075.85)]
