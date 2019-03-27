@@ -159,148 +159,157 @@ namespace Financier.Common.Tests.Expenses
 
         public static class RonCard
         {
-            public static Guid RonCardId = Guid.NewGuid();
-            public const string RonCardNumber = "34875487543";
-            public static Func<Card> GetRonCard = () => new Card
+            public static Guid CardId = Guid.NewGuid();
+            public const string CardNumber = "34875487543";
+            public static Func<Card> GetCard = () => new Card
             {
-                Id = RonCardId,
-                Number = RonCardNumber,
+                Id = CardId,
+                Number = CardNumber,
                 CardType = CardTypes.Credit,
                 Statements = new List<Statement>()
             };
 
-            public static Guid RonsCrazyStatementId = Guid.NewGuid();
-            public static Func<Statement> GetRonsCrazyStatement = () => new Statement
-            {
-                Id = RonsCrazyStatementId,
-                   CardId = RonCardId,
-                   Items = new List<Item>(),
-                   PostedAt = new DateTime(2019, 7, 1)
-            };
-
             public static class CrazyStatement
             {
-                public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
+                public static Guid StatementId = Guid.NewGuid();
+                public static Func<Statement> GetStatement = () => new Statement
                 {
-                    Id = Guid.NewGuid(),
-                   Amount = -35000.00M,
-                   Description = "Thank you!",
-                   ItemId = Guid.NewGuid().ToString(),
-                   ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                   PostedAt = new DateTime(2019, 6, 22),
-                   TransactedAt = new DateTime(2019, 6, 22),
+                    Id = StatementId,
+                       CardId = CardId,
+                       Items = new List<Item>(),
+                       PostedAt = new DateTime(2019, 7, 1)
                 };
+
+                public static class Items
+                {
+                    public const string LamboItemId = "9481";
+                    public static Guid LamboId = Guid.NewGuid();
+                    public static Func<IEnumerable<Tag>, Item> GetLamboItem = (tags) => new Item
+                    {
+                        Id = LamboId,
+                           Amount = 300000.00M,
+                           Description = "Lambo",
+                           ItemId = LamboItemId,
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 6, 5),
+                           TransactedAt = new DateTime(2019, 6, 5),
+                    };
+
+                    public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = -35000.00M,
+                           Description = "Thank you!",
+                           ItemId = Guid.NewGuid().ToString(),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 6, 22),
+                           TransactedAt = new DateTime(2019, 6, 22),
+                    };
+                }
             }
         }
 
         public static class DanCard
         {
-            public static Guid DanCardId = Guid.NewGuid();
-            public const string DanCardNumber = "1234567";
-            public static Func<Card> GetDanCard = () => new Card
+            public static Guid CardId = Guid.NewGuid();
+            public const string CardNumber = "1234567";
+            public static Func<Card> Card = () => new Card
             {
-                Id = DanCardId,
-                   Number = DanCardNumber,
+                Id = CardId,
+                   Number = CardNumber,
                    CardType = CardTypes.Credit,
                    Statements = new List<Statement>()
             };
 
-            public static Guid JuneStatementId = Guid.NewGuid();
-            public static Func<Statement> GetJuneStatement = () => new Statement
-            {
-                Id = JuneStatementId,
-                   CardId = DanCardId,
-                   Items = new List<Item>(),
-                   PostedAt = new DateTime(2019, 7, 1)
-            };
-
-            public static Guid JulyStatementId = Guid.NewGuid();
-            public static Func<Statement> GetJulyStatement = () => new Statement
-            {
-                Id = JulyStatementId,
-                   CardId = DanCardId,
-                   Items = new List<Item>(),
-                   PostedAt = new DateTime(2019, 8, 1)
-            };
-
             public static class June
             {
-                public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
+                public static Guid StatementId = Guid.NewGuid();
+                public static Func<Statement> GetStatement = () => new Statement
                 {
-                    Id = Guid.NewGuid(),
-                       Amount = -967.15M,
-                       Description = "Thank you!",
-                       ItemId = Guid.NewGuid().ToString(),
-                       ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                       PostedAt = new DateTime(2019, 6, 22),
-                       TransactedAt = new DateTime(2019, 6, 22),
+                    Id = StatementId,
+                       CardId = CardId,
+                       Items = new List<Item>(),
+                       PostedAt = new DateTime(2019, 7, 1)
                 };
+
+                public static class Items
+                {
+                    public const string PorscheItemId = "1234";
+                    public static Guid PorscheId = Guid.NewGuid();
+                    public static Func<IEnumerable<Tag>, Item> GetPorscheItem = (tags) => new Item
+                    {
+                        Id = PorscheId,
+                           Amount = 300000.00M,
+                           Description = "Porsche 911",
+                           ItemId = PorscheItemId,
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 6, 5),
+                           TransactedAt = new DateTime(2019, 6, 5),
+                    };
+
+                    public const string FerrariItemId = "458487";
+                    public static Guid FerrariId = Guid.NewGuid();
+                    public static Func<IEnumerable<Tag>, Item> GetFerrariItem = (tags) => new Item
+                    {
+                        Id = FerrariId,
+                           Amount = 300000.00M,
+                           Description = "Ferrari",
+                           ItemId = FerrariItemId,
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 6, 5),
+                           TransactedAt = new DateTime(2019, 6, 5),
+                    };
+
+                    public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = -967.15M,
+                           Description = "Thank you!",
+                           ItemId = Guid.NewGuid().ToString(),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 6, 22),
+                           TransactedAt = new DateTime(2019, 6, 22),
+                    };
+                }
             }
 
             public static class July
             {
-                public static Func<IEnumerable<Tag>, Item> GetLunch = (tags) => new Item
+                public static Guid StatementId = Guid.NewGuid();
+                public static Func<Statement> GetStatement = () => new Statement
                 {
-                    Id = Guid.NewGuid(),
-                       Amount = 10.00M,
-                       Description = "Golden Star",
-                       ItemId = Guid.NewGuid().ToString(),
-                       ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                       PostedAt = new DateTime(2019, 7, 17),
-                       TransactedAt = new DateTime(2019, 7, 17),
+                    Id = StatementId,
+                       CardId = CardId,
+                       Items = new List<Item>(),
+                       PostedAt = new DateTime(2019, 8, 1)
                 };
 
-                public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
+                public static class Items
                 {
-                    Id = Guid.NewGuid(),
-                       Amount = -600000.00M,
-                       Description = "Thank you!",
-                       ItemId = Guid.NewGuid().ToString(),
-                       ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                       PostedAt = new DateTime(2019, 7, 22),
-                       TransactedAt = new DateTime(2019, 7, 22),
-                };
+                    public static Func<IEnumerable<Tag>, Item> GetLunch = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = 10.00M,
+                           Description = "Golden Star",
+                           ItemId = Guid.NewGuid().ToString(),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 7, 17),
+                           TransactedAt = new DateTime(2019, 7, 17),
+                    };
+
+                    public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                           Amount = -600000.00M,
+                           Description = "Thank you!",
+                           ItemId = Guid.NewGuid().ToString(),
+                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                           PostedAt = new DateTime(2019, 7, 22),
+                           TransactedAt = new DateTime(2019, 7, 22),
+                    };
+                }
             }
         }
-
-        public const string PorscheItemId = "1234";
-        public static Guid PorscheId = Guid.NewGuid();
-        public static Func<IEnumerable<Tag>, Item> GetPorscheItem = (tags) => new Item
-        {
-            Id = PorscheId,
-            Amount = 300000.00M,
-            Description = "Porsche 911",
-            ItemId = PorscheItemId,
-            ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-            PostedAt = new DateTime(2019, 6, 5),
-            TransactedAt = new DateTime(2019, 6, 5),
-        };
-
-        public const string LamboItemId = "9481";
-        public static Guid LamboId = Guid.NewGuid();
-        public static Func<IEnumerable<Tag>, Item> GetLamboItem = (tags) => new Item
-        {
-            Id = LamboId,
-            Amount = 300000.00M,
-            Description = "Lambo",
-            ItemId = LamboItemId,
-            ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-            PostedAt = new DateTime(2019, 6, 5),
-            TransactedAt = new DateTime(2019, 6, 5),
-        };
-
-        public const string FerrariItemId = "458487";
-        public static Guid FerrariId = Guid.NewGuid();
-        public static Func<IEnumerable<Tag>, Item> GetFerrariItem = (tags) => new Item
-        {
-            Id = FerrariId,
-            Amount = 300000.00M,
-            Description = "Ferrari",
-            ItemId = FerrariItemId,
-            ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-            PostedAt = new DateTime(2019, 6, 5),
-            TransactedAt = new DateTime(2019, 6, 5),
-        };
 
         public static class Tags
         {
@@ -380,18 +389,28 @@ namespace Financier.Common.Tests.Expenses
 
                 // Credit Cards
                 {
-                    var danCard = MyFactories.DanCard.GetDanCard();
-                    var ronCard = MyFactories.RonCard.GetRonCard();
+                    var danCard = MyFactories.DanCard.Card();
+                    var ronCard = MyFactories.RonCard.GetCard();
                     db.Cards.Add(danCard);
                     db.Cards.Add(ronCard);
                     db.SaveChanges();
 
-                    var juneStatement = MyFactories.DanCard.GetJuneStatement();
-                    var julyStatement = MyFactories.DanCard.GetJulyStatement();
-                    var ronsCrazyStatement = MyFactories.RonCard.GetRonsCrazyStatement();
-                    juneStatement.Items.Add(MyFactories.GetPorscheItem(new[] { funTag, fastTag }));
-                    juneStatement.Items.Add(MyFactories.GetFerrariItem(new[] { funTag }));
-                    ronsCrazyStatement.Items.Add(MyFactories.GetLamboItem(new[] { fastTag, dogTag }));
+                    var juneStatement = MyFactories.DanCard.June.GetStatement();
+                    var julyStatement = MyFactories.DanCard.July.GetStatement();
+                    var ronsCrazyStatement = MyFactories.RonCard.CrazyStatement.GetStatement();
+                    juneStatement.Items.AddRange(new[] {
+                        MyFactories.DanCard.June.Items.GetPorscheItem(new[] { funTag, fastTag }),
+                        MyFactories.DanCard.June.Items.GetFerrariItem(new[] { funTag }),
+                        MyFactories.DanCard.June.Items.GetCreditCardPayment(new[] { creditCardPaymentTag })
+                    });
+                    julyStatement.Items.AddRange(new[] {
+                        MyFactories.DanCard.July.Items.GetCreditCardPayment(new[] { creditCardPaymentTag }),
+                        MyFactories.DanCard.July.Items.GetLunch(new[] { lunchTag })
+                    });
+                    ronsCrazyStatement.Items.AddRange(new[] {
+                        MyFactories.RonCard.CrazyStatement.Items.GetLamboItem(new[] { fastTag, dogTag }),
+                        MyFactories.RonCard.CrazyStatement.Items.GetCreditCardPayment(new[] { creditCardPaymentTag })
+                    });
 
                     db.Statements.Add(juneStatement);
                     db.Statements.Add(julyStatement);
