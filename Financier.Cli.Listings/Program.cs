@@ -1,25 +1,47 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using McMaster.Extensions.CommandLineUtils;
 
 using Financier.Common;
+using Financier.Common.Expenses;
 
 namespace Financier.Cli.Listings
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+
+        private void OnExecute()
         {
             Context.Environment = Environments.Dev;
-            Console.WriteLine("Hello World!");
 
+            DateTime earliestAt, latestAt;
             using (var db = new Context())
             {
-                var selectedStatement = db.Statements
-                    .Include(stmt => stmt.Items)
-                    .First(stmt => stmt.Id == Guid.Parse(args[0]));
+                earliestAt = db.Items
+                    .OrderBy(item => item.TransactedAt)
+                    .First()
+                    .TransactedAt;
 
-                Console.WriteLine(selectedStatement);
+                latestAt = db.Items
+                    .OrderByDescending(item => item.TransactedAt)
+                    .First()
+                    .TransactedAt;
+            }
+
+            earliestAt = new DateTime(earliestAt.Year, earliestAt.Month, 1);
+            latestAt = new DateTime(latestAt.Year, latestAt.Month, 1).AddMonths(1).AddDays(-1);
+
+            var startAt = earliestAt;
+            while (startAt <= latestAt)
+            {
+                var endAt = startAt.AddMonths(1).AddDays(-1);
+                var items = new Analysis(startAt, endAt).GetEarningsWithCcExpenses();
+
+                var amount = items.Aggregate(0.00M, (result, item) => result + item.Amount);
+                Console.WriteLine($"{startAt.ToString("MMMM yyyy")}\t{amount}");
+
+                startAt = startAt.AddMonths(1);
             }
         }
     }
