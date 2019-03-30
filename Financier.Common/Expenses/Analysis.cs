@@ -49,7 +49,7 @@ namespace Financier.Common.Expenses
             return itemsByTag;
         }
 
-        public decimal GetEarnings()
+        public decimal GetEarnings(int days)
         {
             using (var db = new Context())
             {
@@ -64,14 +64,19 @@ namespace Financier.Common.Expenses
                 //     select items.Amount;
                 //
                 // return amounts.ToList().Aggregate(0.00M, (result, amount) => result + amount);
-                return db.Items
+                var items = db.Items
                     // .Include(item => item.Statement)
                     // .ThenInclude(statement => statement.Card)
                     .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
-                    .Where(item => item.TransactedAt >= StartAt)
-                    .Where(item => item.TransactedAt < EndAt)
-                    .ToList()
-                    .Aggregate(0.00M, (result, item) => result + item.Amount);
+                    .ToList();
+
+                var salaries = items.Where(item => item.Amount > 0);
+                var amount = salaries.Aggregate(0.00M, (result, item) => result + item.Amount);
+                var earliestAt = items.OrderBy(item => item.TransactedAt).First().TransactedAt;
+                var latestAt = items.OrderByDescending(item => item.TransactedAt).First().TransactedAt;
+                var dateRange = latestAt - earliestAt;
+
+                return Convert.ToDecimal(Convert.ToDouble(amount) * days / dateRange.TotalDays);
             }
         }
 
