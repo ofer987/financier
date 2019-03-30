@@ -34,23 +34,23 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -2000.00M,
-                           Description = "Dan Salary",
-                           ItemId = Guid.NewGuid().ToString(),
-                           PostedAt = new DateTime(2019, 6, 6),
-                           TransactedAt = new DateTime(2019, 6, 5),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        Amount = -2000.00M,
+                        Description = "Dan Salary",
+                        ItemId = Guid.NewGuid().ToString(),
+                        PostedAt = new DateTime(2019, 6, 6),
+                        TransactedAt = new DateTime(2019, 6, 5),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetEdithSalary = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -1000.00M,
-                           Description = "Edith Salary",
-                           ItemId = Guid.NewGuid().ToString(),
-                           PostedAt = new DateTime(2019, 6, 23),
-                           TransactedAt = new DateTime(2019, 6, 23),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        Amount = -1000.00M,
+                        Description = "Edith Salary",
+                        ItemId = Guid.NewGuid().ToString(),
+                        PostedAt = new DateTime(2019, 6, 23),
+                        TransactedAt = new DateTime(2019, 6, 23),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetGroceries = (tags) => new Item
@@ -89,12 +89,12 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetCrazyCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = 35000.00M,
-                           Description = "Transfer to Crazy Credit Card",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 6, 22),
-                           TransactedAt = new DateTime(2019, 6, 22)
+                        Amount = 35000.00M,
+                        Description = "Transfer to Crazy Credit Card",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 6, 22),
+                        TransactedAt = new DateTime(2019, 6, 22)
                     };
                 }
             }
@@ -113,45 +113,45 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -2000.00M,
-                           Description = "Dan Salary",
-                           ItemId = Guid.NewGuid().ToString(),
-                           PostedAt = new DateTime(2019, 7, 6),
-                           TransactedAt = new DateTime(2019, 7, 5),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        Amount = -2000.00M,
+                        Description = "Dan Salary",
+                        ItemId = Guid.NewGuid().ToString(),
+                        PostedAt = new DateTime(2019, 7, 6),
+                        TransactedAt = new DateTime(2019, 7, 5),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetGroceries = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = 98.25M,
-                           Description = "Your Community Grocer",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 7, 8),
-                           TransactedAt = new DateTime(2019, 7, 7)
+                        Amount = 98.25M,
+                        Description = "Your Community Grocer",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 7, 8),
+                        TransactedAt = new DateTime(2019, 7, 7)
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetCoffee = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = 4.20M,
-                           Description = "IQ",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 7, 14),
-                           TransactedAt = new DateTime(2019, 7, 14)
+                        Amount = 4.20M,
+                        Description = "IQ",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 7, 14),
+                        TransactedAt = new DateTime(2019, 7, 14)
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetDanCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = 600000.00M,
-                           Description = "Transfer to Dan Credit Card",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 7, 22),
-                           TransactedAt = new DateTime(2019, 7, 22)
+                        Amount = 600000.00M,
+                        Description = "Transfer to Dan Credit Card",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 7, 22),
+                        TransactedAt = new DateTime(2019, 7, 22)
                     };
                 }
             }
@@ -175,9 +175,9 @@ namespace Financier.Common.Tests.Expenses
                 public static Func<Statement> GetStatement = () => new Statement
                 {
                     Id = StatementId,
-                       CardId = CardId,
-                       Items = new List<Item>(),
-                       PostedAt = new DateTime(2019, 7, 1)
+                    CardId = CardId,
+                    Items = new List<Item>(),
+                    PostedAt = new DateTime(2019, 7, 1)
                 };
 
                 public static class Items
@@ -187,23 +187,23 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetLamboItem = (tags) => new Item
                     {
                         Id = LamboId,
-                           Amount = 300000.00M,
-                           Description = "Lambo",
-                           ItemId = LamboItemId,
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 6, 5),
-                           TransactedAt = new DateTime(2019, 6, 5),
+                        Amount = 300000.00M,
+                        Description = "Lambo",
+                        ItemId = LamboItemId,
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 6, 5),
+                        TransactedAt = new DateTime(2019, 6, 5),
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -35000.00M,
-                           Description = "Thank you!",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 6, 22),
-                           TransactedAt = new DateTime(2019, 6, 22),
+                        Amount = -35000.00M,
+                        Description = "Thank you!",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 6, 22),
+                        TransactedAt = new DateTime(2019, 6, 22),
                     };
                 }
             }
@@ -216,9 +216,9 @@ namespace Financier.Common.Tests.Expenses
             public static Func<Card> Card = () => new Card
             {
                 Id = CardId,
-                   Number = CardNumber,
-                   CardType = CardTypes.Credit,
-                   Statements = new List<Statement>()
+                Number = CardNumber,
+                CardType = CardTypes.Credit,
+                Statements = new List<Statement>()
             };
 
             public static class June
@@ -227,9 +227,9 @@ namespace Financier.Common.Tests.Expenses
                 public static Func<Statement> GetStatement = () => new Statement
                 {
                     Id = StatementId,
-                       CardId = CardId,
-                       Items = new List<Item>(),
-                       PostedAt = new DateTime(2019, 7, 1)
+                    CardId = CardId,
+                    Items = new List<Item>(),
+                    PostedAt = new DateTime(2019, 7, 1)
                 };
 
                 public static class Items
@@ -239,12 +239,12 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetPorscheItem = (tags) => new Item
                     {
                         Id = PorscheId,
-                           Amount = 300000.00M,
-                           Description = "Porsche 911",
-                           ItemId = PorscheItemId,
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 6, 5),
-                           TransactedAt = new DateTime(2019, 6, 5),
+                        Amount = 300000.00M,
+                        Description = "Porsche 911",
+                        ItemId = PorscheItemId,
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 6, 5),
+                        TransactedAt = new DateTime(2019, 6, 5),
                     };
 
                     public const string FerrariItemId = "458487";
@@ -252,23 +252,23 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetFerrariItem = (tags) => new Item
                     {
                         Id = FerrariId,
-                           Amount = 300000.00M,
-                           Description = "Ferrari",
-                           ItemId = FerrariItemId,
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 6, 5),
-                           TransactedAt = new DateTime(2019, 6, 5),
+                        Amount = 300000.00M,
+                        Description = "Ferrari",
+                        ItemId = FerrariItemId,
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 6, 5),
+                        TransactedAt = new DateTime(2019, 6, 5),
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -967.15M,
-                           Description = "Thank you!",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 6, 22),
-                           TransactedAt = new DateTime(2019, 6, 22),
+                        Amount = -967.15M,
+                        Description = "Thank you!",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 6, 22),
+                        TransactedAt = new DateTime(2019, 6, 22),
                     };
                 }
             }
@@ -279,9 +279,9 @@ namespace Financier.Common.Tests.Expenses
                 public static Func<Statement> GetStatement = () => new Statement
                 {
                     Id = StatementId,
-                       CardId = CardId,
-                       Items = new List<Item>(),
-                       PostedAt = new DateTime(2019, 8, 1)
+                    CardId = CardId,
+                    Items = new List<Item>(),
+                    PostedAt = new DateTime(2019, 8, 1)
                 };
 
                 public static class Items
@@ -289,23 +289,23 @@ namespace Financier.Common.Tests.Expenses
                     public static Func<IEnumerable<Tag>, Item> GetLunch = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = 10.00M,
-                           Description = "Golden Star",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 7, 17),
-                           TransactedAt = new DateTime(2019, 7, 17),
+                        Amount = 10.00M,
+                        Description = "Golden Star",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 7, 17),
+                        TransactedAt = new DateTime(2019, 7, 17),
                     };
 
                     public static Func<IEnumerable<Tag>, Item> GetCreditCardPayment = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
-                           Amount = -600000.00M,
-                           Description = "Thank you!",
-                           ItemId = Guid.NewGuid().ToString(),
-                           ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
-                           PostedAt = new DateTime(2019, 7, 22),
-                           TransactedAt = new DateTime(2019, 7, 22),
+                        Amount = -600000.00M,
+                        Description = "Thank you!",
+                        ItemId = Guid.NewGuid().ToString(),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                        PostedAt = new DateTime(2019, 7, 22),
+                        TransactedAt = new DateTime(2019, 7, 22),
                     };
                 }
             }
@@ -316,37 +316,37 @@ namespace Financier.Common.Tests.Expenses
             public static Func<Tag> GetFun = () => new Tag
             {
                 Id = Guid.NewGuid(),
-                   Name = "Fun"
+                Name = "Fun"
             };
 
             public static Func<Tag> GetFast = () => new Tag
             {
                 Id = Guid.NewGuid(),
-                   Name = "Fast"
+                Name = "Fast"
             };
 
             public static Func<Tag> GetDog = () => new Tag
             {
                 Id = Guid.NewGuid(),
-                   Name = "like-a-dog"
+                Name = "like-a-dog"
             };
 
             public static Func<Tag> GetGroceries = () => new Tag
             {
                 Id = Guid.NewGuid(),
-               Name = "groceries"
+                Name = "groceries"
             };
 
             public static Func<Tag> GetCoffee = () => new Tag
             {
                 Id = Guid.NewGuid(),
-                   Name = "coffee"
+                Name = "coffee"
             };
 
             public static Func<Tag> GetLunch = () => new Tag
             {
                 Id = Guid.NewGuid(),
-               Name = "lunch"
+                Name = "lunch"
             };
 
             public static Func<Tag> GetCreditCardPayment = () => new Tag

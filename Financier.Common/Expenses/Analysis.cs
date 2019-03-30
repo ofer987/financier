@@ -49,25 +49,24 @@ namespace Financier.Common.Expenses
             return itemsByTag;
         }
 
-        public decimal GetExpenses()
-        {
-            using (var db = new Context())
-            {
-                return db.Items
-                    .Include(item => item.Statement)
-                    .Where(item => item.Statement.Card.CardType == CardTypes.Credit)
-                    .Where(item => item.TransactedAt >= StartAt)
-                    .Where(item => item.TransactedAt < EndAt)
-                    .Where(item => item.Amount > 0)
-                    .Aggregate(0.00M, (result, item) => result + item.Amount);
-            }
-        }
-
         public decimal GetEarnings()
         {
             using (var db = new Context())
             {
+                // var amounts =
+                //     from items in db.Items
+                //     join statements in db.Statements on items.StatementId equals statements.Id
+                //     join cards in db.Cards on statements.CardId equals cards.Id
+                //     where true
+                //         && cards.CardType == CardTypes.Bank
+                //         && items.TransactedAt >= StartAt
+                //         && items.TransactedAt < EndAt
+                //     select items.Amount;
+                //
+                // return amounts.ToList().Aggregate(0.00M, (result, amount) => result + amount);
                 return db.Items
+                    // .Include(item => item.Statement)
+                    // .ThenInclude(statement => statement.Card)
                     .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
                     .Where(item => item.TransactedAt >= StartAt)
                     .Where(item => item.TransactedAt < EndAt)
@@ -76,9 +75,10 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public decimal GetEarningsWithCcExpenses()
+        public List<Item> GetEarningsWithCcExpenses()
         {
-            const string creditCardPaymentTagName = "creditcard-payment";
+            // TODO: what is the right tag name?
+            const string creditCardPaymentTagName = "credit-card-payment";
             using (var db = new Context())
             {
                 // var bankStatementItems = db.Items
@@ -86,65 +86,75 @@ namespace Financier.Common.Expenses
                 //     .Where(item => item.TransactedAt < EndAt)
                 //     .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
 
-                var bankStatementItems =
-                    from items in db.Items
-                    join statements in db.Statements on items.StatementId equals statements.Id
-                    join cards in db.Cards on statements.CardId equals cards.Id
-                    join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
-                    join tags in db.Tags on itemTags.TagId equals tags.Id
-                    where true
-                        && tags.Name == creditCardPaymentTagName
-                        && cards.CardType == CardTypes.Bank
-                        && items.TransactedAt >= StartAt
-                        && items.TransactedAt < EndAt
-                    select items;
+                var bankStatementItems = db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(itemTags => itemTags.Tag)
+                    .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
+                    .Where(item => item.TransactedAt >= StartAt)
+                    .Where(item => item.TransactedAt < EndAt);
+                // var bankStatementItems =
+                //     from items in db.Items
+                //     join statements in db.Statements on items.StatementId equals statements.Id
+                //     join cards in db.Cards on statements.CardId equals cards.Id
+                //     join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
+                //     join tags in db.Tags on itemTags.TagId equals tags.Id
+                //     where true
+                //         && cards.CardType == CardTypes.Bank
+                //         && items.TransactedAt >= StartAt
+                //         && items.TransactedAt < EndAt
+                //     select items;
 
-                var bankStatementPayments =
-                    from items in db.Items
-                    join statements in db.Statements on items.StatementId equals statements.Id
-                    join cards in db.Cards on statements.CardId equals cards.Id
-                    join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
-                    join tags in db.Tags on itemTags.TagId equals tags.Id
-                    where true
-                        && tags.Name == creditCardPaymentTagName
-                        && cards.CardType == CardTypes.Bank
-                        && items.TransactedAt >= StartAt
-                        && items.TransactedAt < EndAt
-                    select items;
+                // var bankStatementPayments =
+                //     from items in db.Items
+                //     join statements in db.Statements on items.StatementId equals statements.Id
+                //     join cards in db.Cards on statements.CardId equals cards.Id
+                //     join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
+                //     join tags in db.Tags on itemTags.TagId equals tags.Id
+                //     where true
+                //         && tags.Name == creditCardPaymentTagName
+                //         && cards.CardType == CardTypes.Bank
+                //         && items.TransactedAt >= StartAt
+                //         && items.TransactedAt < EndAt
+                //     select items;
 
-                var bankStatementExpenses = db.Items
-                    .Where(item => !bankStatementPayments.Any(payment => payment.Id == item.Id));
+                // var bankStatementExpenses = db.Items
+                //     .Where(item => !bankStatementPayments.Any(payment => payment.Id == item.Id));
 
-                var creditCardPayments =
-                    from items in db.Items
-                    join statements in db.Statements on items.StatementId equals statements.Id
-                    join cards in db.Cards on statements.CardId equals cards.Id
-                    join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
-                    join tags in db.Tags on itemTags.TagId equals tags.Id
-                    where true
-                        && tags.Name == creditCardPaymentTagName
-                        && cards.CardType == CardTypes.Credit
-                        && items.TransactedAt >= StartAt
-                        && items.TransactedAt < EndAt
-                    select items;
-                
-                var creditCardItems =
-                    from items in db.Items
-                    join statements in db.Statements on items.StatementId equals statements.Id
-                    join cards in db.Cards on statements.CardId equals cards.Id
-                    join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
-                    join tags in db.Tags on itemTags.TagId equals tags.Id
-                    where true
-                        && cards.CardType == CardTypes.Credit
-                        && items.TransactedAt >= StartAt
-                        && items.TransactedAt < EndAt
-                    select items;
+                var creditCardItems = db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(itemTags => itemTags.Tag)
+                    .Where(item => item.Statement.Card.CardType == CardTypes.Credit)
+                    .Where(item => item.TransactedAt >= StartAt)
+                    .Where(item => item.TransactedAt < EndAt);
+                    // from items in db.Items
+                    // join statements in db.Statements on items.StatementId equals statements.Id
+                    // join cards in db.Cards on statements.CardId equals cards.Id
+                    // join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
+                    // join tags in db.Tags on itemTags.TagId equals tags.Id
+                    // where true
+                    //     && cards.CardType == CardTypes.Credit
+                    //     && items.TransactedAt >= StartAt
+                    //     && items.TransactedAt < EndAt
+                    // select items;
 
-                var creditCardExpenses = creditCardItems
-                    .Where(item => !creditCardPayments.Any(payment => payment.Id == item.Id));
+                var totalBankStatementExpenses = bankStatementItems
+                    .ToList()
+                    .Where(item => !item.Tags.Any(tag => tag.Name == creditCardPaymentTagName));
+
+                var totalCreditCardStatementExpenses = creditCardItems
+                    .ToList()
+                    .Where(item => !item.Tags.Any(tag => tag.Name == creditCardPaymentTagName));
+
+                return totalBankStatementExpenses
+                    .Concat(totalCreditCardStatementExpenses)
+                    .ToList();
             }
+        }
 
-            return 0.00M;
+        public decimal GetEarningsWithCcExpensesAmount()
+        {
+            return GetEarningsWithCcExpenses()
+                .Aggregate(0.00M, (result, item) => result + item.Amount);
         }
     }
 }

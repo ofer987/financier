@@ -5,7 +5,7 @@ using Financier.Common.Expenses;
 
 namespace Financier.Common.Tests.Expenses.AnalysisTests
 {
-    public class GetExpenses : Fixture
+    public class GetEarnings : Fixture
     {
         [Test]
         [TestCase(2019, 6, 33075.85)]
