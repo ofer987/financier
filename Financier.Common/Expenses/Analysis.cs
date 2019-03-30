@@ -49,6 +49,19 @@ namespace Financier.Common.Expenses
             return itemsByTag;
         }
 
+        public decimal GetExpenses()
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
+                    .Where(item => item.TransactedAt >= StartAt)
+                    .Where(item => item.TransactedAt < EndAt)
+                    .ToList()
+                    .Aggregate(0.00M, (result, item) => result + item.Amount);
+            }
+        }
+
         public decimal GetEarnings(int days)
         {
             using (var db = new Context())
@@ -80,7 +93,7 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public List<Item> GetEarningsWithCcExpenses()
+        public List<Item> GetAllExpenses()
         {
             // TODO: what is the right tag name?
             const string creditCardPaymentTagName = "credit-card-payment";
@@ -131,16 +144,16 @@ namespace Financier.Common.Expenses
                     .Where(item => item.Statement.Card.CardType == CardTypes.Credit)
                     .Where(item => item.TransactedAt >= StartAt)
                     .Where(item => item.TransactedAt < EndAt);
-                    // from items in db.Items
-                    // join statements in db.Statements on items.StatementId equals statements.Id
-                    // join cards in db.Cards on statements.CardId equals cards.Id
-                    // join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
-                    // join tags in db.Tags on itemTags.TagId equals tags.Id
-                    // where true
-                    //     && cards.CardType == CardTypes.Credit
-                    //     && items.TransactedAt >= StartAt
-                    //     && items.TransactedAt < EndAt
-                    // select items;
+                // from items in db.Items
+                // join statements in db.Statements on items.StatementId equals statements.Id
+                // join cards in db.Cards on statements.CardId equals cards.Id
+                // join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
+                // join tags in db.Tags on itemTags.TagId equals tags.Id
+                // where true
+                //     && cards.CardType == CardTypes.Credit
+                //     && items.TransactedAt >= StartAt
+                //     && items.TransactedAt < EndAt
+                // select items;
 
                 var totalBankStatementExpenses = bankStatementItems
                     .ToList()
@@ -154,12 +167,6 @@ namespace Financier.Common.Expenses
                     .Concat(totalCreditCardStatementExpenses)
                     .ToList();
             }
-        }
-
-        public decimal GetEarningsWithCcExpensesAmount()
-        {
-            return GetEarningsWithCcExpenses()
-                .Aggregate(0.00M, (result, item) => result + item.Amount);
         }
     }
 }

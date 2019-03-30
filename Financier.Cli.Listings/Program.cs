@@ -36,7 +36,7 @@ namespace Financier.Cli.Listings
             while (startAt <= latestAt)
             {
                 var endAt = startAt.AddMonths(1).AddDays(-1);
-                var items = new Analysis(startAt, endAt).GetEarningsWithCcExpenses();
+                var items = new Analysis(startAt, endAt).GetAllExpenses();
 
                 var amount = items.Aggregate(0.00M, (result, item) => result + item.Amount);
                 Console.WriteLine($"{startAt.ToString("MMMM yyyy")}\t{amount}");

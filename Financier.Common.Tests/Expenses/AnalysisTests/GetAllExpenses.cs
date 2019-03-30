@@ -6,11 +6,10 @@ using NUnit.Framework;
 
 using Financier.Common.Expenses;
 using Financier.Common.Extensions;
-using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.AnalysisTests
 {
-    public class GetEarningsWithCcExpenses : Fixture
+    public class GetAllExpenses : Fixture
     {
         public static IEnumerable TestCases
         {
@@ -36,11 +35,11 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
 
         [Test]
         [TestCase(2019, 6)]
-        public void Test_Expenses_Analysis_GetEarningsWithCcExpenses(int year, int month)
+        public void Test_Expenses_Analysis_GetAllExpenses(int year, int month)
         {
             var startAt = new DateTime(year, month, 1);
             var endAt = startAt.AddMonths(1).AddDays(-1);
-            var actual = new Analysis(startAt, endAt).GetEarningsWithCcExpenses();
+            var actual = new Analysis(startAt, endAt).GetAllExpenses();
 
             foreach (var item in actual)
             {
