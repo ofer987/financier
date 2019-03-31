@@ -26,37 +26,20 @@ namespace Financier.Common.Expenses
             public DateTime ItemTransactedAt { get; set; }
         }
 
-        public IEnumerable<Result> GetItemsByTag()
+        public IEnumerable<ValueTuple<Tag, Item>> GetItemsByTag()
         {
-            List<Result> tags;
             using (var db = new Context())
             {
-                tags = (
+                return (
                      from t in db.Tags
                      join it in db.ItemTags on t.Id equals it.TagId
                      join i in db.Items on it.ItemId equals i.Id
                      where true
                          && i.TransactedAt >= StartAt
                          && i.TransactedAt < EndAt
-                     select new Result { TagName = t.Name, ItemDescription = i.Description, ItemAmount = i.Amount, ItemTransactedAt = i.TransactedAt }
+                     select ValueTuple.Create<Tag, Item>(t, i)
                     ).ToList();
-
-                // tags = db.Tags
-                //     .Include(tag => tag.ItemTags)
-                //         .ThenInclude(itemTag => itemTag.Item)
-                //     .ToList();
             }
-
-            return tags;
-
-            // var results = new Dictionary<Tag, IEnumerable<Item>>();
-            // foreach (var tag in tags)
-            // {
-            //     results.Add(tag, tag.Items);
-            // }
-            //
-            // return results;
-            //
         }
 
         public decimal GetExpenses()
