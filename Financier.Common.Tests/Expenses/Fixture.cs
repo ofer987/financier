@@ -96,6 +96,17 @@ namespace Financier.Common.Tests.Expenses
                         PostedAt = new DateTime(2019, 6, 22),
                         TransactedAt = new DateTime(2019, 6, 22)
                     };
+
+                    public static Func<IEnumerable<Tag>, Item> GetChildCareBenefit = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                        Amount = -800.00M,
+                        Description = "Federal Childcare Benefit",
+                        ItemId = Guid.NewGuid().ToString(),
+                        PostedAt = new DateTime(2019, 6, 23),
+                        TransactedAt = new DateTime(2019, 6, 23),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                    };
                 }
             }
 
@@ -152,6 +163,17 @@ namespace Financier.Common.Tests.Expenses
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                         PostedAt = new DateTime(2019, 7, 22),
                         TransactedAt = new DateTime(2019, 7, 22)
+                    };
+
+                    public static Func<IEnumerable<Tag>, Item> GetChildCareBenefit = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                        Amount = -800.00M,
+                        Description = "Federal Childcare Benefit",
+                        ItemId = Guid.NewGuid().ToString(),
+                        PostedAt = new DateTime(2019, 7, 23),
+                        TransactedAt = new DateTime(2019, 7, 23),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                     };
                 }
             }
@@ -429,7 +451,8 @@ namespace Financier.Common.Tests.Expenses
                             MyFactories.SavingsCard.June.Items.GetGroceries(new[] { groceriesTag }),
                             MyFactories.SavingsCard.June.Items.GetCoffee(new[] { groceriesTag }),
                             MyFactories.SavingsCard.June.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag }),
-                            MyFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag })
+                            MyFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag }),
+                            MyFactories.SavingsCard.June.Items.GetChildCareBenefit(new[] { salaryTag })
                         });
                         db.Statements.Add(juneStatement);
 
@@ -438,7 +461,8 @@ namespace Financier.Common.Tests.Expenses
                             MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
                             MyFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
                             MyFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
-                            MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag } )
+                            MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag } ),
+                            MyFactories.SavingsCard.July.Items.GetChildCareBenefit(new[] { salaryTag })
                         });
                         db.Statements.Add(julyStatement);
                     }

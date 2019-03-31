@@ -8,8 +8,8 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
     public class GetExpenses : Fixture
     {
         [Test]
-        [TestCase(2019, 6, 33075.85)]
-        [TestCase(2019, 7, 598102.45)]
+        [TestCase(2019, 6, 32275.85)]
+        [TestCase(2019, 7, 597302.45)]
         public void Test_Expenses_Analysis_GetExpenses(int year, int month, decimal expected)
         {
             // -3000 + 104.50 + 4.20 + 967.15 + 35000.00
