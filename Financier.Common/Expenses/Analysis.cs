@@ -18,35 +18,45 @@ namespace Financier.Common.Expenses
             EndAt = endAt;
         }
 
-        public Dictionary<Tag, List<Item>> ItemsByGroup()
+        public class Result
         {
-            List<Item> items;
+            public string TagName { get; set; }
+            public string ItemDescription { get; set; }
+            public decimal ItemAmount { get; set; }
+            public DateTime ItemTransactedAt { get; set; }
+        }
+
+        public IEnumerable<Result> GetItemsByTag()
+        {
+            List<Result> tags;
             using (var db = new Context())
             {
-                items = db.Items
-                    .Where(item => item.TransactedAt >= StartAt)
-                    .Where(item => item.TransactedAt < EndAt)
-                    .Where(item => item.Amount > 0)
-                    .ToList();
+                tags = (
+                     from t in db.Tags
+                     join it in db.ItemTags on t.Id equals it.TagId
+                     join i in db.Items on it.ItemId equals i.Id
+                     where true
+                         && i.TransactedAt >= StartAt
+                         && i.TransactedAt < EndAt
+                     select new Result { TagName = t.Name, ItemDescription = i.Description, ItemAmount = i.Amount, ItemTransactedAt = i.TransactedAt }
+                    ).ToList();
+
+                // tags = db.Tags
+                //     .Include(tag => tag.ItemTags)
+                //         .ThenInclude(itemTag => itemTag.Item)
+                //     .ToList();
             }
 
-            var itemsByTag = new Dictionary<Tag, List<Item>>();
-            foreach (var item in items)
-            {
-                foreach (var tag in item.Tags)
-                {
-                    if (itemsByTag.TryGetValue(tag, out var taggedItems))
-                    {
-                        taggedItems.Add(item);
-                    }
-                    else
-                    {
-                        itemsByTag.Add(tag, new List<Item> { item });
-                    }
-                }
-            }
+            return tags;
 
-            return itemsByTag;
+            // var results = new Dictionary<Tag, IEnumerable<Item>>();
+            // foreach (var tag in tags)
+            // {
+            //     results.Add(tag, tag.Items);
+            // }
+            //
+            // return results;
+            //
         }
 
         public decimal GetExpenses()
@@ -87,7 +97,7 @@ namespace Financier.Common.Expenses
                 var amount = salaries.Aggregate(0.00M, (result, item) => result + item.Amount);
                 var dateRange = latestAt - earliestAt;
 
-                // Change sense because earnings are reported 
+                // Change sense because earnings are reported
                 // as negative numbers
                 return -1 * Convert.ToDecimal(Convert.ToDouble(amount) * days / dateRange.TotalDays);
             }
