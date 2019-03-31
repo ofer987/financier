@@ -66,30 +66,30 @@ namespace Financier.Common.Expenses
         {
             using (var db = new Context())
             {
-                // var amounts =
-                //     from items in db.Items
-                //     join statements in db.Statements on items.StatementId equals statements.Id
-                //     join cards in db.Cards on statements.CardId equals cards.Id
-                //     where true
-                //         && cards.CardType == CardTypes.Bank
-                //         && items.TransactedAt >= StartAt
-                //         && items.TransactedAt < EndAt
-                //     select items.Amount;
-                //
-                // return amounts.ToList().Aggregate(0.00M, (result, amount) => result + amount);
-                var items = db.Items
-                    // .Include(item => item.Statement)
-                    // .ThenInclude(statement => statement.Card)
-                    .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
-                    .ToList();
+                var salaries =
+                    (from items in db.Items
+                     join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
+                     join tags in db.Tags on itemTags.TagId equals tags.Id
+                     where true
+                     && tags.Name == "salary"
+                     select items).ToList();
 
-                var salaries = items.Where(item => item.Amount > 0);
+                var earliestAt = db.Items
+                    .OrderBy(item => item.TransactedAt)
+                    .First()
+                    .TransactedAt;
+
+                var latestAt = db.Items
+                    .OrderByDescending(item => item.TransactedAt)
+                    .First()
+                    .TransactedAt;
+
                 var amount = salaries.Aggregate(0.00M, (result, item) => result + item.Amount);
-                var earliestAt = items.OrderBy(item => item.TransactedAt).First().TransactedAt;
-                var latestAt = items.OrderByDescending(item => item.TransactedAt).First().TransactedAt;
                 var dateRange = latestAt - earliestAt;
 
-                return Convert.ToDecimal(Convert.ToDouble(amount) * days / dateRange.TotalDays);
+                // Change sense because earnings are reported 
+                // as negative numbers
+                return -1 * Convert.ToDecimal(Convert.ToDouble(amount) * days / dateRange.TotalDays);
             }
         }
 
