@@ -5,6 +5,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
+using Financier.Common.Extensions;
 
 namespace Financier.Cli.Listings
 {
@@ -87,7 +88,7 @@ namespace Financier.Cli.Listings
                 var endAt = startAt.AddMonths(1).AddDays(-1);
 
                 Console.WriteLine($"\t{startAt.ToString("MMMM yyyy")}");
-                DisplayOrderedAmountByTag(startAt, endAt);
+                DisplayOrderedPercentageByTag(startAt, endAt);
 
                 startAt = endAt;
             }
@@ -129,6 +130,30 @@ namespace Financier.Cli.Listings
             {
                 Console.WriteLine($"\t\t{amount.Item1.Name} for a total of {amount.Item2}");
             }
+        }
+
+        private void DisplayOrderedPercentageByTag(DateTime startAt, DateTime endAt)
+        {
+            var total = GetExpenseTotal(startAt, endAt);
+            var amountsByTags = new Analysis(startAt, endAt)
+                .GetExpensesByTag()
+                .GroupBy(result => result.Item1)
+                .Select(i => ValueTuple.Create<Tag, decimal>(i.Key, i.Aggregate(0.00M, (r, item) => r + item.Item2.Amount)))
+                .OrderByDescending(amount => amount.Item2);
+
+            foreach (var amount in amountsByTags)
+            {
+                var percentage = amount.Item2 / total;
+
+                Console.WriteLine($"\t\t{amount.Item1.Name} for a total of {percentage.ToString("P")}");
+            }
+        }
+
+        private decimal GetExpenseTotal(DateTime startAt, DateTime endAt)
+        {
+            return new Analysis(startAt, endAt)
+                .GetExpensesByTag()
+                .Aggregate(0.00M, (r, i) => r + i.Item2.Amount);
         }
     }
 }

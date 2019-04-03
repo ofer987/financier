@@ -42,6 +42,24 @@ namespace Financier.Common.Expenses
             }
         }
 
+        public IEnumerable<ValueTuple<Tag, Item>> GetExpensesByTag()
+        {
+            using (var db = new Context())
+            {
+                return (
+                    from t in db.Tags
+                    join it in db.ItemTags on t.Id equals it.TagId
+                    join i in db.Items on it.ItemId equals i.Id
+                    where true
+                        && i.TransactedAt >= StartAt
+                        && i.TransactedAt < EndAt
+                        && i.Amount > 0
+                        && t.Name != "credit-card-payment"
+                    select ValueTuple.Create<Tag, Item>(t, i)
+                   ).ToList();
+            }
+        }
+
         public decimal GetExpenses()
         {
             using (var db = new Context())
