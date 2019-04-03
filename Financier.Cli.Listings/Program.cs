@@ -5,7 +5,6 @@ using McMaster.Extensions.CommandLineUtils;
 using Financier.Common;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
-using Financier.Common.Extensions;
 
 namespace Financier.Cli.Listings
 {
@@ -81,13 +80,17 @@ namespace Financier.Cli.Listings
             }
 
             Console.WriteLine();
-            Console.WriteLine("Condensed Expenditures");
+            Console.WriteLine("Condensed CashFlow Statement");
             startAt = earliestAt;
             while (startAt <= latestAt)
             {
                 var endAt = startAt.AddMonths(1).AddDays(-1);
 
                 Console.WriteLine($"\t{startAt.ToString("MMMM yyyy")}");
+                Console.WriteLine("\tAssets");
+                DisplayOrderedAssetsPercentageByTag(startAt, endAt);
+
+                Console.WriteLine("\tExpenses");
                 DisplayOrderedPercentageByTag(startAt, endAt);
 
                 startAt = endAt;
@@ -132,20 +135,35 @@ namespace Financier.Cli.Listings
             }
         }
 
+        private void DisplayOrderedAssetsPercentageByTag(DateTime startAt, DateTime endAt)
+        {
+            var total = GetAssetTotal(startAt, endAt);
+            var amountsByTags = new Analysis(startAt, endAt)
+                .GetAssetsByTag()
+                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
+                .OrderBy(pair => pair.Value);
+
+            foreach (var pair in amountsByTags)
+            {
+                var percentage = pair.Value / total;
+
+                Console.WriteLine($"\t\t{pair.Key.Name} for a total of {percentage.ToString("P")}");
+            }
+        }
+
         private void DisplayOrderedPercentageByTag(DateTime startAt, DateTime endAt)
         {
             var total = GetExpenseTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetExpensesByTag()
-                .GroupBy(result => result.Item1)
-                .Select(i => ValueTuple.Create<Tag, decimal>(i.Key, i.Aggregate(0.00M, (r, item) => r + item.Item2.Amount)))
-                .OrderByDescending(amount => amount.Item2);
+                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
+                .OrderByDescending(pair => pair.Value);
 
-            foreach (var amount in amountsByTags)
+            foreach (var pair in amountsByTags)
             {
-                var percentage = amount.Item2 / total;
+                var percentage = pair.Value / total;
 
-                Console.WriteLine($"\t\t{amount.Item1.Name} for a total of {percentage.ToString("P")}");
+                Console.WriteLine($"\t\t{pair.Key.Name} for a total of {percentage.ToString("P")}");
             }
         }
 
@@ -153,7 +171,16 @@ namespace Financier.Cli.Listings
         {
             return new Analysis(startAt, endAt)
                 .GetExpensesByTag()
-                .Aggregate(0.00M, (r, i) => r + i.Item2.Amount);
+                .SelectMany(pair => pair.Value)
+                .Aggregate(0.00M, (r, i) => r + i.Amount);
+        }
+
+        private decimal GetAssetTotal(DateTime startAt, DateTime endAt)
+        {
+            return new Analysis(startAt, endAt)
+                .GetAssetsByTag()
+                .SelectMany(pair => pair.Value)
+                .Aggregate(0.00M, (r, i) => r + i.Amount);
         }
     }
 }

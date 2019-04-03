@@ -42,22 +42,14 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public IEnumerable<ValueTuple<Tag, Item>> GetExpensesByTag()
+        public IDictionary<Tag, IList<Item>> GetAssetsByTag()
         {
-            using (var db = new Context())
-            {
-                return (
-                    from t in db.Tags
-                    join it in db.ItemTags on t.Id equals it.TagId
-                    join i in db.Items on it.ItemId equals i.Id
-                    where true
-                        && i.TransactedAt >= StartAt
-                        && i.TransactedAt < EndAt
-                        && i.Amount > 0
-                        && t.Name != "credit-card-payment"
-                    select ValueTuple.Create<Tag, Item>(t, i)
-                   ).ToList();
-            }
+            return GetItemByTag(true);
+        }
+
+        public IDictionary<Tag, IList<Item>> GetExpensesByTag()
+        {
+            return GetItemByTag(false);
         }
 
         public decimal GetExpenses()
@@ -178,6 +170,40 @@ namespace Financier.Common.Expenses
                     .Concat(totalCreditCardStatementExpenses)
                     .ToList();
             }
+        }
+
+        private IDictionary<Tag, IList<Item>> GetItemByTag(bool isAsset)
+        {
+            List<ValueTuple<Tag, Item>> tagAndExpenses;
+            using (var db = new Context())
+            {
+                tagAndExpenses = (
+                    from t in db.Tags
+                    join it in db.ItemTags on t.Id equals it.TagId
+                    join i in db.Items on it.ItemId equals i.Id
+                    where true
+                        && i.TransactedAt >= StartAt
+                        && i.TransactedAt < EndAt
+                        && (isAsset && i.Amount < 0 || !isAsset && i.Amount > 0)
+                        && t.Name != "credit-card-payment"
+                    select ValueTuple.Create<Tag, Item>(t, i)
+                    ).ToList();
+            }
+
+            var results = new Dictionary<Tag, IList<Item>>();
+            foreach (var tagAndExpense in tagAndExpenses)
+            {
+                if (results.ContainsKey(tagAndExpense.Item1))
+                {
+                    results[tagAndExpense.Item1].Add(tagAndExpense.Item2);
+                }
+                else
+                {
+                    results.Add(tagAndExpense.Item1, new List<Item> { tagAndExpense.Item2 });
+                }
+            }
+
+            return results;
         }
     }
 }
