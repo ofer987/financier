@@ -116,7 +116,7 @@ namespace Financier.Cli.Listings
                     }
                     else
                     {
-                        Console.WriteLine($"\t\t\t{item.Item2.Description} earned for {item.Item2.Amount} dollars");
+                        Console.WriteLine($"\t\t\t{item.Item2.Description} earned {0.00M - item.Item2.Amount} dollars");
                     }
                 }
             }
