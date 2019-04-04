@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Expenses.Models;
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses
 {
@@ -170,6 +171,77 @@ namespace Financier.Common.Expenses
                     .Concat(totalCreditCardStatementExpenses)
                     .ToList();
             }
+        }
+
+        public IDictionary<string, IList<Item>> GetExpensesAndTags()
+        {
+            return GetItemsAndTags(false);
+        }
+
+        public IDictionary<string, IList<Item>> GetAssetsAndTags()
+        {
+            return GetItemsAndTags(true);
+        }
+
+        private IDictionary<string, IList<Item>> GetItemsAndTags(bool isAsset)
+        {
+            List<ValueTuple<Tag, Item>> tagAndItems;
+            using (var db = new Context())
+            {
+                tagAndItems = (
+                    from t in db.Tags
+                    join it in db.ItemTags on t.Id equals it.TagId
+                    join i in db.Items on it.ItemId equals i.Id
+                    where true
+                        && i.TransactedAt >= StartAt
+                        && i.TransactedAt < EndAt
+                        && (isAsset && i.Amount < 0 || !isAsset && i.Amount > 0)
+                        && t.Name != "credit-card-payment"
+                    select ValueTuple.Create<Tag, Item>(t, i)
+                    ).ToList();
+            }
+
+            var results = new Dictionary<Item, IList<Tag>>();
+            foreach (var tagAndItem in tagAndItems)
+            {
+                if (results.ContainsKey(tagAndItem.Item2))
+                {
+                    results[tagAndItem.Item2].Add(tagAndItem.Item1);
+                }
+                else
+                {
+                    results.Add(tagAndItem.Item2, new List<Tag> { tagAndItem.Item1 });
+                }
+            }
+
+            return ByTags(results);
+        }
+
+        private IDictionary<string, IList<Item>> ByTags(IDictionary<Item, IList<Tag>> itemAndTags)
+        {
+            var results = new Dictionary<string, IList<Item>>();
+
+            var orderedItemAndTags = itemAndTags.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value
+                    .OrderBy(tag => tag.Name)
+                    .Select(tag => tag.Name).Join(", ")
+            );
+
+            foreach (var itemAndTag in orderedItemAndTags)
+            {
+
+                if (results.ContainsKey(itemAndTag.Value))
+                {
+                    results[itemAndTag.Value].Add(itemAndTag.Key);
+                }
+                else
+                {
+                    results.Add(itemAndTag.Value, new List<Item> { itemAndTag.Key });
+                }
+            }
+
+            return results;
         }
 
         private IDictionary<Tag, IList<Item>> GetItemByTag(bool isAsset)
