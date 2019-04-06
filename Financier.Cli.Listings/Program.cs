@@ -86,8 +86,9 @@ namespace Financier.Cli.Listings
             while (startAt <= latestAt)
             {
                 var endAt = startAt.AddMonths(1).AddDays(-1);
+                var profit = GetRealAssetTotal(startAt, endAt) - GetRealExpenseTotal(startAt, endAt);
 
-                Console.WriteLine($"\t{startAt.ToString("MMMM yyyy")}");
+                Console.WriteLine($"\t{startAt.ToString("MMMM yyyy")} ({profit})");
                 Console.WriteLine("\tAssets");
                 DisplayOrderedAssetPercentageAndTag(startAt, endAt);
 
