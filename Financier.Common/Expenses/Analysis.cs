@@ -173,17 +173,17 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public IDictionary<string, IList<Item>> GetExpensesAndTags()
+        public IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetExpensesAndTags()
         {
             return GetItemsAndTags(false);
         }
 
-        public IDictionary<string, IList<Item>> GetAssetsAndTags()
+        public IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetAssetsAndTags()
         {
             return GetItemsAndTags(true);
         }
 
-        private IDictionary<string, IList<Item>> GetItemsAndTags(bool isAsset)
+        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetItemsAndTags(bool isAsset)
         {
             List<ValueTuple<Tag, Item>> tagAndItems;
             using (var db = new Context())
@@ -217,31 +217,60 @@ namespace Financier.Common.Expenses
             return ByTags(results);
         }
 
-        private IDictionary<string, IList<Item>> ByTags(IDictionary<Item, IList<Tag>> itemAndTags)
+        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> ByTags(IDictionary<Item, IList<Tag>> itemAndTags)
         {
-            var results = new Dictionary<string, IList<Item>>();
+            var results = new Dictionary<IEnumerable<Tag>, IEnumerable<Item>>(new TagNameComparer());
 
             var orderedItemAndTags = itemAndTags.ToDictionary(
                 pair => pair.Key,
-                pair => pair.Value
-                    .OrderBy(tag => tag.Name)
-                    .Select(tag => tag.Name).Join(", ")
+                pair => pair.Value.OrderBy(tag => tag.Name)
             );
 
             foreach (var itemAndTag in orderedItemAndTags)
             {
-
-                if (results.ContainsKey(itemAndTag.Value))
+                var val = itemAndTag.Value;
+                if (results.ContainsKey(val))
                 {
-                    results[itemAndTag.Value].Add(itemAndTag.Key);
+                    ((List<Item>)results[val]).Add(itemAndTag.Key);
                 }
                 else
                 {
-                    results.Add(itemAndTag.Value, new List<Item> { itemAndTag.Key });
+                    results.Add(val, new List<Item> { itemAndTag.Key });
                 }
             }
 
             return results;
+        }
+
+        public class TagNameComparer : EqualityComparer<IEnumerable<Tag>>
+        {
+            public override bool Equals(IEnumerable<Tag> source, IEnumerable<Tag> target)
+            {
+                if (source.Count() != target.Count())
+                {
+                    return false;
+                }
+
+                var sortedSource = source.OrderBy(tag => tag.Name).ToList();
+                var sortedTarget = target.OrderBy(tag => tag.Name).ToList();
+                for (var i = 0; i < sortedSource.Count; i += 1)
+                {
+                    if (sortedSource[i] != sortedTarget[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public override int GetHashCode(IEnumerable<Tag> obj)
+            {
+                return obj
+                    .Select(item => item.Name)
+                    .OrderBy(name => name)
+                    .Aggregate(0, (result, name) => result + name.GetHashCode());
+            }
         }
 
         private IDictionary<Tag, IList<Item>> GetItemByTag(bool isAsset)

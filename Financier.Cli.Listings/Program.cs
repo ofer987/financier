@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -89,10 +90,10 @@ namespace Financier.Cli.Listings
                 var profit = GetRealAssetTotal(startAt, endAt) - GetRealExpenseTotal(startAt, endAt);
 
                 Console.WriteLine($"\t{startAt.ToString("MMMM yyyy")} ({profit})");
-                Console.WriteLine("\tAssets");
+                Console.WriteLine($"\tAssets ({GetRealAssetTotal(startAt, endAt)})");
                 DisplayOrderedAssetPercentageAndTag(startAt, endAt);
 
-                Console.WriteLine("\tExpenses");
+                Console.WriteLine($"\tExpenses ({GetRealExpenseTotal(startAt, endAt)})");
                 DisplayOrderedExpensePercentageAndTag(startAt, endAt);
 
                 startAt = startAt.AddMonths(1);
@@ -175,15 +176,69 @@ namespace Financier.Cli.Listings
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetAssetsAndTags()
                 .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r - i.Amount))
+                .ToDictionary(pair => pair.Key, pair => pair.Value / total);
+
+            DisplayItems(amountsByTags);
+        }
+
+        private void DisplayItems(IDictionary<IEnumerable<Tag>, decimal> amountsByTags)
+        {
+            const decimal threshold = 0.05M;
+
+            var processedItems = GetMajorItems(amountsByTags, threshold)
+                .Concat(GetMinorItems(amountsByTags, threshold))
                 .OrderByDescending(pair => pair.Value);
 
-            foreach (var pair in amountsByTags)
+            foreach (var pair in processedItems)
             {
-                var tagNames = pair.Key;
-                var percentage = pair.Value / total;
+                var tagNames = pair.Key.Select(tag => tag.Name).Distinct().OrderBy(name => name).Join(", ");
+                var percentage = pair.Value;
 
                 Console.WriteLine($"\t\t{tagNames} for a total of {percentage.ToString("P")}");
             }
+        }
+
+        private IDictionary<IEnumerable<Tag>, decimal> GetMajorItems(IDictionary<IEnumerable<Tag>, decimal> items, decimal threshold)
+        {
+            return items
+                .Where(pair => pair.Value >= threshold)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        private IDictionary<IEnumerable<Tag>, decimal> GetMinorItems(IDictionary<IEnumerable<Tag>, decimal> items, decimal threshold)
+        {
+            var minorAmounts = items
+                .Where(pair => pair.Value < threshold)
+                .ToList();
+
+            var results = new Dictionary<IEnumerable<Tag>, decimal>();
+
+            var totalAmount = 0.00M;
+            List<Tag> keys = new List<Tag>();
+
+            // skip the last item
+            foreach (var amount in minorAmounts.Skip(1).OrderBy(pair => pair.Value))
+            {
+                totalAmount += amount.Value;
+                keys.AddRange(amount.Key);
+
+                if (totalAmount >= threshold)
+                {
+                    results.Add(keys, totalAmount);
+                    keys = new List<Tag>();
+                    totalAmount = 0.00M;
+                }
+            }
+
+            foreach (var amount in minorAmounts.Take(1).OrderBy(pair => pair.Value))
+            {
+                totalAmount += amount.Value;
+                keys.AddRange(amount.Key);
+
+                results.Add(keys, totalAmount);
+            }
+
+            return results;
         }
 
         private void DisplayOrderedExpensePercentageAndTag(DateTime startAt, DateTime endAt)
@@ -192,16 +247,9 @@ namespace Financier.Cli.Listings
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetExpensesAndTags()
                 .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
-                .OrderByDescending(pair => pair.Value)
-                .Take(4);
+                .ToDictionary(pair => pair.Key, pair => pair.Value / total);
 
-            foreach (var pair in amountsByTags)
-            {
-                var tagNames = pair.Key;
-                var percentage = pair.Value / total;
-
-                Console.WriteLine($"\t\t{tagNames} for a total of {percentage.ToString("P")}");
-            }
+            DisplayItems(amountsByTags);
         }
 
         private decimal GetExpenseTotal(DateTime startAt, DateTime endAt)
