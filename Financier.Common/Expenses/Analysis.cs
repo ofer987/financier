@@ -175,15 +175,15 @@ namespace Financier.Common.Expenses
 
         public IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetExpensesAndTags()
         {
-            return GetItemsAndTags(false);
+            return GetItemsByTags(false);
         }
 
         public IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetAssetsAndTags()
         {
-            return GetItemsAndTags(true);
+            return GetItemsByTags(true);
         }
 
-        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetItemsAndTags(bool isAsset)
+        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetItemsByTags(bool isAsset)
         {
             List<ValueTuple<Tag, Item>> tagAndItems;
             using (var db = new Context())
@@ -201,7 +201,7 @@ namespace Financier.Common.Expenses
                     ).ToList();
             }
 
-            var results = new Dictionary<Item, IList<Tag>>();
+            var results = new Dictionary<Item, List<Tag>>();
             foreach (var tagAndItem in tagAndItems)
             {
                 if (results.ContainsKey(tagAndItem.Item2))
@@ -214,10 +214,10 @@ namespace Financier.Common.Expenses
                 }
             }
 
-            return ByTags(results);
+            return SwitchKeyWithValue(results);
         }
 
-        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> ByTags(IDictionary<Item, IList<Tag>> itemAndTags)
+        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> SwitchKeyWithValue(IDictionary<Item, List<Tag>> itemAndTags)
         {
             var results = new Dictionary<IEnumerable<Tag>, IEnumerable<Item>>(new TagNameComparer());
 
