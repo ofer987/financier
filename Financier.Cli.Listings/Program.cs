@@ -192,7 +192,8 @@ namespace Financier.Cli.Listings
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetExpensesAndTags()
                 .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
-                .OrderByDescending(pair => pair.Value);
+                .OrderByDescending(pair => pair.Value)
+                .Take(4);
 
             foreach (var pair in amountsByTags)
             {
