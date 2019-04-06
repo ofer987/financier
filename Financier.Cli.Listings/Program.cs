@@ -94,7 +94,7 @@ namespace Financier.Cli.Listings
                 Console.WriteLine("\tExpenses");
                 DisplayOrderedExpensePercentageAndTag(startAt, endAt);
 
-                startAt = endAt;
+                startAt = startAt.AddMonths(1);
             }
         }
 
