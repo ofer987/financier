@@ -19,14 +19,6 @@ namespace Financier.Common.Expenses
             EndAt = endAt;
         }
 
-        public class Result
-        {
-            public string TagName { get; set; }
-            public string ItemDescription { get; set; }
-            public decimal ItemAmount { get; set; }
-            public DateTime ItemTransactedAt { get; set; }
-        }
-
         public IEnumerable<ValueTuple<Tag, Item>> GetItemsByTag()
         {
             using (var db = new Context())
