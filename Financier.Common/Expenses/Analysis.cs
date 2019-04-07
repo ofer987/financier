@@ -209,60 +209,26 @@ namespace Financier.Common.Expenses
             return SwitchKeyWithValue(results);
         }
 
-        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> SwitchKeyWithValue(IDictionary<Item, List<Tag>> itemAndTags)
+        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> SwitchKeyWithValue(IDictionary<Item, List<Tag>> tagsByItem)
         {
             var results = new Dictionary<IEnumerable<Tag>, IEnumerable<Item>>(new TagNameComparer());
 
-            var orderedItemAndTags = itemAndTags.ToDictionary(
-                pair => pair.Key,
-                pair => pair.Value.OrderBy(tag => tag.Name)
-            );
-
-            foreach (var itemAndTag in orderedItemAndTags)
+            foreach (var itemAndTag in tagsByItem)
             {
-                var val = itemAndTag.Value;
+                var key = itemAndTag.Key;
+                var val = itemAndTag.Value.OrderBy(tag => tag.Name);
+
                 if (results.ContainsKey(val))
                 {
-                    ((List<Item>)results[val]).Add(itemAndTag.Key);
+                    ((List<Item>)results[val]).Add(key);
                 }
                 else
                 {
-                    results.Add(val, new List<Item> { itemAndTag.Key });
+                    results.Add(val, new List<Item> { key });
                 }
             }
 
             return results;
-        }
-
-        public class TagNameComparer : EqualityComparer<IEnumerable<Tag>>
-        {
-            public override bool Equals(IEnumerable<Tag> source, IEnumerable<Tag> target)
-            {
-                if (source.Count() != target.Count())
-                {
-                    return false;
-                }
-
-                var sortedSource = source.OrderBy(tag => tag.Name).ToList();
-                var sortedTarget = target.OrderBy(tag => tag.Name).ToList();
-                for (var i = 0; i < sortedSource.Count; i += 1)
-                {
-                    if (sortedSource[i] != sortedTarget[i])
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            public override int GetHashCode(IEnumerable<Tag> obj)
-            {
-                return obj
-                    .Select(item => item.Name)
-                    .OrderBy(name => name)
-                    .Aggregate(0, (result, name) => result + name.GetHashCode());
-            }
         }
 
         private IDictionary<Tag, IList<Item>> GetItemByTag(bool isAsset)
