@@ -9,13 +9,13 @@ namespace Financier.Common.Expenses
     {
         public override bool Equals(IEnumerable<Tag> source, IEnumerable<Tag> target)
         {
-            if (source.Count() != target.Count())
+            var sortedSource = source.OrderBy(tag => tag.Name).ToList();
+            var sortedTarget = target.OrderBy(tag => tag.Name).ToList();
+
+            if (sortedSource.Count != sortedTarget.Count)
             {
                 return false;
             }
-
-            var sortedSource = source.OrderBy(tag => tag.Name).ToList();
-            var sortedTarget = target.OrderBy(tag => tag.Name).ToList();
             for (var i = 0; i < sortedSource.Count; i += 1)
             {
                 if (sortedSource[i] != sortedTarget[i])
