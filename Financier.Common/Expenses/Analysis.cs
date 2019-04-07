@@ -177,10 +177,10 @@ namespace Financier.Common.Expenses
 
         private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetItemsByTags(bool isAsset)
         {
-            List<ValueTuple<Tag, Item>> tagAndItems;
+            List<ValueTuple<Tag, Item>> tagAndItemList;
             using (var db = new Context())
             {
-                tagAndItems = (
+                tagAndItemList = (
                     from t in db.Tags
                     join it in db.ItemTags on t.Id equals it.TagId
                     join i in db.Items on it.ItemId equals i.Id
@@ -194,7 +194,7 @@ namespace Financier.Common.Expenses
             }
 
             var results = new Dictionary<Item, List<Tag>>();
-            foreach (var tagAndItem in tagAndItems)
+            foreach (var tagAndItem in tagAndItemList)
             {
                 if (results.ContainsKey(tagAndItem.Item2))
                 {
