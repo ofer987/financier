@@ -1,0 +1,27 @@
+﻿@page
+@model IndexModel
+@{
+  ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+  <h1 class="display-4">Welcome</h1>
+  <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div>
+  <span>
+    @Html.DisplayNameFor(model => model.EarliestAt)
+  </span>
+  <span>
+    @Html.DisplayFor(model => model.EarliestAt)
+  </span>
+
+  @foreach (var item in Model.GetItems(Model.EarliestAt, Model.LatestAt))
+  {
+    <div>
+      @Html.DisplayFor(model => item.Value);
+    </div>
+  }
+  <div>
+</div>
