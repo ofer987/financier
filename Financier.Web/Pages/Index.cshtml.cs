@@ -48,6 +48,20 @@ namespace Financier.Web.Pages
             }
         }
 
+        public IEnumerable<DateTime> Months
+        {
+            get
+            {
+                var earliestAt = EarliestAt;
+                var latestAt = LatestAt;
+
+                for (var startAt = earliestAt; startAt <= latestAt; startAt = startAt.AddMonths(1))
+                {
+                    yield return startAt;
+                }
+            }
+        }
+
         public void OnGet()
         {
             if (ModelState.IsValid)
@@ -56,13 +70,32 @@ namespace Financier.Web.Pages
             }
         }
 
-        public IDictionary<IEnumerable<Tag>, decimal> GetItems(DateTime startAt, DateTime endAt)
+        public IDictionary<IEnumerable<Tag>, decimal> GetAssets(DateTime at)
         {
             const decimal threshold = 0.05M;
+            var startAt = at;
+            var endAt = at.AddMonths(1).AddDays(-1);
             var total = GetRealAssetTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetAssetsAndTags()
                 .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r - i.Amount))
+                .ToDictionary(pair => pair.Key, pair => pair.Value / total);
+
+            return new Dictionary<IEnumerable<Tag>, decimal>()
+                .Concat(GetMajorItems(amountsByTags, threshold))
+                .Concat(GetMinorItems(amountsByTags, threshold))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        public IDictionary<IEnumerable<Tag>, decimal> GetExpenses(DateTime at)
+        {
+            const decimal threshold = 0.05M;
+            var startAt = at;
+            var endAt = at.AddMonths(1).AddDays(-1);
+            var total = GetRealExpenseTotal(startAt, endAt);
+            var amountsByTags = new Analysis(startAt, endAt)
+                .GetExpensesAndTags()
+                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
                 .ToDictionary(pair => pair.Key, pair => pair.Value / total);
 
             return new Dictionary<IEnumerable<Tag>, decimal>()
@@ -128,6 +161,25 @@ namespace Financier.Web.Pages
                 .GetExpensesAndTags()
                 .SelectMany(pair => pair.Value)
                 .Aggregate(0.00M, (r, i) => r + i.Amount);
+        }
+
+        public string DisplayPercentage(decimal amount)
+        {
+            return amount.ToString("P");
+        }
+
+        public string DisplayTagNames(IEnumerable<Tag> tags)
+        {
+            return tags
+                .Select(tag => tag.Name)
+                .Distinct()
+                .OrderBy(name => name)
+                .Join(", ");
+        }
+
+        public string DisplayMonth(DateTime at)
+        {
+            return at.ToString("MMMM yyyy");
         }
     }
 }

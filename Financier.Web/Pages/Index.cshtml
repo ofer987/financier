@@ -10,18 +10,29 @@
 </div>
 
 <div>
-  <span>
-    @Html.DisplayNameFor(model => model.EarliestAt)
-  </span>
-  <span>
-    @Html.DisplayFor(model => model.EarliestAt)
-  </span>
-
-  @foreach (var item in Model.GetItems(Model.EarliestAt, Model.LatestAt))
+  @foreach (var month in Model.Months)
   {
-    <div>
-      @Html.DisplayFor(model => item.Value);
-    </div>
+    <h2>@Model.DisplayMonth(month)</h2>
+
+    <h3>Assets</h3>
+    @foreach (var item in Model.GetAssets(month))
+    {
+      <div>
+        @Model.DisplayTagNames(item.Key)
+        &nbsp;for a total of&nbsp;
+        @Model.DisplayPercentage(item.Value)
+      </div>
+    }
+
+    <h3>Expenses</h3>
+    @foreach (var item in Model.GetExpenses(month))
+    {
+      <div>
+        @Model.DisplayTagNames(item.Key)
+        &nbsp;for a total of&nbsp;
+        @Model.DisplayPercentage(item.Value)
+      </div>
+    }
   }
   <div>
 </div>
