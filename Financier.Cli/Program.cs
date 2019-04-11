@@ -36,7 +36,7 @@ namespace Financier.Cli
             }
 
             Console.WriteLine("Processing Items");
-            foreach (var item in Item.GetAll())
+            foreach (var item in Item.GetAllNewItems())
             {
                 Console.WriteLine();
                 Console.WriteLine("Processing Item:");

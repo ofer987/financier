@@ -13,7 +13,15 @@ namespace Financier.Common.Expenses.Models
     [Table("Expenses_Items")]
     public class Item
     {
-        public static Item[] GetAll()
+        public static IEnumerable<Item> GetAll()
+        {
+            using (var db = new Context())
+            {
+                return db.Items.ToList();
+            }
+        }
+
+        public static Item[] GetAllNewItems()
         {
             using (var db = new Context())
             {
