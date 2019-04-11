@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using GraphQL;
+using GraphQL.Server;
+using GraphQL.Server.Ui.Playground;
+
+using Financier.Common;
 
 namespace Financier.Web
 {
@@ -16,6 +16,7 @@ namespace Financier.Web
     {
         public Startup(IConfiguration configuration)
         {
+            Context.Environment = Environments.Dev;
             Configuration = configuration;
         }
 
@@ -31,6 +32,17 @@ namespace Financier.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+            services.AddScoped<ItemSchema>();
+
+            // Add GraphQL
+            services.AddGraphQL(options =>
+                    {
+                    options.EnableMetrics = true;
+                    options.ExposeExceptions = true;
+                    })
+            .AddGraphTypes(ServiceLifetime.Scoped)
+            .AddDataLoader();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -52,6 +64,11 @@ namespace Financier.Web
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseGraphQL<ItemSchema>();
+
+            // app.UseWebSockets();
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
             app.UseMvc();
         }
