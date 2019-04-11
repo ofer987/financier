@@ -15,7 +15,7 @@
     <h2>@Model.DisplayMonth(month)</h2>
 
     <h3>Assets</h3>
-    @foreach (var item in Model.GetAssets(month))
+    @foreach (var item in Model.GetAssets(month).OrderByDescending(asset => asset.Value))
     {
       <div>
         @Model.DisplayTagNames(item.Key)
@@ -25,12 +25,12 @@
     }
 
     <h3>Expenses</h3>
-    @foreach (var item in Model.GetExpenses(month))
+    @foreach (var item in Model.GetExpenses(month).OrderByDescending(expense => expense.Value))
     {
       <div>
-        @Model.DisplayTagNames(item.Key)
-        &nbsp;for a total of&nbsp;
-        @Model.DisplayPercentage(item.Value)
+        <span>@Model.DisplayTagNames(item.Key)</span>
+        <span>for a total of</span>
+        <span>@Model.DisplayPercentage(item.Value)</span>
       </div>
     }
   }

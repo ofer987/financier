@@ -165,7 +165,8 @@ namespace Financier.Web.Pages
 
         public string DisplayPercentage(decimal amount)
         {
-            return amount.ToString("P");
+            var specifier = "##.## %";
+            return amount.ToString(specifier);
         }
 
         public string DisplayTagNames(IEnumerable<Tag> tags)
