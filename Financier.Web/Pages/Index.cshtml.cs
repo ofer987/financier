@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 using Financier.Common;
@@ -181,6 +179,13 @@ namespace Financier.Web.Pages
         public string DisplayMonth(DateTime at)
         {
             return at.ToString("MMMM yyyy");
+        }
+
+        public string DisplayTagIds(IEnumerable<Tag> tags)
+        {
+            return tags
+                .Select(tag => tag.Id)
+                .Join(";");
         }
     }
 }
