@@ -32,6 +32,38 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static Item Get(Guid id)
+        {
+            using (var db = new Context())
+            {
+                return db.Items.First(item => item.Id == id);
+            }
+        }
+
+        public static Item GetByItemId(string itemId)
+        {
+            itemId = (itemId ?? string.Empty).Trim();
+            using (var db = new Context())
+            {
+                return db.Items.First(item => item.ItemId == itemId);
+            }
+        }
+
+        public static IEnumerable<Item> GetByTagIds(IEnumerable<Guid> tagIds)
+        {
+            using (var db = new Context())
+            {
+                var query =
+                    from item in db.Items
+                    join itemTag in db.ItemTags on item.Id equals itemTag.ItemId
+                    join tag in db.Tags on itemTag.TagId equals tag.Id
+                    where tagIds.Contains(tag.Id)
+                    select item;
+
+                return query.ToList();
+            }
+        }
+
         [Key]
         [Required]
         public Guid Id { get; set; }
@@ -94,8 +126,8 @@ namespace Financier.Common.Expenses.Models
             }
 
             if ((Description ?? string.Empty) != (other.Description ?? string.Empty)
-                    || Amount != other.Amount 
-                    || TransactedAt != other.TransactedAt 
+                    || Amount != other.Amount
+                    || TransactedAt != other.TransactedAt
                     || PostedAt != other.PostedAt)
             {
                 return false;
