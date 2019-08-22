@@ -19,9 +19,12 @@ namespace Financier.Common.Expenses
 
         public DateTime PostedAt { get; private set; }
 
+        public string Path { get; private set; }
+
         protected StatementFile(FileInfo file)
         {
             Stream = file.OpenRead();
+            Path = file.FullName;
             PostedAt = DateTime.ParseExact(DateRegex.Match(file.Name).Value, "yyyyMMdd", null);
         }
 
@@ -59,7 +62,7 @@ namespace Financier.Common.Expenses
                 catch (Exception exception)
                 {
                     // TODO: Record error in logger
-                    Console.WriteLine("Error creating item");
+                    Console.WriteLine($"Error creating item for file at ({Path})");
                     Console.WriteLine(exception);
 
                     // Continue to next record
