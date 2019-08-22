@@ -28,6 +28,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                     .Reject(item => item.ItemTags.Any())
+                    .OrderBy(item => item.TransactedAt)
                     .ToArray();
             }
         }
