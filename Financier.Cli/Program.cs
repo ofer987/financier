@@ -36,10 +36,13 @@ namespace Financier.Cli
             }
 
             Console.WriteLine("Processing Items");
-            foreach (var item in Item.GetAllNewItems())
+            var newItems = Item.GetAllNewItems();
+            var i = 0;
+            foreach (var item in newItems)
             {
-                Console.WriteLine();
-                Console.WriteLine("Processing Item:");
+                i += 1;
+
+                Console.WriteLine($"Processing Item ({i} of {newItems.Length}):");
                 Console.WriteLine(item);
 
                 var tagManager = new TagManager(item);
@@ -69,6 +72,8 @@ namespace Financier.Cli
                             case "no":
                                 Console.WriteLine("Input tags:");
                                 var newTagsString = ReadNewTags();
+                                Console.WriteLine();
+
                                 var newTags = TagManager.FindOrCreateTags(newTagsString);
                                 tagManager.AddTags(newTags);
                                 break;
@@ -82,6 +87,8 @@ namespace Financier.Cli
                 {
                     Console.WriteLine("Input tags:");
                     var newTagsString = ReadNewTags();
+                    Console.WriteLine();
+
                     var newTags = TagManager.FindOrCreateTags(newTagsString);
                     tagManager.AddTags(newTags);
                 }
