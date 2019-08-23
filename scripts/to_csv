@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'csv'
+
+file_path = ARGV[0].to_s.strip
+account = ARGV[1].to_s.strip
+bank_card = ARGV[2].to_s.strip
+results = CSV.read(file_path, col_sep: "\t")[1..-1]
+
+headers = [
+  'Account',
+  'First Bank Card',
+  'Transaction Type',
+  'Date Posted',
+  'Transaction Amount',
+  'Description'
+]
+
+records = results.map do |item|
+  amount = (item[3] || item[4]).gsub('$', '').to_f
+  code = item[1]
+  type = 'DEBIT'
+  type = 'CREDIT' if amount < 0
+  posted_at = DateTime
+    .strptime(item[0], "%b %e, %Y")
+    .strftime('%Y%m%d')
+  description = item[2]
+
+  [
+    "'#{account}'",
+    "'#{bank_card}'",
+    type,
+    posted_at,
+    '%.2f' % (0 - amount),
+    "[#{code}]#{description}"
+  ]
+end
+
+csv = CSV(col_sep: ',', row_sep: "\n")
+puts headers.join(',')
+records.each do |record|
+  csv << record
+end
