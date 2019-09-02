@@ -19,6 +19,9 @@ namespace Financier.Cli
         [OptionAttribute("-b|--bank-cards", CommandOptionType.SingleOrNoValue)]
         public (bool HasValue, string Value) BankStatementsPath { get; }
 
+        [OptionAttribute("-a|--auto-assign", CommandOptionType.NoValue)]
+        public bool IsAutoAssign { get; }
+
         public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         private void OnExecute()
@@ -48,7 +51,11 @@ namespace Financier.Cli
                 var tagManager = new TagManager(item);
                 var similarTags = tagManager.GetSimilarTagsByDescription();
 
-                if (similarTags.Length > 0)
+                if (similarTags.Length > 0 && IsAutoAssign)
+                {
+                    tagManager.AddTags(similarTags);
+                }
+                else if (similarTags.Length > 0)
                 {
                     // TODO: Place in its own function
                     var repeat = true;
