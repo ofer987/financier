@@ -163,7 +163,7 @@ namespace Financier.Web.Pages
 
         public string DisplayPercentage(decimal amount)
         {
-            var specifier = "##.## %";
+            var specifier = "#0.00 %";
             return amount.ToString(specifier);
         }
 
@@ -173,7 +173,7 @@ namespace Financier.Web.Pages
                 .Select(tag => tag.Name)
                 .Distinct()
                 .OrderBy(name => name)
-                .Join(", ");
+                .Join(" ");
         }
 
         public string DisplayMonth(DateTime at)
