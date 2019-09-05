@@ -54,3 +54,26 @@ body {
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.flex-container {
+  display: flex;
+  flex-flow: wrap;
+
+  justify-content: space-between;
+  text-align: left;
+}
+
+.flex-container .flex-item {
+  background: hotpink;
+}
+
+.flex-container .flex-tags {
+  max-width: 90%;
+  text-align: left;
+}
+
+.flex-container .flex-value {
+  background: cyan;
+  font-family: monospace;
+  text-align: right;
+}

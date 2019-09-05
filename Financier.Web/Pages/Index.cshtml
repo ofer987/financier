@@ -17,20 +17,26 @@
     <h3>Assets</h3>
     @foreach (var item in Model.GetAssets(month).OrderByDescending(asset => asset.Value))
     {
-      <div id="@Model.DisplayTagIds(item.Key)">
-        @Model.DisplayTagNames(item.Key)
-        &nbsp;for a total of&nbsp;
-        @Model.DisplayPercentage(item.Value)
+      <div class="flex-container" id="@Model.DisplayTagIds(item.Key)">
+        <div class="flex-item flex-tags">
+          @Model.DisplayTagNames(item.Key)
+        </div>
+        <div class="flex-item flex-value">
+          @Model.DisplayPercentage(item.Value)
+        </div>
       </div>
     }
 
     <h3>Expenses</h3>
     @foreach (var item in Model.GetExpenses(month).OrderByDescending(expense => expense.Value))
     {
-      <div id="@Model.DisplayTagIds(item.Key)">
-        <span>@Model.DisplayTagNames(item.Key)</span>
-        <span>for a total of</span>
-        <span>@Model.DisplayPercentage(item.Value)</span>
+      <div class="flex-container" id="@Model.DisplayTagIds(item.Key)">
+        <div class="flex-item flex-tags">
+          @Model.DisplayTagNames(item.Key)
+        </div>
+        <div class="flex-item flex-value">
+          @Model.DisplayPercentage(item.Value)
+        </div>
       </div>
     }
   }
