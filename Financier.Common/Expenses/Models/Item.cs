@@ -33,6 +33,23 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static IEnumerable<Item> FindExpenses(int year, int month)
+        {
+            var begin = new DateTime(year, month, 1);
+            var end = new DateTime(year, month + 1, 1).AddDays(-1);
+
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .Where(item => item.Amount > 0)
+                    .Where(item => item.TransactedAt >= begin)
+                    .Where(item => item.TransactedAt <= end)
+                    .ToArray();
+            }
+        }
+
         public static Item Get(Guid id)
         {
             using (var db = new Context())
