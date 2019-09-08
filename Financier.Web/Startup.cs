@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GraphQL;
 using GraphQL.Server;
 using GraphQL.Server.Ui.Playground;
+using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
 
@@ -38,13 +39,18 @@ namespace Financier.Web
             // Add GraphQL
             services.AddGraphQL(options =>
                     {
-                    options.EnableMetrics = true;
-                    options.ExposeExceptions = true;
+                        options.EnableMetrics = true;
+                        options.ExposeExceptions = true;
                     })
             .AddGraphTypes(ServiceLifetime.Scoped)
             .AddDataLoader();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services
+                .AddMvc();
+                // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+//
+            services
+                .AddRouteAnalyzer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,7 +76,26 @@ namespace Financier.Web
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "monthlyexpenses_index",
+                    template: "MonthlyExpenses/Index/year/{year}/month/{month}",
+                    defaults: new { controller = "MonthlyExpenses", action = "Index" }
+                );
+
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "MonthlyStatements.Get",
+                    template: "MonthlyStatements/Get/year/{year}",
+                    defaults: new { controller = "MonthlyStatements", action = "Get" }
+                );
+
+                routes.MapRouteAnalyzer("/routes");
+            });
         }
     }
 }
