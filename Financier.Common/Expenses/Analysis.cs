@@ -190,7 +190,7 @@ namespace Financier.Common.Expenses
                         && (isAsset && i.Amount < 0 || !isAsset && i.Amount > 0)
                         && t.Name != "credit-card-payment"
                     select ValueTuple.Create<Tag, Item>(t, i)
-                    ).ToList();
+                ).ToList();
             }
 
             var results = new Dictionary<Item, List<Tag>>();

@@ -21,6 +21,19 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static IEnumerable<Item> GetAllBy(DateTime from, DateTime to)
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    .ToArray();
+            }
+        }
+
         public static Item[] GetAllNewItems()
         {
             using (var db = new Context())
@@ -28,24 +41,39 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                     .Reject(item => item.ItemTags.Any())
-                    .OrderBy(item => item.TransactedAt)
+                    .OrderBy(item => item.PostedAt)
                     .ToArray();
             }
         }
 
-        public static IEnumerable<Item> FindExpenses(int year, int month)
+        public static IEnumerable<Item> FindCredits(DateTime from, DateTime to)
         {
-            var begin = new DateTime(year, month, 1);
-            var end = new DateTime(year, month + 1, 1).AddDays(-1);
-
             using (var db = new Context())
             {
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.Amount > 0)
-                    .Where(item => item.TransactedAt >= begin)
-                    .Where(item => item.TransactedAt <= end)
+                    .Where(item => item.IsCredit)
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Reject(item => item.Tags.HasInternalTransfer())
+                    .ToArray();
+            }
+        }
+
+        public static IEnumerable<Item> FindDebits(DateTime from, DateTime to)
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                    .ThenInclude(it => it.Tag)
+                    .Where(item => item.IsDebit)
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
         }
@@ -82,6 +110,21 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static IEnumerable<Item> GetByTagNames(IEnumerable<string> tagNames)
+        {
+            using (var db = new Context())
+            {
+                var query =
+                    from item in db.Items
+                    join itemTag in db.ItemTags on item.Id equals itemTag.ItemId
+                    join tag in db.Tags on itemTag.TagId equals tag.Id
+                    where tagNames.Contains(tag.Name)
+                    select item;
+
+                return query.ToList();
+            }
+        }
+
         [Key]
         [Required]
         public Guid Id { get; set; }
@@ -97,7 +140,25 @@ namespace Financier.Common.Expenses.Models
         public string Description { get; set; }
 
         [Required]
-        public decimal Amount { get; set; }
+        [Column("Amount")]
+        protected decimal amount;
+        public virtual decimal Amount 
+        {
+            get
+            {
+                if (IsCredit)
+                {
+                    return 0.00M - amount;
+                }
+
+                return amount;
+            }
+
+            set 
+            {
+                amount = value;
+            }
+        }
 
         [Required]
         public DateTime TransactedAt { get; set; }
@@ -108,6 +169,9 @@ namespace Financier.Common.Expenses.Models
         public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 
         public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
+
+        public bool IsDebit => amount >= 0;
+        public bool IsCredit => amount < 0;
 
         public Item(string description, DateTime transactedAt, DateTime postedAt, decimal amount)
         {

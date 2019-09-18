@@ -56,6 +56,11 @@ namespace Financier.Common.Expenses
             Item = item;
         }
 
+        public TagManager(Guid itemId)
+        {
+            Item = Item.Get(itemId);
+        }
+
         public List<Tag> AddTags(IEnumerable<Tag> newTags)
         {
             using (var db = new Context())
@@ -89,13 +94,60 @@ namespace Financier.Common.Expenses
             }
         }
 
+        public bool UpdateTags(IEnumerable<string> newTagNames)
+        {
+            var newTags = newTagNames.Select(name => Tag.GetOrCreate(name));
+
+            return UpdateTags(newTags);
+        }
+
+        public bool UpdateTags(IEnumerable<Tag> newTags)
+        {
+            using (var db = new Context())
+            {
+                var existingItemTags = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.ItemId == Item.Id);
+                var existingTags = existingItemTags.Select(it => it.Tag);
+
+                foreach (var newTag in newTags)
+                {
+                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
+                    {
+                        var itemTag = new ItemTag
+                        {
+                            ItemId = Item.Id,
+                            TagId = newTag.Id
+                        };
+
+                        db.ItemTags.Add(itemTag);
+                    }
+                }
+
+                // var itemTagsToDelete = existingTags
+                //     .Reject(existingTag => newTags.Any(newTag => newTag.Name == existingTag.Name));
+
+                var itemTagsToDelete = existingItemTags
+                    .Reject(existingItemTag => newTags.Any(newTag => newTag.Name == existingItemTag.Tag.Name));
+
+                foreach (var itemTag in itemTagsToDelete) 
+                {
+                    db.ItemTags.Remove(itemTag);
+                }
+
+                db.SaveChanges();
+            }
+
+            return true;
+        }
+
         public Tag[] GetSimilarTagsByDescription()
         {
             using (var db = new Context())
             {
                 var itemsWithSameDescription =
                     (from items in db.Items
-                     // filter items that have tags
+                         // filter items that have tags
                      join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
                      where
                         1 == 1

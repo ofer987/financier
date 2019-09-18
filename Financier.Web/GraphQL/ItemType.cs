@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Web
+namespace Financier.Web.GraphQL
 {
     public class ItemType : ObjectGraphType<Item>
     {

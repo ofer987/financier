@@ -10,6 +10,7 @@ using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
+using Financier.Web.GraphQL;
 
 namespace Financier.Web
 {
@@ -40,6 +41,7 @@ namespace Financier.Web
             services.AddGraphQL(options =>
                     {
                         options.EnableMetrics = true;
+                        // TODO: should depend whether is dev environment
                         options.ExposeExceptions = true;
                     })
             .AddGraphTypes(ServiceLifetime.Scoped)
@@ -47,8 +49,8 @@ namespace Financier.Web
 
             services
                 .AddMvc();
-                // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-//
+            // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            //
             services
                 .AddRouteAnalyzer();
         }
@@ -82,6 +84,18 @@ namespace Financier.Web
                     name: "monthlyexpenses_index",
                     template: "MonthlyExpenses/Index/year/{year}/month/{month}",
                     defaults: new { controller = "MonthlyExpenses", action = "Index" }
+                );
+
+                routes.MapRoute(
+                    name: "AllItems#GetMonth",
+                    template: "AllItems/Get/year/{year}/month/{month}",
+                    defaults: new { controller = "AllItems", action = "GetMonth" }
+                );
+
+                routes.MapRoute(
+                    name: "AllItems#GetYear",
+                    template: "AllItems/Get/year/{year}",
+                    defaults: new { controller = "AllItems", action = "GetYear" }
                 );
 
                 routes.MapRoute(

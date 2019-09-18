@@ -72,11 +72,11 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
         }
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             Context.Clean();
-            InitDb1();
+            InitDb();
         }
 
         [OneTimeTearDown]
@@ -93,7 +93,7 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Assert.That(actualTags, Is.EqualTo(ExpectedTags));
         }
 
-        private void InitDb1()
+        private void InitDb()
         {
             using (var db = new Context())
             {

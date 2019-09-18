@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Financier.Common;
 using Financier.Common.Extensions;
 using Financier.Common.Expenses;
-using Financier.Common.Expenses.Models;
 
 namespace Financier.Web.ViewModels
 {
@@ -84,9 +83,9 @@ namespace Financier.Web.ViewModels
             Statement = statement;
         }
 
-        public IEnumerable<Item> GetItems()
+        public IEnumerable<Financier.Common.Expenses.Models.Item> GetItems()
         {
-            return Item.FindExpenses(Year, Month);
+            return Financier.Common.Expenses.Models.Item.FindDebits(From, To);
         }
     }
 }

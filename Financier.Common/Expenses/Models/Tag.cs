@@ -4,11 +4,44 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 using System.Linq;
 
+using Financier.Common.Extensions;
+
 namespace Financier.Common.Expenses.Models
 {
     [Table("Expenses_Tags")]
     public class Tag
     {
+        public static Tag GetOrCreate(string name)
+        {
+            if (name.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException("name cannot be null or whitespace");
+            }
+
+            name = name.ToLower().Trim();
+            using (var db = new Context())
+            {
+                var tag = db.Tags
+                    .DefaultIfEmpty(null)
+                    .FirstOrDefault(t => t.Name == name);
+
+                if (tag != null)
+                {
+                    return tag;
+                }
+
+                tag = new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = name
+                };
+                db.Tags.Add(tag);
+                db.SaveChanges();
+
+                return tag;
+            }
+        }
+
         [Key]
         [Required]
         public Guid Id { get; set; }

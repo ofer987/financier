@@ -1,0 +1,15 @@
+﻿@model IEnumerable<Financier.Web.ViewModels.Item>
+
+<link href="~/css/site.css" rel="stylesheet">
+
+@foreach (var item in Model)
+{
+  <div class="flex-container">
+    <div class="flex-item flex-id">@item.Id</div>
+    <div class="flex-item flex-description">@item.Description</div>
+    <div class="flex-item flex-amount">@item.Amount</div>
+    <div class="flex-item flex-tags">
+      <input value="@(item.Tags)" type="text" />
+    </div>
+  </div>
+}

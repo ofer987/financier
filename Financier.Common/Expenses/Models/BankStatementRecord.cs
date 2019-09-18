@@ -53,15 +53,14 @@ namespace Financier.Common.Expenses.Models
 
             using (var db = new Context())
             {
+                var amount = 0.00M - Convert.ToDecimal(Amount);
                 var newItem = new Item
                 {
                     Id = Guid.NewGuid(),
                     StatementId = statementId,
                     ItemId = ItemId.Trim(),
                     Description = Description,
-                    // Credit values appear as increases to account, while
-                    // debits appear
-                    Amount = 0.00M - Convert.ToDecimal(Amount),
+                    Amount = amount,
                     TransactedAt = ToDateTime(PostedAt),
                     PostedAt = ToDateTime(PostedAt)
                 };

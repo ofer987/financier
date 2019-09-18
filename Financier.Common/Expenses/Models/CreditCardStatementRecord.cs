@@ -35,6 +35,7 @@ namespace Financier.Common.Expenses.Models
         {
             Validate();
 
+            var amount = Convert.ToDecimal(Amount);
             using (var db = new Context())
             {
                 var newItem = new Item
@@ -43,7 +44,7 @@ namespace Financier.Common.Expenses.Models
                     StatementId = statementId,
                     ItemId = ItemId.Trim(),
                     Description = Description,
-                    Amount = Convert.ToDecimal(Amount),
+                    Amount = amount,
                     TransactedAt = ToDateTime(TransactedAt),
                     PostedAt = ToDateTime(PostedAt)
                 };
