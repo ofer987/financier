@@ -1,15 +1,101 @@
 ﻿@model IEnumerable<Financier.Web.ViewModels.Item>
 
 <link href="~/css/site.css" rel="stylesheet">
+<script src="~/js/apollo-client.min.js"></script>
+<script src="~/js/items.js"></script>
 
-@foreach (var item in Model)
-{
-  <div class="flex-container">
-    <div class="flex-item flex-id">@item.Id</div>
-    <div class="flex-item flex-description">@item.Description</div>
-    <div class="flex-item flex-amount">@item.Amount</div>
-    <div class="flex-item flex-tags">
-      <input value="@(item.Tags)" type="text" />
+<div>
+  @foreach (var item in Model)
+  {
+    <div class="flex-container">
+      <div class="flex-item flex-date">@item.At</div>
+      <div class="flex-item flex-description">@item.Description</div>
+      <div class="flex-item flex-type">@item.Type</div>
+      <div class="flex-item flex-amount">@item.AmountString</div>
+      <div class="flex-item flex-tags" data-itemid=@item.Id>
+        <input id="new-tags" value="@(item.Tags)" type="text" />
+        <input id="button" type="button" value="modify">
+        <span id="result"></span>
+      </div>
     </div>
-  </div>
-}
+  }
+
+  <script type="text/javascript">
+    'use strict';
+    (function() {
+      function getScript() {
+        var scripts = document.getElementsByTagName('script');
+
+        return scripts[scripts.length - 1];
+      }
+
+      function getForms() {
+        return getScript().parentElement.querySelectorAll('div.flex-tags');
+      }
+
+      function request(_uri, itemId, tags) {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
+        });
+
+        client
+          .mutate({
+            mutation: Apollo.gql`
+              mutation($itemId: ID!, $tagNames: [String]!) {
+                updateTags(itemId: $itemId, newTags: $tagNames)
+            }`,
+            variables: {
+              itemId: itemId,
+              tagNames: tags,
+            },
+          })
+          .then(data => {
+            if (((data['data'] || {})['updateTags']) || false) {
+              document.location.reload();
+            }
+          });
+      }
+
+      function configureFormToSubmitModifyTags(form) {
+        var button = form.querySelector('#button');
+
+        button.addEventListener('click', event => {
+          event.preventDefault();
+
+          var itemId = form.getAttribute('data-itemid');
+          var newTags = form.querySelector('#new-tags').value
+            .split(",")
+            .map(tag => tag.trim())
+            .filter(tag => tag);
+          var result = form.querySelector('#result')
+
+          var endpoint = ''
+          var data = '';
+
+          request(endpoint, itemId, newTags);
+          // const response = await fetch('modifyTagsEndpoint', {
+          //   method: 'POST',
+          //   body: modifyTagsData,
+          //   headers: {
+          //     'Content-Type': 'application/graphql'
+          //   }
+          // });
+          //
+          // if (response.ok) {
+          //   result.text('OK');
+          // } else {
+          //   result.text('fail');
+          // }
+        });
+      }
+
+      getForms().forEach(form => {
+        configureFormToSubmitModifyTags(form);
+      });
+    })();
+  </script>
+</div>

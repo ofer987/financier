@@ -14,7 +14,7 @@ namespace Financier.Web.Controllers
         public IActionResult GetYear(int year)
         {
             Init(year, 1, 12);
-            var items = GetItems();
+            var items = GetItems().ToArray();
 
             return View("Get", items);
         }
@@ -22,7 +22,7 @@ namespace Financier.Web.Controllers
         public IActionResult GetMonth(int year, int month)
         {
             Init(year, month, month);
-            var items = GetItems();
+            var items = GetItems().ToArray();
 
             return View("Get", items);
         }
@@ -45,7 +45,8 @@ namespace Financier.Web.Controllers
         {
             return Financier.Common.Expenses.Models.Item
                 .GetAllBy(From, To)
-                .Select(model => new ViewModels.Item(model));
+                .Select(model => new ViewModels.Item(model))
+                .OrderBy(model => model.At);
         }
     }
 }

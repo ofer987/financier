@@ -8,11 +8,12 @@ namespace Financier.Web.ViewModels
 {
     public class Item
     {
-        public Financier.Common.Expenses.Models.Item Model { get;  }
+        public Financier.Common.Expenses.Models.Item Model { get; }
 
         public Guid Id => Model.Id;
         public string Description => Model.Description;
         public decimal Amount => Model.Amount;
+        public string AmountString => Amount.ToString("#0.00");
 
         private string tags = string.Empty;
         public string Tags
@@ -31,6 +32,27 @@ namespace Financier.Web.ViewModels
                     .Join();
 
                 return tags;
+            }
+        }
+
+        public string At
+        {
+            get
+            {
+                return Model.At.ToString("dd MMMM yyyy");
+            }
+        }
+
+        public string Type
+        {
+            get
+            {
+                if (Model.IsCredit)
+                {
+                    return "Credit";
+                }
+
+                return "Debit";
             }
         }
 

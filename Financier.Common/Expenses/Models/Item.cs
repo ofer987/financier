@@ -28,8 +28,8 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.PostedAt >= from)
-                    .Where(item => item.PostedAt < to)
+                    .Where(item => item.At >= from)
+                    .Where(item => item.At < to)
                     .ToArray();
             }
         }
@@ -41,7 +41,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                     .Reject(item => item.ItemTags.Any())
-                    .OrderBy(item => item.PostedAt)
+                    .OrderBy(item => item.At)
                     .ToArray();
             }
         }
@@ -54,8 +54,8 @@ namespace Financier.Common.Expenses.Models
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
                     .Where(item => item.IsCredit)
-                    .Where(item => item.PostedAt >= from)
-                    .Where(item => item.PostedAt < to)
+                    .Where(item => item.At >= from)
+                    .Where(item => item.At < to)
                     .Reject(item => item.Tags.HasCreditCardPayent())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
@@ -70,8 +70,8 @@ namespace Financier.Common.Expenses.Models
                     .Include(item => item.ItemTags)
                     .ThenInclude(it => it.Tag)
                     .Where(item => item.IsDebit)
-                    .Where(item => item.PostedAt >= from)
-                    .Where(item => item.PostedAt < to)
+                    .Where(item => item.At >= from)
+                    .Where(item => item.At < to)
                     .Reject(item => item.Tags.HasCreditCardPayent())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
@@ -165,6 +165,8 @@ namespace Financier.Common.Expenses.Models
 
         [Required]
         public DateTime PostedAt { get; set; }
+
+        public DateTime At => PostedAt;
 
         public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 

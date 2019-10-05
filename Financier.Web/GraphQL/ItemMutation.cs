@@ -32,9 +32,7 @@ namespace Financier.Web.GraphQL
 
                     return context.TryAsyncResolve(async _c =>
                     {
-                        new TagManager(itemId).UpdateTags(newTags);
-
-                        return true;
+                        return new TagManager(itemId).UpdateTags(newTags);
                     });
                 }
             );
