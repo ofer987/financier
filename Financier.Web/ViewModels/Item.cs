@@ -6,6 +6,8 @@ using Financier.Common.Extensions;
 
 namespace Financier.Web.ViewModels
 {
+    public enum Types { Debit = 0, Credit }
+
     public class Item
     {
         public Financier.Common.Expenses.Models.Item Model { get; }
@@ -14,6 +16,19 @@ namespace Financier.Web.ViewModels
         public string Description => Model.Description;
         public decimal Amount => Model.Amount;
         public string AmountString => Amount.ToString("#0.00");
+
+        public string TypeCssClasses
+        {
+            get
+            {
+                if (Type == Types.Credit)
+                {
+                    return "flex-credit";
+                }
+
+                return "flex-debit";
+            }
+        }
 
         private string tags = string.Empty;
         public string Tags
@@ -43,16 +58,16 @@ namespace Financier.Web.ViewModels
             }
         }
 
-        public string Type
+        public Types Type
         {
             get
             {
                 if (Model.IsCredit)
                 {
-                    return "Credit";
+                    return Types.Credit;
                 }
 
-                return "Debit";
+                return Types.Debit;
             }
         }
 

@@ -56,7 +56,7 @@ namespace Financier.Common.Expenses.Models
                     .Where(item => item.IsCredit)
                     .Where(item => item.At >= from)
                     .Where(item => item.At < to)
-                    .Reject(item => item.Tags.HasCreditCardPayent())
+                    // .Reject(item => item.Tags.HasCreditCardPayent())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -72,7 +72,22 @@ namespace Financier.Common.Expenses.Models
                     .Where(item => item.IsDebit)
                     .Where(item => item.At >= from)
                     .Where(item => item.At < to)
-                    .Reject(item => item.Tags.HasCreditCardPayent())
+                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Reject(item => item.Tags.HasInternalTransfer())
+                    .ToArray();
+            }
+        }
+
+        public static IEnumerable<Item> FindExternalItems(DateTime from, DateTime to)
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                    .ThenInclude(it => it.Tag)
+                    .Where(item => item.At >= from)
+                    .Where(item => item.At < to)
+                    // .Reject(item => item.Tags.HasCreditCardPayent())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }

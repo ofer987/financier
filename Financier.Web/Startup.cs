@@ -81,9 +81,15 @@ namespace Financier.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "monthlyexpenses_index",
-                    template: "MonthlyExpenses/Index/year/{year}/month/{month}",
-                    defaults: new { controller = "MonthlyExpenses", action = "Index" }
+                    name: "Statements#GetYear",
+                    template: "Statements/year/{year}",
+                    defaults: new { controller = "Statements", action = "GetYear" }
+                );
+
+                routes.MapRoute(
+                    name: "Statements#GetMonth",
+                    template: "Statements/year/{year}/month/{month}",
+                    defaults: new { controller = "Statements", action = "GetMonth" }
                 );
 
                 routes.MapRoute(

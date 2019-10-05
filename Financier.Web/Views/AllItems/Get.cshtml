@@ -10,8 +10,8 @@
     <div class="flex-container">
       <div class="flex-item flex-date">@item.At</div>
       <div class="flex-item flex-description">@item.Description</div>
-      <div class="flex-item flex-type">@item.Type</div>
-      <div class="flex-item flex-amount">@item.AmountString</div>
+      <div class="flex-item flex-type @item.TypeCssClasses">@item.Type</div>
+      <div class="flex-item flex-amount @item.TypeCssClasses">@item.AmountString</div>
       <div class="flex-item flex-tags" data-itemid=@item.Id>
         <input id="new-tags" value="@(item.Tags)" type="text" />
         <input id="button" type="button" value="modify">

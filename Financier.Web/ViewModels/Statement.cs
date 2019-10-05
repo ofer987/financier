@@ -9,17 +9,18 @@ using Microsoft.EntityFrameworkCore;
 using Financier.Common.Extensions;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Expenses
+namespace Financier.Web.ViewModels
 {
-    public class MonthlyStatement
+    public class Statement
     {
         public int Year { get; }
         public int Month { get; }
+        public DateTime At => new DateTime(Year, Month, 1);
 
         public DateTime From { get; }
         public DateTime To { get; }
 
-        public MonthlyStatement(int year, int month)
+        public Statement(int year, int month)
         {
             Year = year;
             Month = month;
@@ -40,17 +41,14 @@ namespace Financier.Common.Expenses
         {
             if (!expenseTotal.HasValue)
             {
-                using (var db = new Context())
-                {
-                    expenseTotal = Item
-                        .FindDebits(From, To)
-                        .Sum(item => item.Amount);
-                    // return db.Items
-                    //     .Where(item => item.Amount > 0)
-                    //     .Where(item => item.TransactedAt >= From)
-                    //     .Where(item => item.TransactedAt < To)
-                    //     .Sum(item => item.Amount);
-                }
+                expenseTotal = Financier.Common.Expenses.Models.Item
+                    .FindDebits(From, To)
+                    .Sum(item => item.Amount);
+                // return db.Items
+                //     .Where(item => item.Amount > 0)
+                //     .Where(item => item.TransactedAt >= From)
+                //     .Where(item => item.TransactedAt < To)
+                //     .Sum(item => item.Amount);
             }
 
             return expenseTotal.Value;
@@ -61,7 +59,7 @@ namespace Financier.Common.Expenses
         {
             if (!assetTotal.HasValue)
             {
-                assetTotal = Item
+                assetTotal = Financier.Common.Expenses.Models.Item
                     .FindCredits(From, To)
                     .Sum(item => item.Amount);
                 // using (var db = new Context())
@@ -80,6 +78,11 @@ namespace Financier.Common.Expenses
         public decimal GetProfitTotal()
         {
             return GetAssetTotal() - GetExpenseTotal();
+        }
+
+        public IEnumerable<Financier.Common.Expenses.Models.Item> GetItems()
+        {
+            return Financier.Common.Expenses.Models.Item.FindExternalItems(From, To);
         }
     }
 }
