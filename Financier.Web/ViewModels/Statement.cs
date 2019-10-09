@@ -84,5 +84,15 @@ namespace Financier.Web.ViewModels
         {
             return Financier.Common.Expenses.Models.Item.FindExternalItems(From, To);
         }
+
+        public IEnumerable<TagCost> GetTagCostAssets()
+        {
+            return new TagAnalysis(Year, Month).GetAssets();
+        }
+
+        public IEnumerable<TagCost> GetTagCostExpenses()
+        {
+            return new TagAnalysis(Year, Month).GetExpenses();
+        }
     }
 }

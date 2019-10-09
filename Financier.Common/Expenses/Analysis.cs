@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Financier.Common.Expenses.Models;
 using Financier.Common.Extensions;
 
+// TODO: Remove hardcoded filter tag names and replace with functions
+
 namespace Financier.Common.Expenses
 {
     public class Analysis
