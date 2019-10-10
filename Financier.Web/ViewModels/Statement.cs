@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Extensions;
+using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Web.ViewModels
@@ -87,12 +88,56 @@ namespace Financier.Web.ViewModels
 
         public IEnumerable<TagCost> GetTagCostAssets()
         {
-            return new TagAnalysis(Year, Month).GetAssets();
+            var tagCosts = new Analysis(From, To).GetAssetsAndTags()
+                .Select(pair => new TagCost(pair.Key, pair.Value));
+
+            return GetGroupedItems(tagCosts);
         }
 
         public IEnumerable<TagCost> GetTagCostExpenses()
         {
-            return new TagAnalysis(Year, Month).GetExpenses();
+            var tagCosts = new Analysis(From, To).GetExpensesAndTags()
+                .Select(pair => new TagCost(pair.Key, pair.Value));
+
+            return GetGroupedItems(tagCosts);
+        }
+
+        private IEnumerable<TagCost> GetGroupedItems(IEnumerable<TagCost> tagCosts)
+        {
+            const decimal threshold = 0.05M;
+            var totalAmount = tagCosts
+                .Select(tc => tc.Amount)
+                .Aggregate(0.00M, (r, i) => r + i);
+
+            return GetAboveThreshold(tagCosts, totalAmount, threshold)
+                .Concat(GetBelowThreshold(tagCosts, totalAmount, threshold));
+        }
+
+        private IEnumerable<TagCost> GetAboveThreshold(IEnumerable<TagCost> tagCosts, decimal total, decimal threshold)
+        {
+            return tagCosts
+                .Where(tc => tc.Amount / total >= threshold);
+        }
+
+        private IEnumerable<TagCost> GetBelowThreshold(IEnumerable<TagCost> tagCosts, decimal total, decimal threshold)
+        {
+            var results = new List<TagCost>();
+
+            foreach (var tagCost in tagCosts.OrderBy(tc => tc.Amount))
+            {
+                results.Add(tagCost);
+                var totalAmount = results
+                    .Select(result => result.Amount)
+                    .Aggregate(0.00M, (r, i) => r + i);
+
+                if (totalAmount >= threshold)
+                {
+                    results = new List<TagCost>();
+
+                    yield return results
+                        .Aggregate(new TagCost(), (r, i) => r + i);
+                }
+            }
         }
     }
 }
