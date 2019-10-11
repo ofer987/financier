@@ -174,7 +174,7 @@ namespace Financier.Cli.Listings
         {
             var total = GetRealAssetTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
-                .GetAssetsAndTags()
+                .GetTagExpenses()
                 .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r - i.Amount))
                 .ToDictionary(pair => pair.Key, pair => pair.Value / total);
 
@@ -245,7 +245,7 @@ namespace Financier.Cli.Listings
         {
             var total = GetRealExpenseTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
-                .GetExpensesAndTags()
+                .GetTagExpenses()
                 .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
                 .ToDictionary(pair => pair.Key, pair => pair.Value / total);
 
@@ -271,7 +271,7 @@ namespace Financier.Cli.Listings
         private decimal GetRealAssetTotal(DateTime startAt, DateTime endAt)
         {
             return new Analysis(startAt, endAt)
-                .GetAssetsAndTags()
+                .GetTagExpenses()
                 .SelectMany(pair => pair.Value)
                 .Aggregate(0.00M, (r, i) => r - i.Amount);
         }
@@ -279,7 +279,7 @@ namespace Financier.Cli.Listings
         private decimal GetRealExpenseTotal(DateTime startAt, DateTime endAt)
         {
             return new Analysis(startAt, endAt)
-                .GetExpensesAndTags()
+                .GetTagExpenses()
                 .SelectMany(pair => pair.Value)
                 .Aggregate(0.00M, (r, i) => r + i.Amount);
         }

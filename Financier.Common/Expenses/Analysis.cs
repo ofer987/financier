@@ -167,70 +167,34 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetExpensesAndTags()
+        public IEnumerable<TagCost> GetTagExpenses()
         {
-            return GetItemsByTags(false);
+            return GetGroupedItemsByTags(false);
         }
 
-        public IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetAssetsAndTags()
+        public IEnumerable<TagCost> GetTagAssets()
         {
-            return GetItemsByTags(true);
+            return GetGroupedItemsByTags(true);
         }
 
-        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> GetItemsByTags(bool isAsset)
+        private IEnumerable<TagCost> GetGroupedItemsByTags(bool isAsset)
         {
-            List<ValueTuple<Tag, Item>> tagAndItemList;
+            Item[] items;
             using (var db = new Context())
             {
-                tagAndItemList = (
-                    from t in db.Tags
-                    join it in db.ItemTags on t.Id equals it.TagId
-                    join i in db.Items on it.ItemId equals i.Id
-                    where true
-                        && i.TransactedAt >= StartAt
-                        && i.TransactedAt < EndAt
-                        && (isAsset && i.Amount < 0 || !isAsset && i.Amount > 0)
-                        && t.Name != "credit-card-payment"
-                    select ValueTuple.Create<Tag, Item>(t, i)
-                ).ToList();
+                items = db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .Where(item => isAsset && item.IsCredit || !isAsset && item.IsDebit)
+                    .Where(item => item.At >= StartAt)
+                    .Where(item => item.At < EndAt)
+                    .Reject(item => item.Tags.HasInternalTransfer())
+                    .ToArray();
             }
 
-            var results = new Dictionary<Item, List<Tag>>();
-            foreach (var tagAndItem in tagAndItemList)
-            {
-                if (results.ContainsKey(tagAndItem.Item2))
-                {
-                    results[tagAndItem.Item2].Add(tagAndItem.Item1);
-                }
-                else
-                {
-                    results.Add(tagAndItem.Item2, new List<Tag> { tagAndItem.Item1 });
-                }
-            }
-
-            return SwitchKeyWithValue(results);
-        }
-
-        private IDictionary<IEnumerable<Tag>, IEnumerable<Item>> SwitchKeyWithValue(IDictionary<Item, List<Tag>> tagsByItem)
-        {
-            var results = new Dictionary<IEnumerable<Tag>, IEnumerable<Item>>(new TagNameComparer());
-
-            foreach (var itemAndTag in tagsByItem)
-            {
-                var key = itemAndTag.Key;
-                var val = itemAndTag.Value.OrderBy(tag => tag.Name);
-
-                if (results.ContainsKey(val))
-                {
-                    ((List<Item>)results[val]).Add(key);
-                }
-                else
-                {
-                    results.Add(val, new List<Item> { key });
-                }
-            }
-
-            return results;
+            return items
+                .GroupBy(item => item.Tags.Select(tag => tag.Name).Join(", "))
+                .Select(grouped => new TagCost(grouped.First().Tags, grouped));
         }
 
         private IDictionary<Tag, IList<Item>> GetItemByTag(bool isAsset)

@@ -1,12 +1,8 @@
 using System;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-using Financier.Common.Extensions;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
@@ -88,16 +84,14 @@ namespace Financier.Web.ViewModels
 
         public IEnumerable<TagCost> GetTagCostAssets()
         {
-            var tagCosts = new Analysis(From, To).GetAssetsAndTags()
-                .Select(pair => new TagCost(pair.Key, pair.Value));
+            var tagCosts = new Analysis(From, To).GetTagAssets();
 
             return GetGroupedItems(tagCosts);
         }
 
         public IEnumerable<TagCost> GetTagCostExpenses()
         {
-            var tagCosts = new Analysis(From, To).GetExpensesAndTags()
-                .Select(pair => new TagCost(pair.Key, pair.Value));
+            var tagCosts = new Analysis(From, To).GetTagExpenses();
 
             return GetGroupedItems(tagCosts);
         }
@@ -123,20 +117,30 @@ namespace Financier.Web.ViewModels
         {
             var results = new List<TagCost>();
 
-            foreach (var tagCost in tagCosts.OrderBy(tc => tc.Amount))
+            var orderedItems = tagCosts
+                .Where(tc => tc.Amount / total < threshold)
+                .OrderBy(tc => tc.Amount);
+
+            foreach (var tagCost in orderedItems)
             {
                 results.Add(tagCost);
                 var totalAmount = results
                     .Select(result => result.Amount)
                     .Aggregate(0.00M, (r, i) => r + i);
 
-                if (totalAmount >= threshold)
+                if (totalAmount / total >= threshold)
                 {
-                    results = new List<TagCost>();
-
                     yield return results
                         .Aggregate(new TagCost(), (r, i) => r + i);
+
+                    results = new List<TagCost>();
                 }
+            }
+
+            if (results.Any())
+            {
+                yield return results
+                    .Aggregate(new TagCost(), (r, i) => r + i);
             }
         }
     }

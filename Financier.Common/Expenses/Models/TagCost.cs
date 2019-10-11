@@ -29,5 +29,15 @@ namespace Financier.Common.Expenses.Models
             Tags = tags;
             Items = items;
         }
+
+        public TagCost(string tagNames, IEnumerable<Item> items)
+        {
+            Tags = tagNames
+                .Split(",")
+                .Select(tagName => tagName.Trim())
+                .Select(tagName => new Tag { Name = tagName });
+
+            Items = items;
+        }
     }
 }

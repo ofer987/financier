@@ -14,7 +14,12 @@ namespace Financier.Common.Extensions
 
         public static bool HasInternalTransfer(this IEnumerable<Tag> tags)
         {
-            return tags.Any(tag => tag.Name == "transfer" || tag.Name == "internal");
+            return tags.Any(tag => tag.IsInternalTransfer());
+        }
+
+        public static bool IsInternalTransfer(this Tag tag)
+        {
+            return tag.Name == "transfer" || tag.Name == "internal";
         }
     }
 }
