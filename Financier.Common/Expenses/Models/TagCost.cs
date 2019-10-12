@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,9 +15,11 @@ namespace Financier.Common.Expenses.Models
         }
 
         public decimal Amount => Items.Aggregate(0.00M, (r, i) => r + i.Amount);
-        public double Percentage { get; set; }
+        public double AccuratePercentage => Convert.ToDouble(Amount) / Convert.ToDouble(TotalAmount);
+        public decimal Percentage => Amount / TotalAmount;
         public IEnumerable<Tag> Tags { get; set; }
         public IEnumerable<Item> Items { get; set; }
+        public decimal TotalAmount { get; set; }
 
         public TagCost()
         {

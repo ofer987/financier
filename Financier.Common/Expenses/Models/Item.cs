@@ -265,9 +265,9 @@ namespace Financier.Common.Expenses.Models
 
         private string AmountString()
         {
-            if (Amount < 0.00M)
+            if (IsCredit)
             {
-                return $"Credit of {(0.00M - Amount).ToString("C")}";
+                return $"Credit of {(Amount).ToString("C")}";
             }
 
             return Amount.ToString("C");

@@ -17,6 +17,15 @@ namespace Financier.Web.ViewModels
         public DateTime From { get; }
         public DateTime To { get; }
 
+        public IEnumerable<TagCost> AssetCosts { get; private set; } = Enumerable.Empty<TagCost>();
+        public IEnumerable<TagCost> ExpenseCosts { get; private set; } = Enumerable.Empty<TagCost>();
+
+        public IEnumerable<TagCost> GroupedAssetCosts { get; private set; } = Enumerable.Empty<TagCost>();
+        public IEnumerable<TagCost> GroupedExpenseCosts { get; private set; } = Enumerable.Empty<TagCost>();
+
+        public decimal AssetAmountTotal { get; private set; } = 0.00M;
+        public decimal ExpenseAmountTotal { get; private set; } = 0.00M;
+
         public Statement(int year, int month)
         {
             Year = year;
@@ -31,6 +40,8 @@ namespace Financier.Web.ViewModels
             {
                 To = new DateTime(year, month + 1, 1).AddDays(-1);
             }
+
+            ProcessCosts();
         }
 
         private decimal? expenseTotal = null;
@@ -82,18 +93,33 @@ namespace Financier.Web.ViewModels
             return Financier.Common.Expenses.Models.Item.FindExternalItems(From, To);
         }
 
-        public IEnumerable<TagCost> GetTagCostAssets()
+        public IEnumerable<TagCost> GetTagAssets()
         {
-            var tagCosts = new Analysis(From, To).GetTagAssets();
-
-            return GetGroupedItems(tagCosts);
+            return new Analysis(From, To).GetTagAssets();
         }
 
-        public IEnumerable<TagCost> GetTagCostExpenses()
+        public void ProcessCosts()
         {
-            var tagCosts = new Analysis(From, To).GetTagExpenses();
+            SetAssets();
+            SetExpenses();
+        }
 
-            return GetGroupedItems(tagCosts);
+        private void SetAssets()
+        {
+            AssetCosts = new Analysis(From, To).GetTagAssets();
+            GroupedAssetCosts = GetGroupedItems(AssetCosts);
+            AssetAmountTotal = AssetCosts
+                .Select(cost => cost.Amount)
+                .Aggregate(0.00M, (r, i) => r + i);
+        }
+
+        private void SetExpenses()
+        {
+            ExpenseCosts = new Analysis(From, To).GetTagExpenses();
+            GroupedExpenseCosts = GetGroupedItems(ExpenseCosts);
+            ExpenseAmountTotal = ExpenseCosts
+                .Select(cost => cost.Amount)
+                .Aggregate(0.00M, (r, i) => r + i);
         }
 
         private IEnumerable<TagCost> GetGroupedItems(IEnumerable<TagCost> tagCosts)
