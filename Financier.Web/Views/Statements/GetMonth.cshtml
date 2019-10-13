@@ -1,0 +1,69 @@
+﻿@model Financier.Web.ViewModels.Statement
+@using Financier.Common.Extensions
+
+<link href="~/css/site.css" rel="stylesheet">
+
+<div>
+  @Model.At.ToString("MMMM yyyy")
+</div>
+<div>
+  <div>
+    <h1>
+      Assets:&nbsp;@(Model.GetAssetTotal())
+    </h1>
+
+    <h1>
+      Expense:&nbsp;@(Model.GetExpenseTotal())
+    </h1>
+
+    <h1>
+      Profit:&nbsp;@(Model.GetProfitTotal())
+    </h1>
+  </div>
+  <div class="tag-costs">
+    <h2>Assets</h2>
+    @foreach (var tagCost in Model.AssetCosts.OrderBy(tc => tc.Amount))
+    {
+    <div class="flex-container">
+      <div class="flex-item flex-tags">
+        @(tagCost.Tags.Select(tag => tag.Name).Join(", "))
+      </div>
+      <div class="flex-item flex-amount">
+        @((tagCost.Amount / Model.AssetAmountTotal).ToString("#0.00 %"))
+      </div>
+    </div>
+    }
+  </div>
+  <div class="tag-costs">
+    <h2>Expenses</h2>
+    @foreach (var tagCost in Model.ExpenseCosts.OrderBy(tc => tc.Amount))
+    {
+    <div class="flex-container">
+      <div class="flex-item flex-tags">
+        @(tagCost.Tags.Select(tag => tag.Name).Join(", "))
+      </div>
+      <div class="flex-item flex-amount">
+        @((tagCost.Amount / Model.ExpenseAmountTotal).ToString("#0.00 %"))
+      </div>
+    </div>
+    }
+  </div>
+  <h2>Items</h2>
+  @foreach (var item in Model.GetItems().OrderByDescending(item => item.Amount))
+  {
+    <div class="flex-container">
+      <div class="flex-item flex-tags">
+        @(item.Description)
+      </div>
+      <div class="flex-item flex-more-tags">
+        @foreach (var tag in item.Tags)
+        {
+          <span>@(tag.Name)</span>
+        }
+      </div>
+      <div class="flex-item flex-value">
+        @(item.Amount)
+      </div>
+    </div>
+  }
+</div>
