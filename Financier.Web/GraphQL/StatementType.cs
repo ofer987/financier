@@ -9,8 +9,10 @@ namespace Financier.Web.GraphQL
         {
             Field(t => t.From, nullable: false, type: typeof(DateTimeGraphType));
             Field(t => t.To, nullable: false, type: typeof(DateTimeGraphType));
-            Field(t => t.AssetCosts, nullable: false, type: typeof(ListGraphType<TagType>));
-            Field(t => t.ExpenseCosts, nullable: false, type: typeof(ListGraphType<TagType>));
+            Field(t => t.AssetCosts, nullable: false, type: typeof(ListGraphType<TagCostType>));
+            Field(t => t.ExpenseCosts, nullable: false, type: typeof(ListGraphType<TagCostType>));
+            Field(t => t.AssetAmountTotal, nullable: false, type: typeof(DecimalGraphType));
+            Field(t => t.ExpenseAmountTotal, nullable: false, type: typeof(DecimalGraphType));
         }
     }
 }

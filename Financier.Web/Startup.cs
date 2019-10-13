@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GraphQL;
@@ -35,17 +34,19 @@ namespace Financier.Web
             });
 
             services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+            services.AddScoped<StatementSchema>();
             services.AddScoped<ItemSchema>();
 
             // Add GraphQL
-            services.AddGraphQL(options =>
+            services
+                .AddGraphQL(options =>
                     {
                         options.EnableMetrics = true;
                         // TODO: should depend whether is dev environment
                         options.ExposeExceptions = true;
                     })
-            .AddGraphTypes(ServiceLifetime.Scoped)
-            .AddDataLoader();
+                .AddGraphTypes(ServiceLifetime.Scoped)
+                .AddDataLoader();
 
             services
                 .AddMvc();
@@ -73,7 +74,8 @@ namespace Financier.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseGraphQL<ItemSchema>();
+            app.UseGraphQL<ItemSchema>("/graphql/item");
+            app.UseGraphQL<StatementSchema>("/graphql/statement");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());

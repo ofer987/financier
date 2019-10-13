@@ -10,6 +10,7 @@ namespace Financier.Web.GraphQL
     {
         public TagType(IDataLoaderContextAccessor dataLoaderAccessor)
         {
+            Field(t => t.Name, nullable: false, type: typeof(StringGraphType));
         }
     }
 }
