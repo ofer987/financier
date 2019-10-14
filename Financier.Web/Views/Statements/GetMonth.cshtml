@@ -6,6 +6,98 @@
 <div>
   @Model.At.ToString("MMMM yyyy")
 </div>
+
+<!-- bar chart -->
+<div class="charts">
+  <div id="asset-costs">
+    <h2>
+      Assets
+    </h2>
+  </div>
+  <div id="expense-costs">
+    <h2>
+      Expenses
+    </h2>
+  </div>
+</div>
+
+<link href="~/css/chart.css" rel="stylesheet">
+
+<script src="~/js/apollo-client.min.js"></script>
+<script src="~/js/d3.min.js">
+</script>
+
+<script type="text/javascript">
+  'use strict';
+
+  (function() {
+    function request(year, month) {
+      var client = new Apollo.lib.ApolloClient({
+        networkInterface: Apollo.lib.createNetworkInterface({
+          uri: '/graphql/statement',
+          transportBatching: true,
+        }),
+        connectToDevTools: true,
+      });
+
+      client
+        .query({
+          query: Apollo.gql`
+            {
+              statement(
+                year: ${year},
+                month: ${month}
+              ) {
+                assetCosts {
+                  tags {
+                    name
+                  }
+                  amount
+                }
+                expenseCosts {
+                  tags {
+                    name
+                  }
+                  amount
+                }
+                assetAmountTotal
+              }
+            }
+          `
+        })
+        .then(response => {
+          drawChart(".charts #asset-costs", response.data.statement.assetCosts);
+          drawChart(".charts #expense-costs", response.data.statement.expenseCosts);
+        });
+    }
+
+    function drawChart(selector, costs) {
+      var amounts = costs
+        .map(x => x.amount)
+        .sort()
+        .reverse();
+      var scale = d3.scaleLinear()
+        .domain([0, d3.max(amounts)])
+        .range([0, 800]);
+
+      d3.select(selector)
+        .selectAll("div")
+          .data(costs)
+        .enter().append("div")
+          .attr("class", "datum")
+          .style("width", d => {
+            return `${scale(d.amount).toFixed()}px`;
+          }).text(d => {
+            return d.tags
+              .map(tag => tag.name)
+              .join(", ");
+          });
+    }
+
+    request(2019, 4);
+  })();
+</script>
+
 <div>
   <div>
     <h1>
