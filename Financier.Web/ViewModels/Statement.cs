@@ -34,11 +34,11 @@ namespace Financier.Web.ViewModels
             
             if (month == 12)
             {
-                To = new DateTime(year + 1, 1, 1).AddDays(-1);
+                To = new DateTime(year + 1, 1, 1);
             }
             else
             {
-                To = new DateTime(year, month + 1, 1).AddDays(-1);
+                To = new DateTime(year, month + 1, 1);
             }
 
             ProcessCosts();
