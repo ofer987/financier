@@ -44,6 +44,19 @@ namespace Financier.Web.ViewModels
             ProcessCosts();
         }
 
+        public Statement(DateTime fro, DateTime to)
+        {
+            if (fro >= to)
+            {
+                throw new Exception($"the {nameof(fro)} ({fro}) has to be before {nameof(to)} ({to})");
+            }
+
+            From = fro;
+            To = to;
+
+            ProcessCosts();
+        }
+
         private decimal? expenseTotal = null;
         public decimal GetExpenseTotal()
         {
