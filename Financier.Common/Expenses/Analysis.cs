@@ -30,8 +30,8 @@ namespace Financier.Common.Expenses
                      join it in db.ItemTags on t.Id equals it.TagId
                      join i in db.Items on it.ItemId equals i.Id
                      where true
-                         && i.TransactedAt >= StartAt
-                         && i.TransactedAt < EndAt
+                         && i.At >= StartAt
+                         && i.At < EndAt
                      select ValueTuple.Create<Tag, Item>(t, i)
                     ).ToList();
             }
@@ -53,8 +53,8 @@ namespace Financier.Common.Expenses
             {
                 return db.Items
                     .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
-                    .Where(item => item.TransactedAt >= StartAt)
-                    .Where(item => item.TransactedAt < EndAt)
+                    .Where(item => item.At >= StartAt)
+                    .Where(item => item.At < EndAt)
                     .ToList()
                     .Aggregate(0.00M, (result, item) => result + item.Amount);
             }
@@ -73,14 +73,14 @@ namespace Financier.Common.Expenses
                      select items).ToList();
 
                 var earliestAt = db.Items
-                    .OrderBy(item => item.TransactedAt)
+                    .OrderBy(item => item.At)
                     .First()
-                    .TransactedAt;
+                    .At;
 
                 var latestAt = db.Items
-                    .OrderByDescending(item => item.TransactedAt)
+                    .OrderByDescending(item => item.At)
                     .First()
-                    .TransactedAt;
+                    .At;
 
                 var amount = salaries.Aggregate(0.00M, (result, item) => result + item.Amount);
                 var dateRange = latestAt - earliestAt;
@@ -106,8 +106,8 @@ namespace Financier.Common.Expenses
                     .Include(item => item.ItemTags)
                         .ThenInclude(itemTags => itemTags.Tag)
                     .Where(item => item.Statement.Card.CardType == CardTypes.Bank)
-                    .Where(item => item.TransactedAt >= StartAt)
-                    .Where(item => item.TransactedAt < EndAt);
+                    .Where(item => item.At >= StartAt)
+                    .Where(item => item.At < EndAt);
                 // var bankStatementItems =
                 //     from items in db.Items
                 //     join statements in db.Statements on items.StatementId equals statements.Id
@@ -140,8 +140,8 @@ namespace Financier.Common.Expenses
                     .Include(item => item.ItemTags)
                         .ThenInclude(itemTags => itemTags.Tag)
                     .Where(item => item.Statement.Card.CardType == CardTypes.Credit)
-                    .Where(item => item.TransactedAt >= StartAt)
-                    .Where(item => item.TransactedAt < EndAt);
+                    .Where(item => item.At >= StartAt)
+                    .Where(item => item.At < EndAt);
                 // from items in db.Items
                 // join statements in db.Statements on items.StatementId equals statements.Id
                 // join cards in db.Cards on statements.CardId equals cards.Id
@@ -207,8 +207,8 @@ namespace Financier.Common.Expenses
                     join it in db.ItemTags on t.Id equals it.TagId
                     join i in db.Items on it.ItemId equals i.Id
                     where true
-                        && i.TransactedAt >= StartAt
-                        && i.TransactedAt < EndAt
+                        && i.At >= StartAt
+                        && i.At < EndAt
                         && (isAsset && i.Amount < 0 || !isAsset && i.Amount > 0)
                         && t.Name != "credit-card-payment"
                     select ValueTuple.Create<Tag, Item>(t, i)

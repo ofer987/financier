@@ -181,6 +181,7 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public DateTime PostedAt { get; set; }
 
+        // TODO: maybe change to TransactedAt because that is when the transaction took place???
         public DateTime At => PostedAt;
 
         public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
