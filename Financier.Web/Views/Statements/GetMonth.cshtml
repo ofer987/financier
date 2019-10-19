@@ -9,15 +9,15 @@
 
 <!-- bar chart -->
 <div class="charts">
+  <h2>
+    Assets
+  </h2>
   <svg class="chart" id="asset-costs">
-    <h2>
-      Assets
-    </h2>
   </svg>
+  <h2>
+    Expenses
+  </h2>
   <svg class="chart" id="expense-costs">
-    <h2>
-      Expenses
-    </h2>
   </svg>
 </div>
 
@@ -67,51 +67,64 @@
         })
         .then(response => {
 
-          new Chart(".charts #asset-costs", 420, 20)
+          var width = 960;
+          var height = 500;
+          new Chart(".charts #asset-costs", width, height)
             .render(response.data.statement.assetCosts);
-          new Chart(".charts #expense-costs", 420, 20)
+          new Chart(".charts #expense-costs", width, height)
             .render(response.data.statement.expenseCosts);
         });
     }
 
-    function Chart(selector, width, barHeight) {
+    function Chart(selector, width, height) {
+      this.margins = {
+        top: 20,
+        right: 30,
+        bottom: 30,
+        left: 40
+      };
+
       this.selector = selector;
-      this.width = width;
-      this.barHeight = barHeight;
+      this.width = width - this.margins.left - this.margins.right;
+      this.height = height - this.margins.top - this.margins.bottom;
 
       this.scale = function(costs) {
         var amounts = costs
-          .map(x => +x.amount.toFixed())
+          .map(x => x.amount)
 
         return d3.scaleLinear()
-          .domain([0, d3.max(amounts)])
-          .range([0, this.width]);
+          .range([this.height, 0])
+          .domain([0, d3.max(amounts, d => d)]);
       };
     }
 
     Chart.prototype.render = function(costs) {
+      var barWidth = this.width / costs.length;
       var barChart = d3.select(this.selector)
-        .attr("width", this.width)
-        .attr("height", this.barHeight * costs.length);
+        .attr("width", this.width + this.margins.left + this.margins.right)
+        .attr("height", (this.height + this.margins.top + this.margins.bottom));
+      var scaledValues = this.scale(costs);
 
       var bar = barChart.selectAll("g")
           .data(costs)
         .enter().append("g")
-          .attr("transform", (d, i) => `translate(0, ${i * this.barHeight})`);
+        .attr("transform", (d, i) => { debugger; return `translate(${i * barWidth}, ${scaledValues(d.amount)})`; });
 
-      var scaledValues = this.scale(costs);
       bar.append("rect")
-        .attr("width", d => scaledValues(+d.amount.toFixed()))
-        .attr("height", this.barHeight - 1);
+        .attr("y", d => { debugger; return scaledValues(d); })
+        .attr("height", d => { debugger; return this.height - scaledValues(d.amount) })
+        .attr("width", barWidth - 1);
 
       bar.append("text")
-        .attr("x", d => scaledValues(+d.amount.toFixed()) - 3)
-        .attr("y", this.barHeight / 2)
-        .attr("dy", ".35em")
+        .attr("x", barWidth / 2)
+        .attr("y", d => scaledValues(d) + 3)
+        .attr("dy", ".75em")
         .text(d => {
-          return d.tags
+          var text = d.tags
             .map(tag => tag.name)
             .join(", ");
+
+          return `${text} (${d.amount})`;
         });
     };
 
