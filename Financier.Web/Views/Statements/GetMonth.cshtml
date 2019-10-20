@@ -24,7 +24,8 @@
 <link href="~/css/chart.css" rel="stylesheet">
 
 <script src="~/js/apollo-client.min.js"></script>
-<script src="~/js/d3.min.js">
+<script src="~/js/d3.min.js"></script>
+<script src="~/js/d3-axis.min.js"></script>
 </script>
 
 <script type="text/javascript">
@@ -87,45 +88,149 @@
       this.selector = selector;
       this.width = width - this.margins.left - this.margins.right;
       this.height = height - this.margins.top - this.margins.bottom;
-
-      this.scale = function(costs) {
-        var amounts = costs
-          .map(x => x.amount)
-
-        return d3.scaleLinear()
-          .range([this.height, 0])
-          .domain([0, d3.max(amounts, d => d)]);
-      };
     }
+
+    Chart.prototype.xBand = function(costs) {
+      if (typeof(costs) !== "object") {
+        debugger;
+      }
+      var amounts = costs
+        .map(x => x.amount)
+
+      var scale = d3.scaleBand()
+        .domain(amounts)
+        .range([0, this.width]);
+
+      return scale;
+
+      // return d3.scaleLinear()
+      //   .domain([0, d3.max(amounts, d => d.value)])
+      //   .range([this.height, 0]);
+    };
+
+    Chart.prototype.xScale = function(costs) {
+      if (typeof(costs) !== "object") {
+        debugger;
+      }
+
+      var amounts = costs
+        .map(x => x.amount);
+      var scale = d3.scaleLinear()
+        .range([this.width, 0])
+        .domain([d3.max(amounts, d => d), 0]);
+        // .range(costs => {
+        //   return 400;
+        //   // var text = d.tags
+        //   //   .map(tag => tag.name)
+        //   //   .join(", ");
+        //   //
+        //   // return `${text} (${d.amount})`;
+        // });
+
+      return scale;
+
+      // return d3.scaleLinear()
+      //   .domain([0, d3.max(amounts, d => d.value)])
+      //   .range([this.height, 0]);
+    };
+
+    Chart.prototype.yScale = function(costs) {
+      if (typeof(costs) !== 'object') {
+        debugger;
+      }
+      var amounts = costs
+        .map(x => x.amount)
+
+      var scale = d3.scaleLinear()
+        .range([this.height, 0])
+        .domain([0, d3.max(amounts, d => d)]);
+
+      return scale;
+
+      // return scale(costs);
+
+      // return d3.scaleLinear()
+      //   .domain([0, d3.max(amounts, d => d.value)])
+      //   .range([this.height, 0]);
+    };
+
+    Chart.prototype.xAxis = function(costs, selectedScale) {
+      var numbers = [];
+      for (var i = 0; i < this.costs; i += 1) {
+        numbers.push(i + 1);
+      }
+
+      // debugger;
+      return d3.axisBottom()
+        .ticks(10)
+        // .scale(selectedScale());
+        .scale(
+          d3.scaleBand()
+            .domain(costs.map(d => {
+              var text = d.tags
+                .map(tag => tag.name)
+                .join(", ");
+
+              return `${text} (${d.amount})`;
+            }))
+            .range([0, this.width])
+        );
+    };
+
+    Chart.prototype.yAxis = function(selectedScale) {
+      return d3.axisLeft()
+        .scale(selectedScale());
+        // .scale(this.yScale);
+    };
 
     Chart.prototype.render = function(costs) {
       var barWidth = this.width / costs.length;
       var barChart = d3.select(this.selector)
         .attr("width", this.width + this.margins.left + this.margins.right)
-        .attr("height", (this.height + this.margins.top + this.margins.bottom));
-      var scaledValues = this.scale(costs);
+        .attr("height", this.height + this.margins.top + this.margins.bottom)
+        .append("g")
+          .attr("transform", `translate(${this.margins.left}, ${this.margins.top})`);
 
-      var bar = barChart.selectAll("g")
-          .data(costs)
-        .enter().append("g")
-        .attr("transform", (d, i) => { debugger; return `translate(${i * barWidth}, ${scaledValues(d.amount)})`; });
+      // FIXME: just pass xScale as a value
+      barChart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", `translate(0, ${this.height})`)
+        .call(this.xAxis(costs, () => this.xScale(costs)));
 
-      bar.append("rect")
-        .attr("y", d => { debugger; return scaledValues(d); })
-        .attr("height", d => { debugger; return this.height - scaledValues(d.amount) })
-        .attr("width", barWidth - 1);
+      // FIXME: just pass yScale as a value
+      barChart.append("g")
+        .attr("class", "y axis")
+        // .call(s => this.yAxis((d) => { debugger; return this.yScale(costs); }));
+        .call(this.yAxis(() => this.yScale(costs)));
 
-      bar.append("text")
-        .attr("x", barWidth / 2)
-        .attr("y", d => scaledValues(d) + 3)
-        .attr("dy", ".75em")
-        .text(d => {
-          var text = d.tags
-            .map(tag => tag.name)
-            .join(", ");
+      // debugger;
+      var bar = barChart.selectAll(".bar")
+          .data(costs.map(d => d.amount))
+        .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", d => this.xBand(costs)(d))
+          .attr("y", d => this.yScale(costs)(d))
+          .attr("height", d => this.height - this.yScale(costs)(d))
+          .attr("width", barWidth);
+      
+        // .attr("transform", (d, i) => { /* debugger; */ return `translate(${i * barWidth}, 0)`; });
 
-          return `${text} (${d.amount})`;
-        });
+      // bar.append("rect")
+      //   .attr("y", d => { /* debugger; */ return this.yScale(costs)(d.amount); })
+      //   .attr("height", d => { /* debugger; */ return this.height - this.yScale(costs)(d.amount) })
+      //   .attr("width", barWidth - 1);
+      //
+      // bar.append("text")
+      //   .attr("x", barWidth / 2)
+      //   .attr("y", d => this.yScale(costs)(d.amount) + 3)
+      //   .attr("dy", ".75em")
+      //   .text(d => {
+      //     var text = d.tags
+      //       .map(tag => tag.name)
+      //       .join(", ");
+      //
+      //     return `${text} (${d.amount})`;
+      //   });
     };
 
     request(2019, 4);
