@@ -4,7 +4,7 @@ using GraphQL.Types;
 using Financier.Common.Expenses.Models;
 
 // TODO: move to Types namespace
-namespace Financier.Web.GraphQL
+namespace Financier.Web.GraphQL.Tags
 {
     public class TagType : ObjectGraphType<Tag>
     {

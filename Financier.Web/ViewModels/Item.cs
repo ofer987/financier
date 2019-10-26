@@ -14,7 +14,7 @@ namespace Financier.Web.ViewModels
 
         public Guid Id => Model.Id;
         public string Description => Model.Description;
-        public decimal Amount => Model.Amount;
+        public decimal Amount => Model.TheRealAmount;
         public string AmountString => Amount.ToString("#0.00");
 
         public string TypeCssClasses

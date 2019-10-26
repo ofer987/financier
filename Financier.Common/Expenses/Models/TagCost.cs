@@ -14,7 +14,7 @@ namespace Financier.Common.Expenses.Models
             );
         }
 
-        public decimal Amount => Items.Aggregate(0.00M, (r, i) => r + i.Amount);
+        public decimal Amount => Items.Aggregate(0.00M, (r, i) => r + i.TheRealAmount);
         public double AccuratePercentage => Convert.ToDouble(Amount) / Convert.ToDouble(TotalAmount);
         public decimal Percentage => Amount / TotalAmount;
         public IEnumerable<Tag> Tags { get; set; }

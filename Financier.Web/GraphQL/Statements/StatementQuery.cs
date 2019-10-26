@@ -4,7 +4,7 @@ using GraphQL.Types;
 
 using Financier.Web.ViewModels;
 
-namespace Financier.Web.GraphQL
+namespace Financier.Web.GraphQL.Statements
 {
     public class StatementQuery : ObjectGraphType
     {

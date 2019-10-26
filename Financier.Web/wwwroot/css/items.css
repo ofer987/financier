@@ -1,3 +1,7 @@
+.tag-name input, .tag-name div {
+  display: inline
+}
+
 .charts .chart rect {
   fill: steelblue;
 }
@@ -20,4 +24,18 @@
 
 .x.axis path {
   display: none;
+}
+
+.charts .items {
+  display: flex;
+  flex-flow: nowrap;
+  flex-direction: row;
+}
+
+.charts .items .tags {
+  max-width: 25%;
+}
+
+.charts .items .chart {
+  max-width: 75%;
 }

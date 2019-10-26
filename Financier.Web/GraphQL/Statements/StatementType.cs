@@ -1,7 +1,9 @@
 using GraphQL.DataLoader;
 using GraphQL.Types;
 
-namespace Financier.Web.GraphQL
+using Financier.Web.GraphQL.TagCosts;
+
+namespace Financier.Web.GraphQL.Statements
 {
     public class StatementType : ObjectGraphType<ViewModels.Statement>
     {

@@ -4,7 +4,7 @@ using GraphQL.Types;
 
 using Financier.Common.Expenses;
 
-namespace Financier.Web.GraphQL
+namespace Financier.Web.GraphQL.Items
 {
     public class ItemMutation : ObjectGraphType
     {

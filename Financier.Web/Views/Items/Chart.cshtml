@@ -1,28 +1,42 @@
-﻿@model Financier.Web.ViewModels.Statement
-@using Financier.Common.Extensions
+﻿@using Financier.Common.Extensions
 
 <link href="~/css/site.css" rel="stylesheet">
-
-<div>
-  @Model.At.ToString("MMMM yyyy")
-</div>
+<link href="~/css/items.css" rel="stylesheet">
+<link href="~/css/MonthPicker.min.css" rel="stylesheet">
+<link href="~/css/jquery-ui.min.css" rel="stylesheet">
+<link href="~/css/jquery-ui.theme.min.css" rel="stylesheet">
 
 <!-- bar chart -->
 <div class="charts">
-  <h2>
-    Assets
-  </h2>
-  <svg class="chart" id="asset-costs">
-  </svg>
-  <h2>
-    Expenses
-  </h2>
-  <svg class="chart" id="expense-costs">
-  </svg>
+  <div class="items">
+    <div class="tags">
+      <div class="from-picker">
+        From:&nbsp;
+        <input id="from-date" class="month-picker" />
+      </div>
+      <div class="from-picker">
+        To:&nbsp;
+        <input id="to-date" class="month-picker" />
+      </div>
+      <div class="compare">
+        <input type="button" value="Compare" />
+      </div>
+      <div class="clear">
+        <input type="button" value="Clear" />
+      </div>
+      <div class="names">
+      </div>
+    </div>
+
+    <svg class="chart" id="asset-costs">
+    </svg>
+  </div>
 </div>
 
-<link href="~/css/chart.css" rel="stylesheet">
 
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/jquery-ui.min.js"></script>
+<script src="~/js/MonthPicker.min.js"></script>
 <script src="~/js/apollo-client.min.js"></script>
 <script src="~/js/d3.min.js"></script>
 <script src="~/js/d3-axis.min.js"></script>
@@ -32,10 +46,16 @@
   'use strict';
 
   (function() {
-    function request(year, month) {
+    function Tags() {
+      this.compareButton = $(".tags .compare");
+      this.tagsContainer = $(".tags .names");
+      this.names = [];
+    }
+
+    Tags.prototype.fetch = function() {
       var client = new Apollo.lib.ApolloClient({
         networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/statements',
+          uri: '/graphql/tags',
           transportBatching: true,
         }),
         connectToDevTools: true,
@@ -45,37 +65,61 @@
         .query({
           query: Apollo.gql`
             {
-              statement(
-                year: ${year},
-                month: ${month}
-              ) {
-                assetCosts {
-                  tags {
-                    name
-                  }
-                  amount
-                }
-                expenseCosts {
-                  tags {
-                    name
-                  }
-                  amount
-                }
-                assetAmountTotal
+              list {
+                name
               }
             }
           `
         })
         .then(response => {
+          this.names = response.data.list
+            .map(tag => tag.name);
 
-          var width = 960;
-          var height = 500;
-          new Chart(".charts #asset-costs", width, height)
-            .render(response.data.statements.assetCosts);
-          new Chart(".charts #expense-costs", width, height)
-            .render(response.data.statements.expenseCosts);
+          this.render();
         });
-    }
+    };
+
+    Tags.prototype.render = function() {
+      this.names.forEach(name => {
+        var element = `
+          <div class="tag-name">
+            <input id="${name}" type="checkbox" data-tag-name="${name}"></input>
+            <label for="${name}">${name}</div>
+          </div>
+        `;
+
+        this.tagsContainer.append(element);
+      });
+    };
+
+    Tags.prototype.setup = function() {
+      this.compareButton.click(() => this.compare());
+    };
+
+    Tags.prototype.selectedTags = function() {
+      return this.tagsContainer
+        .find("input:checked").toArray()
+        .map(input => $(input).attr("data-tag-name"));
+    };
+
+    Tags.prototype.fromMonthYear = function() {
+      return $("#from-date").val()
+        .split("/")
+        .map(v => +v);
+    };
+
+    Tags.prototype.toMonthYear = function() {
+      return $("#to-date").val()
+        .split("/")
+        .map(v => +v);
+    };
+
+    Tags.prototype.compare = function() {
+      var from = this.fromMonthYear();
+      var to = this.toMonthYear();
+      new Chart(".charts .chart", 960, 500)
+        .request(from[0], from[1], to[0], to[1], this.selectedTags());
+    };
 
     function Chart(selector, width, height) {
       this.margins = {
@@ -88,6 +132,39 @@
       this.selector = selector;
       this.width = width - this.margins.left - this.margins.right;
       this.height = height - this.margins.top - this.margins.bottom;
+    }
+
+    Chart.prototype.request = function(fromMonth, fromYear, toMonth, toYear, tags) {
+      var client = new Apollo.lib.ApolloClient({
+        networkInterface: Apollo.lib.createNetworkInterface({
+          uri: '/graphql/items',
+          transportBatching: true,
+        }),
+        connectToDevTools: true,
+      });
+
+      var names = tags.map(name => `"${name}"`).join(", ");
+      client
+        .query({
+          query: Apollo.gql`
+          {
+            monthlyExpensesByTagNames(
+              tagNames: [${tags.map(name => `"${name}"`).join(", ")}],
+              fromYear: ${fromYear},
+              fromMonth: ${fromMonth},
+              toYear: ${toYear},
+              toMonth: ${toMonth}
+            ) {
+              at,
+              amount
+            }
+          }
+          `
+        })
+        .then(response => {
+          this.clear();
+          this.render(response.data.monthlyExpensesByTagNames);
+        });
     }
 
     Chart.prototype.xBand = function(costs) {
@@ -167,11 +244,9 @@
         .scale(
           d3.scaleBand()
             .domain(costs.map(d => {
-              var text = d.tags
-                .map(tag => tag.name)
-                .join(", ");
+              var text = d.at;
 
-              return `${text} (${d.amount})`;
+              return `${text}`;
             }))
             .range([0, this.width])
         );
@@ -181,6 +256,10 @@
       return d3.axisLeft()
         .scale(selectedScale());
         // .scale(this.yScale);
+    };
+
+    Chart.prototype.clear = function() {
+      $(this.selector).empty();
     };
 
     Chart.prototype.render = function(costs) {
@@ -212,7 +291,7 @@
           .attr("y", d => this.yScale(costs)(d))
           .attr("height", d => this.height - this.yScale(costs)(d))
           .attr("width", barWidth);
-      
+
         // .attr("transform", (d, i) => { /* debugger; */ return `translate(${i * barWidth}, 0)`; });
 
       // bar.append("rect")
@@ -233,68 +312,10 @@
       //   });
     };
 
-    request(2019, 4);
+    $(".month-picker").MonthPicker({ Button: false });
+    var tags = new Tags();
+
+    tags.setup();
+    tags.fetch();
   })();
 </script>
-
-<div>
-  <div>
-    <h1>
-      Assets:&nbsp;@(Model.GetAssetTotal())
-    </h1>
-
-    <h1>
-      Expense:&nbsp;@(Model.GetExpenseTotal())
-    </h1>
-
-    <h1>
-      Profit:&nbsp;@(Model.GetProfitTotal())
-    </h1>
-  </div>
-  <div class="tag-costs">
-    <h2>Assets</h2>
-    @foreach (var tagCost in Model.AssetCosts.OrderBy(tc => tc.Amount))
-    {
-    <div class="flex-container">
-      <div class="flex-item flex-tags">
-        @(tagCost.Tags.Select(tag => tag.Name).Join(", "))
-      </div>
-      <div class="flex-item flex-amount">
-        @((tagCost.Amount / Model.AssetAmountTotal).ToString("#0.00 %"))
-      </div>
-    </div>
-    }
-  </div>
-  <div class="tag-costs">
-    <h2>Expenses</h2>
-    @foreach (var tagCost in Model.ExpenseCosts.OrderBy(tc => tc.Amount))
-    {
-    <div class="flex-container">
-      <div class="flex-item flex-tags">
-        @(tagCost.Tags.Select(tag => tag.Name).Join(", "))
-      </div>
-      <div class="flex-item flex-amount">
-        @((tagCost.Amount / Model.ExpenseAmountTotal).ToString("#0.00 %"))
-      </div>
-    </div>
-    }
-  </div>
-  <h2>Items</h2>
-  @foreach (var item in Model.GetItems().OrderByDescending(item => item.Amount))
-  {
-    <div class="flex-container">
-      <div class="flex-item flex-tags">
-        @(item.Description)
-      </div>
-      <div class="flex-item flex-more-tags">
-        @foreach (var tag in item.Tags)
-        {
-          <span>@(tag.Name)</span>
-        }
-      </div>
-      <div class="flex-item flex-value">
-        @(item.Amount)
-      </div>
-    </div>
-  }
-</div>

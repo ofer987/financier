@@ -62,7 +62,7 @@ namespace Financier.Cli.Listings
                 var endAt = startAt.AddMonths(1).AddDays(-1);
                 var items = new Analysis(startAt, endAt).GetAllExpenses();
 
-                var amount = items.Aggregate(0.00M, (result, item) => result + item.Amount);
+                var amount = items.Aggregate(0.00M, (result, item) => result + item.TheRealAmount);
                 Console.WriteLine($"\t{startAt.ToString("MMMM yyyy")}\t{amount}");
 
                 startAt = startAt.AddMonths(1);
@@ -108,18 +108,11 @@ namespace Financier.Cli.Listings
                 var tag = result.Key;
                 var itemAndTags = result;
 
-                var total = result.Aggregate(0.00M, (r, i) => r + i.Item2.Amount);
+                var total = result.Aggregate(0.00M, (r, i) => r + i.Item2.TheRealAmount);
                 Console.WriteLine($"\t\t{tag.Name} for a total of {total}");
                 foreach (var item in itemAndTags)
                 {
-                    if (item.Item2.Amount >= 0)
-                    {
-                        Console.WriteLine($"\t\t\t{item.Item2.Description} bought for {item.Item2.Amount} dollars");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\t\t\t{item.Item2.Description} earned {0.00M - item.Item2.Amount} dollars");
-                    }
+                    Console.WriteLine($"\t\t\t{item.Item2.Description} bought for {item.Item2.TheRealAmount} dollars");
                 }
             }
         }
@@ -129,7 +122,7 @@ namespace Financier.Cli.Listings
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetItemsByTag()
                 .GroupBy(result => result.Item1)
-                .Select(i => ValueTuple.Create<Tag, decimal>(i.Key, i.Aggregate(0.00M, (r, item) => r + item.Item2.Amount)))
+                .Select(i => ValueTuple.Create<Tag, decimal>(i.Key, i.Aggregate(0.00M, (r, item) => r + item.Item2.TheRealAmount)))
                 .OrderByDescending(amount => amount.Item2);
 
             foreach (var amount in amountsByTags)
@@ -143,7 +136,7 @@ namespace Financier.Cli.Listings
             var total = GetAssetTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetAssetsByTag()
-                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
+                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.TheRealAmount))
                 .OrderBy(pair => pair.Value);
 
             foreach (var pair in amountsByTags)
@@ -159,7 +152,7 @@ namespace Financier.Cli.Listings
             var total = GetExpenseTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetExpensesByTag()
-                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
+                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.TheRealAmount))
                 .OrderByDescending(pair => pair.Value);
 
             foreach (var pair in amountsByTags)
@@ -175,8 +168,7 @@ namespace Financier.Cli.Listings
             var total = GetRealAssetTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetTagExpenses()
-                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r - i.Amount))
-                .ToDictionary(pair => pair.Key, pair => pair.Value / total);
+                .ToDictionary(pair => pair.Tags, pair => pair.Amount / total);
 
             DisplayItems(amountsByTags);
         }
@@ -246,8 +238,7 @@ namespace Financier.Cli.Listings
             var total = GetRealExpenseTotal(startAt, endAt);
             var amountsByTags = new Analysis(startAt, endAt)
                 .GetTagExpenses()
-                .ToDictionary(pair => pair.Key, pair => pair.Value.Aggregate(0.00M, (r, i) => r + i.Amount))
-                .ToDictionary(pair => pair.Key, pair => pair.Value / total);
+                .ToDictionary(pair => pair.Tags, pair => pair.Amount);
 
             DisplayItems(amountsByTags);
         }
@@ -257,7 +248,7 @@ namespace Financier.Cli.Listings
             return new Analysis(startAt, endAt)
                 .GetExpensesByTag()
                 .SelectMany(pair => pair.Value)
-                .Aggregate(0.00M, (r, i) => r + i.Amount);
+                .Aggregate(0.00M, (r, i) => r + i.TheRealAmount);
         }
 
         private decimal GetAssetTotal(DateTime startAt, DateTime endAt)
@@ -265,23 +256,23 @@ namespace Financier.Cli.Listings
             return new Analysis(startAt, endAt)
                 .GetAssetsByTag()
                 .SelectMany(pair => pair.Value)
-                .Aggregate(0.00M, (r, i) => r + i.Amount);
+                .Aggregate(0.00M, (r, i) => r + i.TheRealAmount);
         }
 
         private decimal GetRealAssetTotal(DateTime startAt, DateTime endAt)
         {
             return new Analysis(startAt, endAt)
                 .GetTagExpenses()
-                .SelectMany(pair => pair.Value)
-                .Aggregate(0.00M, (r, i) => r - i.Amount);
+                .Select(pair => pair.Amount)
+                .Aggregate(0.00M, (r, i) => r + i);
         }
 
         private decimal GetRealExpenseTotal(DateTime startAt, DateTime endAt)
         {
             return new Analysis(startAt, endAt)
                 .GetTagExpenses()
-                .SelectMany(pair => pair.Value)
-                .Aggregate(0.00M, (r, i) => r + i.Amount);
+                .Select(pair => pair.Amount)
+                .Aggregate(0.00M, (r, i) => r + i);
         }
     }
 }

@@ -1,7 +1,7 @@
 using GraphQL;
 using GraphQL.Types;
 
-namespace Financier.Web.GraphQL
+namespace Financier.Web.GraphQL.Statements
 {
     public class StatementSchema : Schema
     {

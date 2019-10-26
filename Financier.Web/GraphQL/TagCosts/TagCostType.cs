@@ -2,9 +2,10 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using Financier.Common.Expenses.Models;
+using Financier.Web.GraphQL.Tags;
 
 // TODO: move to Types namespace
-namespace Financier.Web.GraphQL
+namespace Financier.Web.GraphQL.TagCosts
 {
     public class TagCostType : ObjectGraphType<TagCost>
     {

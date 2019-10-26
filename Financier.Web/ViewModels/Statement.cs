@@ -64,7 +64,7 @@ namespace Financier.Web.ViewModels
             {
                 expenseTotal = Financier.Common.Expenses.Models.Item
                     .FindDebits(From, To)
-                    .Sum(item => item.Amount);
+                    .Sum(item => item.TheRealAmount);
                 // return db.Items
                 //     .Where(item => item.Amount > 0)
                 //     .Where(item => item.TransactedAt >= From)
@@ -82,7 +82,7 @@ namespace Financier.Web.ViewModels
             {
                 assetTotal = Financier.Common.Expenses.Models.Item
                     .FindCredits(From, To)
-                    .Sum(item => item.Amount);
+                    .Sum(item => item.TheRealAmount);
                 // using (var db = new Context())
                 // {
                 //     assetTotal = 0 - db.Items

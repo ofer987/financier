@@ -402,7 +402,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     };
                     record.CreateItem(newStatement.Id);
 
-                    var dbItem = db.Items.First(i => i.Amount == 10.00M);
+                    var dbItem = db.Items.First(i => i.TheRealAmount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));
                 }
             }

@@ -50,7 +50,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
                 Console.WriteLine(item.Tags.Join(", "));
             }
             Assert.That(actual.Select(item => item.Description), Is.EquivalentTo(expectedItems));
-            Assert.That(actual.Aggregate(0.00M, (result, item) => result + item.Amount), Is.EqualTo(expectedAmount));
+            Assert.That(actual.Aggregate(0.00M, (result, item) => result + item.TheRealAmount), Is.EqualTo(expectedAmount));
         }
     }
 }

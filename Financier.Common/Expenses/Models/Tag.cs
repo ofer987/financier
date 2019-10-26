@@ -11,6 +11,15 @@ namespace Financier.Common.Expenses.Models
     [Table("Expenses_Tags")]
     public class Tag
     {
+        public static IList<Tag> GetAll()
+        {
+            using (var db = new Context())
+            {
+                return db.Tags
+                    .ToList();
+            }
+        }
+
         public static Tag GetOrCreate(string name)
         {
             if (name.IsNullOrWhiteSpace())

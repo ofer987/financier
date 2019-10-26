@@ -106,7 +106,10 @@ namespace Financier.Common.Expenses.Models
             itemId = (itemId ?? string.Empty).Trim();
             using (var db = new Context())
             {
-                return db.Items.First(item => item.ItemId == itemId);
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(itemTag => itemTag.Tag)
+                    .First(item => item.ItemId == itemId);
             }
         }
 
@@ -155,23 +158,18 @@ namespace Financier.Common.Expenses.Models
         public string Description { get; set; }
 
         [Required]
-        [Column("Amount")]
-        protected decimal amount;
-        public virtual decimal Amount 
+        public decimal Amount { get; set; }
+
+        public virtual decimal TheRealAmount 
         {
             get
             {
                 if (IsCredit)
                 {
-                    return 0.00M - amount;
+                    return 0.00M - Amount;
                 }
 
-                return amount;
-            }
-
-            set 
-            {
-                amount = value;
+                return Amount;
             }
         }
 
@@ -188,8 +186,8 @@ namespace Financier.Common.Expenses.Models
 
         public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
 
-        public bool IsDebit => amount >= 0;
-        public bool IsCredit => amount < 0;
+        public bool IsDebit => Amount >= 0;
+        public bool IsCredit => Amount < 0;
 
         public Item(string description, DateTime transactedAt, DateTime postedAt, decimal amount)
         {
@@ -226,7 +224,7 @@ namespace Financier.Common.Expenses.Models
             }
 
             if ((Description ?? string.Empty) != (other.Description ?? string.Empty)
-                    || Amount != other.Amount
+                    || TheRealAmount != other.TheRealAmount
                     || TransactedAt != other.TransactedAt
                     || PostedAt != other.PostedAt)
             {
@@ -257,7 +255,8 @@ namespace Financier.Common.Expenses.Models
 
             sb.AppendLine($"{nameof(Id)}: ({Id})");
             sb.AppendLine($"{nameof(Description)}: ({Description ?? string.Empty})");
-            sb.AppendLine($"{nameof(Amount)}: ({AmountString()})");
+            sb.AppendLine($"{nameof(TheRealAmount)}: ({AmountString()})");
+            sb.AppendLine($"{nameof(Amount)}: ({Amount})");
             sb.AppendLine($"{nameof(PostedAt)}: ({PostedAt})");
             sb.AppendLine($"{nameof(TransactedAt)}: ({TransactedAt})");
 
@@ -268,10 +267,10 @@ namespace Financier.Common.Expenses.Models
         {
             if (IsCredit)
             {
-                return $"Credit of {(Amount).ToString("C")}";
+                return $"Credit of {(TheRealAmount).ToString("C")}";
             }
 
-            return Amount.ToString("C");
+            return TheRealAmount.ToString("C");
         }
     }
 }

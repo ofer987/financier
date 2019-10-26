@@ -56,7 +56,7 @@ namespace Financier.Common.Expenses
                     .Where(item => item.At >= StartAt)
                     .Where(item => item.At < EndAt)
                     .ToList()
-                    .Aggregate(0.00M, (result, item) => result + item.Amount);
+                    .Aggregate(0.00M, (result, item) => result + item.TheRealAmount);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Financier.Common.Expenses
                     .First()
                     .At;
 
-                var amount = salaries.Aggregate(0.00M, (result, item) => result + item.Amount);
+                var amount = salaries.Aggregate(0.00M, (result, item) => result + item.TheRealAmount);
                 var dateRange = latestAt - earliestAt;
 
                 // Change sense because earnings are reported
@@ -197,6 +197,59 @@ namespace Financier.Common.Expenses
                 .Select(grouped => new TagCost(grouped.First().Tags, grouped));
         }
 
+        public IEnumerable<Item> GetItemsByTags(bool isAsset, IEnumerable<string> tagNames)
+        {
+            Item[] items;
+            using (var db = new Context())
+            {
+                items = (
+                     from i in db.Items
+                     join it in db.ItemTags on i.Id equals it.ItemId
+                     join t in db.Tags on it.TagId equals t.Id
+                     where true
+                        && i.At >= StartAt
+                        && i.At < EndAt
+                        && (isAsset && i.IsCredit || !isAsset && i.IsDebit)
+                        && tagNames.Any(tagName => tagName == t.Name)
+                     select i
+                )
+                .Include(item => item.ItemTags)
+                    .ThenInclude(itemTag => itemTag.Tag)
+                .ToArray();
+            }
+
+            return items
+                .Reject(item => item.Tags.HasInternalTransfer())
+                .ToArray();
+        }
+
+        public IEnumerable<ValueTuple<DateTime, decimal>> GetItemsByTagsSortedByDate(bool isAsset, IEnumerable<string> tagNames)
+        {
+            var amountsByMonth = GetItemsByTags(isAsset, tagNames)
+                .GroupBy(item => new DateTime(item.At.Year, item.At.Month, 1))
+                .ToDictionary(items => items.Key, items => items.Aggregate(0.00M, (r, i) => r + i.Amount));
+
+            var startAt = new DateTime(StartAt.Year, StartAt.Month, 1);
+            var endAt = new DateTime(EndAt.Year, EndAt.Month, 1);
+            for (var at = startAt; at <= endAt; at = at.AddMonths(1))
+            {
+                if (amountsByMonth.ContainsKey(at))
+                {
+                    yield return new ValueTuple<DateTime, decimal>(
+                        at,
+                        amountsByMonth[at]
+                    );
+                }
+                else
+                {
+                    yield return new ValueTuple<DateTime, decimal>(
+                        at,
+                        0.00M
+                    );
+                }
+            }
+        }
+
         private IDictionary<Tag, IList<Item>> GetItemByTag(bool isAsset)
         {
             List<ValueTuple<Tag, Item>> tagAndExpenses;
@@ -209,7 +262,7 @@ namespace Financier.Common.Expenses
                     where true
                         && i.At >= StartAt
                         && i.At < EndAt
-                        && (isAsset && i.Amount < 0 || !isAsset && i.Amount > 0)
+                        && (isAsset && i.TheRealAmount < 0 || !isAsset && i.TheRealAmount > 0)
                         && t.Name != "credit-card-payment"
                     select ValueTuple.Create<Tag, Item>(t, i)
                     ).ToList();

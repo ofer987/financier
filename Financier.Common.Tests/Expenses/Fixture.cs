@@ -31,23 +31,25 @@ namespace Financier.Common.Tests.Expenses
 
                 public static class Items
                 {
+                    public const string DanSalaryItemId = "gfhkj35hkls";
                     public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
                         Amount = -2000.00M,
                         Description = "Dan Salary",
-                        ItemId = Guid.NewGuid().ToString(),
+                        ItemId = DanSalaryItemId,
                         PostedAt = new DateTime(2019, 6, 6),
                         TransactedAt = new DateTime(2019, 6, 5),
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                     };
 
+                    public const string EdithSalaryItemId = "347js9";
                     public static Func<IEnumerable<Tag>, Item> GetEdithSalary = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
                         Amount = -1000.00M,
                         Description = "Edith Salary",
-                        ItemId = Guid.NewGuid().ToString(),
+                        ItemId = EdithSalaryItemId,
                         PostedAt = new DateTime(2019, 6, 23),
                         TransactedAt = new DateTime(2019, 6, 23),
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
@@ -97,12 +99,13 @@ namespace Financier.Common.Tests.Expenses
                         TransactedAt = new DateTime(2019, 6, 22)
                     };
 
+                    public const string ChildCareBenefitItemId = "898ghg";
                     public static Func<IEnumerable<Tag>, Item> GetChildCareBenefit = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
                         Amount = -800.00M,
                         Description = "Federal Childcare Benefit",
-                        ItemId = Guid.NewGuid().ToString(),
+                        ItemId = ChildCareBenefitItemId,
                         PostedAt = new DateTime(2019, 6, 23),
                         TransactedAt = new DateTime(2019, 6, 23),
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
@@ -121,12 +124,13 @@ namespace Financier.Common.Tests.Expenses
 
                 public static class Items
                 {
+                    public const string DanSalaryItemId = "fdjg65201j";
                     public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
                         Amount = -2000.00M,
                         Description = "Dan Salary",
-                        ItemId = Guid.NewGuid().ToString(),
+                        ItemId = DanSalaryItemId,
                         PostedAt = new DateTime(2019, 7, 6),
                         TransactedAt = new DateTime(2019, 7, 5),
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
@@ -165,14 +169,40 @@ namespace Financier.Common.Tests.Expenses
                         TransactedAt = new DateTime(2019, 7, 22)
                     };
 
+                    public const string ChildCareBenefitItemId = "34h52";
                     public static Func<IEnumerable<Tag>, Item> GetChildCareBenefit = (tags) => new Item
                     {
                         Id = Guid.NewGuid(),
                         Amount = -800.00M,
                         Description = "Federal Childcare Benefit",
-                        ItemId = Guid.NewGuid().ToString(),
+                        ItemId = ChildCareBenefitItemId,
                         PostedAt = new DateTime(2019, 7, 23),
                         TransactedAt = new DateTime(2019, 7, 23),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
+                    };
+                }
+            }
+
+            public static class August
+            {
+                public static Func<Statement> GetStatement = () => new Statement
+                {
+                    Id = Guid.NewGuid(),
+                    CardId = CardId,
+                    PostedAt = new DateTime(2019, 8, 31)
+                };
+
+                public static class Items
+                {
+                    public const string TransferItemId = "fdjg65201j";
+                    public static Func<IEnumerable<Tag>, Item> GetTransfer = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                        Amount = -20.00M,
+                        Description = "An internal transfer",
+                        ItemId = TransferItemId,
+                        PostedAt = new DateTime(2019, 8, 16),
+                        TransactedAt = new DateTime(2019, 8, 15),
                         ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList(),
                     };
                 }
@@ -382,6 +412,18 @@ namespace Financier.Common.Tests.Expenses
                 Id = Guid.NewGuid(),
                 Name = "salary"
             };
+
+            public static Func<Tag> GetInternal = () => new Tag
+            {
+                Id = Guid.NewGuid(),
+                Name = "internal"
+            };
+
+            public static Func<Tag> GetSavings = () => new Tag
+            {
+                Id = Guid.NewGuid(),
+                Name = "savings"
+            };
         }
     }
 
@@ -399,6 +441,8 @@ namespace Financier.Common.Tests.Expenses
                 var lunchTag = MyFactories.Tags.GetLunch();
                 var creditCardPaymentTag = MyFactories.Tags.GetCreditCardPayment();
                 var salaryTag = MyFactories.Tags.GetSalary();
+                var savingsTag = MyFactories.Tags.GetSavings();
+                var internalTag = MyFactories.Tags.GetInternal();
                 db.Tags.Add(funTag);
                 db.Tags.Add(fastTag);
                 db.Tags.Add(dogTag);
@@ -458,13 +502,22 @@ namespace Financier.Common.Tests.Expenses
 
                         var julyStatement = MyFactories.SavingsCard.July.GetStatement();
                         julyStatement.Items.AddRange(new[] {
-                            MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
+                                MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag, internalTag }),
                             MyFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
                             MyFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
-                            MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag } ),
+                            MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag } ),
                             MyFactories.SavingsCard.July.Items.GetChildCareBenefit(new[] { salaryTag })
                         });
                         db.Statements.Add(julyStatement);
+
+                        var augustStatement = MyFactories.SavingsCard.August.GetStatement();
+                        var transferItem = MyFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag });
+                        Console.WriteLine(transferItem);
+
+                        augustStatement.Items.AddRange(new[] {
+                            MyFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag })
+                    });
+                        db.Statements.Add(augustStatement);
                     }
                 }
 

@@ -9,7 +9,9 @@ using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
-using Financier.Web.GraphQL;
+using Financier.Web.GraphQL.Tags;
+using Financier.Web.GraphQL.Statements;
+using Financier.Web.GraphQL.Items;
 
 namespace Financier.Web
 {
@@ -36,6 +38,7 @@ namespace Financier.Web
             services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
             services.AddScoped<StatementSchema>();
             services.AddScoped<ItemSchema>();
+            services.AddScoped<TagSchema>();
 
             // Add GraphQL
             services
@@ -74,14 +77,21 @@ namespace Financier.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseGraphQL<ItemSchema>("/graphql/item");
-            app.UseGraphQL<StatementSchema>("/graphql/statement");
+            app.UseGraphQL<TagSchema>("/graphql/tags");
+            app.UseGraphQL<ItemSchema>("/graphql/items");
+            app.UseGraphQL<StatementSchema>("/graphql/statements");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "Items#Chart",
+                    template: "Items/chart",
+                    defaults: new { controller = "Charts", action = "Chart" }
+                );
+
                 routes.MapRoute(
                     name: "Statements#GetYear",
                     template: "Statements/year/{year}",
