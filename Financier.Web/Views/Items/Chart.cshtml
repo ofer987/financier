@@ -92,8 +92,8 @@
       });
     };
 
-    Tags.prototype.setup = function() {
-      this.compareButton.click(() => this.compare());
+    Tags.prototype.setup = function(renderChart) {
+      this.compareButton.click(() => this.compare(renderChart));
     };
 
     Tags.prototype.selectedTags = function() {
@@ -102,23 +102,22 @@
         .map(input => $(input).attr("data-tag-name"));
     };
 
-    Tags.prototype.fromMonthYear = function() {
+    Tags.prototype.compare = function(renderChart) {
+      renderChart(this.selectedTags());
+    };
+
+    function DateRange() {}
+
+    DateRange.prototype.fromMonthYear = function() {
       return $("#from-date").val()
         .split("/")
         .map(v => +v);
     };
 
-    Tags.prototype.toMonthYear = function() {
+    DateRange.prototype.toMonthYear = function() {
       return $("#to-date").val()
         .split("/")
         .map(v => +v);
-    };
-
-    Tags.prototype.compare = function() {
-      var from = this.fromMonthYear();
-      var to = this.toMonthYear();
-      new Chart(".charts .chart", 960, 500)
-        .request(from[0], from[1], to[0], to[1], this.selectedTags());
     };
 
     function Chart(selector, width, height) {
@@ -134,7 +133,7 @@
       this.height = height - this.margins.top - this.margins.bottom;
     }
 
-    Chart.prototype.request = function(fromMonth, fromYear, toMonth, toYear, tags) {
+    Chart.prototype.request = function(fromMonth, fromYear, toMonth, toYear, tags, render) {
       var client = new Apollo.lib.ApolloClient({
         networkInterface: Apollo.lib.createNetworkInterface({
           uri: '/graphql/items',
@@ -162,8 +161,7 @@
           `
         })
         .then(response => {
-          this.clear();
-          this.render(response.data.monthlyExpensesByTagNames);
+          render(response.data.monthlyExpensesByTagNames);
         });
     }
 
@@ -314,8 +312,19 @@
 
     $(".month-picker").MonthPicker({ Button: false });
     var tags = new Tags();
+    var dates = new DateRange();
+    var chart = new Chart(".charts .chart", 960, 500);
 
-    tags.setup();
+    tags.setup(tagNames => {
+      var from = dates.fromMonthYear();
+      var to = dates.toMonthYear();
+
+      chart.request(from[0], from[1], to[0], to[1], tagNames, (monthlyExpensesByTagNames) => {
+        chart.clear();
+        chart.render(monthlyExpensesByTagNames);
+      });
+    });
+
     tags.fetch();
   })();
 </script>
