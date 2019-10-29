@@ -5,9 +5,9 @@ using NUnit.Framework;
 using Financier.Common.Expenses.Models;
 using Financier.Common.Expenses;
 
-namespace Financier.Common.Tests.Expenses.AnalysisTests
+namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
 {
-    public class GetItemsByTags : Fixture
+    public class Query : Fixture
     {
         [TestCase(
             new[] { "fun" },
@@ -47,7 +47,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
             2019,
             7
         )]
-        public void Test_Expenses_Analysis_GetItemsByTags_ForDebits(
+        public void Test_Expenses_Models_ItemQuery_Query_ForDebits(
             string[] tagNames,
             string[] expectedItemIds,
             int yearFrom,
@@ -106,7 +106,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
             2019,
             9
         )]
-        public void Test_Expenses_Analysis_GetItemsByTags_ForCredits(
+        public void Test_Expenses_Models_ItemQuery_Query_ForCredits(
             string[] tagNames,
             string[] expectedItemIds,
             int yearFrom,
