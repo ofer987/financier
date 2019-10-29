@@ -3,11 +3,10 @@ using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Expenses.Models;
-using Financier.Common.Expenses;
 
-namespace Financier.Common.Tests.Expenses.AnalysisTests
+namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
 {
-    public class GetItemsByTags : Fixture
+    public class Query : Fixture
     {
         [TestCase(
             new[] { "fun" },
@@ -47,7 +46,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
             2019,
             7
         )]
-        public void Test_Expenses_Analysis_GetItemsByTags_ForDebits(
+        public void Test_Expenses_Models_ItemQuery_Query_ForDebits(
             string[] tagNames,
             string[] expectedItemIds,
             int yearFrom,
@@ -60,9 +59,9 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var actualItems = new Analysis(fro, to).GetItemsByTags(false, tagNames);
+            var result = new ItemQuery(tagNames, fro, to, false).Query();
 
-            Assert.That(actualItems, Is.EquivalentTo(expectedItems));
+            Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
 
         [TestCase(
@@ -106,7 +105,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
             2019,
             9
         )]
-        public void Test_Expenses_Analysis_GetItemsByTags_ForCredits(
+        public void Test_Expenses_Models_ItemQuery_Query_ForCredits(
             string[] tagNames,
             string[] expectedItemIds,
             int yearFrom,
@@ -119,13 +118,9 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var actualItems = new Analysis(fro, to).GetItemsByTags(true, tagNames);
+            var result = new ItemQuery(tagNames, fro, to, true).Query();
 
-            foreach (var item in expectedItems)
-            {
-                Console.WriteLine(item);
-            }
-            Assert.That(actualItems, Is.EquivalentTo(expectedItems));
+            Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
     }
 }
