@@ -37,7 +37,7 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
-        public ItemResult Query()
+        public ItemResult GetResults()
         {
             Item[] items;
             using (var db = new Context())
@@ -64,5 +64,24 @@ namespace Financier.Common.Expenses.Models
 
             return new ItemResult(this, externalItems);
         }
+
+        public IEnumerable<MonthlyItemResult> GetResultsOrderedByMonth()
+        {
+            var monthlyItems = GetResults().Items
+                .GroupBy(item => new DateTime(item.At.Year, item.At.Month, 1))
+                .ToDictionary(items => items.Key, items => items.AsEnumerable());
+
+            var startAt = new DateTime(From.Year, From.Month, 1);
+            var endAt = new DateTime(To.Year, To.Month, 1);
+            for (var at = startAt; at <= endAt; at = at.AddMonths(1))
+            {
+                yield return new MonthlyItemResult(
+                    this,
+                    monthlyItems.GetValueOrDefault(at, Enumerable.Empty<Item>()),
+                    at
+                );
+            }
+        }
+
     }
 }

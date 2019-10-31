@@ -136,7 +136,7 @@
     Chart.prototype.request = function(fromMonth, fromYear, toMonth, toYear, tags, render) {
       var client = new Apollo.lib.ApolloClient({
         networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/items',
+          uri: '/graphql/item-queries',
           transportBatching: true,
         }),
         connectToDevTools: true,
@@ -154,7 +154,8 @@
               toYear: ${toYear},
               toMonth: ${toMonth}
             ) {
-              at,
+              year,
+              month,
               amount
             }
           }
@@ -165,29 +166,13 @@
         });
     }
 
-    Chart.prototype.xBand = function(costs) {
-      if (typeof(costs) !== "object") {
-        debugger;
-      }
-      var amounts = costs
-        .map(x => x.amount)
-
-      var scale = d3.scaleBand()
-        .domain(amounts)
+    Chart.prototype.xBand = function(items) {
+      return d3.scaleBand()
+        .domain(this.getBandLabels(items))
         .range([0, this.width]);
-
-      return scale;
-
-      // return d3.scaleLinear()
-      //   .domain([0, d3.max(amounts, d => d.value)])
-      //   .range([this.height, 0]);
     };
 
     Chart.prototype.xScale = function(costs) {
-      if (typeof(costs) !== "object") {
-        debugger;
-      }
-
       var amounts = costs
         .map(x => x.amount);
       var scale = d3.scaleLinear()
@@ -210,9 +195,6 @@
     };
 
     Chart.prototype.yScale = function(costs) {
-      if (typeof(costs) !== 'object') {
-        debugger;
-      }
       var amounts = costs
         .map(x => x.amount)
 
@@ -229,25 +211,27 @@
       //   .range([this.height, 0]);
     };
 
-    Chart.prototype.xAxis = function(costs, selectedScale) {
-      var numbers = [];
-      for (var i = 0; i < this.costs; i += 1) {
-        numbers.push(i + 1);
-      }
-
-      // debugger;
+    Chart.prototype.xAxis = function(items) {
       return d3.axisBottom()
-        .ticks(10)
-        // .scale(selectedScale());
+        .ticks(1)
         .scale(
           d3.scaleBand()
-            .domain(costs.map(d => {
-              var text = d.at;
-
-              return `${text}`;
-            }))
+            .domain(this.getBandLabels(items))
             .range([0, this.width])
         );
+    };
+
+    Chart.prototype.getBandLabel = function(item) {
+      var month = +item.month;
+      if (month > 0 && month < 10) {
+        month = `0${month}`;
+      }
+
+      return `${item.year}-${month}`;
+    };
+
+    Chart.prototype.getBandLabels = function(items) {
+      return items.map(item => this.getBandLabel(item));
     };
 
     Chart.prototype.yAxis = function(selectedScale) {
@@ -272,7 +256,7 @@
       barChart.append("g")
         .attr("class", "x axis")
         .attr("transform", `translate(0, ${this.height})`)
-        .call(this.xAxis(costs, () => this.xScale(costs)));
+        .call(this.xAxis(costs));
 
       // FIXME: just pass yScale as a value
       barChart.append("g")
@@ -280,14 +264,19 @@
         // .call(s => this.yAxis((d) => { debugger; return this.yScale(costs); }));
         .call(this.yAxis(() => this.yScale(costs)));
 
+      var bandLabels = this.getBandLabels(costs);
+
       // debugger;
       var bar = barChart.selectAll(".bar")
-          .data(costs.map(d => d.amount))
+          .data(costs)
         .enter().append("rect")
           .attr("class", "bar")
-          .attr("x", d => this.xBand(costs)(d))
-          .attr("y", d => this.yScale(costs)(d))
-          .attr("height", d => this.height - this.yScale(costs)(d))
+          .attr("x", d => {
+            var bandLabel = this.getBandLabel(d);
+            return this.xBand(costs)(bandLabel);
+          })
+          .attr("y", d => this.yScale(costs)(d.amount))
+          .attr("height", d => this.height - this.yScale(costs)(d.amount))
           .attr("width", barWidth);
 
         // .attr("transform", (d, i) => { /* debugger; */ return `translate(${i * barWidth}, 0)`; });
