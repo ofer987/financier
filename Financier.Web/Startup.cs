@@ -11,6 +11,7 @@ using AspNetCore.RouteAnalyzer;
 using Financier.Common;
 using Financier.Web.GraphQL.Tags;
 using Financier.Web.GraphQL.Statements;
+using Financier.Web.GraphQL.ItemQueries;
 using Financier.Web.GraphQL.Items;
 
 namespace Financier.Web
@@ -39,6 +40,7 @@ namespace Financier.Web
             services.AddScoped<StatementSchema>();
             services.AddScoped<ItemSchema>();
             services.AddScoped<TagSchema>();
+            services.AddScoped<ItemQuerySchema>();
 
             // Add GraphQL
             services
@@ -80,6 +82,7 @@ namespace Financier.Web
             app.UseGraphQL<TagSchema>("/graphql/tags");
             app.UseGraphQL<ItemSchema>("/graphql/items");
             app.UseGraphQL<StatementSchema>("/graphql/statements");
+            app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
