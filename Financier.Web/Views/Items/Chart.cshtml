@@ -299,7 +299,12 @@
       //   });
     };
 
-    $(".month-picker").MonthPicker({ Button: false });
+    (function() {
+      $(".month-picker").MonthPicker({ Button: false });
+      $(".month-picker#from-date").val("11/2018");
+      $(".month-picker#to-date").val("10/2019");
+    })();
+
     var tags = new Tags();
     var dates = new DateRange();
     var chart = new Chart(".charts .chart", 960, 500);
