@@ -1,0 +1,276 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'rest-client'
+require 'date'
+require 'csv'
+
+class Bmo
+  attr_reader :content
+
+  def self.init_from_file(path)
+    new(IO.read(path))
+  end
+
+  def self.init_from_stdin
+    new(STDIN.read)
+  end
+
+  def cookie
+    @cookie ||= content['log']['entries']
+      .select { |entry| entry['request']['url'] =~ /default_loans_mortgages_en/ }
+      .map { |entry| entry ['request']['headers'].select { |header| header['name'] == 'Cookie' } }
+      .flatten
+      .map { |header| header['value'] }
+      .first
+  end
+
+  private
+
+  def initialize(content)
+    self.content = JSON.parse(content)
+  end
+
+  attr_writer :content
+end
+
+class Cards
+  attr_reader :cookie, :cards
+
+  def initialize(cookie, cards)
+    self.cookie = cookie
+    self.cards = cards
+  end
+
+  def process(user, year, month)
+    cards_for(user).each do |card|
+      begin
+        content = statement(card, year, month)
+
+        write_to_file(content, card['number'], year, month, card['billing_day'])
+      rescue StandardError => exception
+        puts "error with card (#{card})"
+        puts exception.message
+        puts exception.backtrace
+      end
+    end
+  end
+
+  private
+
+  def write_to_file(content, card_number, year, month, day)
+    type = self.class.to_s
+    card_number = card_number.gsub(' ', '').gsub('-', '')
+
+    Dir.mkdir(type) unless Dir.exist?(type)
+    Dir.mkdir(File.join(type, card_number)) unless Dir.exist?(File.join(type, card_number))
+
+    date = DateTime.new(year, month, day).strftime("%Y%m%d")
+    path = File.join(type, card_number, "#{date}.csv")
+    IO.write path, content, write: 'wb'
+  end
+
+  def cards_for(user)
+    self.cards.select { |c| c['user'] == user }
+  end
+
+  attr_writer :cookie, :cards
+end
+
+class BankCards < Cards
+  def initialize(cookie, cards)
+    super(cookie, cards)
+  end
+
+  private
+
+  def statement(card, year, month)
+    BmoBankPage
+      .new(cookie)
+      .statement(card['id'], card['number'], DateTime.new(year, month, 1), DateTime.new(year, month, card['billing_day']))
+  end
+end
+
+class CreditCards < Cards
+  def initialize(cookie, cards)
+    super(cookie, cards)
+  end
+
+  private
+
+  def statement(card, year, month)
+    BmoCreditPage
+      .new(cookie)
+      .statement(card['number'], DateTime.new(year, month, card['billing_day']))
+  end
+end
+
+class BmoPage
+  attr_reader :cookie
+
+  def initialize(cookie)
+    self.cookie = cookie
+  end
+
+  private
+
+  def request(headers, form)
+    uris.each do |uri|
+      begin
+        response = attempt_request(uri, headers, form)
+
+        puts "succeeded making a request to (#{uri})"
+        return response
+      rescue RestClient::Found
+        puts "error making a request to (#{uri})"
+        puts "trying next uri"
+      end
+    end
+
+    raise 'error making all requests to BMO'
+  end
+
+  def attempt_request(uri, headers, form)
+    response = RestClient::Request.execute(
+      method: :post,
+      url: uri,
+      payload: form,
+      headers: headers
+    )
+
+    case response.code
+    when 200
+      response.body
+    else
+      raise "error downloading account details code = #{response.code}"
+    end
+  end
+
+  def headers(cookie)
+    {
+      'Cookie' => cookie
+    }
+  end
+
+  def subdomains
+    ['www12', 'www13']
+  end
+
+  attr_writer :cookie
+end
+
+class BmoBankPage < BmoPage
+  attr_reader :cookie
+
+  def initialize(cookie)
+    super(cookie)
+  end
+
+  def statement(card_id, card_number, from_date, to_date)
+    data = request(
+      headers(cookie),
+      form(card_id, from_date, to_date)
+    )
+
+    lines = data.split("\n")
+    headers = ['Account'] + lines[3]
+      .split(',')
+      .map(&:strip)
+
+    records = (lines[6..-1] || []).map do |line|
+      ["'#{card_number.gsub('-', '').gsub(' ', '')}'"] + line
+        .split(',')
+        .map(&:strip)
+    end
+
+    processed_lines = [headers.join(',')] + records.map { |r| r.join(',') }
+    processed_lines
+      .join("\n")
+  end
+
+  private
+
+  def uris
+    subdomains.map do |subdomain|
+      "https://#{subdomain}.bmo.com/onlinebanking/OLBmain/downloadAccountDetails?mode=confirmation"
+    end
+  end
+
+  def form(card_id, from_date, to_date)
+    {
+      "pfmID#{card_id}" => 'true',
+      'downloadOptions' => 'no',
+      'fromDate' => from_date.strftime('%Y-%m-%d'),
+      'toDate' => to_date.strftime('%Y-%m-%d'),
+      'saveDefaultSoftware' => 'True',
+      'selectSoftware' => 105,
+      'saveActivityRadio' => 'remember_selection'
+    }
+  end
+
+  attr_writer :cookie
+end
+
+class BmoCreditPage < BmoPage
+  attr_reader :cookie
+
+  def initialize(cookie)
+    super(cookie)
+  end
+
+  def statement(card_number, statement_date)
+    data = request(
+      headers(cookie),
+      form(card_number, statement_date)
+    )
+
+    lines = data
+      .split("\n")
+      .map(&:strip)
+
+    headers = lines[2]
+      .split(',')
+      .map(&:strip)
+
+    records = (lines[3..-1] || []).map do |line|
+      line
+        .split(',')
+        .map(&:strip)
+    end
+
+    processed_lines = [headers.join(',')] + records.map { |r| r.join(',') }
+    processed_lines
+      .join("\n")
+  end
+
+  private
+
+  def uris
+    subdomains.map do |subdomain|
+      "https://#{subdomain}.bmo.com/onlinebanking/OLBmain/downloadMcAcctDts?mode=confirmation"
+    end
+  end
+
+  def form(card_number, statement_date)
+    {
+      'pfmID' => 0,
+      'stmtDate' => statement_date.strftime('%Y%m%d'),
+      'saveDefaultSoftware' => 'True',
+      'selectSoftware' => 105,
+      'mcNumber' => card_number
+    }
+  end
+
+  attr_writer :cookie
+end
+
+cards_path = ARGV[0].to_s.strip
+user = ARGV[1].to_s.strip
+year = ARGV[2].to_s.strip.to_i
+month = ARGV[3].to_s.strip.to_i
+har_path = ARGV[4].to_s.strip
+
+cookie = Bmo.init_from_file(har_path).cookie
+cards = YAML.load(IO.read(cards_path))
+BankCards.new(cookie, cards['bank']).process(user, year, month)
+CreditCards.new(cookie, cards['credit']).process(user, year, month)
