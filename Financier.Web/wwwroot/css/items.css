@@ -1,41 +1,79 @@
 .tag-name input, .tag-name div {
-  display: inline
+    display: inline
 }
 
 .charts .chart rect {
-  fill: steelblue;
+    fill: steelblue;
 }
 
 .charts .chart text {
-  fill: black;
-  font: 10px sans-serif;
-  text-anchor: middle;
+    fill: black;
+    font: 10px sans-serif;
+    text-anchor: middle;
 }
 
 .axis text {
-  font: 10px sans-serif;
+    font: 10px sans-serif;
 }
 
 .axis path, .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
 }
 
 .x.axis path {
-  display: none;
+    display: none;
+}
+
+.results {
+    display: flew;
+    flex-flow: nowrap;
+    flex-direction: row;
 }
 
 .charts .items {
-  display: flex;
-  flex-flow: nowrap;
-  flex-direction: row;
+    display: flex;
+    flex-flow: nowrap;
+    flex-direction: row;
 }
 
 .charts .items .tags {
-  max-width: 25%;
+    max-width: 25%;
 }
 
 .charts .items .chart {
-  max-width: 75%;
+    max-width: 75%;
+}
+
+.details {
+    display: flex;
+    flex-flow: nowrap;
+    flex-direction: column;
+    margin-top: 50px;
+}
+
+.details .items {
+    display: flex;
+    flex-flow: nowrap;
+    flex-direction: column;
+    margin-left: 100px;
+}
+
+.details .items .item {
+    display: flex;
+    flex-flow: nowrap;
+    flex-direction: row;
+}
+
+.details .items .item .date {
+    width: 20%;
+}
+
+.details .items .item .description {
+    width: 60%;
+}
+
+.details .items .item .amount {
+    width: 20%;
 }
