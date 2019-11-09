@@ -14,7 +14,7 @@ namespace Financier.Web.GraphQL.Items
             Field(t => t.At, nullable: false, type: typeof(DateGraphType));
             Field(t => t.TransactedAt, nullable: false, type: typeof(DateGraphType));
             Field(t => t.PostedAt, nullable: false, type: typeof(DateGraphType));
-            Field("amount", t => t.TheRealAmount, nullable: false, type: typeof(DecimalGraphType));
+            Field("amount", t => t.TheRealAmount.ToString("#0.00"), nullable: false, type: typeof(StringGraphType));
             Field(t => t.ItemId, nullable: false, type: typeof(StringGraphType));
         }
     }
