@@ -9,16 +9,12 @@
 <!-- bar chart -->
 <div class="charts">
   <div class="items">
-    <!-- TODO: rename to .input -->
-    <!-- TODO: place .tags div within .input div -->
-    <div class="tags">
-      <!-- TODO: move from-picker and to-picker as siblings of .tags -->
-      <div class="from-picker">
+    <div class="input">
+      <div class="date-picker">
         From:&nbsp;
         <input id="from-date" class="month-picker" />
       </div>
-      <!-- TODO: rename from-picker to to-picker -->
-      <div class="from-picker">
+      <div class="date-picker">
         To:&nbsp;
         <input id="to-date" class="month-picker" />
       </div>
@@ -28,7 +24,7 @@
       <div class="clear">
         <input type="button" value="Clear" />
       </div>
-      <div class="names">
+      <div class="tags">
       </div>
     </div>
 
@@ -57,8 +53,8 @@
 
   (function() {
     function Tags() {
-      this.compareButton = $(".tags .compare");
-      this.tagsContainer = $(".tags .names");
+      this.compareButton = $(".input .compare");
+      this.tagsContainer = $(".input .tags");
       this.names = [];
     }
 
