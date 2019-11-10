@@ -40,7 +40,6 @@
       </div>
     </div>
   </div>
-
 </div>
 
 
@@ -200,20 +199,8 @@
       var scale = d3.scaleLinear()
         .range([this.width, 0])
         .domain([d3.max(amounts, d => d), 0]);
-        // .range(costs => {
-        //   return 400;
-        //   // var text = d.tags
-        //   //   .map(tag => tag.name)
-        //   //   .join(", ");
-        //   //
-        //   // return `${text} (${d.amount})`;
-        // });
 
       return scale;
-
-      // return d3.scaleLinear()
-      //   .domain([0, d3.max(amounts, d => d.value)])
-      //   .range([this.height, 0]);
     };
 
     Chart.prototype.yScale = function(costs) {
@@ -225,12 +212,6 @@
         .domain([0, d3.max(amounts, d => d)]);
 
       return scale;
-
-      // return scale(costs);
-
-      // return d3.scaleLinear()
-      //   .domain([0, d3.max(amounts, d => d.value)])
-      //   .range([this.height, 0]);
     };
 
     Chart.prototype.xAxis = function(items) {
@@ -259,7 +240,6 @@
     Chart.prototype.yAxis = function(selectedScale) {
       return d3.axisLeft()
         .scale(selectedScale());
-        // .scale(this.yScale);
     };
 
     Chart.prototype.clear = function() {
@@ -283,12 +263,10 @@
       // FIXME: just pass yScale as a value
       barChart.append("g")
         .attr("class", "y axis")
-        // .call(s => this.yAxis((d) => { debugger; return this.yScale(costs); }));
         .call(this.yAxis(() => this.yScale(costs)));
 
       var bandLabels = this.getBandLabels(costs);
 
-      // debugger;
       var bar = barChart.selectAll(".bar")
           .data(costs)
         .enter().append("rect")
@@ -300,42 +278,11 @@
           .attr("y", d => this.yScale(costs)(d.amount))
           .attr("height", d => this.height - this.yScale(costs)(d.amount))
           .attr("width", barWidth);
-
-        // .attr("transform", (d, i) => { /* debugger; */ return `translate(${i * barWidth}, 0)`; });
-
-      // bar.append("rect")
-      //   .attr("y", d => { /* debugger; */ return this.yScale(costs)(d.amount); })
-      //   .attr("height", d => { /* debugger; */ return this.height - this.yScale(costs)(d.amount) })
-      //   .attr("width", barWidth - 1);
-      //
-      // bar.append("text")
-      //   .attr("x", barWidth / 2)
-      //   .attr("y", d => this.yScale(costs)(d.amount) + 3)
-      //   .attr("dy", ".75em")
-      //   .text(d => {
-      //     var text = d.tags
-      //       .map(tag => tag.name)
-      //       .join(", ");
-      //
-      //     return `${text} (${d.amount})`;
-      //   });
     };
 
     function Details(selector, data) {
       this.selector = selector;
       this.data = _.orderBy(data, item => new Date(item.year, item.month, 1), "desc");
-
-      // data.sort((first, second) => {
-      //   var firstDate = new Date(first.year, first.month, 1);
-      //   var secondDate = new Date(second.year, second.month, 1);
-      //
-      //   if (firstDate < secondDate) {
-      //     return 1;
-      //   } else if (firstDate > secondDate) {
-      //     return -1;
-      //   }
-      //   return 0;
-      // });
     }
 
     Details.prototype.getContainer = function() {
@@ -379,24 +326,7 @@
       };
 
       this.selector = selector;
-      // this.data = data;
-
       this.data = _.orderBy(data, item => getDate(item.at), "asc");
-
-      // this.data.sort((first, second) => {
-      //   var firstDate = getDate(first);
-      //   var secondDate = getDate(second);
-      //
-      //   if (firstDate < secondDate) {
-      //     return -1;
-      //   } else if (firstDate > secondDate) {
-      //     return 1;
-      //   }
-      //   return 0;
-      // });
-      // }
-
-      // TODO: sort the items in ascending order by date
     }
 
     Month.prototype.getContainer = function() {
