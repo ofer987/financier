@@ -64,16 +64,20 @@
     display: flex;
     flex-flow: nowrap;
     flex-direction: row;
+    font-family: courier;
 }
 
 .details .items .item .date {
     width: 20%;
+    text-align: left;
 }
 
 .details .items .item .description {
     width: 60%;
+    text-align: left;
 }
 
 .details .items .item .amount {
     width: 20%;
+    text-align: right;
 }

@@ -21,17 +21,3 @@
 .x.axis path {
     display: none;
 }
-
-.details {
-    display: flex;
-    flex-flow: nowrap;
-    flex-direction: row;
-    margin-top: 50px;
-}
-
-.details .items {
-    display: flex;
-    flex-flow: nowrap;
-    flex-direction: row;
-    margin-left: 100px;
-}
