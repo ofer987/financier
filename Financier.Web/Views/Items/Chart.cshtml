@@ -322,7 +322,7 @@
       };
 
       this.selector = selector;
-      this.data = _.orderBy(data, item => getDate(item.at), "asc");
+      this.data = _.groupBy(data, item => item.description);
     }
 
     Month.prototype.getContainer = function() {
@@ -335,23 +335,36 @@
 
     Month.prototype.render = function() {
       var container = this.getContainer();
-      this.data.forEach(item => {
-        var html = `
-          <div class="item">
-            <div class="date">
-              ${item.at}
-            </div>
-            <div class="description">
-              ${item.description}
-            </div>
-            <div class="amount">
-              ${item.amount}
-            </div>
-          </div>
-        `;
 
-        container.append(html);
+      var totals = {};
+      Object.keys(this.data).forEach(description => {
+        var total = 0.00;
+        this.data[description].forEach(item => {
+          total += +item.amount;
+        });
+
+        totals[description] = {
+          description: description,
+          total: total
+        };
       });
+
+      _
+        .orderBy(Object.values(totals), value => value.total, "desc")
+        .forEach(item => {
+          var html = `
+            <div class="item">
+              <div class="description">
+                ${item.description}
+              </div>
+              <div class="amount">
+                ${item.total.toFixed(2)}
+              </div>
+            </div>
+          `;
+
+          container.append(html);
+        });
     };
 
     (function() {
