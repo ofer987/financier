@@ -164,7 +164,7 @@
               month,
               amount,
               items {
-                description, 
+                description,
                 at,
                 amount
               }
@@ -306,7 +306,7 @@
 
         container.append(monthElement);
 
-        var items = new Month(`.items#${identifer}`, item.items);
+        var items = new AggregatedMonth(`.items#${identifer}`, item.items);
 
         items.render();
       });
@@ -322,7 +322,7 @@
       };
 
       this.selector = selector;
-      this.data = _.groupBy(data, item => item.description);
+      this.data = _.orderBy(data, item => getDate(item.at), "asc");
     }
 
     Month.prototype.getContainer = function() {
@@ -334,6 +334,40 @@
     };
 
     Month.prototype.render = function() {
+      var container = this.getContainer();
+      this.data.forEach(item => {
+        var html = `
+          <div class="item">
+            <div class="date">
+              ${item.at}
+            </div>
+            <div class="description">
+              ${item.description}
+            </div>
+            <div class="amount">
+              ${item.amount}
+            </div>
+          </div>
+        `;
+
+        container.append(html);
+      });
+    };
+
+    function AggregatedMonth(selector, data) {
+      Month.call(this, selector, data);
+
+      this.data = _.groupBy(data, item => item.description);
+    }
+
+    AggregatedMonth.prototype = Object.create(Month.prototype);
+    Object.defineProperty(AggregatedMonth.prototype, 'constructor', {
+      value: AggregatedMonth,
+      enumerable: false,
+      writable: true
+    });
+
+    AggregatedMonth.prototype.render = function() {
       var container = this.getContainer();
 
       var totals = {};
