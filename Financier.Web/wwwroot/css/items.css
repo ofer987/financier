@@ -78,3 +78,7 @@
     width: 20%;
     text-align: right;
 }
+
+.comparisons div {
+    display: inline;
+}
