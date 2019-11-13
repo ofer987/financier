@@ -68,15 +68,21 @@
       this.getContainer().empty();
     };
 
-    function Input(selector, getResults) {
-      Element.call(Element);
+    function Input(selector, renderResults) {
+      Element.call(this, selector);
 
       this.tags = new Tags(".tags");
       this.compareButton = new CompareButton(".compare input", () => {
-        this.request(getResults)
+        this.request((data) => {
+          var results = new Results(".results", data);
+          renderResults(results);
+        });
       });
       this.detailedCompareButton = new CompareButton(".detailed-compare input", () => {
-        this.request(getResults)
+        this.request((data) => {
+          var results = new DetailedResults(".results", data);
+          renderResults(results);
+        });
       });
       this.dates = new DateRange(".month-picker", new Date(2018, 11, 1), new Date(2019, 10, 1));
       this.clearButton = $(".clear input");
@@ -89,7 +95,7 @@
       writable: true
     });
 
-    Inputs.prototype.render = function() {
+    Input.prototype.render = function() {
       // TODO: should Tags.fetch be called fetch or render?
       this.tags.fetch();
       this.dates.render();
@@ -121,7 +127,6 @@
         connectToDevTools: true,
       });
 
-      var names = tags.map(name => `"${name}"`).join(", ");
       client
         .query({
           query: Apollo.gql`
@@ -157,10 +162,10 @@
     }
 
     function Results(selector, data) {
-      Element.call(this);
+      Element.call(this, selector);
 
-      this.chart = new Chart(".charts .chart", 960, 500, data);
-      this.details = new Details(".details", data);
+      this.chart = new Chart(".results .chart", 960, 500, data);
+      this.details = new Details(".results .details", data);
     }
 
     Results.prototype = Object.create(Element.prototype);
@@ -175,13 +180,30 @@
       this.details.render();
     };
 
+    Results.prototype.clear = function() {
+      this.chart.clear();
+      this.details.clear();
+    };
+
+    function DetailedResults(selector, data) {
+      Results.call(this, selector, data);
+
+      this.chart = new Chart(".results .chart", 960, 500, data);
+      this.details = new DetailedDetails(".results .details", data);
+    }
+
+    DetailedResults.prototype = Object.create(Results.prototype);
+    Object.defineProperty(DetailedResults.prototype, 'constructor', {
+      value: DetailedResults,
+      enumerable: false,
+      writable: true
+    });
+
     function CompareButton(selector, action) {
       Element.call(this, selector);
 
       this.getContainer().click(action);
     }
-
-    CompareButton.prototype.setup
 
     CompareButton.prototype = Object.create(Element.prototype);
     Object.defineProperty(CompareButton.prototype, 'constructor', {
@@ -285,11 +307,11 @@
     };
 
     DateRange.prototype.from = function() {
-      return new Date(this.fromMonthYear[0], this.fromMonthYear[1], 1);
+      return new Date(this.fromMonthYear()[1], this.fromMonthYear()[0], 1);
     }
 
     DateRange.prototype.to = function() {
-      return new Date(this.toMonthYear[0], this.toMonthYear[1], 1);
+      return new Date(this.toMonthYear()[1], this.toMonthYear()[0], 1);
     }
 
     DateRange.prototype.fromMonthYear = function() {
@@ -432,6 +454,10 @@
       writable: true
     });
 
+    Details.prototype.createMonth = function(selector, values) {
+      return new Month(selector, values);
+    };
+
     Details.prototype.render = function() {
       var container = this.getContainer();
       this.data.forEach(item => {
@@ -447,25 +473,31 @@
 
         container.append(monthElement);
 
-        var items = new AggregatedMonth(`.items#${identifer}`, item.items);
-
-        items.render();
+        this
+          .createMonth(`.items#${identifer}`, item.items)
+          .render();
       });
+    };
+
+    function DetailedDetails(selector, data) {
+      Details.call(this, selector, data);
+    }
+
+    DetailedDetails.prototype = Object.create(Details.prototype);
+    Object.defineProperty(DetailedDetails.prototype, 'constructor', {
+      value: DetailedDetails,
+      enumerable: false,
+      writable: true
+    });
+
+    DetailedDetails.prototype.createMonth = function(selector, values) {
+      return new DetailedMonth(selector, values);
     };
 
     function Month(selector, data) {
       Element.call(this, selector);
 
-      var getDate = (string) => {
-        return new Date(
-          string.substr(0, 4),
-          string.substr(5, 2),
-          string.substr(8, 2)
-        );
-      };
-
-      this.selector = selector;
-      this.data = _.orderBy(data, item => getDate(item.at), "asc");
+      this.data = _.groupBy(data, item => item.description);
     }
 
     Month.prototype = Object.create(Element.prototype);
@@ -476,40 +508,6 @@
     });
 
     Month.prototype.render = function() {
-      var container = this.getContainer();
-      this.data.forEach(item => {
-        var html = `
-          <div class="item">
-            <div class="date">
-              ${item.at}
-            </div>
-            <div class="description">
-              ${item.description}
-            </div>
-            <div class="amount">
-              ${item.amount}
-            </div>
-          </div>
-        `;
-
-        container.append(html);
-      });
-    };
-
-    function AggregatedMonth(selector, data) {
-      Month.call(this, selector, data);
-
-      this.data = _.groupBy(data, item => item.description);
-    }
-
-    AggregatedMonth.prototype = Object.create(Month.prototype);
-    Object.defineProperty(AggregatedMonth.prototype, 'constructor', {
-      value: AggregatedMonth,
-      enumerable: false,
-      writable: true
-    });
-
-    AggregatedMonth.prototype.render = function() {
       var container = this.getContainer();
 
       var totals = {};
@@ -543,46 +541,59 @@
         });
     };
 
-    (function() {
-      $(".month-picker").MonthPicker({ Button: false });
-      $(".month-picker#from-date").val("11/2018");
-      $(".month-picker#to-date").val("10/2019");
-    })();
+    function DetailedMonth(selector, data) {
+      Month.call(this, selector, data);
 
-    var inputs = new Input(".input", (data) => {
-      var results = new Results(".results", data);
+      var getDate = (string) => {
+        return new Date(
+          string.substr(0, 4),
+          string.substr(5, 2),
+          string.substr(8, 2)
+        );
+      };
+
+      this.selector = selector;
+      this.data = _.orderBy(data, item => getDate(item.at), "asc");
+    }
+
+    DetailedMonth.prototype = Object.create(Month.prototype);
+    Object.defineProperty(DetailedMonth.prototype, 'constructor', {
+      value: DetailedMonth,
+      enumerable: false,
+      writable: true
+    });
+
+    DetailedMonth.prototype.render = function() {
+      var container = this.getContainer();
+      this.data.forEach(item => {
+        var html = `
+          <div class="item">
+            <div class="date">
+              ${item.at}
+            </div>
+            <div class="description">
+              ${item.description}
+            </div>
+            <div class="amount">
+              ${item.amount}
+            </div>
+          </div>
+        `;
+
+        container.append(html);
+      });
+    };
+
+    // (function() {
+    //   $(".month-picker").MonthPicker({ Button: false });
+    //   $(".month-picker#from-date").val("11/2018");
+    //   $(".month-picker#to-date").val("10/2019");
+    // })();
+
+    var inputs = new Input(".input", (results) => {
       results.clear();
       results.render();
     });
     inputs.render();
-
-    var clearAll = (tags, dates, results) => {
-      tags.clear();
-      dates.clear();
-      $(".results").empty();
-    };
-
-    var tags = new Tags();
-    var dates = new DateRange();
-    var chart = new Chart(".charts .chart", 960, 500);
-
-    $(".clear").click(() => clearAll(tags, dates));
-
-    tags.setup(tagNames => {
-      var from = dates.fromMonthYear();
-      var to = dates.toMonthYear();
-
-      chart.request(from[0], from[1], to[0], to[1], tagNames, (monthlyExpensesByTagNames) => {
-        var details = new Details(".details", monthlyExpensesByTagNames);
-        chart.clear();
-        details.clear();
-
-        chart.render(monthlyExpensesByTagNames);
-        details.render();
-
-      });
-    });
-
-    tags.fetch();
   })();
 </script>
