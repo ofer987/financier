@@ -56,415 +56,377 @@
   'use strict';
 
   (function() {
-    function Element(selector) {
-      this.selector = selector;
+    class Element {
+      constructor(selector) {
+        this.selector = selector;
+      }
+
+      getContainer() {
+        return $(this.selector);
+      }
+
+      clear() {
+        this.getContainer().empty();
+      }
     }
 
-    Element.prototype.getContainer = function() {
-      return $(this.selector);
-    };
+    class Input extends Element{
+      constructor(selector, renderResults) {
+        super(selector);
 
-    Element.prototype.clear = function() {
-      this.getContainer().empty();
-    };
-
-    function Input(selector, renderResults) {
-      Element.call(this, selector);
-
-      this.tags = new Tags(".tags");
-      this.compareButton = new Button(".compare input", () => {
-        this.request((data) => {
-          var results = new Results(".results", data);
-          renderResults(results);
+        this.tags = new Tags(".tags");
+        this.compareButton = new Button(".compare input", () => {
+          this.request((data) => {
+            var results = new Results(".results", data);
+            renderResults(results);
+          });
         });
-      });
-      this.detailedCompareButton = new Button(".detailed-compare input", () => {
-        this.request((data) => {
-          var results = new DetailedResults(".results", data);
-          renderResults(results);
+        this.detailedCompareButton = new Button(".detailed-compare input", () => {
+          this.request((data) => {
+            var results = new DetailedResults(".results", data);
+            renderResults(results);
+          });
         });
-      });
-      this.dates = new DateRange(".month-picker", new Date(2018, 11, 1), new Date(2019, 10, 1));
-      this.clearButton = new Button(".clear input", () => {
-        new Results(".results", []).clear();
-      });
-    }
+        this.dates = new DateRange(".month-picker", new Date(2018, 11, 1), new Date(2019, 10, 1));
+        this.clearButton = new Button(".clear input", () => {
+          new Results(".results", []).clear();
+        });
+      }
 
-    Input.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Input.prototype, 'constructor', {
-      value: Input,
-      enumerable: false,
-      writable: true
-    });
+      render() {
+        // TODO: should Tags.fetch be called fetch or render?
+        this.tags.fetch();
+        this.dates.render();
+      }
 
-    Input.prototype.render = function() {
-      // TODO: should Tags.fetch be called fetch or render?
-      this.tags.fetch();
-      this.dates.render();
-    };
+      clear() {
+        this.tags.clear();
+        this.dates.clear();
+      }
 
-    Input.prototype.clear = function() {
-      this.tags.clear();
-      this.dates.clear();
-    };
+      getTagNames() {
+        return this.tags.selectedTags();
+      }
 
-    Input.prototype.getTagNames = function() {
-      return this.tags.selectedTags();
-    };
+      getFromDate() {
+        return this.dates.from();
+      }
 
-    Input.prototype.getFromDate = function() {
-      return this.dates.from();
-    };
+      getToDate() {
+        return this.dates.to();
+      }
 
-    Input.prototype.getToDate = function() {
-      return this.dates.to();
-    };
+      request(render) {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql/item-queries',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
+        });
 
-    Input.prototype.request = function(render) {
-      var client = new Apollo.lib.ApolloClient({
-        networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/item-queries',
-          transportBatching: true,
-        }),
-        connectToDevTools: true,
-      });
-
-      client
-        .query({
-          query: Apollo.gql`
-          query($tagNames: [String!], $fromYear: Int!, $fromMonth: Int!, $toYear: Int!, $toMonth: Int!){
-            monthlyExpensesByTagNames(
-              tagNames: $tagNames,
-              fromYear: $fromYear,
-              fromMonth: $fromMonth,
-              toYear: $toYear,
-              toMonth: $toMonth
-            ) {
-              year,
-              month,
-              amount,
-              items {
-                description,
-                at,
-                amount
+        client
+          .query({
+            query: Apollo.gql`
+            query($tagNames: [String!], $fromYear: Int!, $fromMonth: Int!, $toYear: Int!, $toMonth: Int!){
+              monthlyExpensesByTagNames(
+                tagNames: $tagNames,
+                fromYear: $fromYear,
+                fromMonth: $fromMonth,
+                toYear: $toYear,
+                toMonth: $toMonth
+              ) {
+                year,
+                month,
+                amount,
+                items {
+                  description,
+                  at,
+                  amount
+                }
               }
+            }`,
+            variables: {
+              tagNames: this.getTagNames(),
+              fromYear: this.getFromDate().getFullYear(),
+              fromMonth: this.getFromDate().getMonth(),
+              toYear: this.getToDate().getFullYear(),
+              toMonth: this.getToDate().getMonth()
             }
-          }`,
-          variables: {
-            tagNames: this.getTagNames(),
-            fromYear: this.getFromDate().getFullYear(),
-            fromMonth: this.getFromDate().getMonth(),
-            toYear: this.getToDate().getFullYear(),
-            toMonth: this.getToDate().getMonth()
-          }
-        })
-        .then(response => {
-          render(response.data.monthlyExpensesByTagNames);
+          })
+          .then(response => {
+            render(response.data.monthlyExpensesByTagNames);
+          });
+      }
+    }
+
+    class Results extends Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.chart = new Chart(".results .chart", 960, 500, data);
+        this.details = new Details(".results .details", data);
+      }
+
+      render() {
+        this.chart.render();
+        this.details.render();
+      }
+
+      clear() {
+        this.chart.clear();
+        this.details.clear();
+      }
+    }
+
+    class DetailedResults extends Results {
+      constructor(selector, data) {
+        super(selector, data);
+
+        this.chart = new Chart(".results .chart", 960, 500, data);
+        this.details = new DetailedDetails(".results .details", data);
+      }
+    }
+
+    class Button extends Element {
+      constructor(selector, action) {
+        super(selector);
+
+        this.getContainer().click(action);
+      }
+    }
+
+    class Tags extends Element {
+      constructor(selector) {
+        super(selector);
+
+        this.compareButton = $(".input .compare");
+        this.tagsContainer = $(".input .tags");
+        this.names = [];
+      }
+
+      fetch() {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql/tags',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
         });
-    }
 
-    function Results(selector, data) {
-      Element.call(this, selector);
-
-      this.chart = new Chart(".results .chart", 960, 500, data);
-      this.details = new Details(".results .details", data);
-    }
-
-    Results.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Results.prototype, 'constructor', {
-      value: Results,
-      enumerable: false,
-      writable: true
-    });
-
-    Results.prototype.render = function() {
-      this.chart.render();
-      this.details.render();
-    };
-
-    Results.prototype.clear = function() {
-      this.chart.clear();
-      this.details.clear();
-    };
-
-    function DetailedResults(selector, data) {
-      Results.call(this, selector, data);
-
-      this.chart = new Chart(".results .chart", 960, 500, data);
-      this.details = new DetailedDetails(".results .details", data);
-    }
-
-    DetailedResults.prototype = Object.create(Results.prototype);
-    Object.defineProperty(DetailedResults.prototype, 'constructor', {
-      value: DetailedResults,
-      enumerable: false,
-      writable: true
-    });
-
-    function Button(selector, action) {
-      Element.call(this, selector);
-
-      this.getContainer().click(action);
-    }
-
-    Button.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Button.prototype, 'constructor', {
-      value: Button,
-      enumerable: false,
-      writable: true
-    });
-
-    function Tags(selector) {
-      Element.call(this, selector);
-
-      this.compareButton = $(".input .compare");
-      this.tagsContainer = $(".input .tags");
-      this.names = [];
-    }
-
-    Tags.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Tags.prototype, 'constructor', {
-      value: Tags,
-      enumerable: false,
-      writable: true
-    });
-
-    Tags.prototype.fetch = function() {
-      var client = new Apollo.lib.ApolloClient({
-        networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/tags',
-          transportBatching: true,
-        }),
-        connectToDevTools: true,
-      });
-
-      client
-        .query({
-          query: Apollo.gql`
+        client
+          .query({
+            query: Apollo.gql`
             {
               list {
                 name
               }
             }
           `
-        })
-        .then(response => {
-          this.names = response.data.list
-            .map(tag => tag.name);
+          })
+          .then(response => {
+            this.names = response.data.list
+              .map(tag => tag.name);
 
-          this.render();
-        });
-    };
+            this.render();
+          });
+      }
 
-    Tags.prototype.render = function() {
-      this.names.forEach(name => {
-        var element = `
+      render() {
+        this.names.forEach(name => {
+          var element = `
           <div class="tag-name">
             <input id="${name}" type="checkbox" data-tag-name="${name}"></input>
             <label for="${name}">${name}</div>
           </div>
         `;
 
-        this.tagsContainer.append(element);
-      });
-    };
-
-    Tags.prototype.setup = function(renderChart) {
-      this.compareButton.click(() => this.compare(renderChart));
-    };
-
-    Tags.prototype.selectedTags = function() {
-      return this.tagsContainer
-        .find("input:checked").toArray()
-        .map(input => $(input).attr("data-tag-name"));
-    };
-
-    Tags.prototype.compare = function(renderChart) {
-      renderChart(this.selectedTags());
-    };
-
-    Tags.prototype.clear = function() {
-      $(".tags input").removeAttr("checked");
-    };
-
-    function DateRange(selector, fromDate, toDate) {
-      Element.call(this, selector);
-
-      this.initialFrom = fromDate;
-      this.initialTo = toDate;
-    }
-
-    DateRange.prototype = Object.create(Element.prototype);
-    Object.defineProperty(DateRange.prototype, 'constructor', {
-      value: DateRange,
-      enumerable: false,
-      writable: true
-    });
-
-    DateRange.prototype.render = function() {
-      // FIXME: use the getContainer function
-      $(".month-picker").MonthPicker({ Button: false });
-      $(".month-picker#from-date").val(`${this.initialFrom.getMonth()}/${this.initialFrom.getFullYear()}`);
-      $(".month-picker#to-date").val(`${this.initialTo.getMonth()}/${this.initialTo.getFullYear()}`);
-    };
-
-    DateRange.prototype.from = function() {
-      return new Date(this.fromMonthYear()[1], this.fromMonthYear()[0], 1);
-    }
-
-    DateRange.prototype.to = function() {
-      return new Date(this.toMonthYear()[1], this.toMonthYear()[0], 1);
-    }
-
-    DateRange.prototype.fromMonthYear = function() {
-      return $("#from-date").val()
-        .split("/")
-        .map(v => +v);
-    };
-
-    DateRange.prototype.toMonthYear = function() {
-      return $("#to-date").val()
-        .split("/")
-        .map(v => +v);
-    };
-
-    DateRange.prototype.clear = function() {
-      $(".date-picker input").val("");
-    }
-
-    function Chart(selector, width, height, data) {
-      Element.call(this, selector);
-
-      this.margins = {
-        top: 20,
-        right: 30,
-        bottom: 30,
-        left: 40
-      };
-      this.selector = selector;
-      this.width = width - this.margins.left - this.margins.right;
-      this.height = height - this.margins.top - this.margins.bottom;
-      this.data = data;
-    }
-
-    Chart.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Chart.prototype, 'constructor', {
-      value: Chart,
-      enumerable: false,
-      writable: true
-    });
-
-    Chart.prototype.xBand = function(items) {
-      return d3.scaleBand()
-        .domain(this.getBandLabels(items))
-        .range([0, this.width]);
-    };
-
-    Chart.prototype.xScale = function(costs) {
-      var amounts = costs
-        .map(x => x.amount);
-      var scale = d3.scaleLinear()
-        .range([this.width, 0])
-        .domain([d3.max(amounts, d => d), 0]);
-
-      return scale;
-    };
-
-    Chart.prototype.yScale = function(costs) {
-      var amounts = costs
-        .map(x => x.amount)
-
-      var scale = d3.scaleLinear()
-        .range([this.height, 0])
-        .domain([0, d3.max(amounts, d => d)]);
-
-      return scale;
-    };
-
-    Chart.prototype.xAxis = function(items) {
-      return d3.axisBottom()
-        .ticks(1)
-        .scale(
-          d3.scaleBand()
-            .domain(this.getBandLabels(items))
-            .range([0, this.width])
-        );
-    };
-
-    Chart.prototype.getBandLabel = function(item) {
-      var month = +item.month;
-      if (month > 0 && month < 10) {
-        month = `0${month}`;
+          this.tagsContainer.append(element);
+        });
       }
 
-      return `${item.year}-${month}`;
-    };
+      setup(renderChart) {
+        this.compareButton.click(() => this.compare(renderChart));
+      }
 
-    Chart.prototype.getBandLabels = function(items) {
-      return items.map(item => this.getBandLabel(item));
-    };
+      selectedTags() {
+        return this.tagsContainer
+          .find("input:checked").toArray()
+          .map(input => $(input).attr("data-tag-name"));
+      }
 
-    Chart.prototype.yAxis = function(selectedScale) {
-      return d3.axisLeft()
-        .scale(selectedScale());
-    };
+      compare(renderChart) {
+        renderChart(this.selectedTags());
+      }
 
-    Chart.prototype.render = function() {
-      var barWidth = this.width / this.data.length;
-      var barChart = d3.select(this.selector)
-        .attr("width", this.width + this.margins.left + this.margins.right)
-        .attr("height", this.height + this.margins.top + this.margins.bottom)
-        .append("g")
-          .attr("transform", `translate(${this.margins.left}, ${this.margins.top})`);
-
-      // FIXME: just pass xScale as a value
-      barChart.append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${this.height})`)
-        .call(this.xAxis(this.data));
-
-      // FIXME: just pass yScale as a value
-      barChart.append("g")
-        .attr("class", "y axis")
-        .call(this.yAxis(() => this.yScale(this.data)));
-
-      var bandLabels = this.getBandLabels(this.data);
-
-      var bar = barChart.selectAll(".bar")
-          .data(this.data)
-        .enter().append("rect")
-          .attr("class", "bar")
-          .attr("x", d => {
-            var bandLabel = this.getBandLabel(d);
-            return this.xBand(this.data)(bandLabel);
-          })
-          .attr("y", d => this.yScale(this.data)(d.amount))
-          .attr("height", d => this.height - this.yScale(this.data)(d.amount))
-          .attr("width", barWidth);
-    };
-
-    function Details(selector, data) {
-      Element.call(this, selector);
-      this.selector = selector;
-      this.data = _.orderBy(data, item => new Date(item.year, item.month, 1), "desc");
+      clear() {
+        $(".tags input").removeAttr("checked");
+      }
     }
 
-    Details.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Details.prototype, 'constructor', {
-      value: Details,
-      enumerable: false,
-      writable: true
-    });
+    class DateRange extends Element {
+      constructor(selector, fromDate, toDate) {
+        super(selector);
 
-    Details.prototype.createMonth = function(selector, values) {
-      return new Month(selector, values);
-    };
+        this.initialFrom = fromDate;
+        this.initialTo = toDate;
+      }
 
-    Details.prototype.render = function() {
-      var container = this.getContainer();
-      this.data.forEach(item => {
-        var identifer = `${item.year}-${item.month}`;
-        var monthElement = `
+      render() {
+        // FIXME: use the getContainer function
+        $(".month-picker").MonthPicker({ Button: false });
+        $(".month-picker#from-date").val(`${this.initialFrom.getMonth()}/${this.initialFrom.getFullYear()}`);
+        $(".month-picker#to-date").val(`${this.initialTo.getMonth()}/${this.initialTo.getFullYear()}`);
+      }
+
+      from() {
+        return new Date(this.fromMonthYear()[1], this.fromMonthYear()[0], 1);
+      }
+
+      to() {
+        return new Date(this.toMonthYear()[1], this.toMonthYear()[0], 1);
+      }
+
+      fromMonthYear() {
+        return $("#from-date").val()
+          .split("/")
+          .map(v => +v);
+      }
+
+      toMonthYear() {
+        return $("#to-date").val()
+          .split("/")
+          .map(v => +v);
+      }
+
+      clear() {
+        $(".date-picker input").val("");
+      }
+    }
+
+    class Chart extends Element {
+      constructor(selector, width, height, data) {
+        super(selector);
+
+        this.margins = {
+          top: 20,
+          right: 30,
+          bottom: 30,
+          left: 40
+        };
+        this.selector = selector;
+        this.width = width - this.margins.left - this.margins.right;
+        this.height = height - this.margins.top - this.margins.bottom;
+        this.data = data;
+      }
+
+      xBand(items) {
+        return d3.scaleBand()
+          .domain(this.getBandLabels(items))
+          .range([0, this.width]);
+      }
+
+      xScale(costs) {
+        var amounts = costs
+          .map(x => x.amount);
+        var scale = d3.scaleLinear()
+          .range([this.width, 0])
+          .domain([d3.max(amounts, d => d), 0]);
+
+        return scale;
+      }
+
+      yScale(costs) {
+        var amounts = costs
+          .map(x => x.amount)
+
+        var scale = d3.scaleLinear()
+          .range([this.height, 0])
+          .domain([0, d3.max(amounts, d => d)]);
+
+        return scale;
+      }
+
+      xAxis(items) {
+        return d3.axisBottom()
+          .ticks(1)
+          .scale(
+            d3.scaleBand()
+              .domain(this.getBandLabels(items))
+              .range([0, this.width])
+          );
+      }
+
+      getBandLabel(item) {
+        var month = +item.month;
+        if (month > 0 && month < 10) {
+          month = `0${month}`;
+        }
+
+        return `${item.year}-${month}`;
+      }
+
+      getBandLabels(items) {
+        return items.map(item => this.getBandLabel(item));
+      }
+
+      yAxis(selectedScale) {
+        return d3.axisLeft()
+          .scale(selectedScale());
+      }
+
+      render() {
+        var barWidth = this.width / this.data.length;
+        var barChart = d3.select(this.selector)
+          .attr("width", this.width + this.margins.left + this.margins.right)
+          .attr("height", this.height + this.margins.top + this.margins.bottom)
+          .append("g")
+            .attr("transform", `translate(${this.margins.left}, ${this.margins.top})`);
+
+        // FIXME: just pass xScale as a value
+        barChart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", `translate(0, ${this.height})`)
+          .call(this.xAxis(this.data));
+
+        // FIXME: just pass yScale as a value
+        barChart.append("g")
+          .attr("class", "y axis")
+          .call(this.yAxis(() => this.yScale(this.data)));
+
+        var bandLabels = this.getBandLabels(this.data);
+
+        var bar = barChart.selectAll(".bar")
+            .data(this.data)
+          .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", d => {
+              var bandLabel = this.getBandLabel(d);
+              return this.xBand(this.data)(bandLabel);
+            })
+            .attr("y", d => this.yScale(this.data)(d.amount))
+            .attr("height", d => this.height - this.yScale(this.data)(d.amount))
+            .attr("width", barWidth);
+      }
+    }
+
+    class Details extends Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.selector = selector;
+        this.data = _.orderBy(data, item => new Date(item.year, item.month, 1), "desc");
+      }
+
+      createMonth(selector, values) {
+        return new Month(selector, values);
+      }
+
+      render() {
+        var container = this.getContainer();
+        this.data.forEach(item => {
+          var identifer = `${item.year}-${item.month}`;
+          var monthElement = `
           <div class="month">
             <h1>${identifer}</h1>
 
@@ -473,102 +435,87 @@
           </div>
         `;
 
-        container.append(monthElement);
+          container.append(monthElement);
 
-        this
-          .createMonth(`.items#${identifer}`, item.items)
-          .render();
-      });
-    };
-
-    function DetailedDetails(selector, data) {
-      Details.call(this, selector, data);
+          this
+            .createMonth(`.items#${identifer}`, item.items)
+            .render();
+        });
+      }
     }
 
-    DetailedDetails.prototype = Object.create(Details.prototype);
-    Object.defineProperty(DetailedDetails.prototype, 'constructor', {
-      value: DetailedDetails,
-      enumerable: false,
-      writable: true
-    });
+    class DetailedDetails extends Details {
+      constructor(selector, data) {
+        super(selector, data);
+      }
 
-    DetailedDetails.prototype.createMonth = function(selector, values) {
-      return new DetailedMonth(selector, values);
-    };
-
-    function Month(selector, data) {
-      Element.call(this, selector);
-
-      this.data = _.groupBy(data, item => item.description);
+      createMonth(selector, values) {
+        return new DetailedMonth(selector, values);
+      }
     }
 
-    Month.prototype = Object.create(Element.prototype);
-    Object.defineProperty(Month.prototype, 'constructor', {
-      value: Month,
-      enumerable: false,
-      writable: true
-    });
+    class Month extends Element {
+      constructor(selector, data) {
+        super(selector);
 
-    Month.prototype.render = function() {
-      var container = this.getContainer();
+        this.data = _.groupBy(data, item => item.description);
+      }
 
-      var totals = {};
-      Object.keys(this.data).forEach(description => {
-        var total = 0.00;
-        this.data[description].forEach(item => {
-          total += +item.amount;
+      render() {
+        var container = this.getContainer();
+
+        var totals = {};
+        Object.keys(this.data).forEach(description => {
+          var total = 0.00;
+          this.data[description].forEach(item => {
+            total += +item.amount;
+          });
+
+          totals[description] = {
+            description: description,
+            total: total
+          };
         });
 
-        totals[description] = {
-          description: description,
-          total: total
+        _
+          .orderBy(Object.values(totals), value => value.total, "desc")
+          .forEach(item => {
+            var html = `
+              <div class="item">
+                <div class="description">
+                  ${item.description}
+                </div>
+                <div class="amount">
+                  ${item.total.toFixed(2)}
+                </div>
+              </div>
+            `;
+
+            container.append(html);
+          });
+      }
+    }
+
+    class DetailedMonth extends Month {
+      constructor(selector, data) {
+        super(selector, data);
+
+        var getDate = (string) => {
+          return new Date(
+            string.substr(0, 4),
+            string.substr(5, 2),
+            string.substr(8, 2)
+          );
         };
-      });
 
-      _
-        .orderBy(Object.values(totals), value => value.total, "desc")
-        .forEach(item => {
+        this.selector = selector;
+        this.data = _.orderBy(data, item => getDate(item.at), "asc");
+      }
+
+      render() {
+        var container = this.getContainer();
+        this.data.forEach(item => {
           var html = `
-            <div class="item">
-              <div class="description">
-                ${item.description}
-              </div>
-              <div class="amount">
-                ${item.total.toFixed(2)}
-              </div>
-            </div>
-          `;
-
-          container.append(html);
-        });
-    };
-
-    function DetailedMonth(selector, data) {
-      Month.call(this, selector, data);
-
-      var getDate = (string) => {
-        return new Date(
-          string.substr(0, 4),
-          string.substr(5, 2),
-          string.substr(8, 2)
-        );
-      };
-
-      this.selector = selector;
-      this.data = _.orderBy(data, item => getDate(item.at), "asc");
-    }
-
-    DetailedMonth.prototype = Object.create(Month.prototype);
-    Object.defineProperty(DetailedMonth.prototype, 'constructor', {
-      value: DetailedMonth,
-      enumerable: false,
-      writable: true
-    });
-
-    DetailedMonth.prototype.render = function() {
-      var container = this.getContainer();
-      this.data.forEach(item => {
-        var html = `
           <div class="item">
             <div class="date">
               ${item.at}
@@ -582,9 +529,10 @@
           </div>
         `;
 
-        container.append(html);
-      });
-    };
+          container.append(html);
+        });
+      }
+    }
 
     // (function() {
     //   $(".month-picker").MonthPicker({ Button: false });
