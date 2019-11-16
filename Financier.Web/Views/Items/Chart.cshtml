@@ -72,20 +72,22 @@
       Element.call(this, selector);
 
       this.tags = new Tags(".tags");
-      this.compareButton = new CompareButton(".compare input", () => {
+      this.compareButton = new Button(".compare input", () => {
         this.request((data) => {
           var results = new Results(".results", data);
           renderResults(results);
         });
       });
-      this.detailedCompareButton = new CompareButton(".detailed-compare input", () => {
+      this.detailedCompareButton = new Button(".detailed-compare input", () => {
         this.request((data) => {
           var results = new DetailedResults(".results", data);
           renderResults(results);
         });
       });
       this.dates = new DateRange(".month-picker", new Date(2018, 11, 1), new Date(2019, 10, 1));
-      this.clearButton = $(".clear input");
+      this.clearButton = new Button(".clear input", () => {
+        new Results(".results", []).clear();
+      });
     }
 
     Input.prototype = Object.create(Element.prototype);
@@ -199,15 +201,15 @@
       writable: true
     });
 
-    function CompareButton(selector, action) {
+    function Button(selector, action) {
       Element.call(this, selector);
 
       this.getContainer().click(action);
     }
 
-    CompareButton.prototype = Object.create(Element.prototype);
-    Object.defineProperty(CompareButton.prototype, 'constructor', {
-      value: CompareButton,
+    Button.prototype = Object.create(Element.prototype);
+    Object.defineProperty(Button.prototype, 'constructor', {
+      value: Button,
       enumerable: false,
       writable: true
     });
