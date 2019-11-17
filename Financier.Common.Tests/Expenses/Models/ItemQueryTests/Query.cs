@@ -3,7 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Expenses.Models;
-using Financier.Common.Expenses;
 
 namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
 {
@@ -60,9 +59,9 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var actualItems = new Analysis(fro, to).GetItemsByTags(false, tagNames);
+            var result = new ItemQuery(tagNames, fro, to, false).GetResults();
 
-            Assert.That(actualItems, Is.EquivalentTo(expectedItems));
+            Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
 
         [TestCase(
@@ -119,13 +118,9 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var actualItems = new Analysis(fro, to).GetItemsByTags(true, tagNames);
+            var result = new ItemQuery(tagNames, fro, to, true).GetResults();
 
-            foreach (var item in expectedItems)
-            {
-                Console.WriteLine(item);
-            }
-            Assert.That(actualItems, Is.EquivalentTo(expectedItems));
+            Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
     }
 }

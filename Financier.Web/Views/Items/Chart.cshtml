@@ -9,30 +9,39 @@
 <!-- bar chart -->
 <div class="charts">
   <div class="items">
-    <div class="tags">
-      <div class="from-picker">
+    <div class="input">
+      <div class="date-picker">
         From:&nbsp;
         <input id="from-date" class="month-picker" />
       </div>
-      <div class="from-picker">
+      <div class="date-picker">
         To:&nbsp;
         <input id="to-date" class="month-picker" />
       </div>
-      <div class="compare">
-        <input type="button" value="Compare" />
+      <div class="comparisons">
+        <div class="compare">
+          <input type="button" value="Compare" />
+        </div>
+        <div class="detailed-compare">
+          <input type="button" value="Detailed Comparison" />
+        </div>
       </div>
       <div class="clear">
         <input type="button" value="Clear" />
       </div>
-      <div class="names">
+      <div class="tags">
       </div>
     </div>
 
-    <svg class="chart" id="asset-costs">
-    </svg>
+    <div class="results">
+      <svg class="chart" id="asset-costs">
+      </svg>
+
+      <div class="details">
+      </div>
+    </div>
   </div>
 </div>
-
 
 <script src="~/js/jquery.min.js"></script>
 <script src="~/js/jquery-ui.min.js"></script>
@@ -40,291 +49,501 @@
 <script src="~/js/apollo-client.min.js"></script>
 <script src="~/js/d3.min.js"></script>
 <script src="~/js/d3-axis.min.js"></script>
+<script src="~/js/lodash.min.js"></script>
 </script>
 
 <script type="text/javascript">
   'use strict';
 
   (function() {
-    function Tags() {
-      this.compareButton = $(".tags .compare");
-      this.tagsContainer = $(".tags .names");
-      this.names = [];
+    class Element {
+      constructor(selector) {
+        this.selector = selector;
+      }
+
+      getContainer() {
+        return $(this.selector);
+      }
+
+      clear() {
+        this.getContainer().empty();
+      }
     }
 
-    Tags.prototype.fetch = function() {
-      var client = new Apollo.lib.ApolloClient({
-        networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/tags',
-          transportBatching: true,
-        }),
-        connectToDevTools: true,
-      });
+    class Input extends Element{
+      constructor(selector, renderResults) {
+        super(selector);
 
-      client
-        .query({
-          query: Apollo.gql`
+        this.tags = new Tags(".tags");
+        this.compareButton = new Button(".compare input", () => {
+          this.request((data) => {
+            var results = new Results(".results", data);
+            renderResults(results);
+          });
+        });
+        this.detailedCompareButton = new Button(".detailed-compare input", () => {
+          this.request((data) => {
+            var results = new DetailedResults(".results", data);
+            renderResults(results);
+          });
+        });
+        this.dates = new DateRange(".month-picker", new Date(2018, 11, 1), new Date(2019, 10, 1));
+        this.clearButton = new Button(".clear input", () => {
+          new Results(".results", []).clear();
+        });
+      }
+
+      render() {
+        // TODO: should Tags.fetch be called fetch or render?
+        this.tags.fetch();
+        this.dates.render();
+      }
+
+      clear() {
+        this.tags.clear();
+        this.dates.clear();
+      }
+
+      getTagNames() {
+        return this.tags.selectedTags();
+      }
+
+      getFromDate() {
+        return this.dates.from();
+      }
+
+      getToDate() {
+        return this.dates.to();
+      }
+
+      request(render) {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql/item-queries',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
+        });
+
+        client
+          .query({
+            query: Apollo.gql`
+            query($tagNames: [String!], $fromYear: Int!, $fromMonth: Int!, $toYear: Int!, $toMonth: Int!){
+              monthlyExpensesByTagNames(
+                tagNames: $tagNames,
+                fromYear: $fromYear,
+                fromMonth: $fromMonth,
+                toYear: $toYear,
+                toMonth: $toMonth
+              ) {
+                year,
+                month,
+                amount,
+                items {
+                  description,
+                  at,
+                  amount
+                }
+              }
+            }`,
+            variables: {
+              tagNames: this.getTagNames(),
+              fromYear: this.getFromDate().getFullYear(),
+              fromMonth: this.getFromDate().getMonth(),
+              toYear: this.getToDate().getFullYear(),
+              toMonth: this.getToDate().getMonth()
+            }
+          })
+          .then(response => {
+            render(response.data.monthlyExpensesByTagNames);
+          });
+      }
+    }
+
+    class Results extends Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.chart = new Chart(".results .chart", 960, 500, data);
+        this.details = new Details(".results .details", data);
+      }
+
+      render() {
+        this.chart.render();
+        this.details.render();
+      }
+
+      clear() {
+        this.chart.clear();
+        this.details.clear();
+      }
+    }
+
+    class DetailedResults extends Results {
+      constructor(selector, data) {
+        super(selector, data);
+
+        this.chart = new Chart(".results .chart", 960, 500, data);
+        this.details = new DetailedDetails(".results .details", data);
+      }
+    }
+
+    class Button extends Element {
+      constructor(selector, action) {
+        super(selector);
+
+        this.getContainer().click(action);
+      }
+    }
+
+    class Tags extends Element {
+      constructor(selector) {
+        super(selector);
+
+        this.compareButton = $(".input .compare");
+        this.tagsContainer = $(".input .tags");
+        this.names = [];
+      }
+
+      fetch() {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql/tags',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
+        });
+
+        client
+          .query({
+            query: Apollo.gql`
             {
               list {
                 name
               }
             }
           `
-        })
-        .then(response => {
-          this.names = response.data.list
-            .map(tag => tag.name);
+          })
+          .then(response => {
+            this.names = response.data.list
+              .map(tag => tag.name);
 
-          this.render();
-        });
-    };
+            this.render();
+          });
+      }
 
-    Tags.prototype.render = function() {
-      this.names.forEach(name => {
-        var element = `
+      render() {
+        this.names.forEach(name => {
+          var element = `
           <div class="tag-name">
             <input id="${name}" type="checkbox" data-tag-name="${name}"></input>
             <label for="${name}">${name}</div>
           </div>
         `;
 
-        this.tagsContainer.append(element);
-      });
-    };
-
-    Tags.prototype.setup = function(renderChart) {
-      this.compareButton.click(() => this.compare(renderChart));
-    };
-
-    Tags.prototype.selectedTags = function() {
-      return this.tagsContainer
-        .find("input:checked").toArray()
-        .map(input => $(input).attr("data-tag-name"));
-    };
-
-    Tags.prototype.compare = function(renderChart) {
-      renderChart(this.selectedTags());
-    };
-
-    function DateRange() {}
-
-    DateRange.prototype.fromMonthYear = function() {
-      return $("#from-date").val()
-        .split("/")
-        .map(v => +v);
-    };
-
-    DateRange.prototype.toMonthYear = function() {
-      return $("#to-date").val()
-        .split("/")
-        .map(v => +v);
-    };
-
-    function Chart(selector, width, height) {
-      this.margins = {
-        top: 20,
-        right: 30,
-        bottom: 30,
-        left: 40
-      };
-
-      this.selector = selector;
-      this.width = width - this.margins.left - this.margins.right;
-      this.height = height - this.margins.top - this.margins.bottom;
-    }
-
-    Chart.prototype.request = function(fromMonth, fromYear, toMonth, toYear, tags, render) {
-      var client = new Apollo.lib.ApolloClient({
-        networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/items',
-          transportBatching: true,
-        }),
-        connectToDevTools: true,
-      });
-
-      var names = tags.map(name => `"${name}"`).join(", ");
-      client
-        .query({
-          query: Apollo.gql`
-          {
-            monthlyExpensesByTagNames(
-              tagNames: [${tags.map(name => `"${name}"`).join(", ")}],
-              fromYear: ${fromYear},
-              fromMonth: ${fromMonth},
-              toYear: ${toYear},
-              toMonth: ${toMonth}
-            ) {
-              at,
-              amount
-            }
-          }
-          `
-        })
-        .then(response => {
-          render(response.data.monthlyExpensesByTagNames);
+          this.tagsContainer.append(element);
         });
+      }
+
+      setup(renderChart) {
+        this.compareButton.click(() => this.compare(renderChart));
+      }
+
+      selectedTags() {
+        return this.tagsContainer
+          .find("input:checked").toArray()
+          .map(input => $(input).attr("data-tag-name"));
+      }
+
+      compare(renderChart) {
+        renderChart(this.selectedTags());
+      }
+
+      clear() {
+        $(".tags input").removeAttr("checked");
+      }
     }
 
-    Chart.prototype.xBand = function(costs) {
-      if (typeof(costs) !== "object") {
-        debugger;
-      }
-      var amounts = costs
-        .map(x => x.amount)
+    class DateRange extends Element {
+      constructor(selector, fromDate, toDate) {
+        super(selector);
 
-      var scale = d3.scaleBand()
-        .domain(amounts)
-        .range([0, this.width]);
-
-      return scale;
-
-      // return d3.scaleLinear()
-      //   .domain([0, d3.max(amounts, d => d.value)])
-      //   .range([this.height, 0]);
-    };
-
-    Chart.prototype.xScale = function(costs) {
-      if (typeof(costs) !== "object") {
-        debugger;
+        this.initialFrom = fromDate;
+        this.initialTo = toDate;
       }
 
-      var amounts = costs
-        .map(x => x.amount);
-      var scale = d3.scaleLinear()
-        .range([this.width, 0])
-        .domain([d3.max(amounts, d => d), 0]);
-        // .range(costs => {
-        //   return 400;
-        //   // var text = d.tags
-        //   //   .map(tag => tag.name)
-        //   //   .join(", ");
-        //   //
-        //   // return `${text} (${d.amount})`;
-        // });
-
-      return scale;
-
-      // return d3.scaleLinear()
-      //   .domain([0, d3.max(amounts, d => d.value)])
-      //   .range([this.height, 0]);
-    };
-
-    Chart.prototype.yScale = function(costs) {
-      if (typeof(costs) !== 'object') {
-        debugger;
-      }
-      var amounts = costs
-        .map(x => x.amount)
-
-      var scale = d3.scaleLinear()
-        .range([this.height, 0])
-        .domain([0, d3.max(amounts, d => d)]);
-
-      return scale;
-
-      // return scale(costs);
-
-      // return d3.scaleLinear()
-      //   .domain([0, d3.max(amounts, d => d.value)])
-      //   .range([this.height, 0]);
-    };
-
-    Chart.prototype.xAxis = function(costs, selectedScale) {
-      var numbers = [];
-      for (var i = 0; i < this.costs; i += 1) {
-        numbers.push(i + 1);
+      render() {
+        // FIXME: use the getContainer function
+        $(".month-picker").MonthPicker({ Button: false });
+        $(".month-picker#from-date").val(`${this.initialFrom.getMonth()}/${this.initialFrom.getFullYear()}`);
+        $(".month-picker#to-date").val(`${this.initialTo.getMonth()}/${this.initialTo.getFullYear()}`);
       }
 
-      // debugger;
-      return d3.axisBottom()
-        .ticks(10)
-        // .scale(selectedScale());
-        .scale(
-          d3.scaleBand()
-            .domain(costs.map(d => {
-              var text = d.at;
+      from() {
+        return new Date(this.fromMonthYear()[1], this.fromMonthYear()[0], 1);
+      }
 
-              return `${text}`;
-            }))
-            .range([0, this.width])
-        );
-    };
+      to() {
+        return new Date(this.toMonthYear()[1], this.toMonthYear()[0], 1);
+      }
 
-    Chart.prototype.yAxis = function(selectedScale) {
-      return d3.axisLeft()
-        .scale(selectedScale());
-        // .scale(this.yScale);
-    };
+      fromMonthYear() {
+        return $("#from-date").val()
+          .split("/")
+          .map(v => +v);
+      }
 
-    Chart.prototype.clear = function() {
-      $(this.selector).empty();
-    };
+      toMonthYear() {
+        return $("#to-date").val()
+          .split("/")
+          .map(v => +v);
+      }
 
-    Chart.prototype.render = function(costs) {
-      var barWidth = this.width / costs.length;
-      var barChart = d3.select(this.selector)
-        .attr("width", this.width + this.margins.left + this.margins.right)
-        .attr("height", this.height + this.margins.top + this.margins.bottom)
-        .append("g")
-          .attr("transform", `translate(${this.margins.left}, ${this.margins.top})`);
+      clear() {
+        $(".date-picker input").val("");
+      }
+    }
 
-      // FIXME: just pass xScale as a value
-      barChart.append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${this.height})`)
-        .call(this.xAxis(costs, () => this.xScale(costs)));
+    class Chart extends Element {
+      constructor(selector, width, height, data) {
+        super(selector);
 
-      // FIXME: just pass yScale as a value
-      barChart.append("g")
-        .attr("class", "y axis")
-        // .call(s => this.yAxis((d) => { debugger; return this.yScale(costs); }));
-        .call(this.yAxis(() => this.yScale(costs)));
+        this.margins = {
+          top: 20,
+          right: 30,
+          bottom: 30,
+          left: 40
+        };
+        this.selector = selector;
+        this.width = width - this.margins.left - this.margins.right;
+        this.height = height - this.margins.top - this.margins.bottom;
+        this.data = data;
+      }
 
-      // debugger;
-      var bar = barChart.selectAll(".bar")
-          .data(costs.map(d => d.amount))
-        .enter().append("rect")
-          .attr("class", "bar")
-          .attr("x", d => this.xBand(costs)(d))
-          .attr("y", d => this.yScale(costs)(d))
-          .attr("height", d => this.height - this.yScale(costs)(d))
-          .attr("width", barWidth);
+      xBand(items) {
+        return d3.scaleBand()
+          .domain(this.getBandLabels(items))
+          .range([0, this.width]);
+      }
 
-        // .attr("transform", (d, i) => { /* debugger; */ return `translate(${i * barWidth}, 0)`; });
+      xScale(costs) {
+        var amounts = costs
+          .map(x => x.amount);
+        var scale = d3.scaleLinear()
+          .range([this.width, 0])
+          .domain([d3.max(amounts, d => d), 0]);
 
-      // bar.append("rect")
-      //   .attr("y", d => { /* debugger; */ return this.yScale(costs)(d.amount); })
-      //   .attr("height", d => { /* debugger; */ return this.height - this.yScale(costs)(d.amount) })
-      //   .attr("width", barWidth - 1);
-      //
-      // bar.append("text")
-      //   .attr("x", barWidth / 2)
-      //   .attr("y", d => this.yScale(costs)(d.amount) + 3)
-      //   .attr("dy", ".75em")
-      //   .text(d => {
-      //     var text = d.tags
-      //       .map(tag => tag.name)
-      //       .join(", ");
-      //
-      //     return `${text} (${d.amount})`;
-      //   });
-    };
+        return scale;
+      }
 
-    $(".month-picker").MonthPicker({ Button: false });
-    var tags = new Tags();
-    var dates = new DateRange();
-    var chart = new Chart(".charts .chart", 960, 500);
+      yScale(costs) {
+        var amounts = costs
+          .map(x => x.amount)
 
-    tags.setup(tagNames => {
-      var from = dates.fromMonthYear();
-      var to = dates.toMonthYear();
+        var scale = d3.scaleLinear()
+          .range([this.height, 0])
+          .domain([0, d3.max(amounts, d => d)]);
 
-      chart.request(from[0], from[1], to[0], to[1], tagNames, (monthlyExpensesByTagNames) => {
-        chart.clear();
-        chart.render(monthlyExpensesByTagNames);
-      });
+        return scale;
+      }
+
+      xAxis(items) {
+        return d3.axisBottom()
+          .ticks(1)
+          .scale(
+            d3.scaleBand()
+              .domain(this.getBandLabels(items))
+              .range([0, this.width])
+          );
+      }
+
+      getBandLabel(item) {
+        var month = +item.month;
+        if (month > 0 && month < 10) {
+          month = `0${month}`;
+        }
+
+        return `${item.year}-${month}`;
+      }
+
+      getBandLabels(items) {
+        return items.map(item => this.getBandLabel(item));
+      }
+
+      yAxis(selectedScale) {
+        return d3.axisLeft()
+          .scale(selectedScale());
+      }
+
+      render() {
+        var barWidth = this.width / this.data.length;
+        var barChart = d3.select(this.selector)
+          .attr("width", this.width + this.margins.left + this.margins.right)
+          .attr("height", this.height + this.margins.top + this.margins.bottom)
+          .append("g")
+            .attr("transform", `translate(${this.margins.left}, ${this.margins.top})`);
+
+        // FIXME: just pass xScale as a value
+        barChart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", `translate(0, ${this.height})`)
+          .call(this.xAxis(this.data));
+
+        // FIXME: just pass yScale as a value
+        barChart.append("g")
+          .attr("class", "y axis")
+          .call(this.yAxis(() => this.yScale(this.data)));
+
+        var bandLabels = this.getBandLabels(this.data);
+
+        var bar = barChart.selectAll(".bar")
+            .data(this.data)
+          .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", d => {
+              var bandLabel = this.getBandLabel(d);
+              return this.xBand(this.data)(bandLabel);
+            })
+            .attr("y", d => this.yScale(this.data)(d.amount))
+            .attr("height", d => this.height - this.yScale(this.data)(d.amount))
+            .attr("width", barWidth);
+      }
+    }
+
+    class Details extends Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.selector = selector;
+        this.data = _.orderBy(data, item => new Date(item.year, item.month, 1), "desc");
+      }
+
+      createMonth(selector, values) {
+        return new Month(selector, values);
+      }
+
+      render() {
+        var container = this.getContainer();
+        this.data.forEach(item => {
+          var identifer = `${item.year}-${item.month}`;
+          var monthElement = `
+          <div class="month">
+            <h1>${identifer}</h1>
+
+            <div id="${identifer}" class="items">
+            </div>
+          </div>
+        `;
+
+          container.append(monthElement);
+
+          this
+            .createMonth(`.items#${identifer}`, item.items)
+            .render();
+        });
+      }
+    }
+
+    class DetailedDetails extends Details {
+      constructor(selector, data) {
+        super(selector, data);
+      }
+
+      createMonth(selector, values) {
+        return new DetailedMonth(selector, values);
+      }
+    }
+
+    class Month extends Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.data = _.groupBy(data, item => item.description);
+      }
+
+      render() {
+        var container = this.getContainer();
+
+        var totals = {};
+        Object.keys(this.data).forEach(description => {
+          var total = 0.00;
+          this.data[description].forEach(item => {
+            total += +item.amount;
+          });
+
+          totals[description] = {
+            description: description,
+            total: total
+          };
+        });
+
+        _
+          .orderBy(Object.values(totals), value => value.total, "desc")
+          .forEach(item => {
+            var html = `
+              <div class="item">
+                <div class="description">
+                  ${item.description}
+                </div>
+                <div class="amount">
+                  ${item.total.toFixed(2)}
+                </div>
+              </div>
+            `;
+
+            container.append(html);
+          });
+      }
+    }
+
+    class DetailedMonth extends Month {
+      constructor(selector, data) {
+        super(selector, data);
+
+        var getDate = (string) => {
+          return new Date(
+            string.substr(0, 4),
+            string.substr(5, 2),
+            string.substr(8, 2)
+          );
+        };
+
+        this.selector = selector;
+        this.data = _.orderBy(data, item => getDate(item.at), "asc");
+      }
+
+      render() {
+        var container = this.getContainer();
+        this.data.forEach(item => {
+          var html = `
+          <div class="item">
+            <div class="date">
+              ${item.at}
+            </div>
+            <div class="description">
+              ${item.description}
+            </div>
+            <div class="amount">
+              ${item.amount}
+            </div>
+          </div>
+        `;
+
+          container.append(html);
+        });
+      }
+    }
+
+    // (function() {
+    //   $(".month-picker").MonthPicker({ Button: false });
+    //   $(".month-picker#from-date").val("11/2018");
+    //   $(".month-picker#to-date").val("10/2019");
+    // })();
+
+    var inputs = new Input(".input", (results) => {
+      results.clear();
+      results.render();
     });
-
-    tags.fetch();
+    inputs.render();
   })();
 </script>

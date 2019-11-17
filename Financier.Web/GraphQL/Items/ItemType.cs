@@ -10,11 +10,12 @@ namespace Financier.Web.GraphQL.Items
         public ItemType(IDataLoaderContextAccessor dataLoaderAccessor)
         {
             Field(t => t.Id, nullable: false, type: typeof(IdGraphType));
-            Field(t => t.Description);
-            Field(t => t.TransactedAt);
-            Field(t => t.PostedAt);
-            Field(t => t.TheRealAmount);
-            Field(t => t.ItemId);
+            Field(t => t.Description, nullable: false, type: typeof(StringGraphType));
+            Field(t => t.At, nullable: false, type: typeof(DateGraphType));
+            Field(t => t.TransactedAt, nullable: false, type: typeof(DateGraphType));
+            Field(t => t.PostedAt, nullable: false, type: typeof(DateGraphType));
+            Field("amount", t => t.TheRealAmount.ToString("#0.00"), nullable: false, type: typeof(StringGraphType));
+            Field(t => t.ItemId, nullable: false, type: typeof(StringGraphType));
         }
     }
 }
