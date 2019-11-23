@@ -189,6 +189,28 @@ namespace Financier.Common.Expenses.Models
         public bool IsDebit => Amount >= 0;
         public bool IsCredit => Amount < 0;
 
+        public Item(Guid id, Guid statementId, string itemId, string description, DateTime at, decimal amount)
+        {
+            Id = id;
+            StatementId = statementId;
+            ItemId = itemId;
+            Description = description;
+            TransactedAt = at;
+            PostedAt = at;
+            Amount = amount;
+        }
+
+        public Item(Guid id, Guid statementId, string itemId, string description, DateTime transactedAt, DateTime postedAt, decimal amount)
+        {
+            Id = id;
+            StatementId = statementId;
+            ItemId = itemId;
+            Description = description;
+            TransactedAt = transactedAt;
+            PostedAt = postedAt;
+            Amount = amount;
+        }
+
         public Item(string description, DateTime transactedAt, DateTime postedAt, decimal amount)
         {
             Description = description;

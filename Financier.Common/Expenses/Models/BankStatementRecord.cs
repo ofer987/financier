@@ -54,16 +54,15 @@ namespace Financier.Common.Expenses.Models
             using (var db = new Context())
             {
                 var amount = 0.00M - Convert.ToDecimal(Amount);
-                var newItem = new Item
-                {
-                    Id = Guid.NewGuid(),
-                    StatementId = statementId,
-                    ItemId = ItemId.Trim(),
-                    Description = Description,
-                    Amount = amount,
-                    TransactedAt = ToDateTime(PostedAt),
-                    PostedAt = ToDateTime(PostedAt)
-                };
+                var newItem = new Item(
+                    id: Guid.NewGuid(),
+                    statementId: statementId,
+                    itemId: ItemId.Trim(),
+                    description: Description,
+                    transactedAt: ToDateTime(PostedAt),
+                    postedAt: ToDateTime(PostedAt),
+                    amount: amount
+                );
                 db.Items.Add(newItem);
                 db.SaveChanges();
 
@@ -73,7 +72,7 @@ namespace Financier.Common.Expenses.Models
 
         public override int GetHashCode()
         {
-            return Number.GetHashCode() 
+            return Number.GetHashCode()
                 + ItemId.GetHashCode()
                 + FirstBankCardNumber.GetHashCode()
                 + TransactionTypeString.GetHashCode()

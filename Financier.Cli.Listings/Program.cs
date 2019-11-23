@@ -22,9 +22,9 @@ namespace Financier.Cli.Listings
                 using (var db = new Context())
                 {
                     date = db.Items
-                        .OrderBy(item => item.TransactedAt)
+                        .OrderBy(item => item.At)
                         .First()
-                        .TransactedAt;
+                        .At;
                 }
 
                 return new DateTime(date.Year, date.Month, 1);
@@ -39,9 +39,9 @@ namespace Financier.Cli.Listings
                 using (var db = new Context())
                 {
                     date = db.Items
-                        .OrderByDescending(item => item.TransactedAt)
+                        .OrderByDescending(item => item.At)
                         .First()
-                        .TransactedAt;
+                        .At;
                 }
 
                 return new DateTime(date.Year, date.Month, 1).AddMonths(1).AddDays(-1);

@@ -38,16 +38,15 @@ namespace Financier.Common.Expenses.Models
             var amount = Convert.ToDecimal(Amount);
             using (var db = new Context())
             {
-                var newItem = new Item
-                {
-                    Id = Guid.NewGuid(),
-                    StatementId = statementId,
-                    ItemId = ItemId.Trim(),
-                    Description = Description,
-                    Amount = amount,
-                    TransactedAt = ToDateTime(TransactedAt),
-                    PostedAt = ToDateTime(PostedAt)
-                };
+                var newItem = new Item(
+                    id: Guid.NewGuid(),
+                    statementId: statementId,
+                    itemId: ItemId.Trim(),
+                    description: Description,
+                    transactedAt: ToDateTime(TransactedAt),
+                    postedAt: ToDateTime(PostedAt),
+                    amount: amount
+                );
                 db.Items.Add(newItem);
                 db.SaveChanges();
 

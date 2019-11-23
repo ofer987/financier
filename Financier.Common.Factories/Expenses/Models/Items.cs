@@ -10,14 +10,15 @@ namespace Financier.Common
     {
         public static Item ItemWithoutTags(Statement statement)
         {
-            return new Item
+            return new Item(
+                id: Guid.NewGuid(),
+                statementId: statement.Id,
+                itemId: Guid.NewGuid().ToString(),
+                description: "Item-Without-Tags",
+                at: new DateTime(2019, 1, 2),
+                amount: 10.00M
+            )
             {
-                Id = Guid.NewGuid(),
-                ItemId = Guid.NewGuid().ToString(),
-                StatementId = statement.Id,
-                Amount = 10.00M,
-                Description = "Item-Without-Tags",
-                TransactedAt = new DateTime(2019, 1, 2),
                 ItemTags = new List<ItemTag>()
             };
         }
@@ -26,14 +27,15 @@ namespace Financier.Common
         {
             var itemId = Guid.NewGuid();
 
-            return new Item
+            return new Item(
+                id: itemId,
+                statementId: statement.Id,
+                itemId: Guid.NewGuid().ToString(),
+                description: "Item that has tags",
+                at: new DateTime(2019, 1, 3),
+                amount: 20.00M
+            )
             {
-                Id = itemId,
-                ItemId = Guid.NewGuid().ToString(),
-                StatementId = statement.Id,
-                Amount = 20.00M,
-                Description = "Item that has tags",
-                TransactedAt = new DateTime(2019, 1, 3),
                 ItemTags = tags
                     .Select(tag => new ItemTag { ItemId = itemId, TagId = tag.Id })
                     .ToList()

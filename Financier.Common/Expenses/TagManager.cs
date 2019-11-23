@@ -155,7 +155,7 @@ namespace Financier.Common.Expenses
                         && items.Id != Item.Id
                         // but same description
                         && items.Description == Item.Description
-                     orderby items.PostedAt descending
+                     orderby items.At descending
                      select items);
 
                 if (!itemsWithSameDescription.Any())
