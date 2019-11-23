@@ -277,7 +277,12 @@ year = ARGV[2].to_s.strip.to_i
 month = ARGV[3].to_s.strip.to_i
 har_path = ARGV[4].to_s.strip
 
-cookie = Bmo.init_from_file(har_path).cookie
+cookie = if har_path.empty?
+  Bmo.init_from_stdin.cookie
+else
+  Bmo.init_from_file(har_path).cookie
+end
+
 cards = YAML.load(IO.read(cards_path))
 BankCards.new(cookie, cards['bank']).process(user, year, month)
 CreditCards.new(cookie, cards['credit']).process(user, year, month)
