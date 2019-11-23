@@ -33,11 +33,11 @@ namespace Financier.Web.Controllers
             
             if (endMonth == 12)
             {
-                To = new DateTime(year + 1, 1, 1).AddDays(-1);
+                To = new DateTime(year + 1, 1, 1);
             }
             else
             {
-                To = new DateTime(year, endMonth + 1, 1).AddDays(-1);
+                To = new DateTime(year, endMonth + 1, 1);
             }
         }
 

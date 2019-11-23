@@ -280,9 +280,12 @@
     }
   </div>
   <h2>Items</h2>
-  @foreach (var item in Model.GetItems().OrderByDescending(item => item.Amount))
+  @foreach (var item in Model.GetItems().OrderBy(item => item.At))
   {
     <div class="flex-container">
+      <div class="flex-item flex-at">
+        @(item.At)
+      </div>
       <div class="flex-item flex-tags">
         @(item.Description)
       </div>
