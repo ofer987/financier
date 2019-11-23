@@ -4,6 +4,7 @@ require 'json'
 require 'rest-client'
 require 'date'
 require 'csv'
+require 'yaml'
 
 class Bmo
   attr_reader :content
@@ -172,12 +173,16 @@ class BmoBankPage < BmoPage
       form(card_id, from_date, to_date)
     )
 
-    lines = data.split("\n")
-    headers = ['Account'] + lines[3]
+    lines = data
+      .split("\n")
+      .map(&:strip)
+      .reject(&:empty?)
+      .drop(1)
+    headers = ['Account'] + lines[0]
       .split(',')
       .map(&:strip)
 
-    records = (lines[6..-1] || []).map do |line|
+    records = (lines.drop(1) || []).map do |line|
       ["'#{card_number.gsub('-', '').gsub(' ', '')}'"] + line
         .split(',')
         .map(&:strip)
@@ -227,12 +232,14 @@ class BmoCreditPage < BmoPage
     lines = data
       .split("\n")
       .map(&:strip)
+      .reject(&:empty?)
+      .drop(1)
 
-    headers = lines[2]
+    headers = lines[0]
       .split(',')
       .map(&:strip)
 
-    records = (lines[3..-1] || []).map do |line|
+    records = (lines.drop(1) || []).map do |line|
       line
         .split(',')
         .map(&:strip)
