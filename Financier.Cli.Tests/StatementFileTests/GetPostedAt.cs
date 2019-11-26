@@ -18,7 +18,6 @@ namespace Financier.Cli.Tests.StatementFileTests
         [Test]
         [TestCase("123345/20181203.csv", 2018, 12, 3)]
         [TestCase("123345/20181103.csv", 2018, 11, 3)]
-        [TestCase("123345/20191003.txt", 2019, 10, 3)]
         public void Test_Statements_GetPostedAt_PositiveTest(string relativePath, int year, int month, int day)
         {
             var expectedDate = new DateTime(year, month, day);
@@ -33,7 +32,7 @@ namespace Financier.Cli.Tests.StatementFileTests
         {
             var path = GetCsvPath(relativePath);
 
-            Assert.Throws<FormatException>(() => new CreditCardStatementFile(path));
+            Assert.Throws<FileNotFoundException>(() => new CreditCardStatementFile(path));
         }
 
         private string GetCsvPath(string relativePath)

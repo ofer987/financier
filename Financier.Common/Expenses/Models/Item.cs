@@ -276,6 +276,7 @@ namespace Financier.Common.Expenses.Models
             var sb = new StringBuilder();
 
             sb.AppendLine($"{nameof(Id)}: ({Id})");
+            sb.AppendLine($"{nameof(ItemId)}: ({ItemId})");
             sb.AppendLine($"{nameof(Description)}: ({Description ?? string.Empty})");
             sb.AppendLine($"{nameof(TheRealAmount)}: ({AmountString()})");
             sb.AppendLine($"{nameof(Amount)}: ({Amount})");

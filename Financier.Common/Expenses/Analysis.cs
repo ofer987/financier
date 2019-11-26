@@ -56,7 +56,7 @@ namespace Financier.Common.Expenses
                     .Where(item => item.At >= StartAt)
                     .Where(item => item.At < EndAt)
                     .ToList()
-                    .Aggregate(0.00M, (result, item) => result + item.TheRealAmount);
+                    .Aggregate(0.00M, (result, item) => result + item.Amount);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Financier.Common.Expenses
                      join itemTags in db.ItemTags on items.Id equals itemTags.ItemId
                      join tags in db.Tags on itemTags.TagId equals tags.Id
                      where true
-                     && tags.Name == "salary"
+                         && tags.Name == "salary"
                      select items).ToList();
 
                 var earliestAt = db.Items
@@ -82,7 +82,7 @@ namespace Financier.Common.Expenses
                     .First()
                     .At;
 
-                var amount = salaries.Aggregate(0.00M, (result, item) => result + item.TheRealAmount);
+                var amount = salaries.Aggregate(0.00M, (result, item) => result + item.Amount);
                 var dateRange = latestAt - earliestAt;
 
                 // Change sense because earnings are reported
@@ -209,7 +209,7 @@ namespace Financier.Common.Expenses
                     where true
                         && i.At >= StartAt
                         && i.At < EndAt
-                        && (isAsset && i.TheRealAmount < 0 || !isAsset && i.TheRealAmount > 0)
+                        && (isAsset && i.IsCredit || !isAsset && i.IsDebit)
                         && t.Name != "credit-card-payment"
                     select ValueTuple.Create<Tag, Item>(t, i)
                     ).ToList();
