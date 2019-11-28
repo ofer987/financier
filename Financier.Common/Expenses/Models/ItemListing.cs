@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Financier.Common.Expenses.Models
 {
-    public class TagCost
+    public class ItemListing
     {
-        public static TagCost operator +(TagCost first, TagCost second)
+        public static ItemListing operator +(ItemListing first, ItemListing second)
         {
-            return new TagCost(
+            return new ItemListing(
                 first.Tags.Concat(second.Tags),
                 first.Items.Concat(second.Items)
             );
@@ -21,19 +21,19 @@ namespace Financier.Common.Expenses.Models
         public IEnumerable<Item> Items { get; set; }
         public decimal TotalAmount { get; set; }
 
-        public TagCost()
+        public ItemListing()
         {
             Tags = Enumerable.Empty<Tag>();
             Items = Enumerable.Empty<Item>();
         }
 
-        public TagCost(IEnumerable<Tag> tags, IEnumerable<Item> items)
+        public ItemListing(IEnumerable<Tag> tags, IEnumerable<Item> items)
         {
             Tags = tags;
             Items = items;
         }
 
-        public TagCost(string tagNames, IEnumerable<Item> items)
+        public ItemListing(string tagNames, IEnumerable<Item> items)
         {
             Tags = tagNames
                 .Split(",")

@@ -5,11 +5,11 @@ using System.Collections;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
-using Financier.Common.Extensions;
+using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.AnalysisTests
+namespace Financier.Common.Tests.Expenses.AnalysisHelperTests
 {
-    public class GetAllExpenses : Fixture
+    public class GetItems : Fixture
     {
         public static IEnumerable TestCases
         {
@@ -38,19 +38,22 @@ namespace Financier.Common.Tests.Expenses.AnalysisTests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        public void Test_Expenses_Analysis_GetAllExpenses(int year, int month, decimal expectedAmount, IEnumerable<string> expectedItems)
+        public void Test_Expenses_AnalysisHelper_GetItems(int year, int month, decimal expectedAmount, IEnumerable<string> expectedItems)
         {
             var startAt = new DateTime(year, month, 1);
-            var endAt = startAt.AddMonths(1).AddDays(-1);
-            var actual = new Analysis(startAt, endAt).GetAllExpenses();
+            var endAt = startAt.AddMonths(1);
+            var actual = AnalysisHelper.GetItemListings(startAt, endAt, ItemTypes.Debit);
 
-            foreach (var item in actual)
-            {
-                Console.WriteLine(item.Description);
-                Console.WriteLine(item.Tags.Join(", "));
-            }
-            Assert.That(actual.Select(item => item.Description), Is.EquivalentTo(expectedItems));
-            Assert.That(actual.Aggregate(0.00M, (result, item) => result + item.Amount), Is.EqualTo(expectedAmount));
+            var actualItems = actual
+                .SelectMany(item => item.Items);
+
+            // foreach (var item in actual)
+            // {
+            //     Console.WriteLine(item.Description);
+            //     Console.WriteLine(item.Tags.Join(", "));
+            // }
+            Assert.That(actualItems.Select(item => item.Description), Is.EquivalentTo(expectedItems));
+            Assert.That(actualItems.Aggregate(0.00M, (result, item) => result + item.Amount), Is.EqualTo(expectedAmount));
         }
     }
 }
