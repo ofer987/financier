@@ -21,7 +21,7 @@ namespace Financier.Web.ViewModels
         {
             get
             {
-                if (Type == Types.Credit)
+                if (Type == Financier.Common.Expenses.Models.ItemTypes.Credit)
                 {
                     return "flex-credit";
                 }
@@ -58,18 +58,7 @@ namespace Financier.Web.ViewModels
             }
         }
 
-        public Types Type
-        {
-            get
-            {
-                if (Model.IsCredit)
-                {
-                    return Types.Credit;
-                }
-
-                return Types.Debit;
-            }
-        }
+        public Financier.Common.Expenses.Models.ItemTypes Type => Model.Type;
 
         public Item(Financier.Common.Expenses.Models.Item model)
         {

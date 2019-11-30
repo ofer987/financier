@@ -10,8 +10,6 @@ using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses.Models
 {
-    public enum ItemTypes { Debit, Credit }
-
     [Table("Expenses_Items")]
     public class Item
     {
@@ -145,8 +143,8 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
-        public ItemTypes Type => Amount >= 0 
-            ? ItemTypes.Debit 
+        public ItemTypes Type => Amount >= 0
+            ? ItemTypes.Debit
             : ItemTypes.Credit;
 
         [Key]
@@ -166,7 +164,7 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public decimal Amount { get; set; }
 
-        public virtual decimal TheRealAmount 
+        public virtual decimal TheRealAmount
         {
             get
             {
@@ -191,9 +189,6 @@ namespace Financier.Common.Expenses.Models
         public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 
         public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
-
-        // public bool IsDebit => Amount >= 0;
-        // public bool IsCredit => Amount < 0;
 
         public Item(Guid id, Guid statementId, string itemId, string description, DateTime at, decimal amount)
         {

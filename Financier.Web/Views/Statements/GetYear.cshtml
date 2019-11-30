@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Financier.Web.ViewModels.Statement>
+﻿@model IEnumerable<Financier.Common.Expenses.MonthlyAnalysis>
 
 <link href="~/css/site.css" rel="stylesheet">
 
@@ -11,15 +11,15 @@
   <div>
     <div>
       <h1>
-        Assets:&nbsp;@(month.GetAssetTotal())
+        Assets:&nbsp;@(month.AssetAmountTotal)
       </h1>
 
       <h1>
-        Expense:&nbsp;@(month.GetExpenseTotal())
+        Expense:&nbsp;@(month.ExpenseAmountTotal)
       </h1>
 
       <h1>
-        Profit:&nbsp;@(month.GetProfitTotal())
+        Profit:&nbsp;@(month.ProfitAmountTotal)
       </h1>
     </div>
   </div>

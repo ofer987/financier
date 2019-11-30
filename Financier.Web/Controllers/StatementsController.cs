@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text.Encodings.Web;
 
-using Financier.Common.Extensions;
 using Financier.Common.Expenses;
-using Financier.Web.ViewModels;
 
 namespace Financier.Web.Controllers
 {
@@ -25,17 +22,17 @@ namespace Financier.Web.Controllers
             //
             // var myIds = ids.Join(", ");
 
-            var viewModel = new Statement(year, month);
+            var viewModel = new MonthlyAnalysis(year, month);
 
             return View(viewModel);
             // return $"yo man {year} and {month} and {nameof(id)} = {id} and {nameof(myIds)} = {myIds}";
         }
 
-        private IEnumerable<Statement> GetStatements(int year, int startMonth, int endMonth)
+        private IEnumerable<MonthlyAnalysis> GetStatements(int year, int startMonth, int endMonth)
         {
             for (var i = startMonth; i <= endMonth; i += 1) 
             {
-                yield return new Statement(year, i);
+                yield return new MonthlyAnalysis(year, i);
             }
         }
     }

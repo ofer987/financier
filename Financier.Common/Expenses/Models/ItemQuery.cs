@@ -12,14 +12,14 @@ namespace Financier.Common.Expenses.Models
         public IEnumerable<string> TagNames { get; }
         public DateTime From { get; }
         public DateTime To { get; }
-        public bool IsAsset { get; }
+        public ItemTypes ItemType { get; }
 
-        public ItemQuery(IEnumerable<string> tagNames, DateTime fro, DateTime to, bool isAsset)
+        public ItemQuery(IEnumerable<string> tagNames, DateTime fro, DateTime to, ItemTypes itemType)
         {
             From = fro;
             To = to;
             TagNames = tagNames;
-            IsAsset = isAsset;
+            ItemType = itemType;
 
             Validate();
         }
@@ -49,7 +49,7 @@ namespace Financier.Common.Expenses.Models
                     where true
                         && i.At >= From
                         && i.At < To
-                        && (IsAsset && i.IsCredit || !IsAsset && i.IsDebit)
+                        && i.Type == ItemType
                         && TagNames.Any(tagName => tagName == t.Name)
                     select i
                 )

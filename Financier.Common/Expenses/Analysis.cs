@@ -10,10 +10,11 @@ namespace Financier.Common.Expenses
 {
     public class Analysis
     {
-        private const decimal Threshold = 0.05M;
+        public decimal Threshold { get; private set; }
+        protected const decimal DefaultThreshold = 0.05M;
 
-        public DateTime StartAt { get; }
-        public DateTime EndAt { get; }
+        public DateTime StartAt { get; protected set; }
+        public DateTime EndAt { get; protected set; }
 
         public IReadOnlyList<ItemListing> AssetListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
         public IReadOnlyList<ItemListing> ExpenseListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
@@ -23,8 +24,10 @@ namespace Financier.Common.Expenses
 
         public decimal AssetAmountTotal { get; private set; } = 0.00M;
         public decimal ExpenseAmountTotal { get; private set; } = 0.00M;
+        public decimal ProfitAmountTotal => AssetAmountTotal - ExpenseAmountTotal;
 
-        public Analysis(DateTime startAt, DateTime endAt)
+
+        public Analysis(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : this(threshold)
         {
             StartAt = startAt;
             EndAt = endAt;
@@ -32,7 +35,14 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        public void Init()
+        public Analysis(decimal threshold = DefaultThreshold)
+        {
+            Threshold = threshold;
+
+            Init();
+        }
+
+        protected void Init()
         {
             SetAssets();
             SetExpenses();

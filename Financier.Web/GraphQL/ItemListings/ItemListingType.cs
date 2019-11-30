@@ -7,7 +7,7 @@ using Financier.Web.GraphQL.Tags;
 // TODO: move to Types namespace
 namespace Financier.Web.GraphQL.TagCosts
 {
-    public class TagCostType : ObjectGraphType<TagCost>
+    public class TagCostType : ObjectGraphType<ItemListing>
     {
         public TagCostType(IDataLoaderContextAccessor dataLoaderAccessor)
         {

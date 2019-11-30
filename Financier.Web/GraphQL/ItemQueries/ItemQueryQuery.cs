@@ -54,7 +54,7 @@ namespace Financier.Web.GraphQL.ItemQueries
                          tagNames,
                          new DateTime(fromYear, fromMonth, 1),
                          new DateTime(toYear, toMonth, 1),
-                         false
+                         ItemTypes.Debit
                  ).GetResultsOrderedByMonth();
              }
             );

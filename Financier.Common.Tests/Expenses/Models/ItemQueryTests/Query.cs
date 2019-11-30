@@ -59,7 +59,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var result = new ItemQuery(tagNames, fro, to, false).GetResults();
+            var result = new ItemQuery(tagNames, fro, to, ItemTypes.Debit).GetResults();
 
             Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
@@ -118,7 +118,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var result = new ItemQuery(tagNames, fro, to, true).GetResults();
+            var result = new ItemQuery(tagNames, fro, to, ItemTypes.Credit).GetResults();
 
             Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }

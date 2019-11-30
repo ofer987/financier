@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 
-using Financier.Web.ViewModels;
+using Financier.Common.Expenses;
 
-namespace Financier.Web.GraphQL.Statements
+namespace Financier.Web.GraphQL.Analyses
 {
-    public class StatementQuery : ObjectGraphType
+    public class AnalysisQuery : ObjectGraphType
     {
         public static class Keys
         {
@@ -14,10 +14,10 @@ namespace Financier.Web.GraphQL.Statements
             public static string Month = "month";
         }
 
-        public StatementQuery()
+        public AnalysisQuery()
         {
-            Field<StatementType>(
-                "statement",
+            Field<AnalysisType>(
+                "analysis",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
@@ -33,12 +33,12 @@ namespace Financier.Web.GraphQL.Statements
                     var year = context.GetArgument<int>(Keys.Year);
                     var month = context.GetArgument<int>(Keys.Month);
 
-                    return new Statement(year, month);
+                    return new MonthlyAnalysis(year, month);
                 }
             );
 
-            Field<ListGraphType<StatementType>>(
-                "statements",
+            Field<ListGraphType<AnalysisType>>(
+                "analyses",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
@@ -50,16 +50,16 @@ namespace Financier.Web.GraphQL.Statements
                     var year = context.GetArgument<int>(Keys.Year);
 
                     // Should this be converted to an array?
-                    return GetMonthlyStatements(year).ToList();
+                    return GetMonthlyAnalysis(year).ToList();
                 }
             );
         }
 
-        private IEnumerable<Statement> GetMonthlyStatements(int year)
+        private IEnumerable<Analysis> GetMonthlyAnalysis(int year)
         {
             for (var month = 1; month <= 12; month += 1)
             {
-                yield return new Statement(year, month);
+                yield return new MonthlyAnalysis(year, month);
             }
         }
     }
