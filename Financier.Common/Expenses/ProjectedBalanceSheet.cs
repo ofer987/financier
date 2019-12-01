@@ -11,6 +11,11 @@ namespace Financier.Common.Expenses
             CashFlow = cashflow;
         }
 
+        public ProjectedBalanceSheet(CashFlow cashflow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
+        {
+            CashFlow = cashflow;
+        }
+
         public BalanceSheet GetProjectionAt(DateTime projectedAt)
         {
             if (projectedAt <= At)

@@ -207,6 +207,31 @@ namespace Financier.Common.Tests.Expenses
                     };
                 }
             }
+
+            public static class September
+            {
+                public static Func<Statement> GetStatement = () => new Statement
+                {
+                    Id = Guid.NewGuid(),
+                    CardId = CardId,
+                    PostedAt = new DateTime(2019, 9, 30)
+                };
+
+                public static class Items
+                {
+                    public const string DanSalaryItemId = "ghfjdkg8341";
+                    public static Func<IEnumerable<Tag>, Item> GetDanSalary = (tags) => new Item
+                    {
+                        Id = Guid.NewGuid(),
+                        Amount = -1000000.00M,
+                        Description = "Dan Mega Salary",
+                        ItemId = DanSalaryItemId,
+                        PostedAt = new DateTime(2019, 9, 21),
+                        TransactedAt = new DateTime(2019, 9, 21),
+                        ItemTags = tags.Select(tag => new ItemTag { Tag = tag }).ToList()
+                    };
+                }
+            }
         }
 
         public static class RonCard
@@ -514,8 +539,14 @@ namespace Financier.Common.Tests.Expenses
 
                         augustStatement.Items.AddRange(new[] {
                             MyFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag })
-                    });
+                        });
                         db.Statements.Add(augustStatement);
+
+                        var septemberStatement = MyFactories.SavingsCard.September.GetStatement();
+                        septemberStatement.Items.AddRange(new[] {
+                            MyFactories.SavingsCard.September.Items.GetDanSalary(new[] { salaryTag } )
+                        });
+                        db.Statements.Add(septemberStatement);
                     }
                 }
 
