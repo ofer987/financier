@@ -6,13 +6,13 @@ namespace Financier.Common.Expenses
     public class BalanceSheet
     {
         public decimal Cash { get; }
-        public decimal Debts { get; }
+        public decimal Debt { get; }
         public DateTime At { get; }
 
-        public BalanceSheet(decimal cash, decimal debts, DateTime at)
+        public BalanceSheet(decimal cash, decimal debt, DateTime at)
         {
             Cash = cash;
-            Debts = debts;
+            Debt = debt;
             At = at;
         }
 
@@ -22,7 +22,7 @@ namespace Financier.Common.Expenses
 
             sb.AppendLine($"Balance Sheet (as of {At.ToString("D")})");
             sb.AppendLine($"Cash:\t{Cash.ToString("#0.00")}");
-            sb.AppendLine($"Debts:\t{Debts.ToString("#0.00")}");
+            sb.AppendLine($"Debt:\t{Debt.ToString("#0.00")}");
 
             return sb.ToString();
         }

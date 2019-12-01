@@ -6,7 +6,7 @@ namespace Financier.Common.Expenses
     {
         public CashFlow CashFlow { get; }
 
-        public ProjectedBalanceSheet(CashFlow cashflow, decimal cash, decimal debts) : base(cash, debts, DateTime.Now)
+        public ProjectedBalanceSheet(CashFlow cashflow, decimal cash, decimal debt) : base(cash, debt, DateTime.Now)
         {
             CashFlow = cashflow;
         }
@@ -19,7 +19,7 @@ namespace Financier.Common.Expenses
             }
 
             var futureCash = Cash + CashFlow.DailyProfit * projectAt.Subtract(At).Days;
-            return new BalanceSheet(futureCash, Debts, projectAt);
+            return new BalanceSheet(futureCash, Debt, projectAt);
         }
     }
 }
