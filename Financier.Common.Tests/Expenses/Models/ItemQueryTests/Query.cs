@@ -81,6 +81,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             new[] {
                 MyFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
                 MyFactories.SavingsCard.June.Items.DanSalaryItemId,
+                MyFactories.SavingsCard.July.Items.DanSalaryItemId,
                 MyFactories.SavingsCard.July.Items.ChildCareBenefitItemId,
                 MyFactories.SavingsCard.June.Items.EdithSalaryItemId,
             },

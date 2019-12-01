@@ -467,15 +467,15 @@ namespace Financier.Common.Tests.Expenses
                     juneStatement.Items.AddRange(new[] {
                         MyFactories.DanCard.June.Items.GetPorscheItem(new[] { funTag, fastTag }),
                         MyFactories.DanCard.June.Items.GetFerrariItem(new[] { funTag }),
-                        MyFactories.DanCard.June.Items.GetCreditCardPayment(new[] { creditCardPaymentTag })
+                        MyFactories.DanCard.June.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag })
                     });
                     julyStatement.Items.AddRange(new[] {
-                        MyFactories.DanCard.July.Items.GetCreditCardPayment(new[] { creditCardPaymentTag }),
+                        MyFactories.DanCard.July.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
                         MyFactories.DanCard.July.Items.GetLunch(new[] { lunchTag })
                     });
                     ronsCrazyStatement.Items.AddRange(new[] {
                         MyFactories.RonCard.CrazyStatement.Items.GetLamboItem(new[] { fastTag, dogTag }),
-                        MyFactories.RonCard.CrazyStatement.Items.GetCreditCardPayment(new[] { creditCardPaymentTag })
+                        MyFactories.RonCard.CrazyStatement.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag })
                     });
 
                     db.Statements.Add(juneStatement);
@@ -494,15 +494,15 @@ namespace Financier.Common.Tests.Expenses
                             MyFactories.SavingsCard.June.Items.GetEdithSalary(new[] { salaryTag }),
                             MyFactories.SavingsCard.June.Items.GetGroceries(new[] { groceriesTag }),
                             MyFactories.SavingsCard.June.Items.GetCoffee(new[] { groceriesTag }),
-                            MyFactories.SavingsCard.June.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag }),
-                            MyFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag }),
+                            MyFactories.SavingsCard.June.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
+                            MyFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
                             MyFactories.SavingsCard.June.Items.GetChildCareBenefit(new[] { salaryTag })
                         });
                         db.Statements.Add(juneStatement);
 
                         var julyStatement = MyFactories.SavingsCard.July.GetStatement();
                         julyStatement.Items.AddRange(new[] {
-                                MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag, internalTag }),
+                                MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
                             MyFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
                             MyFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
                             MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag } ),
@@ -511,8 +511,6 @@ namespace Financier.Common.Tests.Expenses
                         db.Statements.Add(julyStatement);
 
                         var augustStatement = MyFactories.SavingsCard.August.GetStatement();
-                        var transferItem = MyFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag });
-                        Console.WriteLine(transferItem);
 
                         augustStatement.Items.AddRange(new[] {
                             MyFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag })
