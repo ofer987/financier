@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using System.Globalization;
 using McMaster.Extensions.CommandLineUtils;
 
 using Financier.Common;
-using Financier.Common.Extensions;
 using Financier.Common.Expenses;
-using Financier.Common.Expenses.Models;
 
 namespace Financier.Cli.BalanceSheet
 {
@@ -18,10 +14,12 @@ namespace Financier.Cli.BalanceSheet
         public String ProjectedAtArgument { get; }
 
         [OptionAttribute("-c|--cash", CommandOptionType.SingleValue)]
-        public decimal Cash { get; private set; }
+        public string CashArgument { get; private set; }
+        public decimal Cash => decimal.Parse(CashArgument);
 
-        [OptionAttribute("-c|--debt", CommandOptionType.SingleValue)]
-        public decimal Debt { get; private set; }
+        [OptionAttribute("-d|--debt", CommandOptionType.SingleValue)]
+        public string DebtArgument { get; private set; }
+        public decimal Debt => decimal.Parse(DebtArgument);
 
         public DateTime ProjectedAt => DateTime.ParseExact(ProjectedAtArgument, "yyyyMMdd", CultureInfo.InvariantCulture);
         public DateTime At { get; private set; }
@@ -31,10 +29,15 @@ namespace Financier.Cli.BalanceSheet
         private void OnExecute()
         {
             Context.Environment = Environments.Dev;
-            At = DateTime.Now;
 
-            var cashFlow = new CashFlow(GetEarliestItem(), GetLatestItem());
-            var projectedBalanceSheet = new ProjectedBalanceSheet(cashFlow, Cash, Debt);
+            var fro = GetEarliestItem();
+            var to = GetLatestItem();
+            var cashFlow = new CashFlow(fro, to);
+            var projectedBalanceSheet = new ProjectedBalanceSheet(cashFlow, Cash, Debt)
+                .GetProjectionAt(ProjectedAt);
+
+            Console.WriteLine($"fro: {fro}");
+            Console.WriteLine($"to: {to}");
 
             Console.WriteLine(projectedBalanceSheet);
         }
@@ -45,7 +48,8 @@ namespace Financier.Cli.BalanceSheet
             {
                 return db.Items
                     .OrderBy(item => item.At)
-                    .First;
+                    .Select(item => item.At)
+                    .First();
             }
         }
 
@@ -55,7 +59,8 @@ namespace Financier.Cli.BalanceSheet
             {
                 return db.Items
                     .OrderByDescending(item => item.At)
-                    .First;
+                    .Select(item => item.At)
+                    .First();
             }
         }
     }
