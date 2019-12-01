@@ -6,7 +6,7 @@ using Financier.Common.Expenses;
 
 namespace Financier.Web.Controllers
 {
-    public class StatementsController : Controller
+    public class CashFlowsController : Controller
     {
         public IActionResult GetYear(int year)
         {

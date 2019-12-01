@@ -96,15 +96,15 @@ namespace Financier.Web
                 );
 
                 routes.MapRoute(
-                    name: "Statements#GetYear",
-                    template: "Statements/year/{year}",
-                    defaults: new { controller = "Statements", action = "GetYear" }
+                    name: "CashFlows#GetYear",
+                    template: "CashFlows/year/{year}",
+                    defaults: new { controller = "CashFlows", action = "GetYear" }
                 );
 
                 routes.MapRoute(
-                    name: "Statements#GetMonth",
-                    template: "Statements/year/{year}/month/{month}",
-                    defaults: new { controller = "Statements", action = "GetMonth" }
+                    name: "CashFlows#GetMonth",
+                    template: "CashFlows/year/{year}/month/{month}",
+                    defaults: new { controller = "CashFlows", action = "GetMonth" }
                 );
 
                 routes.MapRoute(
