@@ -26,6 +26,8 @@ namespace Financier.Common.Expenses
         public decimal DebitAmountTotal { get; private set; } = 0.00M;
         public decimal ProfitAmountTotal => CreditAmountTotal - DebitAmountTotal;
 
+        // TODO: test me
+        public decimal DailyProfit => ProfitAmountTotal / EndAt.Subtract(StartAt).Days;
 
         public CashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : this(threshold)
         {
