@@ -11,15 +11,15 @@ namespace Financier.Common.Expenses
             CashFlow = cashflow;
         }
 
-        public BalanceSheet GetProjectionAt(DateTime projectAt)
+        public BalanceSheet GetProjectionAt(DateTime projectedAt)
         {
-            if (projectAt <= At)
+            if (projectedAt <= At)
             {
-                throw new ArgumentOutOfRangeException(nameof(projectAt), $"Should be later than ({At})");
+                throw new ArgumentOutOfRangeException(nameof(projectedAt), $"Should be later than ({At})");
             }
 
-            var futureCash = Cash + CashFlow.DailyProfit * projectAt.Subtract(At).Days;
-            return new BalanceSheet(futureCash, Debt, projectAt);
+            var futureCash = Cash + CashFlow.DailyProfit * projectedAt.Subtract(At).Days;
+            return new BalanceSheet(futureCash, Debt, projectedAt);
         }
     }
 }
