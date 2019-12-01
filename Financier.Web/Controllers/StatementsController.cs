@@ -22,17 +22,17 @@ namespace Financier.Web.Controllers
             //
             // var myIds = ids.Join(", ");
 
-            var viewModel = new MonthlyAnalysis(year, month);
+            var viewModel = new MonthlyCashFlow(year, month);
 
             return View(viewModel);
             // return $"yo man {year} and {month} and {nameof(id)} = {id} and {nameof(myIds)} = {myIds}";
         }
 
-        private IEnumerable<MonthlyAnalysis> GetStatements(int year, int startMonth, int endMonth)
+        private IEnumerable<MonthlyCashFlow> GetStatements(int year, int startMonth, int endMonth)
         {
             for (var i = startMonth; i <= endMonth; i += 1) 
             {
-                yield return new MonthlyAnalysis(year, i);
+                yield return new MonthlyCashFlow(year, i);
             }
         }
     }

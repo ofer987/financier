@@ -1,4 +1,4 @@
-﻿@model Financier.Common.Expenses.MonthlyAnalysis
+﻿@model Financier.Common.Expenses.MonthlyCashFlow
 @using Financier.Common.Extensions
 
 <link href="~/css/site.css" rel="stylesheet">
@@ -35,7 +35,7 @@
     function request(year, month) {
       var client = new Apollo.lib.ApolloClient({
         networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/analyses',
+          uri: '/graphql/cash_flows',
           transportBatching: true,
         }),
         connectToDevTools: true,
@@ -45,7 +45,7 @@
         .query({
           query: Apollo.gql`
             {
-              analysis(
+              cash_flow(
                 year: ${year},
                 month: ${month}
               ) {
@@ -71,9 +71,9 @@
           var width = 960;
           var height = 500;
           new Chart(".charts #asset-costs", width, height)
-            .render(response.data.analysis.assetListings);
+            .render(response.data.cash_flow.assetListings);
           new Chart(".charts #expense-costs", width, height)
-            .render(response.data.analysis.expenseListings);
+            .render(response.data.cash_flow.expenseListings);
         });
     }
 

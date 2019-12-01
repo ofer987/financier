@@ -4,9 +4,9 @@ using GraphQL.Types;
 
 using Financier.Common.Expenses;
 
-namespace Financier.Web.GraphQL.Analyses
+namespace Financier.Web.GraphQL.CashFlows
 {
-    public class AnalysisQuery : ObjectGraphType
+    public class CashFlowQuery : ObjectGraphType
     {
         public static class Keys
         {
@@ -14,10 +14,10 @@ namespace Financier.Web.GraphQL.Analyses
             public static string Month = "month";
         }
 
-        public AnalysisQuery()
+        public CashFlowQuery()
         {
-            Field<AnalysisType>(
-                "analysis",
+            Field<CashFlowType>(
+                "cash_flow",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
@@ -33,12 +33,12 @@ namespace Financier.Web.GraphQL.Analyses
                     var year = context.GetArgument<int>(Keys.Year);
                     var month = context.GetArgument<int>(Keys.Month);
 
-                    return new MonthlyAnalysis(year, month);
+                    return new MonthlyCashFlow(year, month);
                 }
             );
 
-            Field<ListGraphType<AnalysisType>>(
-                "analyses",
+            Field<ListGraphType<CashFlowType>>(
+                "cash_flows",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
@@ -55,11 +55,11 @@ namespace Financier.Web.GraphQL.Analyses
             );
         }
 
-        private IEnumerable<Analysis> GetMonthlyAnalysis(int year)
+        private IEnumerable<CashFlow> GetMonthlyAnalysis(int year)
         {
             for (var month = 1; month <= 12; month += 1)
             {
-                yield return new MonthlyAnalysis(year, month);
+                yield return new MonthlyCashFlow(year, month);
             }
         }
     }

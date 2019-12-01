@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.AnalysisHelperTests
+namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
 {
     public class GetItemListings : Fixture
     {
@@ -51,7 +51,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisHelperTests
         [Test]
         [TestCaseSource(nameof(DebitTestCases))]
         [TestCaseSource(nameof(CreditTestCases))]
-        public void Test_Expenses_AnalysisHelper_GetItemListings(
+        public void Test_Expenses_CashFlowHelper_GetItemListings(
             int year,
             int month,
             ItemTypes type,
@@ -60,7 +60,7 @@ namespace Financier.Common.Tests.Expenses.AnalysisHelperTests
         {
             var startAt = new DateTime(year, month, 1);
             var endAt = startAt.AddMonths(1);
-            var actual = AnalysisHelper.GetItemListings(startAt, endAt, type);
+            var actual = CashFlowHelper.GetItemListings(startAt, endAt, type);
 
             var actualItems = actual
                 .SelectMany(item => item.Items);

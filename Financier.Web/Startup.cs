@@ -10,7 +10,7 @@ using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
 using Financier.Web.GraphQL.Tags;
-using Financier.Web.GraphQL.Analyses;
+using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.ItemQueries;
 using Financier.Web.GraphQL.Items;
 
@@ -37,7 +37,7 @@ namespace Financier.Web
             });
 
             services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
-            services.AddScoped<AnalysisSchema>();
+            services.AddScoped<CashFlowSchema>();
             services.AddScoped<ItemSchema>();
             services.AddScoped<TagSchema>();
             services.AddScoped<ItemQuerySchema>();
@@ -81,7 +81,7 @@ namespace Financier.Web
 
             app.UseGraphQL<TagSchema>("/graphql/tags");
             app.UseGraphQL<ItemSchema>("/graphql/items");
-            app.UseGraphQL<AnalysisSchema>("/graphql/analyses");
+            app.UseGraphQL<CashFlowSchema>("/graphql/cash_flows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
 
             // app.UseWebSockets();

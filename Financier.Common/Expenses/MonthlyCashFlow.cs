@@ -2,11 +2,11 @@ using System;
 
 namespace Financier.Common.Expenses
 {
-    public class MonthlyAnalysis : Analysis
+    public class MonthlyCashFlow : CashFlow
     {
         public DateTime At => StartAt;
 
-        public MonthlyAnalysis(int year, int month, decimal threshold = DefaultThreshold) : base(threshold)
+        public MonthlyCashFlow(int year, int month, decimal threshold = DefaultThreshold) : base(threshold)
         {
             StartAt = new DateTime(year, month, 1);
 

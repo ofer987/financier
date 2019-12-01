@@ -8,7 +8,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Expenses
 {
-    public class Analysis
+    public class CashFlow
     {
         public decimal Threshold { get; private set; }
         protected const decimal DefaultThreshold = 0.05M;
@@ -27,7 +27,7 @@ namespace Financier.Common.Expenses
         public decimal ProfitAmountTotal => AssetAmountTotal - ExpenseAmountTotal;
 
 
-        public Analysis(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : this(threshold)
+        public CashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : this(threshold)
         {
             StartAt = startAt;
             EndAt = endAt;
@@ -35,7 +35,7 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        public Analysis(decimal threshold = DefaultThreshold)
+        public CashFlow(decimal threshold = DefaultThreshold)
         {
             Threshold = threshold;
 
@@ -50,8 +50,8 @@ namespace Financier.Common.Expenses
 
         private void SetAssets()
         {
-            AssetListings = AnalysisHelper.GetItemListings(StartAt, EndAt, ItemTypes.Credit);
-            CombinedAssetListings = AnalysisHelper.CombineItemListings(AssetListings, Threshold);
+            AssetListings = CashFlowHelper.GetItemListings(StartAt, EndAt, ItemTypes.Credit);
+            CombinedAssetListings = CashFlowHelper.CombineItemListings(AssetListings, Threshold);
             AssetAmountTotal = AssetListings
                 .Select(cost => cost.Amount)
                 .Aggregate(0.00M, (r, i) => r + i);
@@ -59,8 +59,8 @@ namespace Financier.Common.Expenses
 
         private void SetExpenses()
         {
-            ExpenseListings = AnalysisHelper.GetItemListings(StartAt, EndAt, ItemTypes.Debit);
-            CombinedExpenseListings = AnalysisHelper.CombineItemListings(AssetListings, Threshold);
+            ExpenseListings = CashFlowHelper.GetItemListings(StartAt, EndAt, ItemTypes.Debit);
+            CombinedExpenseListings = CashFlowHelper.CombineItemListings(AssetListings, Threshold);
             ExpenseAmountTotal = ExpenseListings
                 .Select(cost => cost.Amount)
                 .Aggregate(0.00M, (r, i) => r + i);

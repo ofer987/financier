@@ -4,11 +4,11 @@ using GraphQL.Types;
 using Financier.Common.Expenses;
 using Financier.Web.GraphQL.TagCosts;
 
-namespace Financier.Web.GraphQL.Analyses
+namespace Financier.Web.GraphQL.CashFlows
 {
-    public class AnalysisType : ObjectGraphType<Analysis>
+    public class CashFlowType : ObjectGraphType<CashFlow>
     {
-        public AnalysisType(IDataLoaderContextAccessor dataLoaderAccessor)
+        public CashFlowType(IDataLoaderContextAccessor dataLoaderAccessor)
         {
             Field(t => t.StartAt, nullable: false, type: typeof(DateTimeGraphType));
             Field(t => t.EndAt, nullable: false, type: typeof(DateTimeGraphType));

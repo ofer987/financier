@@ -9,7 +9,7 @@ using Financier.Common.Extensions;
 // TODO: Remove hardcoded filter tag names and replace with functions
 namespace Financier.Common.Expenses
 {
-    public static class AnalysisHelper
+    public static class CashFlowHelper
     {
         public static IReadOnlyList<ItemListing> GetItemListings(DateTime startAt, DateTime endAt, ItemTypes itemType)
         {
