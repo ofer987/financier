@@ -10,14 +10,14 @@
 <!-- bar chart -->
 <div class="charts">
   <h2>
-    Assets
+    Credits
   </h2>
-  <svg class="chart" id="asset-costs">
+  <svg class="chart" id="credit-costs">
   </svg>
   <h2>
-    Expenses
+    Debits
   </h2>
-  <svg class="chart" id="expense-costs">
+  <svg class="chart" id="debit-costs">
   </svg>
 </div>
 
@@ -49,19 +49,19 @@
                 year: ${year},
                 month: ${month}
               ) {
-                assetListings {
+                creditListings {
                   tags {
                     name
                   }
                   amount
                 }
-                expenseListings {
+                debitListings {
                   tags {
                     name
                   }
                   amount
                 }
-                assetAmountTotal
+                creditAmountTotal
               }
             }
           `
@@ -70,10 +70,10 @@
 
           var width = 960;
           var height = 500;
-          new Chart(".charts #asset-costs", width, height)
-            .render(response.data.cash_flow.assetListings);
-          new Chart(".charts #expense-costs", width, height)
-            .render(response.data.cash_flow.expenseListings);
+          new Chart(".charts #credit-costs", width, height)
+            .render(response.data.cash_flow.creditListings);
+          new Chart(".charts #debit-costs", width, height)
+            .render(response.data.cash_flow.debitListings);
         });
     }
 
@@ -240,11 +240,11 @@
 <div>
   <div>
     <h1>
-      Assets:&nbsp;@(Model.AssetAmountTotal)
+      Credits:&nbsp;@(Model.CreditAmountTotal)
     </h1>
 
     <h1>
-      Expense:&nbsp;@(Model.ExpenseAmountTotal)
+      Debits:&nbsp;@(Model.DebitAmountTotal)
     </h1>
 
     <h1>
@@ -252,29 +252,29 @@
     </h1>
   </div>
   <div class="tag-costs">
-    <h2>Assets</h2>
-    @foreach (var listing in Model.AssetListings.OrderBy(tc => tc.Amount))
+    <h2>Credits</h2>
+    @foreach (var listing in Model.CreditListings.OrderBy(tc => tc.Amount))
     {
     <div class="flex-container">
       <div class="flex-item flex-tags">
         @(listing.Tags.Select(tag => tag.Name).Join(", "))
       </div>
       <div class="flex-item flex-amount">
-        @((listing.Amount / Model.AssetAmountTotal).ToString("#0.00 %"))
+        @((listing.Amount / Model.CreditAmountTotal).ToString("#0.00 %"))
       </div>
     </div>
     }
   </div>
   <div class="tag-costs">
-    <h2>Expenses</h2>
-    @foreach (var listing in Model.ExpenseListings.OrderBy(tc => tc.Amount))
+    <h2>Debits</h2>
+    @foreach (var listing in Model.DebitListings.OrderBy(tc => tc.Amount))
     {
     <div class="flex-container">
       <div class="flex-item flex-tags">
         @(listing.Tags.Select(tag => tag.Name).Join(", "))
       </div>
       <div class="flex-item flex-amount">
-        @((listing.Amount / Model.ExpenseAmountTotal).ToString("#0.00 %"))
+        @((listing.Amount / Model.DebitAmountTotal).ToString("#0.00 %"))
       </div>
     </div>
     }

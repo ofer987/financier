@@ -16,15 +16,15 @@ namespace Financier.Common.Expenses
         public DateTime StartAt { get; protected set; }
         public DateTime EndAt { get; protected set; }
 
-        public IReadOnlyList<ItemListing> AssetListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
-        public IReadOnlyList<ItemListing> ExpenseListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
+        public IReadOnlyList<ItemListing> CreditListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
+        public IReadOnlyList<ItemListing> DebitListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
 
-        public IReadOnlyList<ItemListing> CombinedAssetListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
-        public IReadOnlyList<ItemListing> CombinedExpenseListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
+        public IReadOnlyList<ItemListing> CombinedCreditListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
+        public IReadOnlyList<ItemListing> CombinedDebitListings { get; private set; } = Enumerable.Empty<ItemListing>().ToList();
 
-        public decimal AssetAmountTotal { get; private set; } = 0.00M;
-        public decimal ExpenseAmountTotal { get; private set; } = 0.00M;
-        public decimal ProfitAmountTotal => AssetAmountTotal - ExpenseAmountTotal;
+        public decimal CreditAmountTotal { get; private set; } = 0.00M;
+        public decimal DebitAmountTotal { get; private set; } = 0.00M;
+        public decimal ProfitAmountTotal => CreditAmountTotal - DebitAmountTotal;
 
 
         public CashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : this(threshold)
@@ -44,24 +44,24 @@ namespace Financier.Common.Expenses
 
         protected void Init()
         {
-            SetAssets();
-            SetExpenses();
+            SetCredits();
+            SetDebits();
         }
 
-        private void SetAssets()
+        private void SetCredits()
         {
-            AssetListings = CashFlowHelper.GetItemListings(StartAt, EndAt, ItemTypes.Credit);
-            CombinedAssetListings = CashFlowHelper.CombineItemListings(AssetListings, Threshold);
-            AssetAmountTotal = AssetListings
+            CreditListings = CashFlowHelper.GetItemListings(StartAt, EndAt, ItemTypes.Credit);
+            CombinedCreditListings = CashFlowHelper.CombineItemListings(CreditListings, Threshold);
+            CreditAmountTotal = CreditListings
                 .Select(cost => cost.Amount)
                 .Aggregate(0.00M, (r, i) => r + i);
         }
 
-        private void SetExpenses()
+        private void SetDebits()
         {
-            ExpenseListings = CashFlowHelper.GetItemListings(StartAt, EndAt, ItemTypes.Debit);
-            CombinedExpenseListings = CashFlowHelper.CombineItemListings(AssetListings, Threshold);
-            ExpenseAmountTotal = ExpenseListings
+            DebitListings = CashFlowHelper.GetItemListings(StartAt, EndAt, ItemTypes.Debit);
+            CombinedDebitListings = CashFlowHelper.CombineItemListings(CreditListings, Threshold);
+            DebitAmountTotal = DebitListings
                 .Select(cost => cost.Amount)
                 .Aggregate(0.00M, (r, i) => r + i);
         }
