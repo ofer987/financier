@@ -44,13 +44,7 @@ namespace Financier.Cli.BalanceSheet
 
         private DateTime GetEarliestItem()
         {
-            using (var db = new Context())
-            {
-                return db.Items
-                    .OrderBy(item => item.At)
-                    .Select(item => item.At)
-                    .First();
-            }
+            return new DateTime(2019, 1, 1);
         }
 
         private DateTime GetLatestItem()
