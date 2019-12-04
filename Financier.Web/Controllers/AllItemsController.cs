@@ -30,15 +30,7 @@ namespace Financier.Web.Controllers
         private void Init(int year, int startMonth, int endMonth)
         {
             From = new DateTime(year, startMonth, 1);
-            
-            if (endMonth == 12)
-            {
-                To = new DateTime(year + 1, 1, 1);
-            }
-            else
-            {
-                To = new DateTime(year, endMonth + 1, 1);
-            }
+            To = new DateTime(year, startMonth, 1).AddMonths(1);
         }
 
         private IEnumerable<ViewModels.Item> GetItems()
