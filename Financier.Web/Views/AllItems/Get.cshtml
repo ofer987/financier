@@ -36,7 +36,7 @@
       function request(_uri, itemId, tags) {
         var client = new Apollo.lib.ApolloClient({
           networkInterface: Apollo.lib.createNetworkInterface({
-            uri: '/graphql',
+            uri: '/graphql/items',
             transportBatching: true,
           }),
           connectToDevTools: true,
