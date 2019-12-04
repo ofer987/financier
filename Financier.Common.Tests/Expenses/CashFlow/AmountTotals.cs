@@ -62,7 +62,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
             Assert.That(cashFlow.CreditAmountTotal, Is.EqualTo(expectedCreditAmount));
             Assert.That(cashFlow.DebitAmountTotal, Is.EqualTo(expectedDebitAmount));
             Assert.That(cashFlow.ProfitAmountTotal, Is.EqualTo(expectedCreditAmount - expectedDebitAmount));
-            Assert.That(Decimal.Round(cashFlow.DailyProfit, 2), Is.EqualTo(expectedDailyProfit));
+            Assert.That(cashFlow.DailyProfit, Is.EqualTo(expectedDailyProfit));
         }
     }
 }
