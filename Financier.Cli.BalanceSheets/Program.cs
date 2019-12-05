@@ -6,7 +6,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Financier.Common;
 using Financier.Common.Expenses;
 
-namespace Financier.Cli.BalanceSheet
+namespace Financier.Cli.BalanceSheets
 {
     public class Program
     {
@@ -39,6 +39,10 @@ namespace Financier.Cli.BalanceSheet
             Console.WriteLine($"fro: {fro}");
             Console.WriteLine($"to: {to}");
 
+            Console.WriteLine($"Start: {cashFlow.StartAt}");
+            Console.WriteLine($"End: {cashFlow.EndAt}");
+            Console.WriteLine($"ProfitAmountTotal: {cashFlow.ProfitAmountTotal}");
+            Console.WriteLine($"DailyProfit: {cashFlow.DailyProfit}");
             Console.WriteLine(projectedBalanceSheet);
         }
 
