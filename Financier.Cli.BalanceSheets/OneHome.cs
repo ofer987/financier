@@ -6,6 +6,7 @@ namespace Financier.Cli.BalanceSheets
     {
         public OneHome()
         {
+            var sheet = new BalanceSheet(0, 0);
         }
     }
 }

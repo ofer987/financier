@@ -6,10 +6,10 @@ namespace Financier.Common.Actions
 {
     public interface IAction
     {
-        DateTime At { get; }
-
+        Types Type { get; }
         IProduct Product { get; }
-
-        decimal TotalBy(DateTime at);
+        DateTime At { get; }
+        decimal Price { get; }
+        decimal PriceAt(DateTime at);
     }
 }

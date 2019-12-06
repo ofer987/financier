@@ -12,6 +12,8 @@ namespace Financier.Common.Models
         // TODO place in a configuration file or pass in as constructor parameter
         public const decimal YearlyValuationRate = 5.00M;
 
+        public Guid Id { get; }
+
         public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0/12) - 1;
 
         public double MonthlyValuationRate => Math.Pow(Convert.ToDouble(YearlyValuationRate) / 100, 1.0/12) - 1;
@@ -83,6 +85,7 @@ namespace Financier.Common.Models
 
         public Product(string name, DateTime purchasedAt)
         {
+            Id = Guid.NewGuid();
             Name = name;
             PurchasedAt = purchasedAt;
         }
@@ -115,6 +118,47 @@ namespace Financier.Common.Models
             return Liabilities
                 .Select(liability => liability.CostBy(at))
                 .Aggregate(0.00M, (total, cost) => total += cost);
+        }
+
+        public override string ToString()
+        {
+            return $"Product ({nameof(Id)} = {Id})";
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Product;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (Id != other.Id)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool operator ==(Product x, Product y)
+        {
+            if (object.ReferenceEquals(x, null))
+            {
+                return (object.ReferenceEquals(y, null));
+            }
+
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(Product x, Product y)
+        {
+            return !(x == y);
         }
     }
 }

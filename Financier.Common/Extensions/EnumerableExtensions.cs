@@ -41,5 +41,10 @@ namespace Financier.Common.Extensions
                 yield return item;
             }
         }
+
+        public static bool Empty<T>(this IEnumerable<T> self)
+        {
+            return !self.Any();
+        }
     }
 }

@@ -5,6 +5,8 @@ namespace Financier.Common.Models
 {
     public interface IProduct
     {
+        Guid Id { get; }
+
         string Name { get; }
 
         DateTime PurchasedAt { get; }
