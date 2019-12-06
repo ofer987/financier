@@ -25,7 +25,7 @@ namespace Financier.Common.Flows
             return Actions
                 .Where(action => action.At <= at)
                 .OrderBy(action => action.At)
-                .Aggregate(StartingBalance, (balance, action) => balance + action.TotalBy(at));
+                .Aggregate(StartingBalance, (balance, action) => balance + action.PriceAt(at));
         }
     }
 }
