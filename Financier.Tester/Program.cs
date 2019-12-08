@@ -27,7 +27,8 @@ namespace Financier.Tester
                     { "taxes", 100.00M },
                     { "electricity", 50.00M }
                 };
-                home = new Home("Where-we-live", 200000, expenses, 40000, purchasedAt, 3.19M);
+                // home = new Home("Where-we-live", 200000, expenses, 40000, purchasedAt, 3.19M);
+                home = new Home("Where-we-live", purchasedAt, 200000, 40000);
             }
             var products = new [] { home };
             var income = new[] { new Salary(200000.00M) };

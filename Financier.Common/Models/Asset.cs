@@ -12,7 +12,8 @@ namespace Financier.Common.Models
 
         public virtual decimal InvestmentPrice => PurchasePrice;
 
-        public virtual bool IsSold => Product.IsSold;
+        public virtual bool IsSold => true;
+        // public virtual bool IsSold => Product.IsSold;
 
         private decimal? sellPrice = null;
         public virtual decimal SellPrice
@@ -41,14 +42,16 @@ namespace Financier.Common.Models
 
         public virtual decimal ValueAt(DateTime at)
         {
-            return ValueAt(at.SubtractWholeMonths(Product.PurchasedAt));
+            return 0.00M;
+            // return ValueAt(at.SubtractWholeMonths(Product.PurchasedAt));
         }
 
         public abstract decimal ValueAt(int monthAfterInception);
 
         public virtual decimal ValueBy(DateTime at)
         {
-            return ValueBy(at.SubtractWholeMonths(Product.PurchasedAt));
+            return 0.00M;
+            // return ValueBy(at.SubtractWholeMonths(Product.PurchasedAt));
         }
 
         public abstract decimal ValueBy(int monthAfterInception);

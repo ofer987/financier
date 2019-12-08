@@ -32,40 +32,40 @@ namespace Financier.Common.Models
             From = from;
             To = to;
 
-            var sortedSoldProducts = products
-                .Where(product => product.IsSold)
-                .Where(product => product.PurchasedAt >= from)
-                .Where(product => product.PurchasedAt <= to)
-                .Where(product => product.SoldAt <= to)
-                .OrderBy(product => product.PurchasedAt);
-
-            var sortedUnsoldProducts = products
-                .Where(product => !product.IsSold)
-                .Where(product => product.PurchasedAt >= from)
-                .Where(product => product.PurchasedAt <= to)
-                .OrderBy(product => product.PurchasedAt);
-
-            var sortedYetToBeSoldProducts = products
-                .Where(product => product.IsSold)
-                .Where(product => product.PurchasedAt >= from)
-                .Where(product => product.PurchasedAt <= to)
-                .Where(product => product.SoldAt > to)
-                .OrderBy(product => product.PurchasedAt);
+            // var sortedSoldProducts = products
+            //     .Where(product => product.IsSold)
+            //     .Where(product => product.PurchasedAt >= from)
+            //     .Where(product => product.PurchasedAt <= to)
+            //     .Where(product => product.SoldAt <= to)
+            //     .OrderBy(product => product.PurchasedAt);
+            //
+            // var sortedUnsoldProducts = products
+            //     .Where(product => !product.IsSold)
+            //     .Where(product => product.PurchasedAt >= from)
+            //     .Where(product => product.PurchasedAt <= to)
+            //     .OrderBy(product => product.PurchasedAt);
+            //
+            // var sortedYetToBeSoldProducts = products
+            //     .Where(product => product.IsSold)
+            //     .Where(product => product.PurchasedAt >= from)
+            //     .Where(product => product.PurchasedAt <= to)
+            //     .Where(product => product.SoldAt > to)
+            //     .OrderBy(product => product.PurchasedAt);
 
             // TODO Figure out how to factor in inflation!
-            foreach (var product in sortedSoldProducts)
-            {
-                Cash -= product.InvestmentPrice;
-                Cash += product.ValueBy(to);
-                Cash -= product.CostBy(to);
-            }
-
-            foreach (var product in sortedUnsoldProducts.Concat(sortedYetToBeSoldProducts))
-            {
-                Cash -= product.InvestmentPrice;
-                Assets.AddRange(product.Assets);
-                Liabilities.AddRange(product.Liabilities);
-            }
+            // foreach (var product in sortedSoldProducts)
+            // {
+            //     Cash -= product.InvestmentPrice;
+            //     Cash += product.ValueBy(to);
+            //     Cash -= product.CostBy(to);
+            // }
+            //
+            // foreach (var product in sortedUnsoldProducts.Concat(sortedYetToBeSoldProducts))
+            // {
+            //     Cash -= product.InvestmentPrice;
+            //     Assets.AddRange(product.Assets);
+            //     Liabilities.AddRange(product.Liabilities);
+            // }
         }
 
         public decimal TotalValue()

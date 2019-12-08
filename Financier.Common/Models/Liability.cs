@@ -17,14 +17,16 @@ namespace Financier.Common.Models
 
         public virtual decimal CostAt(DateTime at)
         {
-            return CostAt(at.SubtractWholeMonths(Product.PurchasedAt));
+            return 0.00M;
+            // return CostAt(at.SubtractWholeMonths(Product.PurchasedAt));
         }
 
         public abstract decimal CostBy(int monthAfterInception);
 
         public virtual decimal CostBy(DateTime at)
         {
-            return CostBy(at.SubtractWholeMonths(Product.PurchasedAt));
+            return 0.00M;
+            // return CostBy(at.SubtractWholeMonths(Product.PurchasedAt));
         }
     }
 }
