@@ -30,36 +30,8 @@ namespace Financier.Cli.BalanceSheets
         {
             Context.Environment = Environments.Dev;
 
-            var fro = GetEarliestItem();
-            var to = GetLatestItem();
-            var cashFlow = new CashFlow(fro, to);
-            var projectedBalanceSheet = new ProjectedBalanceSheet(cashFlow, Cash, Debt)
-                .GetProjectionAt(ProjectedAt);
-
-            Console.WriteLine($"fro: {fro}");
-            Console.WriteLine($"to: {to}");
-
-            Console.WriteLine($"Start: {cashFlow.StartAt}");
-            Console.WriteLine($"End: {cashFlow.EndAt}");
-            Console.WriteLine($"ProfitAmountTotal: {cashFlow.ProfitAmountTotal}");
-            Console.WriteLine($"DailyProfit: {cashFlow.DailyProfit}");
-            Console.WriteLine(projectedBalanceSheet);
-        }
-
-        private DateTime GetEarliestItem()
-        {
-            return new DateTime(2019, 1, 1);
-        }
-
-        private DateTime GetLatestItem()
-        {
-            using (var db = new Context())
-            {
-                return db.Items
-                    .OrderByDescending(item => item.At)
-                    .Select(item => item.At)
-                    .First();
-            }
+            var incomeStatement = new OneHome();
+            Console.WriteLine(incomeStatement.GetValueAt(new DateTime(2030, 1, 1)));
         }
     }
 }

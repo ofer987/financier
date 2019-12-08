@@ -112,6 +112,7 @@ namespace Financier.Common.Expenses
             sb.AppendLine($"Balance Sheet (as of {At.ToString("D")})");
             sb.AppendLine($"Cash:\t{Cash.ToString("#0.00")}");
             sb.AppendLine($"Debt:\t{Debt.ToString("#0.00")}");
+            sb.AppendLine($"Total:\t{GetValue().ToString("#0.00")}");
 
             return sb.ToString();
         }

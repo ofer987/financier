@@ -7,19 +7,13 @@ namespace Financier.Common.Calculations
     public class Mortgage : Liability
     {
         public decimal DownPayment { get; }
-
         public decimal BaseValue { get; }
-
         public virtual decimal Value { get; }
-
         public int AmortisationPeriodInMonths { get; }
-
         public decimal InterestRate { get; }
-
         public decimal QuotedInterestRate => InterestRate;
 
         public double EffectiveInterestRateMonthly => Math.Pow(Math.Pow((Convert.ToDouble(QuotedInterestRate) / (2 * 100) + 1), 2), 1.0/12) - 1;
-
         public double AnnualPercentageRateAnnual => EffectiveInterestRateMonthly * 12;
 
         public Mortgage(IProduct product, decimal downPayment, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
