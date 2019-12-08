@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Financier.Common.Actions;
+using Financier.Common.Expenses.Actions;
 using Financier.Common.Models;
 using Financier.Common.Extensions;
-using ActionTypes = Financier.Common.Actions.Types;
+using ActionTypes = Financier.Common.Expenses.Actions.Types;
 
 namespace Financier.Common.Expenses
 {

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Financier.Common.Actions;
+using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Flows
 {

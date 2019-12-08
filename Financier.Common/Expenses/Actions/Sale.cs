@@ -2,7 +2,7 @@ using System;
 
 using Financier.Common.Models;
 
-namespace Financier.Common.Actions
+namespace Financier.Common.Expenses.Actions
 {
     public class Sale : IAction
     {
