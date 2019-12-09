@@ -4,8 +4,6 @@ namespace Financier.Common.Models
 {
     public interface IAsset
     {
-        IProduct Product { get; }
-
         decimal PurchasePrice { get; }
 
         bool IsSold { get; }

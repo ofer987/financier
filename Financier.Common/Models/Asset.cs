@@ -1,12 +1,10 @@
 using System;
 
-using Financier.Common.Extensions;
-
 namespace Financier.Common.Models
 {
-    public abstract class Asset : IAsset
+    public abstract class Asset<T> : IAsset where T : IProduct
     {
-        public IProduct Product { get; }
+        public T Product { get; }
 
         public decimal PurchasePrice { get; }
 
@@ -34,7 +32,7 @@ namespace Financier.Common.Models
             }
         }
 
-        public Asset(IProduct product, decimal purchasePrice)
+        public Asset(T product, decimal purchasePrice)
         {
             Product = product;
             PurchasePrice = purchasePrice;

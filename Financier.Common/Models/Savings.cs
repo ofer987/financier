@@ -2,7 +2,7 @@ using System;
 
 namespace Financier.Common.Models
 {
-    public abstract class Savings : Asset
+    public abstract class Savings<T> : Asset<T> where T : IProduct
     {
         // TODO: place in configuration file or should be configurable somehow
         public const decimal YearlyInflationRate = 2.00M;
@@ -22,7 +22,7 @@ namespace Financier.Common.Models
 
         public double EffectiveInterestRateMonthly => Math.Pow((1.0 + Convert.ToDouble(QuotedInterestRate / 100)), 1.0/12) - 1.0;
 
-        public Savings(IProduct product, decimal purchasePrice) : base(product, purchasePrice)
+        public Savings(T product, decimal purchasePrice) : base(product, purchasePrice)
         {
         }
 

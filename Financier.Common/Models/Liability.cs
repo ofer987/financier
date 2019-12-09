@@ -1,14 +1,12 @@
 using System;
 
-using Financier.Common.Extensions;
-
 namespace Financier.Common.Models
 {
-    public abstract class Liability : ILiability
+    public abstract class Liability<T> : ILiability where T : IProduct
     {
-        public IProduct Product { get; }
+        public T Product { get; }
 
-        public Liability(IProduct product)
+        public Liability(T product)
         {
             Product = product;
         }
