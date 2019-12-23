@@ -17,8 +17,8 @@ namespace Financier.Common.Models
         public string Name { get; }
 
         // What to do with these?
-        public List<IAsset> Assets { get; } = new List<IAsset>();
-        public List<ILiability> Liabilities { get; } = new List<ILiability>();
+        public virtual IList<IAsset> Assets { get; } = new List<IAsset>();
+        public virtual IEnumerable<ILiability> Liabilities { get; } = new List<ILiability>();
 
         protected Product(string name)
         {

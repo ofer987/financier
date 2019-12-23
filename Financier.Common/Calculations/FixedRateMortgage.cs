@@ -43,16 +43,16 @@ namespace Financier.Common.Calculations
             }
 
             var monthlyPayment = GetMonthlyPayment();
-            var balanceAtMonth = InitialValue;
+            var balance = InitialValue;
             var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
 
             var interestPayment = 0.00M;
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                interestPayment = Convert.ToDecimal(Convert.ToDouble(balanceAtMonth) * effectiveInterestRateMonthly / 100);
-                var principalPayment = monthlyPayment - interestPayment;
+                interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
 
-                balanceAtMonth -= principalPayment;
+                var principalPayment = monthlyPayment - interestPayment;
+                balance -= principalPayment;
             }
 
             return interestPayment;
@@ -66,17 +66,17 @@ namespace Financier.Common.Calculations
             }
 
             var monthlyPayment = GetMonthlyPayment();
-            var balanceAtMonth = InitialValue;
+            var balance = InitialValue;
             var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
 
             var totalInterestPayments = 0.00M;
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balanceAtMonth) * effectiveInterestRateMonthly / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
                 totalInterestPayments += interestPayment;
-                var principalPayment = monthlyPayment - interestPayment;
 
-                balanceAtMonth -= principalPayment;
+                var principalPayment = monthlyPayment - interestPayment;
+                balance -= principalPayment;
             }
 
             return totalInterestPayments;
@@ -90,17 +90,17 @@ namespace Financier.Common.Calculations
             }
 
             var monthlyPayment = GetMonthlyPayment();
-            var balanceAtMonth = InitialValue;
+            var balance = InitialValue;
             var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
 
             var totalPrincipalPayments = 0.00M;
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balanceAtMonth) * effectiveInterestRateMonthly / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
                 var principalPayment = monthlyPayment - interestPayment;
-                totalPrincipalPayments += interestPayment;
 
-                balanceAtMonth -= principalPayment;
+                totalPrincipalPayments += principalPayment;
+                balance -= principalPayment;
             }
 
             return totalPrincipalPayments;
@@ -114,18 +114,18 @@ namespace Financier.Common.Calculations
             }
 
             var monthlyPayment = GetMonthlyPayment();
-            var balanceAtMonth = InitialValue;
+            var balance = InitialValue;
             var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
 
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balanceAtMonth) * effectiveInterestRateMonthly / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
                 var principalPayment = monthlyPayment - interestPayment;
 
-                balanceAtMonth -= principalPayment;
+                balance -= principalPayment;
             }
 
-            return balanceAtMonth;
+            return balance;
         }
 
         public override decimal CostAt(int monthAfterInception)

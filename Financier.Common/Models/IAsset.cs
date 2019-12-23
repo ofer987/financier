@@ -6,12 +6,6 @@ namespace Financier.Common.Models
     {
         decimal PurchasePrice { get; }
 
-        bool IsSold { get; }
-
-        decimal InvestmentPrice { get; }
-
-        decimal SellPrice { get; }
-
         decimal ValueAt(int monthAfterInception);
 
         decimal ValueAt(DateTime at);

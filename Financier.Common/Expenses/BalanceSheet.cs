@@ -32,12 +32,17 @@ namespace Financier.Common.Expenses
         {
         }
 
+        public void OneTimePurchase(SimpleProduct product, DateTime at)
+        {
+            Actions.Add(new Actions.OneTimeAction(ActionTypes.Purchase, product, at));
+        }
+
         public void Purchase(IProduct product, decimal price, DateTime at)
         {
             // TODO: How should we handle repeat purchases?
             // TODO: should they be indicated by the same IProduct.Id?
             // TODO: or should they have a unique IProduct.Id
-            Actions.Add(new Purchase(product, price, at));
+            Actions.Add(new Actions.Action(ActionTypes.Purchase, product, price, at));
         }
 
         public decimal GetValue()
@@ -73,7 +78,7 @@ namespace Financier.Common.Expenses
                 throw new Exception($"Error, cannot remove a product at ({at}) before it purchased at ({purchase.At})");
             }
 
-            Actions.Add(new Sale(existingProduct, price, at));
+            Actions.Add(new Actions.Action(ActionTypes.Sale, existingProduct, price, at));
         }
 
         public void Sell(IProduct existingProduct, DateTime at)
@@ -84,7 +89,7 @@ namespace Financier.Common.Expenses
             Sell(existingProduct, purchase.Price, at);
         }
 
-        public Purchase GetPurchase(IProduct existingProduct)
+        public Actions.IAction GetPurchase(IProduct existingProduct)
         {
             var associatedActions = Actions
                 .OrderBy(action => action.At)
@@ -102,7 +107,7 @@ namespace Financier.Common.Expenses
                 throw new Exception($"Error! the product ({existingProduct}) has already been sold at ({lastAction.At})");
             }
 
-            return (Purchase)lastAction;
+            return lastAction;
         }
 
         public override string ToString()

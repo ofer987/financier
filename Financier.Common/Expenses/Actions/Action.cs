@@ -4,15 +4,16 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
-    public class Purchase : IAction
+    public class Action : IAction
     {
-        public Types Type => Types.Purchase;
+        public Types Type { get; }
         public IProduct Product { get; }
         public decimal Price { get; }
         public DateTime At { get; }
 
-        public Purchase(IProduct product, decimal price, DateTime at)
+        public Action(Types type, IProduct product, decimal price, DateTime at)
         {
+            Type = type;
             Product = product;
             Price = price;
             At = at;

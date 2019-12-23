@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Financier.Common.Calculations;
 
@@ -11,6 +12,14 @@ namespace Financier.Common.Models
         public decimal DownPayment { get; }
         public FixedRateMortgage Financing { get; } = null;
 
+        public override IEnumerable<ILiability> Liabilities
+        {
+            get
+            {
+                yield return Financing;
+            }
+        }
+
         public Home(string name, DateTime purchasedAt, decimal downPayment, decimal valuation) : base(name)
         {
             PurchasedAt = purchasedAt;
@@ -21,7 +30,6 @@ namespace Financier.Common.Models
         public Home(string name, DateTime purchasedAt, decimal downPayment, decimal valuation, FixedRateMortgage mortgage) : this(name, purchasedAt, downPayment, valuation)
         {
             Financing = mortgage;
-            Liabilities.Add(Financing);
         }
 
         public decimal GetValueBy(int months)

@@ -31,7 +31,7 @@ namespace Financier.Cli.BalanceSheets
             );
 
             IncomeStatement.Purchase(livingHome, livingHome.DownPayment, livingHome.PurchasedAt);
-            IncomeStatement.Purchase(new OneTimeExpense("notary"), 2000.00M, purchasedAt);
+            IncomeStatement.OneTimePurchase(new SimpleProduct("notary", 2000.00M), purchasedAt);
             IncomeStatement.Sell(livingHome, 500000.00M, new DateTime(2029, 1, 1));
         }
     }

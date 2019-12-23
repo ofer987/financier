@@ -8,7 +8,7 @@ namespace Financier.Common.Models
         Guid Id { get; }
         string Name { get; }
 
-        List<IAsset> Assets { get; }
-        List<ILiability> Liabilities { get; }
+        IList<IAsset> Assets { get; }
+        IEnumerable<ILiability> Liabilities { get; }
     }
 }
