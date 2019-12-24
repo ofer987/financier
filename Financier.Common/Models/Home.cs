@@ -35,7 +35,7 @@ namespace Financier.Common.Models
         {
             return 0.00M
                 + DownPayment 
-                + Financing.GetPrincipalPaymentsBy(months);
+                + Financing.GetTotalPrincipalPayment(months);
         }
 
         public decimal GetRemainingMortgageAmount(int months)

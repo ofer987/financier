@@ -26,8 +26,7 @@ namespace Financier.Cli.BalanceSheets
             var livingHome = new Home(
                 "Principal Home",
                 purchasedAt,
-                80000.00M,
-                450000.00M
+                80000.00M
             );
 
             IncomeStatement.Purchase(livingHome, livingHome.DownPayment, livingHome.PurchasedAt);

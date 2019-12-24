@@ -61,12 +61,19 @@ namespace Financier.Common.Tests.Calculations
         [TestCase(5, 197798.76)]
         [TestCase(10, 195568.30)]
         [TestCase(300, 0)]
-        public void Test_PeriodicMonthlyInterestRate(int monthCount, decimal expectedBalance)
+        public void Test_GetBalance(int monthCount, decimal expectedBalance)
         {
-            Console.WriteLine(Subject.PeriodicMonthlyInterestRate);
-            Console.WriteLine(Subject.EffectiveAnnualInterestRate);
-
             Assert.That(Subject.GetBalance(monthCount), Is.EqualTo(expectedBalance));
+        }
+
+        [TestCase(1, 528.17)]
+        [TestCase(2, 527.01)]
+        [TestCase(5, 523.52)]
+        [TestCase(10, 517.65)]
+        [TestCase(300, 2.54)]
+        public void Test_GetMonthlyInterestPayment(int monthCount, decimal expectedInterestPayment)
+        {
+            Assert.That(Subject.GetMonthlyInterestPayment(monthCount), Is.EqualTo(expectedInterestPayment));
         }
     }
 }
