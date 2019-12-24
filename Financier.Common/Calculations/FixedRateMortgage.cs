@@ -6,34 +6,37 @@ namespace Financier.Common.Calculations
 {
     public class FixedRateMortgage : Liability<Home>
     {
-        public decimal DownPayment { get; }
+        // public decimal DownPayment { get; }
         public decimal BaseValue { get; }
-        public virtual decimal InitialValue { get; }
+        public virtual decimal InitialValue => BaseValue;
         public int AmortisationPeriodInMonths { get; }
         public decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
 
-        public double EffectiveInterestRateMonthly => Math.Pow(Math.Pow((Convert.ToDouble(QuotedInterestRate) / (2 * 100) + 1), 2), 1.0/12) - 1;
-        public double AnnualPercentageRateAnnual => EffectiveInterestRateMonthly * 12;
+        public double PeriodicMonthlyInterestRate => Math.Pow(Math.Pow(((Convert.ToDouble(QuotedInterestRate) / 2) + 1), 2), 1.0/12) - 1;
+        public double PeriodicAnnualInterestRate => PeriodicMonthlyInterestRate * 12;
+        public double EffectiveAnnualInterestRate => Math.Pow(PeriodicMonthlyInterestRate + 1, 12) - 1;
 
-        public FixedRateMortgage(Home product, decimal downPayment, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        public double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
+
+        public FixedRateMortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
         {
-            DownPayment = DownPayment;
+            // DownPayment = DownPayment;
             BaseValue = baseValue;
             AmortisationPeriodInMonths = amortisationPeriodInMonths;
             InterestRate = interestRate;
         }
 
-        // Fixed rate calculations
-        // TODO Create a variable-rate calculation
-        public decimal GetMonthlyPayment()
-        {
-            var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
-
-            var val = Convert.ToDecimal(Convert.ToDouble(InitialValue) * effectiveInterestRateMonthly / ( 1 - Math.Pow((1 + effectiveInterestRateMonthly), -1 * AmortisationPeriodInMonths)));
-
-            return decimal.Round(val, 2);
-        }
+        // // Fixed rate calculations
+        // // TODO Create a variable-rate calculation
+        // public decimal GetMonthlyPayment()
+        // {
+        //     var interestRate = PeriodicAnnualInterestRate;
+        //
+        //     var val = Convert.ToDecimal(Convert.ToDouble(InitialValue) * interestRate / ( 1 - Math.Pow((1 + interestRate), -1 * AmortisationPeriodInMonths)));
+        //
+        //     return decimal.Round(val, 2);
+        // }
 
         public decimal GetMonthlyInterestPayment(int monthAfterInception)
         {
@@ -42,17 +45,17 @@ namespace Financier.Common.Calculations
                 throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
             }
 
-            var monthlyPayment = GetMonthlyPayment();
+            var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
             var balance = InitialValue;
-            var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
+            var interestRate = PeriodicAnnualInterestRate;
 
             var interestPayment = 0.00M;
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
+                interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 100);
 
                 var principalPayment = monthlyPayment - interestPayment;
-                balance -= principalPayment;
+                balance -= decimal.Round(Convert.ToDecimal(principalPayment), 2);
             }
 
             return interestPayment;
@@ -65,14 +68,14 @@ namespace Financier.Common.Calculations
                 throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
             }
 
-            var monthlyPayment = GetMonthlyPayment();
+            var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
             var balance = InitialValue;
-            var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
+            var interestRate = PeriodicAnnualInterestRate;
 
             var totalInterestPayments = 0.00M;
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 100);
                 totalInterestPayments += interestPayment;
 
                 var principalPayment = monthlyPayment - interestPayment;
@@ -89,14 +92,14 @@ namespace Financier.Common.Calculations
                 throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
             }
 
-            var monthlyPayment = GetMonthlyPayment();
+            var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
             var balance = InitialValue;
-            var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
+            var interestRate = PeriodicAnnualInterestRate;
 
             var totalPrincipalPayments = 0.00M;
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 100);
                 var principalPayment = monthlyPayment - interestPayment;
 
                 totalPrincipalPayments += principalPayment;
@@ -113,29 +116,29 @@ namespace Financier.Common.Calculations
                 throw new Exception($"{nameof(monthAfterInception)} cannot be negative number");
             }
 
-            var monthlyPayment = GetMonthlyPayment();
+            var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
             var balance = InitialValue;
-            var effectiveInterestRateMonthly = EffectiveInterestRateMonthly;
+            var interestRate = PeriodicAnnualInterestRate;
 
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * effectiveInterestRateMonthly / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 12);
                 var principalPayment = monthlyPayment - interestPayment;
 
                 balance -= principalPayment;
             }
 
-            return balance;
+            return decimal.Round(balance, 2);
         }
 
         public override decimal CostAt(int monthAfterInception)
         {
-            return GetMonthlyPayment();
+            return Convert.ToDecimal(MonthlyPayment);
         }
 
         public override decimal CostBy(int monthAfterInception)
         {
-            return GetMonthlyPayment() * monthAfterInception;
+            return Convert.ToDecimal(MonthlyPayment) * monthAfterInception;
         }
     }
 }

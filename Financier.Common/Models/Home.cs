@@ -20,14 +20,13 @@ namespace Financier.Common.Models
             }
         }
 
-        public Home(string name, DateTime purchasedAt, decimal downPayment, decimal valuation) : base(name)
+        public Home(string name, DateTime purchasedAt, decimal downPayment) : base(name)
         {
             PurchasedAt = purchasedAt;
             DownPayment = downPayment;
-            Valuation = valuation;
         }
 
-        public Home(string name, DateTime purchasedAt, decimal downPayment, decimal valuation, FixedRateMortgage mortgage) : this(name, purchasedAt, downPayment, valuation)
+        public Home(string name, DateTime purchasedAt, decimal downPayment, FixedRateMortgage mortgage) : this(name, purchasedAt, downPayment)
         {
             Financing = mortgage;
         }
