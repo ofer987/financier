@@ -75,5 +75,15 @@ namespace Financier.Common.Tests.Calculations
         {
             Assert.That(Subject.GetMonthlyInterestPayment(monthCount), Is.EqualTo(expectedInterestPayment));
         }
+
+        [TestCase(1, 437.93)]
+        [TestCase(2, 439.09)]
+        [TestCase(5, 442.57)]
+        [TestCase(10, 448.45)]
+        [TestCase(300, 963.55)]
+        public void Test_GetMonthlyPrincipalPayment(int monthCount, decimal expectedPrincipalPayment)
+        {
+            Assert.That(Subject.GetMonthlyPrincipalPayment(monthCount), Is.EqualTo(expectedPrincipalPayment));
+        }
     }
 }

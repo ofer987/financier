@@ -61,7 +61,7 @@ namespace Financier.Common.Calculations
                 .Sum();
         }
 
-        public IEnumerable<decimal> GetPrincipalPayments(int monthAfterInception)
+        public IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
         {
             if (monthAfterInception < 0)
             {
@@ -74,24 +74,24 @@ namespace Financier.Common.Calculations
 
             for (var i = 0; i < monthAfterInception; i += 1)
             {
-                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 100);
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 12);
                 var principalPayment = monthlyPayment - interestPayment;
 
                 balance -= principalPayment;
 
-                yield return principalPayment;
+                yield return decimal.Round(principalPayment, 2);
             }
         }
 
         public decimal GetTotalPrincipalPayment(int monthAfterInception)
         {
-            return GetPrincipalPayments(monthAfterInception)
+            return GetMonthlyPrincipalPayments(monthAfterInception)
                 .Sum();
         }
 
-        public decimal GetPrincipalPayment(int monthAfterInception)
+        public decimal GetMonthlyPrincipalPayment(int monthAfterInception)
         {
-            return GetPrincipalPayments(monthAfterInception)
+            return GetMonthlyPrincipalPayments(monthAfterInception)
                 .Last();
         }
 
