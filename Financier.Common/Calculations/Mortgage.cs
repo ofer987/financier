@@ -6,7 +6,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Calculations
 {
-    public abstract class Mortgage : Liability<Home>
+    public abstract class Mortgage : Liability<Home>, IMortgage
     {
         public decimal BaseValue { get; }
         public virtual decimal InitialValue => BaseValue;
