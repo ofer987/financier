@@ -1,12 +1,11 @@
 using System;
 
 using Financier.Common.Models;
-using Financier.Common.Tests.Expenses;
 using NUnit.Framework;
 
 namespace Financier.Common.Tests.Calculations
 {
-    public class FixedRateMortgage : Fixture
+    public class FixedRateMortgage
     {
         public Home Home { get; }
         public Financier.Common.Calculations.FixedRateMortgage Subject { get; }

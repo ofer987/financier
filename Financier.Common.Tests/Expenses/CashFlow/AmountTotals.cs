@@ -6,7 +6,7 @@ using Financier.Common.Expenses;
 
 namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
 {
-    public class AmountTotals : Fixture
+    public class AmountTotals : DatabaseFixture
     {
         public static IEnumerable TestCases
         {

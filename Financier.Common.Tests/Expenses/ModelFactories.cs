@@ -6,7 +6,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses
 {
-    public class MyFactories : Factories
+    public class ModelFactories : Factories
     {
         public static class SavingsCard
         {
@@ -449,109 +449,6 @@ namespace Financier.Common.Tests.Expenses
                 Id = Guid.NewGuid(),
                 Name = "savings"
             };
-        }
-    }
-
-    public abstract class Fixture : DatabaseAbstractFixture
-    {
-        protected override void InitDb()
-        {
-            using (var db = new Context())
-            {
-                var funTag = MyFactories.Tags.GetFun();
-                var fastTag = MyFactories.Tags.GetFast();
-                var dogTag = MyFactories.Tags.GetDog();
-                var groceriesTag = MyFactories.Tags.GetGroceries();
-                var coffeeTag = MyFactories.Tags.GetCoffee();
-                var lunchTag = MyFactories.Tags.GetLunch();
-                var creditCardPaymentTag = MyFactories.Tags.GetCreditCardPayment();
-                var salaryTag = MyFactories.Tags.GetSalary();
-                var savingsTag = MyFactories.Tags.GetSavings();
-                var internalTag = MyFactories.Tags.GetInternal();
-                db.Tags.Add(funTag);
-                db.Tags.Add(fastTag);
-                db.Tags.Add(dogTag);
-                db.Tags.Add(groceriesTag);
-                db.Tags.Add(coffeeTag);
-                db.Tags.Add(lunchTag);
-                db.Tags.Add(creditCardPaymentTag);
-                db.Tags.Add(salaryTag);
-                db.SaveChanges();
-
-                // Credit Cards
-                {
-                    var danCard = MyFactories.DanCard.Card();
-                    var ronCard = MyFactories.RonCard.GetCard();
-                    db.Cards.Add(danCard);
-                    db.Cards.Add(ronCard);
-                    db.SaveChanges();
-
-                    var juneStatement = MyFactories.DanCard.June.GetStatement();
-                    var julyStatement = MyFactories.DanCard.July.GetStatement();
-                    var ronsCrazyStatement = MyFactories.RonCard.CrazyStatement.GetStatement();
-                    juneStatement.Items.AddRange(new[] {
-                        MyFactories.DanCard.June.Items.GetPorscheItem(new[] { funTag, fastTag }),
-                        MyFactories.DanCard.June.Items.GetFerrariItem(new[] { funTag }),
-                        MyFactories.DanCard.June.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag })
-                    });
-                    julyStatement.Items.AddRange(new[] {
-                        MyFactories.DanCard.July.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
-                        MyFactories.DanCard.July.Items.GetLunch(new[] { lunchTag })
-                    });
-                    ronsCrazyStatement.Items.AddRange(new[] {
-                        MyFactories.RonCard.CrazyStatement.Items.GetLamboItem(new[] { fastTag, dogTag }),
-                        MyFactories.RonCard.CrazyStatement.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag })
-                    });
-
-                    db.Statements.Add(juneStatement);
-                    db.Statements.Add(julyStatement);
-                    db.Statements.Add(ronsCrazyStatement);
-                }
-
-                // Bank Cards
-                {
-                    var bankCard = MyFactories.SavingsCard.GetCard();
-                    db.Cards.Add(bankCard);
-                    {
-                        var juneStatement = MyFactories.SavingsCard.June.GetStatement();
-                        juneStatement.Items.AddRange(new[] {
-                            MyFactories.SavingsCard.June.Items.GetDanSalary(new[] { salaryTag }),
-                            MyFactories.SavingsCard.June.Items.GetEdithSalary(new[] { salaryTag }),
-                            MyFactories.SavingsCard.June.Items.GetGroceries(new[] { groceriesTag }),
-                            MyFactories.SavingsCard.June.Items.GetCoffee(new[] { groceriesTag }),
-                            MyFactories.SavingsCard.June.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
-                            MyFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
-                            MyFactories.SavingsCard.June.Items.GetChildCareBenefit(new[] { salaryTag })
-                        });
-                        db.Statements.Add(juneStatement);
-
-                        var julyStatement = MyFactories.SavingsCard.July.GetStatement();
-                        julyStatement.Items.AddRange(new[] {
-                                MyFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
-                            MyFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
-                            MyFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
-                            MyFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag } ),
-                            MyFactories.SavingsCard.July.Items.GetChildCareBenefit(new[] { salaryTag })
-                        });
-                        db.Statements.Add(julyStatement);
-
-                        var augustStatement = MyFactories.SavingsCard.August.GetStatement();
-
-                        augustStatement.Items.AddRange(new[] {
-                            MyFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag })
-                        });
-                        db.Statements.Add(augustStatement);
-
-                        var septemberStatement = MyFactories.SavingsCard.September.GetStatement();
-                        septemberStatement.Items.AddRange(new[] {
-                            MyFactories.SavingsCard.September.Items.GetDanSalary(new[] { salaryTag } )
-                        });
-                        db.Statements.Add(septemberStatement);
-                    }
-                }
-
-                db.SaveChanges();
-            }
         }
     }
 }

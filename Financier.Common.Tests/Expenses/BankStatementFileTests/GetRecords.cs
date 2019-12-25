@@ -9,7 +9,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.BankStatementFileTests
 {
-    public class GetRecords : DatabaseAbstractFixture
+    public class GetRecords : Fixture
     {
         public static IEnumerable ValidTestCases
         {
@@ -60,7 +60,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementFileTests
             }
         }
 
-        protected override void InitDb()
+        protected override void InitStorage()
         {
         }
 

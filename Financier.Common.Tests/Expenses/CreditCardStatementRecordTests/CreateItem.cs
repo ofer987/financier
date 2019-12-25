@@ -52,9 +52,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
         };
     }
 
-    public class CreateItem : DatabaseAbstractFixture
+    public class CreateItem : Fixture
     {
-        protected override void InitDb()
+        protected override void InitStorage()
         {
             using (var db = new Context())
             {
