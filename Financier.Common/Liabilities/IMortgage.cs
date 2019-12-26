@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 
-namespace Financier.Common.Calculations
+using Financier.Common.Models;
+
+namespace Financier.Common.Liabilities
 {
-    public interface IMortgage
+    public interface IMortgage : ILiability
     {
         double MonthlyPayment { get; }
 

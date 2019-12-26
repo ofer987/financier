@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-using Financier.Common.Calculations;
+using Financier.Common.Liabilities;
 
 namespace Financier.Common.Models
 {
@@ -10,7 +10,7 @@ namespace Financier.Common.Models
         public DateTime PurchasedAt { get; }
         public decimal Valuation { get; }
         public decimal DownPayment { get; }
-        public FixedRateMortgage Financing { get; } = null;
+        public IMortgage Financing { get; }
 
         public override IEnumerable<ILiability> Liabilities
         {

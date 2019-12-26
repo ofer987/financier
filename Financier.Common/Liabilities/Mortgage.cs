@@ -4,7 +4,7 @@ using System.Linq;
 
 using Financier.Common.Models;
 
-namespace Financier.Common.Calculations
+namespace Financier.Common.Liabilities
 {
     public abstract class Mortgage : Liability<Home>, IMortgage
     {

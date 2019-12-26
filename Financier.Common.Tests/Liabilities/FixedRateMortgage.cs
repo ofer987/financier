@@ -3,24 +3,47 @@ using System;
 using Financier.Common.Models;
 using NUnit.Framework;
 
-namespace Financier.Common.Tests.Calculations
+namespace Financier.Common.Tests.Liabilities
 {
-    public class PrepayableMortgage
+    public class FixedRateMortgage
     {
         public Home Home { get; }
-        public Financier.Common.Calculations.FixedRateMortgage Mortgage { get; }
-        public Financier.Common.Calculations.PrepayableMortgage Subject { get; }
+        public Financier.Common.Liabilities.FixedRateMortgage Subject { get; }
 
-        public PrepayableMortgage()
+        public FixedRateMortgage()
         {
             var downpayment = 50000.00M;
             var mortgageAmount = 200000.00M;
             var preferredInterestRate = 0.0319M;
             Home = new Home("first home", new DateTime(2019, 1, 1), downpayment);
-            Mortgage = new Financier.Common.Calculations.FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
-            Subject = new Financier.Common.Calculations.PrepayableMortgage(Mortgage, new DateTime(2019, 1, 1), 0.20M);
-            Subject.AddPrepayment(new DateTime(2020, 1, 1), 30000.00M);
-            Subject.AddPrepayment(new DateTime(2020, 5, 1), 35000.00M);
+            Subject = new Financier.Common.Liabilities.FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
+        }
+
+        [Test]
+        public void Test_PeriodicMonthlyInterestRate()
+        {
+            Assert.That(
+                decimal.Round(Convert.ToDecimal(Subject.PeriodicMonthlyInterestRate), 5),
+                Is.EqualTo(0.00264M)
+            );
+        }
+
+        [Test]
+        public void Test_EffectiveAnnualInterestRate()
+        {
+            Assert.That(
+                decimal.Round(Convert.ToDecimal(Subject.EffectiveAnnualInterestRate), 6),
+                Is.EqualTo(0.032154M)
+            );
+        }
+
+        [Test]
+        public void Test_PeriodicAnnualInterestRate()
+        {
+            Assert.That(
+                decimal.Round(Convert.ToDecimal(Subject.PeriodicAnnualInterestRate), 6),
+                Is.EqualTo(0.03169M)
+            );
         }
 
         [Test]
@@ -36,9 +59,7 @@ namespace Financier.Common.Tests.Calculations
         [TestCase(2, 199122.99)]
         [TestCase(5, 197798.76)]
         [TestCase(10, 195568.30)]
-        [TestCase(13, 164215.84)]
-        [TestCase(14, 163683.41)]
-        [TestCase(18, 126447.16)]
+        [TestCase(300, 0)]
         public void Test_GetBalance(int monthCount, decimal expectedBalance)
         {
             Assert.That(Subject.GetBalance(monthCount), Is.EqualTo(expectedBalance));
@@ -48,8 +69,7 @@ namespace Financier.Common.Tests.Calculations
         [TestCase(2, 527.01)]
         [TestCase(5, 523.52)]
         [TestCase(10, 517.65)]
-        [TestCase(13, 514.09)]
-        [TestCase(18, 335.59)]
+        [TestCase(300, 2.54)]
         public void Test_GetMonthlyInterestPayment(int monthCount, decimal expectedInterestPayment)
         {
             Assert.That(Subject.GetMonthlyInterestPayment(monthCount), Is.EqualTo(expectedInterestPayment));
@@ -59,9 +79,7 @@ namespace Financier.Common.Tests.Calculations
         [TestCase(2, 439.09)]
         [TestCase(5, 442.57)]
         [TestCase(10, 448.45)]
-        [TestCase(13, 30452.01)]
-        [TestCase(17, 35536.66)]
-        [TestCase(18, 630.50)]
+        [TestCase(300, 963.55)]
         public void Test_GetMonthlyPrincipalPayment(int monthCount, decimal expectedPrincipalPayment)
         {
             Assert.That(Subject.GetMonthlyPrincipalPayment(monthCount), Is.EqualTo(expectedPrincipalPayment));

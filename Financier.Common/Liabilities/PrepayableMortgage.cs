@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Financier.Common.Calculations
+namespace Financier.Common.Liabilities
 {
     public class PrepayableMortgage : IMortgage
     {
@@ -186,6 +186,26 @@ namespace Financier.Common.Calculations
             }
 
             return decimal.Round(balance, 2);
+        }
+
+        public decimal CostAt(int monthAfterInception)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CostAt(DateTime at)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CostBy(int monthAfterInception)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CostBy(DateTime at)
+        {
+            throw new NotImplementedException();
         }
     }
 }

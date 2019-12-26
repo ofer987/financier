@@ -2,7 +2,7 @@ using System;
 
 using Financier.Common.Models;
 
-namespace Financier.Common.Calculations
+namespace Financier.Common.Liabilities
 {
     public class InsuredMortgage : FixedRateMortgage
     {
