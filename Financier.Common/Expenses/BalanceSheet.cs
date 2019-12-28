@@ -10,7 +10,7 @@ using ActionTypes = Financier.Common.Expenses.Actions.Types;
 
 namespace Financier.Common.Expenses
 {
-    public class BalanceSheet
+    public abstract class BalanceSheet
     {
         public decimal Cash { get; }
         public decimal Debt { get; }
@@ -31,6 +31,9 @@ namespace Financier.Common.Expenses
         public BalanceSheet(decimal cash, decimal debt) : this(cash, debt, DateTime.Now)
         {
         }
+
+        public abstract decimal GetBalance(DateTime at);
+        public abstract decimal GetBalance(int months);
 
         public void OneTimePurchase(SimpleProduct product, DateTime at)
         {

@@ -8,31 +8,40 @@ namespace Financier.Common.Expenses
     {
         public ICashFlow CashFlow { get; }
         public Mortgage Mortgage { get; }
+        public DateTime StartAt => At;
         public decimal AnnualCashFlowProfit => CashFlow.DailyProfit * 365;
+        // TODO: there has to be a better way to do this!
+        public decimal MonthlyCashFlowProfit => CashFlow.DailyProfit * 30;
 
-        public MyEasyHome(ICashFlow cashflow, decimal cash, decimal debt) : base(cash, debt, DateTime.Now)
+        public MyEasyHome(ICashFlow cashflow, Mortgage mortgage, DateTime startAt, decimal cash, decimal debt) : base(cash, debt, startAt)
         {
             CashFlow = cashflow;
+            Mortgage = mortgage;
         }
 
-        public MyEasyHome(ICashFlow cashflow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
+        public override decimal GetBalance(DateTime at)
         {
-            CashFlow = cashflow;
+            if (at <= StartAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Value should be later than {StartAt}");
+            }
+
+            throw new NotImplementedException("will be implemented later");
         }
 
-        public decimal GetBalance(int months)
+        public override decimal GetBalance(int months)
         {
-            if (months < Mortgage.AmortisationPeriodInMonths)
+            if (months <= 0)
             {
-                return 0.00M;
+                throw new ArgumentOutOfRangeException(nameof(months), "Value should be greater than 0");
             }
 
-            if (months == Mortgage.AmortisationPeriodInMonths)
-            {
-                return 0.00M;
-            }
-
-            return (months - Mortgage.AmortisationPeriodInMonths) * (Convert.ToDecimal(Mortgage.MonthlyPayment) + CashFlow.DailyProfit * 30);
+            var result = 0.00M
+                + Cash
+                + MonthlyCashFlowProfit * months
+                - Debt
+                - Mortgage.GetBalance(months);
+            return decimal.Round(result, 2);
         }
     }
 }
