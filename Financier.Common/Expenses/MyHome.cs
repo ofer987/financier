@@ -1,6 +1,7 @@
 using System;
 
 using Financier.Common.Liabilities;
+using Financier.Common.Models;
 
 namespace Financier.Common.Expenses
 {
@@ -13,7 +14,7 @@ namespace Financier.Common.Expenses
         // TODO: there has to be a better way to do this!
         public decimal MonthlyCashFlowProfit => CashFlow.DailyProfit * 30;
 
-        public MyHome(ICashFlow cashflow, PrepayableMortgage mortgage, DateTime startAt, decimal cash, decimal debt) : base(cash, debt, startAt)
+        public static MyHome Calculate(ICashFlow cashflow, IMortgage baseMortgage, DateTime startAt, decimal cash, decimal debt)
         {
             Mortgage = mortgage;
             CashFlow = cashflow;
@@ -51,43 +52,35 @@ namespace Financier.Common.Expenses
             throw new NotImplementedException("will be implemented later");
         }
 
-        public override decimal GetBalance(int months)
+        private static PrepayableMortgage GetMortgage(Home home, IMortgage baseMortgage, ICashFlow cashFlow, DateTime startAt)
         {
-            if (months <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(months), "Value should be greater than 0");
-            }
-
+            var result = new PrepayableMortgage(home, baseMortgage, startAt);
             var mortgageBalance = decimal.MaxValue;
-            int i;
-            var result = 0.00M;
-            for (i = 0; mortgageBalance > 0.00M && i <= months; i += 1)
+            var month = 0;
+            while (mortgageBalance > 0.00M)
             {
-                result = 0.00M
-                    + Cash
-                    - Debt;
-
                 // FIXME: Is this API to retrieve the 12th month?
-                if (StartAt.AddMonths(i).Month == 12)
+                if (startAt.AddMonths(month).Month % 12 == 0)
                 {
-                    AddPrepayment(StartAt.AddMonths(i));
+                    // Figure out correct amount
+                    var prepayment = CreatePrepayment(startAt.AddMonths(month), cashFlow.DailyProfit * 365);
+                    result.AddPrepayment(startAt.AddMonths(month), prepayment);
                 }
 
-                mortgageBalance = Mortgage.GetBalance(i);
-                result += mortgageBalance;
+                mortgageBalance = result.GetBalance(month);
             }
-            result += MonthlyCashFlowProfit * (months - i);
 
-            return decimal.Round(result, 2);
+            return result;
         }
 
-        private void AddPrepayment(DateTime at)
+        private static decimal CreatePrepayment(DateTime at, decimal annualProfit)
         {
-            var balance = Mortgage.GetBalance(at.Year);
-            if (balance > AnnualCashFlowProfit)
-            {
-                Mortgage.AddPrepayment(at, AnnualCashFlowProfit);
-            }
+            return annualProfit;
+            // var balance = Mortgage.GetBalance(at.Year);
+            // if (balance > AnnualCashFlowProfit)
+            // {
+            //     Mortgage.AddPrepayment(at, AnnualCashFlowProfit);
+            // }
         }
 
         // public decimal GetBalance(int months)
