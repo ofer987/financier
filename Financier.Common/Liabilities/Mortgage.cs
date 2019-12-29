@@ -8,7 +8,7 @@ namespace Financier.Common.Liabilities
 {
     public abstract class Mortgage : Liability<Home>, IMortgage
     {
-        public decimal BaseValue { get; }
+        public virtual decimal BaseValue { get; }
         public virtual decimal InitialValue => BaseValue;
         public int AmortisationPeriodInMonths { get; }
         public decimal InterestRate { get; }
@@ -18,7 +18,7 @@ namespace Financier.Common.Liabilities
         public double PeriodicAnnualInterestRate => PeriodicMonthlyInterestRate * 12;
         public double EffectiveAnnualInterestRate => Math.Pow(PeriodicMonthlyInterestRate + 1, 12) - 1;
 
-        public double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
+        public virtual double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
 
         public Mortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
         {
@@ -27,7 +27,7 @@ namespace Financier.Common.Liabilities
             InterestRate = interestRate;
         }
 
-        public IEnumerable<decimal> GetMonthlyInterestPayments(int monthAfterInception)
+        public virtual IEnumerable<decimal> GetMonthlyInterestPayments(int monthAfterInception)
         {
             if (monthAfterInception <= 0)
             {
@@ -61,7 +61,7 @@ namespace Financier.Common.Liabilities
                 .Sum();
         }
 
-        public IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
+        public virtual IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
         {
             if (monthAfterInception < 0)
             {
@@ -95,7 +95,7 @@ namespace Financier.Common.Liabilities
                 .Last();
         }
 
-        public decimal GetBalance(int monthAfterInception)
+        public virtual decimal GetBalance(int monthAfterInception)
         {
             if (monthAfterInception <= 0)
             {

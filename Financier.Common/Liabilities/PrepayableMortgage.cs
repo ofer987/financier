@@ -2,25 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Financier.Common.Models;
+
 namespace Financier.Common.Liabilities
 {
-    public class PrepayableMortgage : IMortgage
+    public class PrepayableMortgage : Mortgage
     {
-        public Mortgage BaseMortgage { get; }
+        public override decimal BaseValue => BaseMortgage.BaseValue;
+        public override decimal InitialValue => BaseMortgage.InitialValue;
+
+        public IMortgage BaseMortgage { get; }
         public DateTime InitiatedAt { get; }
 
+        public override double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
+
         public decimal MaximumAllowedPrepaymentTotal { get; }
-        private decimal DefaultMaximumAllowedPrepaymentTotal => decimal.Round(BaseMortgage.InitialValue / 10.00M, 2);
-        public double MonthlyPayment => BaseMortgage.MonthlyPayment;
+        private decimal DefaultMaximumAllowedPrepaymentTotal => decimal.Round(InitialValue / 10.00M, 2);
+        public override double MonthlyPayment => BaseMortgage.MonthlyPayment;
 
         private IDictionary<DateTime, decimal> prepayments = new Dictionary<DateTime, decimal>();
         public IReadOnlyDictionary<DateTime, decimal> Prepayments => (IReadOnlyDictionary<DateTime, decimal>)prepayments;
 
-        public PrepayableMortgage(Mortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M)
+        public PrepayableMortgage(Home product, IMortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M) : base(product, baseMortgage.BaseValue, baseMortgage.InterestRate, baseMortgage.AmortisationPeriodInMonths)
         {
             BaseMortgage = baseMortgage;
             InitiatedAt = initiatedAt;
-            MaximumAllowedPrepaymentTotal = decimal.Round(BaseMortgage.InitialValue * maximumAllowedPrepaymentPercentage, 2);
+            MaximumAllowedPrepaymentTotal = decimal.Round(InitialValue * maximumAllowedPrepaymentPercentage, 2);
         }
 
         public void AddPrepayment(DateTime at, decimal amount)
@@ -59,7 +66,7 @@ namespace Financier.Common.Liabilities
                 .Sum();
         }
 
-        public IEnumerable<decimal> GetMonthlyInterestPayments(int monthAfterInception)
+        public override IEnumerable<decimal> GetMonthlyInterestPayments(int monthAfterInception)
         {
             if (monthAfterInception <= 0)
             {
@@ -67,7 +74,7 @@ namespace Financier.Common.Liabilities
             }
 
             var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
-            var balance = BaseMortgage.InitialValue;
+            var balance = InitialValue;
             var interestRate = BaseMortgage.PeriodicAnnualInterestRate;
 
             for (var i = 0; balance > 0 && i < monthAfterInception; i += 1)
@@ -85,7 +92,7 @@ namespace Financier.Common.Liabilities
         public IEnumerable<decimal> GetMonthlyInterestPayments()
         {
             var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
-            var balance = BaseMortgage.InitialValue;
+            var balance = InitialValue;
             var interestRate = BaseMortgage.PeriodicAnnualInterestRate;
 
             for (var i = 0; balance > 0; i += 1)
@@ -100,19 +107,7 @@ namespace Financier.Common.Liabilities
             }
         }
 
-        public decimal GetMonthlyInterestPayment(int monthAfterInception)
-        {
-            return GetMonthlyInterestPayments(monthAfterInception)
-                .Last();
-        }
-
-        public decimal GetTotalInterestPayment(int monthAfterInception)
-        {
-            return GetMonthlyInterestPayments(monthAfterInception)
-                .Sum();
-        }
-
-        public IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
+        public override IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
         {
             if (monthAfterInception < 0)
             {
@@ -120,7 +115,7 @@ namespace Financier.Common.Liabilities
             }
 
             var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
-            var balance = BaseMortgage.InitialValue;
+            var balance = InitialValue;
             var interestRate = BaseMortgage.PeriodicAnnualInterestRate;
 
             for (var i = 0; balance > 0 && i < monthAfterInception; i += 1)
@@ -138,7 +133,7 @@ namespace Financier.Common.Liabilities
         public IEnumerable<decimal> GetMonthlyPrincipalPayments()
         {
             var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
-            var balance = BaseMortgage.InitialValue;
+            var balance = InitialValue;
             var interestRate = BaseMortgage.PeriodicAnnualInterestRate;
 
             for (var i = 0; balance > 0; i += 1)
@@ -153,19 +148,7 @@ namespace Financier.Common.Liabilities
             }
         }
 
-        public decimal GetTotalPrincipalPayment(int monthAfterInception)
-        {
-            return GetMonthlyPrincipalPayments(monthAfterInception)
-                .Sum();
-        }
-
-        public decimal GetMonthlyPrincipalPayment(int monthAfterInception)
-        {
-            return GetMonthlyPrincipalPayments(monthAfterInception)
-                .Last();
-        }
-
-        public decimal GetBalance(int monthAfterInception)
+        public override decimal GetBalance(int monthAfterInception)
         {
             if (monthAfterInception <= 0)
             {
@@ -173,7 +156,7 @@ namespace Financier.Common.Liabilities
             }
 
             var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
-            var balance = BaseMortgage.InitialValue;
+            var balance = InitialValue;
             var interestRate = BaseMortgage.PeriodicAnnualInterestRate;
 
             for (var i = 0; balance > 0 && i < monthAfterInception; i += 1)
@@ -186,26 +169,6 @@ namespace Financier.Common.Liabilities
             }
 
             return decimal.Round(balance, 2);
-        }
-
-        public decimal CostAt(int monthAfterInception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CostAt(DateTime at)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CostBy(int monthAfterInception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CostBy(DateTime at)
-        {
-            throw new NotImplementedException();
         }
     }
 }
