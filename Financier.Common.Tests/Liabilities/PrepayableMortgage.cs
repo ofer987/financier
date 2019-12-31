@@ -1,7 +1,7 @@
 using System;
+using NUnit.Framework;
 
 using Financier.Common.Models;
-using NUnit.Framework;
 
 namespace Financier.Common.Tests.Liabilities
 {

@@ -218,12 +218,12 @@ namespace Financier.Common.Liabilities
 
         public decimal GetPrepayment(int year, int month)
         {
-            return Prepayments.Get(year, month);
+            return Prepayments.GetMonthlyTotal(year, month);
         }
 
         public IEnumerable<ValueTuple<DateTime, decimal>> GetPrepayments(DateTime startAt, DateTime endAt)
         {
-            return Prepayments.GetAll(startAt, endAt);
+            return Prepayments.GetRange(startAt, endAt);
         }
     }
 }

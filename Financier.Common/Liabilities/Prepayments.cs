@@ -38,19 +38,7 @@ namespace Financier.Common.Liabilities
             amounts.Add(at, amount);
         }
 
-        public decimal GetAnnualTotal(int year)
-        {
-            var beginningOfYear = new DateTime(year, 1, 1);
-            var beginningOfNextYear = new DateTime(year + 1, 1, 1);
-
-            return amounts
-                .Where(prepayment => prepayment.Key >= beginningOfYear)
-                .Where(prepayment => prepayment.Key < beginningOfNextYear)
-                .Select(prepayment => prepayment.Value)
-                .Sum();
-        }
-
-        public IEnumerable<ValueTuple<DateTime, decimal>> GetAll(DateTime startAt, DateTime endAt)
+        public IEnumerable<ValueTuple<DateTime, decimal>> GetRange(DateTime startAt, DateTime endAt)
         {
             if (endAt <= startAt)
             {
@@ -63,15 +51,23 @@ namespace Financier.Common.Liabilities
                 .Select(prepayment => ValueTuple.Create(prepayment.Key, prepayment.Value));
         }
 
-        public decimal Get(int year, int month)
+        public decimal GetAnnualTotal(int year)
+        {
+            var beginningOfYear = new DateTime(year, 1, 1);
+            var beginningOfNextYear = new DateTime(year + 1, 1, 1);
+
+            return GetRange(beginningOfYear, beginningOfNextYear)
+                .Select(amount => amount.Item2)
+                .Sum();
+        }
+
+        public decimal GetMonthlyTotal(int year, int month)
         {
             var beginningOfMonth = new DateTime(year, month, 1);
             var beginningOfNextMonth = new DateTime(year, month, 1).AddMonths(1);
 
-            return amounts
-                .Where(prepayment => prepayment.Key >= beginningOfMonth)
-                .Where(prepayment => prepayment.Key < beginningOfNextMonth)
-                .Select(prepayment => prepayment.Value)
+            return GetRange(beginningOfMonth, beginningOfNextMonth)
+                .Select(amount => amount.Item2)
                 .Sum();
         }
 
