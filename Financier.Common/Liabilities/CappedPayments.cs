@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace Financier.Common.Liabilities
 {
-    public class Prepayments
+    public class CappedPayments
     {
         public decimal Total { get; }
         public decimal MaximumAllowedAnnualTotal { get; }
 
         private IDictionary<DateTime, decimal> amounts = new Dictionary<DateTime, decimal>();
 
-        public Prepayments(decimal total, decimal maximumAllowedAnnualPercentage = 0.10M)
+        public CappedPayments(decimal total, decimal maximumAllowedAnnualPercentage = 0.10M)
         {
             if (total <= 0)
             {

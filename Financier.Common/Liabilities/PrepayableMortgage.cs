@@ -7,7 +7,7 @@ namespace Financier.Common.Liabilities
     public class PrepayableMortgage : IMortgage, IPrepayable
     {
         public IMortgage BaseMortgage { get; }
-        public Prepayments Prepayments { get; }
+        public CappedPayments Prepayments { get; }
 
         public decimal BaseValue => BaseMortgage.BaseValue;
         public decimal InitialValue => BaseMortgage.InitialValue;
@@ -27,7 +27,7 @@ namespace Financier.Common.Liabilities
         public PrepayableMortgage(IMortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M)
         {
             BaseMortgage = baseMortgage;
-            Prepayments = new Prepayments(InitialValue, maximumAllowedPrepaymentPercentage);
+            Prepayments = new CappedPayments(InitialValue, maximumAllowedPrepaymentPercentage);
         }
 
         public decimal GetMonthlyInterestPayment(int monthAfterInception)

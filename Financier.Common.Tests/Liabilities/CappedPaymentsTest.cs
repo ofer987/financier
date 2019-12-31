@@ -7,9 +7,9 @@ using Financier.Common.Liabilities;
 
 namespace Financier.Common.Tests.Liabilities
 {
-    public class PrepaymentsTest
+    public class CappedPaymentsTest
     {
-        public Prepayments Subject { get; private set; }
+        public CappedPayments Subject { get; private set; }
 
         public static IEnumerable GetRangePositiveTestCases
         {
@@ -95,14 +95,14 @@ namespace Financier.Common.Tests.Liabilities
             }
         }
 
-        public PrepaymentsTest()
+        public CappedPaymentsTest()
         {
         }
 
         [TestCaseSource(nameof(GetRangePositiveTestCases))]
         public void Test_Add_and_GetRange(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts, IEnumerable<ValueTuple<DateTime, decimal>> expected)
         {
-            Subject = new Prepayments(total);
+            Subject = new CappedPayments(total);
 
             foreach (var amount in amounts)
             {
@@ -115,7 +115,7 @@ namespace Financier.Common.Tests.Liabilities
         [TestCaseSource(nameof(GetRangeEmptyTestCases))]
         public void Test_Add_and_GetRange_Empty(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts)
         {
-            Subject = new Prepayments(total);
+            Subject = new CappedPayments(total);
 
             foreach (var amount in amounts)
             {
@@ -129,7 +129,7 @@ namespace Financier.Common.Tests.Liabilities
         [TestCaseSource(nameof(GetRangeEmptyTestCases))]
         public void Test_Add_and_GetRange_Empty(decimal total, DateTime startAt, DateTime endAt)
         {
-            Assert.That(new Prepayments(total).GetRange(startAt, endAt), Throws.Exception);
+            Assert.That(new CappedPayments(total).GetRange(startAt, endAt), Throws.Exception);
         }
     }
 }
