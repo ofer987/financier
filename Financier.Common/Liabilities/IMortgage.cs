@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Financier.Common.Models;
@@ -10,6 +11,7 @@ namespace Financier.Common.Liabilities
         decimal InitialValue { get; }
         double MonthlyPayment { get; }
 
+        DateTime InitiatedAt { get; }
         int AmortisationPeriodInMonths { get; }
         decimal InterestRate { get; }
         decimal QuotedInterestRate { get; }
@@ -27,5 +29,6 @@ namespace Financier.Common.Liabilities
         decimal GetMonthlyPrincipalPayment(int monthAfterInception);
 
         decimal GetBalance(int monthAfterInception);
+        decimal GetBalance(DateTime at);
     }
 }

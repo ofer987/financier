@@ -2,71 +2,47 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Financier.Common.Models;
-
 namespace Financier.Common.Liabilities
 {
-    public class PrepayableMortgage : Mortgage
+    public class PrepayableMortgage : IMortgage, IPrepayable
     {
-        public override decimal BaseValue => BaseMortgage.BaseValue;
-        public override decimal InitialValue => BaseMortgage.InitialValue;
-
         public IMortgage BaseMortgage { get; }
-        public DateTime InitiatedAt { get; }
+        public Prepayments Prepayments { get; }
 
-        public override double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
+        public decimal BaseValue => BaseMortgage.BaseValue;
+        public decimal InitialValue => BaseMortgage.InitialValue;
+        public DateTime InitiatedAt => BaseMortgage.InitiatedAt;
 
-        public decimal MaximumAllowedPrepaymentTotal { get; }
-        private decimal DefaultMaximumAllowedPrepaymentTotal => decimal.Round(InitialValue / 10.00M, 2);
-        public override double MonthlyPayment => BaseMortgage.MonthlyPayment;
+        public int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
+        public decimal InterestRate => BaseMortgage.InterestRate;
+        public decimal QuotedInterestRate => BaseMortgage.QuotedInterestRate;
 
-        private IDictionary<DateTime, decimal> prepayments = new Dictionary<DateTime, decimal>();
-        public IReadOnlyDictionary<DateTime, decimal> Prepayments => (IReadOnlyDictionary<DateTime, decimal>)prepayments;
+        public double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
+        public double PeriodicAnnualInterestRate => BaseMortgage.PeriodicAnnualInterestRate;
+        public double EffectiveAnnualInterestRate => BaseMortgage.EffectiveAnnualInterestRate;
 
-        public PrepayableMortgage(Home product, IMortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M) : base(product, baseMortgage.BaseValue, baseMortgage.InterestRate, baseMortgage.AmortisationPeriodInMonths)
+        public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAllowedAnnualTotal;
+        public double MonthlyPayment => BaseMortgage.MonthlyPayment;
+
+        public PrepayableMortgage(IMortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M)
         {
             BaseMortgage = baseMortgage;
-            InitiatedAt = initiatedAt;
-            MaximumAllowedPrepaymentTotal = decimal.Round(InitialValue * maximumAllowedPrepaymentPercentage, 2);
+            Prepayments = new Prepayments(InitialValue, maximumAllowedPrepaymentPercentage);
         }
 
-        public void AddPrepayment(DateTime at, decimal amount)
+        public decimal GetMonthlyInterestPayment(int monthAfterInception)
         {
-            var annualTotal = GetAnnualPrepaidTotal(at.Year);
-
-            if (annualTotal >= MaximumAllowedPrepaymentTotal)
-            {
-                throw new Exception($"Exceeded total prepayment amount ({MaximumAllowedPrepaymentTotal})");
-            }
-
-            prepayments.Add(at, amount);
+            return GetMonthlyInterestPayments(monthAfterInception)
+                .Last();
         }
 
-        public decimal GetAnnualPrepaidTotal(int year)
+        public decimal GetTotalInterestPayment(int monthAfterInception)
         {
-            var beginningOfYear = new DateTime(year, 1, 1);
-            var beginningOfNextYear = new DateTime(year + 1, 1, 1);
-
-            return prepayments
-                .Where(prepayment => prepayment.Key >= beginningOfYear)
-                .Where(prepayment => prepayment.Key < beginningOfNextYear)
-                .Select(prepayment => prepayment.Value)
+            return GetMonthlyInterestPayments(monthAfterInception)
                 .Sum();
         }
 
-        public decimal GetPrepayment(int year, int month)
-        {
-            var beginningOfMonth = new DateTime(year, month, 1);
-            var beginningOfNextMonth = new DateTime(year, month, 1).AddMonths(1);
-
-            return prepayments
-                .Where(prepayment => prepayment.Key >= beginningOfMonth)
-                .Where(prepayment => prepayment.Key < beginningOfNextMonth)
-                .Select(prepayment => prepayment.Value)
-                .Sum();
-        }
-
-        public override IEnumerable<decimal> GetMonthlyInterestPayments(int monthAfterInception)
+        public IEnumerable<decimal> GetMonthlyInterestPayments(int monthAfterInception)
         {
             if (monthAfterInception <= 0)
             {
@@ -107,7 +83,19 @@ namespace Financier.Common.Liabilities
             }
         }
 
-        public override IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
+        public decimal GetTotalPrincipalPayment(int monthAfterInception)
+        {
+            return GetMonthlyPrincipalPayments(monthAfterInception)
+                .Sum();
+        }
+
+        public decimal GetMonthlyPrincipalPayment(int monthAfterInception)
+        {
+            return GetMonthlyPrincipalPayments(monthAfterInception)
+                .Last();
+        }
+
+        public IEnumerable<decimal> GetMonthlyPrincipalPayments(int monthAfterInception)
         {
             if (monthAfterInception < 0)
             {
@@ -148,11 +136,11 @@ namespace Financier.Common.Liabilities
             }
         }
 
-        public override decimal GetBalance(int monthAfterInception)
+        public decimal GetBalance(int monthAfterInception)
         {
-            if (monthAfterInception <= 0)
+            if (monthAfterInception < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be equal or greater than 0");
             }
 
             var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
@@ -169,6 +157,73 @@ namespace Financier.Common.Liabilities
             }
 
             return decimal.Round(balance, 2);
+        }
+
+        public decimal GetBalance(DateTime at)
+        {
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
+            var balance = InitialValue;
+            var interestRate = BaseMortgage.PeriodicAnnualInterestRate;
+
+            for (var i = InitiatedAt; balance > 0 && i < at; i = i.AddMonths(1))
+            {
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 12);
+                var principalPayment = monthlyPayment - interestPayment + GetPrepayment(i.Year, i.Month);
+
+                balance -= principalPayment;
+            }
+
+            return decimal.Round(balance, 2);
+        }
+
+        public decimal CostAt(int monthAfterInception)
+        {
+            if (monthAfterInception <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
+            }
+
+            return Convert.ToDecimal(MonthlyPayment);
+        }
+
+        public decimal CostAt(DateTime at)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CostBy(int monthAfterInception)
+        {
+            if (monthAfterInception <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
+            }
+
+            return Convert.ToDecimal(MonthlyPayment) * monthAfterInception;
+        }
+        
+        public decimal CostBy(DateTime at)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddPrepayment(DateTime at, decimal amount)
+        {
+            Prepayments.Add(at, amount);
+        }
+
+        public decimal GetPrepayment(int year, int month)
+        {
+            return Prepayments.Get(year, month);
+        }
+
+        public IEnumerable<ValueTuple<DateTime, decimal>> GetPrepayments(DateTime startAt, DateTime endAt)
+        {
+            return Prepayments.GetAll(startAt, endAt);
         }
     }
 }

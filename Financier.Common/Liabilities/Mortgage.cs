@@ -10,6 +10,8 @@ namespace Financier.Common.Liabilities
     {
         public virtual decimal BaseValue { get; }
         public virtual decimal InitialValue => BaseValue;
+
+        public DateTime InitiatedAt { get; }
         public int AmortisationPeriodInMonths { get; }
         public decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
@@ -20,9 +22,10 @@ namespace Financier.Common.Liabilities
 
         public virtual double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
 
-        public Mortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        public Mortgage(Home product, DateTime initiatedAt, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
         {
             BaseValue = baseValue;
+            InitiatedAt = initiatedAt;
             AmortisationPeriodInMonths = amortisationPeriodInMonths;
             InterestRate = interestRate;
         }
@@ -107,6 +110,28 @@ namespace Financier.Common.Liabilities
             var interestRate = PeriodicAnnualInterestRate;
 
             for (var i = 0; i < monthAfterInception; i += 1)
+            {
+                var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 12);
+                var principalPayment = monthlyPayment - interestPayment;
+
+                balance -= principalPayment;
+            }
+
+            return decimal.Round(balance, 2);
+        }
+
+        public virtual decimal GetBalance(DateTime at)
+        {
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            var monthlyPayment = Convert.ToDecimal(MonthlyPayment);
+            var balance = InitialValue;
+            var interestRate = PeriodicAnnualInterestRate;
+
+            for (var i = InitiatedAt; balance > 0 && i < at; i = i.AddMonths(1))
             {
                 var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 12);
                 var principalPayment = monthlyPayment - interestPayment;
