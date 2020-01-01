@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 
+using Financier.Common.Extensions;
 using Financier.Common.Liabilities;
 
 namespace Financier.Common.Expenses
@@ -8,20 +9,27 @@ namespace Financier.Common.Expenses
     public class MyHome : BalanceSheet
     {
         public ICashFlow CashFlow { get; }
-        public PrepayableMortgage Mortgage { get; }
+        public IMortgage Mortgage { get; }
         public DateTime StartAt => At;
         public decimal AnnualCashFlowProfit => CashFlow.DailyProfit * 365;
         // TODO: there has to be a better way to do this!
         public decimal MonthlyCashFlowProfit => CashFlow.DailyProfit * 30;
 
-        public static MyHome Process(IMortgage baseMortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt)
+        private Payments expenses = new Payments();
+
+        public static MyHome BuildStatementWithMortgage(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt)
         {
-            var mortgage = CreateMortgage(baseMortgage, cashflow, startAt);
+            return new MyHome(mortgage, cashflow, initialCash, initialDebt, startAt);
+        }
+
+        public static MyHome BuildStatementWithPrepaybleMortgage(IMortgage baseMortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt)
+        {
+            var mortgage = CreatePrepayableMortgage(baseMortgage, cashflow, startAt);
 
             return new MyHome(mortgage, cashflow, initialCash, initialDebt, startAt);
         }
 
-        private static PrepayableMortgage CreateMortgage(IMortgage baseMortgage, ICashFlow cashFlow, DateTime startAt)
+        private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashflow, DateTime startAt)
         {
             var result = new PrepayableMortgage(baseMortgage, startAt);
             var mortgageBalance = decimal.MaxValue;
@@ -36,20 +44,16 @@ namespace Financier.Common.Expenses
                     1
                 ).AddMonths(1).AddMilliseconds(-1);
                 // FIXME: Is this API to retrieve the 12th month?
-                if (startAt.AddMonths(month).Month % 12 == 0)
+                if (endOfMonth.Month == 12)
                 {
+                    var yearlyProfit = cashflow.DailyProfit * endOfMonth.DaysFromBeginningOfYear();
                     // FIXME: Figure out correct amount
                     var prepayment = CreatePrepayment(
                         result.GetBalance(month),
-                        cashFlow.DailyProfit * 365
+                        yearlyProfit
                     );
-                    var prepayedAt = new DateTime(
-                        startAt.AddMonths(month).Year,
-                        startAt.AddMonths(month).Month,
-                        1
-                    ).AddMonths(1).AddMilliseconds(-1);
                     result.AddPrepayment(
-                        prepayedAt,
+                        endOfMonth,
                         prepayment
                     );
                 }
@@ -89,10 +93,10 @@ namespace Financier.Common.Expenses
         //     } while (paymentsCount > year * 12);
         // }
 
-        public MyHome(PrepayableMortgage mortgage, ICashFlow cashFlow, decimal initialCash, decimal initialDebt, DateTime startAt) : base(initialCash, initialDebt, startAt)
+        public MyHome(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt) : base(initialCash, initialDebt, startAt)
         {
             Mortgage = mortgage;
-            CashFlow = cashFlow;
+            CashFlow = cashflow;
         }
 
         public override decimal GetBalance(DateTime at)
@@ -107,7 +111,7 @@ namespace Financier.Common.Expenses
                 - Debt;
 
             result += CashFlow.DailyProfit * (at - StartAt).Days;
-            result -= Mortgage.GetPrepayments(StartAt, at)
+            result -= expenses.GetRange(StartAt, at)
                 .Select(payment => payment.Item2)
                 .Sum();
             result -= Mortgage.GetBalance(at);

@@ -24,5 +24,12 @@ namespace Financier.Common.Extensions
                 return 0 - i;
             }
         }
+
+        public static int DaysFromBeginningOfYear(this DateTime target)
+        {
+            var beginningOfYear = new DateTime(target.Year, 1, 1);
+
+            return target.Subtract(beginningOfYear).Days;
+        }
     }
 }
