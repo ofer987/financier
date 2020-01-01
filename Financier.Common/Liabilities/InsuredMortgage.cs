@@ -13,7 +13,7 @@ namespace Financier.Common.Liabilities
 
         public override decimal InitialValue => BaseValue + Insurance;
 
-        public InsuredMortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product, baseValue, interestRate, amortisationPeriodInMonths)
+        public InsuredMortgage(Home product, DateTime initiatedAt, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product, initiatedAt, baseValue, interestRate, amortisationPeriodInMonths)
         {
         }
     }

@@ -23,8 +23,8 @@ namespace Financier.Common.Expenses
                 throw new ArgumentOutOfRangeException(nameof(projectedAt), $"Should be later than ({At})");
             }
 
-            var futureCash = Cash + CashFlow.DailyProfit * projectedAt.Subtract(At).Days;
-            return new BalanceSheet(futureCash, Debt, projectedAt);
+            var futureCash = InitialCash + CashFlow.DailyProfit * projectedAt.Subtract(At).Days;
+            return new BalanceSheet(futureCash, InitialDebt, projectedAt);
         }
     }
 }

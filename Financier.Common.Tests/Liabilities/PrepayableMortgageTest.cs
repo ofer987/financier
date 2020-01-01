@@ -1,23 +1,25 @@
 using System;
 using NUnit.Framework;
 
+using Financier.Common.Liabilities;
 using Financier.Common.Models;
 
 namespace Financier.Common.Tests.Liabilities
 {
-    public class PrepayableMortgage
+    public class PrepayableMortgageTest
     {
         public Home Home { get; }
         public Financier.Common.Liabilities.FixedRateMortgage Mortgage { get; }
         public Financier.Common.Liabilities.PrepayableMortgage Subject { get; }
 
-        public PrepayableMortgage()
+        public PrepayableMortgageTest()
         {
             var downpayment = 50000.00M;
             var mortgageAmount = 200000.00M;
             var preferredInterestRate = 0.0319M;
-            Home = new Home("first home", new DateTime(2019, 1, 1), downpayment);
-            Mortgage = new Financier.Common.Liabilities.FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
+            var purchasedAt = new DateTime(2019, 1, 1);
+            Home = new Home("first home", purchasedAt, downpayment);
+            Mortgage = new FixedRateMortgage(Home, purchasedAt, mortgageAmount, preferredInterestRate, 300);
             Subject = new Financier.Common.Liabilities.PrepayableMortgage(Mortgage, new DateTime(2019, 1, 1), 0.20M);
             Subject.AddPrepayment(new DateTime(2020, 1, 1), 30000.00M);
             Subject.AddPrepayment(new DateTime(2020, 5, 1), 35000.00M);

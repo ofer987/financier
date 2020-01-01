@@ -107,8 +107,8 @@ namespace Financier.Common.Expenses
             }
 
             var result = 0.00M
-                + Cash
-                - Debt;
+                + InitialCash
+                - InitialDebt;
 
             result += CashFlow.DailyProfit * (at - StartAt).Days;
             result -= expenses.GetRange(StartAt, at)

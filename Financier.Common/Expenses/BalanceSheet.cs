@@ -10,10 +10,10 @@ using ActionTypes = Financier.Common.Expenses.Actions.Types;
 
 namespace Financier.Common.Expenses
 {
-    public abstract class BalanceSheet
+    public class BalanceSheet
     {
-        public decimal Cash { get; }
-        public decimal Debt { get; }
+        public decimal InitialCash { get; }
+        public decimal InitialDebt { get; }
         public DateTime At { get; }
 
         public IReadOnlyList<IAsset> Assets { get; }
@@ -23,8 +23,8 @@ namespace Financier.Common.Expenses
 
         public BalanceSheet(decimal cash, decimal debt, DateTime at)
         {
-            Cash = cash;
-            Debt = debt;
+            InitialCash = cash;
+            InitialDebt = debt;
             At = at;
         }
 
@@ -32,8 +32,15 @@ namespace Financier.Common.Expenses
         {
         }
 
-        public abstract decimal GetBalance(DateTime at);
-        public abstract decimal GetBalance(int months);
+        public virtual decimal GetBalance(DateTime at)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual decimal GetBalance(int months)
+        {
+            throw new NotImplementedException();
+        }
 
         public void OneTimePurchase(SimpleProduct product, DateTime at)
         {
@@ -54,7 +61,7 @@ namespace Financier.Common.Expenses
                 .OrderBy(action => action.At)
                 .Where(action => action.At < At);
 
-            var total = Cash - Debt;
+            var total = InitialCash - InitialDebt;
             foreach (var action in chronologicalActions)
             {
                 switch (action.Type)
@@ -118,8 +125,8 @@ namespace Financier.Common.Expenses
             var sb = new StringBuilder();
 
             sb.AppendLine($"Balance Sheet (as of {At.ToString("D")})");
-            sb.AppendLine($"Cash:\t{Cash.ToString("#0.00")}");
-            sb.AppendLine($"Debt:\t{Debt.ToString("#0.00")}");
+            sb.AppendLine($"Cash:\t{InitialCash.ToString("#0.00")}");
+            sb.AppendLine($"Debt:\t{InitialDebt.ToString("#0.00")}");
             sb.AppendLine($"Total:\t{GetValue().ToString("#0.00")}");
 
             return sb.ToString();
