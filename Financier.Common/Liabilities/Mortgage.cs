@@ -11,7 +11,7 @@ namespace Financier.Common.Liabilities
         public virtual decimal BaseValue { get; }
         public virtual decimal InitialValue => BaseValue;
 
-        public DateTime InitiatedAt { get; }
+        public DateTime InitiatedAt => Product.PurchasedAt;
         public int AmortisationPeriodInMonths { get; }
         public decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
@@ -22,10 +22,9 @@ namespace Financier.Common.Liabilities
 
         public virtual double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
 
-        public Mortgage(Home product, DateTime initiatedAt, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        public Mortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
         {
             BaseValue = baseValue;
-            InitiatedAt = initiatedAt;
             AmortisationPeriodInMonths = amortisationPeriodInMonths;
             InterestRate = interestRate;
         }

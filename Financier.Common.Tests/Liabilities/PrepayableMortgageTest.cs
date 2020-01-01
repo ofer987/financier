@@ -19,8 +19,8 @@ namespace Financier.Common.Tests.Liabilities
             var preferredInterestRate = 0.0319M;
             var purchasedAt = new DateTime(2019, 1, 1);
             Home = new Home("first home", purchasedAt, downpayment);
-            Mortgage = new FixedRateMortgage(Home, purchasedAt, mortgageAmount, preferredInterestRate, 300);
-            Subject = new Financier.Common.Liabilities.PrepayableMortgage(Mortgage, new DateTime(2019, 1, 1), 0.20M);
+            Mortgage = new FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
+            Subject = new Financier.Common.Liabilities.PrepayableMortgage(Mortgage, 0.20M);
             Subject.AddPrepayment(new DateTime(2020, 1, 1), 30000.00M);
             Subject.AddPrepayment(new DateTime(2020, 5, 1), 35000.00M);
         }

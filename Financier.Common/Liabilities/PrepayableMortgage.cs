@@ -24,7 +24,7 @@ namespace Financier.Common.Liabilities
         public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAnnualTotal;
         public double MonthlyPayment => BaseMortgage.MonthlyPayment;
 
-        public PrepayableMortgage(IMortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M)
+        public PrepayableMortgage(IMortgage baseMortgage, decimal maximumAllowedPrepaymentPercentage = 0.10M)
         {
             BaseMortgage = baseMortgage;
             Prepayments = new CappedPayments(InitialValue * maximumAllowedPrepaymentPercentage);

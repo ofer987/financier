@@ -19,7 +19,7 @@ namespace Financier.Common.Tests.Liabilities
             var purchasedAt = new DateTime(2019, 1, 1);
 
             Home = new Home("first home", purchasedAt, downpayment);
-            Subject = new FixedRateMortgage(Home, purchasedAt, mortgageAmount, preferredInterestRate, 300);
+            Subject = new FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
         }
 
         [Test]
