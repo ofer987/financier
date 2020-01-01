@@ -21,13 +21,13 @@ namespace Financier.Common.Liabilities
         public double PeriodicAnnualInterestRate => BaseMortgage.PeriodicAnnualInterestRate;
         public double EffectiveAnnualInterestRate => BaseMortgage.EffectiveAnnualInterestRate;
 
-        public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAllowedAnnualTotal;
+        public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAnnualTotal;
         public double MonthlyPayment => BaseMortgage.MonthlyPayment;
 
         public PrepayableMortgage(IMortgage baseMortgage, DateTime initiatedAt, decimal maximumAllowedPrepaymentPercentage = 0.10M)
         {
             BaseMortgage = baseMortgage;
-            Prepayments = new CappedPayments(InitialValue, maximumAllowedPrepaymentPercentage);
+            Prepayments = new CappedPayments(InitialValue * maximumAllowedPrepaymentPercentage);
         }
 
         public decimal GetMonthlyInterestPayment(int monthAfterInception)

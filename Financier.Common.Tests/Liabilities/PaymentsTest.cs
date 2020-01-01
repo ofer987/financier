@@ -7,16 +7,15 @@ using Financier.Common.Liabilities;
 
 namespace Financier.Common.Tests.Liabilities
 {
-    public class CappedPaymentsTest
+    public class PaymentsTest
     {
-        public CappedPayments Subject { get; private set; }
+        public Payments Subject { get; private set; }
 
         public static IEnumerable GetRangePositiveTestCases
         {
             get
             {
                 yield return new TestCaseData(
-                    20000,
                     new[] {
                     ValueTuple.Create(new DateTime(2019, 1, 1), 10000),
                     ValueTuple.Create(new DateTime(2019, 2, 1), 10000)
@@ -27,14 +26,24 @@ namespace Financier.Common.Tests.Liabilities
                 );
 
                 yield return new TestCaseData(
-                    20000,
                     new[] {
                     ValueTuple.Create(new DateTime(2019, 1, 1), 10000),
                     ValueTuple.Create(new DateTime(2019, 2, 1), 20000)
                     },
                     new DateTime(2019, 1, 1),
                     new DateTime(2019, 12, 1),
-                    10000
+                    30000
+                );
+
+                yield return new TestCaseData(
+                    new[] {
+                        ValueTuple.Create(new DateTime(2019, 1, 1), 10000),
+                        ValueTuple.Create(new DateTime(2019, 2, 1), 20000),
+                        ValueTuple.Create(new DateTime(2020, 3, 2), 40000)
+                        },
+                    new DateTime(2019, 1, 1),
+                    new DateTime(2019, 12, 1),
+                    20000
                 );
             }
         }
@@ -44,7 +53,6 @@ namespace Financier.Common.Tests.Liabilities
             get
             {
                 yield return new TestCaseData(
-                    20000,
                     new DateTime(2019, 1, 1),
                     new DateTime(2019, 12, 1),
                     new[] {
@@ -54,7 +62,6 @@ namespace Financier.Common.Tests.Liabilities
                 );
 
                 yield return new TestCaseData(
-                    20000,
                     new DateTime(2019, 1, 1),
                     new DateTime(2019, 12, 1),
                     new ValueTuple<DateTime, decimal>[] {
@@ -62,7 +69,6 @@ namespace Financier.Common.Tests.Liabilities
                 );
 
                 yield return new TestCaseData(
-                    100,
                     new DateTime(2019, 1, 1),
                     new DateTime(2019, 12, 1),
                     new ValueTuple<DateTime, decimal>[] {
@@ -80,25 +86,13 @@ namespace Financier.Common.Tests.Liabilities
                     new DateTime(2019, 2, 1),
                     new DateTime(2019, 1, 1)
                 );
-
-                yield return new TestCaseData(
-                    0,
-                    new DateTime(2019, 1, 1),
-                    new DateTime(2019, 2, 1)
-                );
-
-                yield return new TestCaseData(
-                    -100,
-                    new DateTime(2019, 1, 1),
-                    new DateTime(2019, 2, 1)
-                );
             }
         }
 
         [TestCaseSource(nameof(GetRangePositiveTestCases))]
-        public void Test_Add_and_GetRange(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts, IEnumerable<ValueTuple<DateTime, decimal>> expected)
+        public void Test_Add_and_GetRange(DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts, IEnumerable<ValueTuple<DateTime, decimal>> expected)
         {
-            Subject = new CappedPayments(total);
+            Subject = new Payments();
 
             foreach (var amount in amounts)
             {
@@ -109,9 +103,9 @@ namespace Financier.Common.Tests.Liabilities
         }
 
         [TestCaseSource(nameof(GetRangeEmptyTestCases))]
-        public void Test_Add_and_GetRange_Empty(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts)
+        public void Test_Add_and_GetRange_Empty(DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts)
         {
-            Subject = new CappedPayments(total);
+            Subject = new Payments();
 
             foreach (var amount in amounts)
             {
@@ -125,7 +119,7 @@ namespace Financier.Common.Tests.Liabilities
         [TestCaseSource(nameof(GetRangeInvalidTestCases))]
         public void Test_Add_and_GetRange_ThrowsUp(decimal total, DateTime startAt, DateTime endAt)
         {
-            Assert.That(new CappedPayments(total).GetRange(startAt, endAt), Throws.Exception);
+            Assert.That(new Payments().GetRange(startAt, endAt), Throws.Exception);
         }
     }
 }
