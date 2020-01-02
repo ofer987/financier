@@ -6,50 +6,51 @@ using Financier.Common.Liabilities;
 
 namespace Financier.Common.Expenses
 {
-    public class MyHome : BalanceSheet
+    public class MyHome
     {
+        public decimal InitialCash { get; }
+        public decimal InitialDebt { get; }
         public ICashFlow CashFlow { get; }
         public IMortgage Mortgage { get; }
-        public DateTime StartAt => At;
+        public DateTime StartAt => Mortgage.InitiatedAt;
         public decimal AnnualCashFlowProfit => CashFlow.DailyProfit * 365;
         // TODO: there has to be a better way to do this!
         public decimal MonthlyCashFlowProfit => CashFlow.DailyProfit * 30;
 
         private Payments expenses = new Payments();
 
-        public static MyHome BuildStatementWithMortgage(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt)
+        public static MyHome BuildStatementWithMortgage(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
         {
-            return new MyHome(mortgage, cashflow, initialCash, initialDebt, startAt);
+            return new MyHome(mortgage, cashflow, initialCash, initialDebt);
         }
 
-        public static MyHome BuildStatementWithPrepaybleMortgage(IMortgage baseMortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt)
+        public static MyHome BuildStatementWithPrepaybleMortgage(IMortgage baseMortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
         {
-            var mortgage = CreatePrepayableMortgage(baseMortgage, cashflow, startAt);
+            var mortgage = CreatePrepayableMortgage(baseMortgage, cashflow);
 
-            return new MyHome(mortgage, cashflow, initialCash, initialDebt, startAt);
+            return new MyHome(mortgage, cashflow, initialCash, initialDebt);
         }
 
-        private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashflow, DateTime startAt)
+        private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashflow)
         {
             var result = new PrepayableMortgage(baseMortgage);
             var mortgageBalance = decimal.MaxValue;
-            var month = 0;
+            var startAt = result.InitiatedAt;
+            var at = startAt;
             while (mortgageBalance > 0.00M)
             {
                 // TODO: verify whether 0:00:00.00 - 1 milliseconds
                 // is the previous day
-                var endOfMonth = new DateTime(
-                    startAt.AddMonths(month).Year,
-                    startAt.AddMonths(month).Month,
-                    1
-                ).AddMonths(1).AddMilliseconds(-1);
+                var endOfMonth = new DateTime(at.Year, at.Month, 1)
+                    .AddMonths(1)
+                    .AddMilliseconds(-1);
                 // FIXME: Is this API to retrieve the 12th month?
                 if (endOfMonth.Month == 12)
                 {
                     var yearlyProfit = cashflow.DailyProfit * endOfMonth.DaysFromBeginningOfYear();
                     // FIXME: Figure out correct amount
                     var prepayment = CreatePrepayment(
-                        result.GetBalance(month),
+                        result.GetBalance(at),
                         yearlyProfit
                     );
                     result.AddPrepayment(
@@ -59,6 +60,7 @@ namespace Financier.Common.Expenses
                 }
 
                 mortgageBalance = result.GetBalance(endOfMonth);
+                at = at.AddMonths(1);
             }
 
             return result;
@@ -93,13 +95,15 @@ namespace Financier.Common.Expenses
         //     } while (paymentsCount > year * 12);
         // }
 
-        public MyHome(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt, DateTime startAt) : base(initialCash, initialDebt, startAt)
+        public MyHome(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
         {
             Mortgage = mortgage;
             CashFlow = cashflow;
+            InitialCash = initialCash;
+            InitialDebt = initialDebt;
         }
 
-        public override decimal GetBalance(DateTime at)
+        public decimal GetBalance(DateTime at)
         {
             if (at <= StartAt)
             {
@@ -119,7 +123,7 @@ namespace Financier.Common.Expenses
             return result;
         }
 
-        public override decimal GetBalance(int months)
+        public decimal GetBalance(int months)
         {
             if (months <= 0)
             {
