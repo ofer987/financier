@@ -15,9 +15,15 @@ namespace Financier.Common.Liabilities
             amounts.Add(at, amount);
         }
 
+        public IEnumerable<ValueTuple<DateTime, decimal>> GetAll()
+        {
+            return amounts
+                .Select(prepayment => ValueTuple.Create(prepayment.Key, prepayment.Value));
+        }
+
         public IEnumerable<ValueTuple<DateTime, decimal>> GetRange(DateTime startAt, DateTime endAt)
         {
-            if (endAt <= startAt)
+            if (endAt < startAt)
             {
                 throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be after {nameof(startAt)}");
             }
@@ -44,6 +50,16 @@ namespace Financier.Common.Liabilities
             var beginningOfNextMonth = new DateTime(year, month, 1).AddMonths(1);
 
             return GetRange(beginningOfMonth, beginningOfNextMonth)
+                .Select(amount => amount.Item2)
+                .Sum();
+        }
+
+        public decimal GetDailyTotal(int year, int month, int day)
+        {
+            var beginningOfDay = new DateTime(year, month, 1);
+            var beginningOfNextDay = new DateTime(year, month, 1).AddMonths(1);
+
+            return GetRange(beginningOfDay, beginningOfNextDay)
                 .Select(amount => amount.Item2)
                 .Sum();
         }

@@ -4,9 +4,9 @@ namespace Financier.Common.Expenses
     {
         public decimal DailyProfit { get; }
 
-        public DummyCashFlow(decimal DailyProfit)
+        public DummyCashFlow(decimal dailyProfit)
         {
-            DailyProfit = decimal.Round(DailyProfit, 2);
+            DailyProfit = decimal.Round(dailyProfit, 2);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Financier.Common.Expenses
         // TODO: there has to be a better way to do this!
         public decimal MonthlyCashFlowProfit => CashFlow.DailyProfit * 30;
 
-        private Payments expenses = new Payments();
+        private Payments Expenditures { get; } = new Payments();
 
         public static MyHome BuildStatementWithMortgage(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
         {
@@ -28,7 +28,15 @@ namespace Financier.Common.Expenses
         {
             var mortgage = CreatePrepayableMortgage(baseMortgage, cashflow);
 
-            return new MyHome(mortgage, cashflow, initialCash, initialDebt);
+            var result = new MyHome(mortgage, cashflow, initialCash, initialDebt);
+
+            // Hack!!!!
+            foreach (var prepayment in mortgage.Prepayments.GetAll())
+            {
+                result.Expenditures.Add(prepayment.Item1, prepayment.Item2);
+            }
+
+            return result;
         }
 
         private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashflow)
@@ -47,16 +55,19 @@ namespace Financier.Common.Expenses
                 // FIXME: Is this API to retrieve the 12th month?
                 if (endOfMonth.Month == 12)
                 {
-                    var yearlyProfit = cashflow.DailyProfit * endOfMonth.DaysFromBeginningOfYear();
+                    var yearlyProfit = cashflow.DailyProfit * Convert.ToDecimal(endOfMonth.Subtract(startAt).TotalDays);
+
                     // FIXME: Figure out correct amount
                     var prepayment = CreatePrepayment(
                         result.GetBalance(at),
-                        yearlyProfit
+                        yearlyProfit,
+                        result.Prepayments.MaximumAnnualTotal
                     );
                     result.AddPrepayment(
                         endOfMonth,
                         prepayment
                     );
+                    startAt = endOfMonth;
                 }
 
                 mortgageBalance = result.GetBalance(endOfMonth);
@@ -66,11 +77,15 @@ namespace Financier.Common.Expenses
             return result;
         }
 
-        private static decimal CreatePrepayment(decimal balance, decimal annualProfit)
+        private static decimal CreatePrepayment(decimal balance, decimal annualProfit, decimal maximumTotal)
         {
-            return balance > annualProfit
+            var result = balance > annualProfit
                 ? annualProfit
                 : balance;
+
+            return result > maximumTotal
+                ? maximumTotal
+                : result;
         }
 
         // public MyHome(ICashFlow cashflow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
@@ -105,7 +120,7 @@ namespace Financier.Common.Expenses
 
         public decimal GetBalance(DateTime at)
         {
-            if (at <= StartAt)
+            if (at < StartAt)
             {
                 throw new ArgumentOutOfRangeException(nameof(at), $"Value should be later than {StartAt}");
             }
@@ -114,20 +129,27 @@ namespace Financier.Common.Expenses
                 + InitialCash
                 - InitialDebt;
 
-            result += CashFlow.DailyProfit * (at - StartAt).Days;
-            result -= expenses.GetRange(StartAt, at)
+            // Console.WriteLine(at.Subtract(StartAt).TotalDays);
+            // Console.WriteLine(CashFlow.DailyProfit);
+            Console.WriteLine($"{StartAt} to {at}: {at.Subtract(StartAt).TotalDays}");
+            Console.WriteLine($"CashFlow: {CashFlow.DailyProfit * Convert.ToDecimal(at.Subtract(StartAt).TotalDays)}");
+            result += CashFlow.DailyProfit * Convert.ToDecimal(at.Subtract(StartAt).TotalDays);
+            var expenses = Expenditures.GetRange(StartAt, at)
                 .Select(payment => payment.Item2)
                 .Sum();
+            Console.WriteLine($"Expenses: {expenses}");
+            Console.WriteLine($"Mortgage Balance {at}: {Mortgage.GetBalance(at)}");
+            result -= expenses;
             result -= Mortgage.GetBalance(at);
 
-            return result;
+            return decimal.Round(result, 2);
         }
 
         public decimal GetBalance(int months)
         {
-            if (months <= 0)
+            if (months < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(months), "Value should be greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(months), "Value should be equal or greater than 0");
             }
 
             throw new NotImplementedException("will be implemented later");
