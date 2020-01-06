@@ -32,6 +32,20 @@ namespace Financier.Common.Liabilities
             Prepayments = new CappedPayments(InitialValue * maximumAllowedPrepaymentPercentage);
         }
 
+        public PrepayableMortgage(IMortgage baseMortgage, decimal maximumAllowedPrepaymentPercentage = 0.10M)
+        {
+            BaseMortgage = baseMortgage;
+            Calculator = new MonthlyPaymentCalculator();
+            Prepayments = new CappedPayments(InitialValue * maximumAllowedPrepaymentPercentage);
+        }
+
+        public decimal GetBalance(DateTime at)
+        {
+            return GetMonthlyPayments(at)
+                .Select(payment => payment.Balance)
+                .Last();
+        }
+
         public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime at)
         {
             return Calculator.GetMonthlyPayments(this, at);

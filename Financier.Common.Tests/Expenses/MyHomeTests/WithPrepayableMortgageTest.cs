@@ -5,7 +5,7 @@ using Financier.Common.Liabilities;
 using Financier.Common.Expenses;
 using Financier.Common.Models;
 
-namespace Financier.Common.Tests.Liabilities
+namespace Financier.Common.Tests.Expenses.MyHomeTests
 {
     // TODO:Rename this file and others to *Tests
     public class WithPrepayableMortgageTest
@@ -22,6 +22,7 @@ namespace Financier.Common.Tests.Liabilities
             var mortgageAmount = 328000.00M;
             var preferredInterestRate = 0.0319M;
             var purchasedAt = new DateTime(2019, 1, 1);
+
             Home = new Home("first home", purchasedAt, downpayment);
             BaseMortgage = new FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
             Subject = MyHome.BuildStatementWithPrepaybleMortgage(BaseMortgage, CashFlow, 2000.00M, 6000.00M);
@@ -50,11 +51,6 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2026, 10, 1, 20709.30)]
         public void Test_GetBalance(int year, int month, int day, decimal expected)
         {
-            var startAt = new DateTime(2020, 1, 1);
-            var endAt = new DateTime(2020, 12, 31);
-            Console.WriteLine($"{startAt} to {endAt}: {endAt.Subtract(startAt).TotalDays}");
-
-            ((PrepayableMortgage)Subject.Mortgage).PrintPrepayments();
             Assert.That(Subject.GetBalance(new DateTime(year, month, day)), Is.EqualTo(expected));
         }
     }

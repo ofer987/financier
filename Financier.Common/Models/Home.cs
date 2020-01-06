@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Financier.Common.Liabilities;
@@ -35,12 +36,16 @@ namespace Financier.Common.Models
         {
             return 0.00M
                 + DownPayment 
-                + Financing.GetTotalPrincipalPayment(months);
+                + Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
+                    .Select(payment => payment.Principal)
+                    .Sum();
         }
 
         public decimal GetRemainingMortgageAmount(int months)
         {
-            return Financing.GetBalance(months);
+            return Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
+                .Select(payment => payment.Balance)
+                .Last();
         }
     }
 }

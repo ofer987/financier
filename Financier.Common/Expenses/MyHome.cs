@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 
-using Financier.Common.Extensions;
 using Financier.Common.Liabilities;
 
 namespace Financier.Common.Expenses
@@ -42,7 +41,7 @@ namespace Financier.Common.Expenses
         private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashflow)
         {
             var result = new PrepayableMortgage(baseMortgage);
-            var mortgageBalance = decimal.MaxValue;
+            var mortgageBalance = result.InitialValue;
             var startAt = result.InitiatedAt;
             var at = startAt;
             while (mortgageBalance > 0.00M)
@@ -67,10 +66,15 @@ namespace Financier.Common.Expenses
                         endOfMonth,
                         prepayment
                     );
+
                     startAt = endOfMonth;
+                    mortgageBalance = result.GetBalance(endOfMonth);
+                }
+                else
+                {
+                    mortgageBalance = result.GetBalance(at);
                 }
 
-                mortgageBalance = result.GetBalance(endOfMonth);
                 at = at.AddMonths(1);
             }
 
@@ -79,13 +83,13 @@ namespace Financier.Common.Expenses
 
         private static decimal CreatePrepayment(decimal balance, decimal annualProfit, decimal maximumTotal)
         {
-            var result = balance > annualProfit
+            var amount = balance > annualProfit
                 ? annualProfit
                 : balance;
 
-            return result > maximumTotal
+            return amount > maximumTotal
                 ? maximumTotal
-                : result;
+                : amount;
         }
 
         // public MyHome(ICashFlow cashflow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
@@ -129,18 +133,14 @@ namespace Financier.Common.Expenses
                 + InitialCash
                 - InitialDebt;
 
-            // Console.WriteLine(at.Subtract(StartAt).TotalDays);
-            // Console.WriteLine(CashFlow.DailyProfit);
-            Console.WriteLine($"{StartAt} to {at}: {at.Subtract(StartAt).TotalDays}");
-            Console.WriteLine($"CashFlow: {CashFlow.DailyProfit * Convert.ToDecimal(at.Subtract(StartAt).TotalDays)}");
             result += CashFlow.DailyProfit * Convert.ToDecimal(at.Subtract(StartAt).TotalDays);
             var expenses = Expenditures.GetRange(StartAt, at)
                 .Select(payment => payment.Item2)
                 .Sum();
-            Console.WriteLine($"Expenses: {expenses}");
-            Console.WriteLine($"Mortgage Balance {at}: {Mortgage.GetBalance(at)}");
             result -= expenses;
-            result -= Mortgage.GetBalance(at);
+            result -= Mortgage.GetMonthlyPayments(at)
+                .Select(payment => payment.Balance)
+                .Last();
 
             return decimal.Round(result, 2);
         }

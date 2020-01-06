@@ -32,6 +32,21 @@ namespace Financier.Common.Liabilities
             InterestRate = interestRate;
         }
 
+        public Mortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        {
+            Calculator = new MonthlyPaymentCalculator();
+            BaseValue = baseValue;
+            AmortisationPeriodInMonths = amortisationPeriodInMonths;
+            InterestRate = interestRate;
+        }
+
+        public decimal GetBalance(DateTime at)
+        {
+            return GetMonthlyPayments(at)
+                .Select(payment => payment.Balance)
+                .Last();
+        }
+
         public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime at)
         {
             return Calculator.GetMonthlyPayments(this, at);

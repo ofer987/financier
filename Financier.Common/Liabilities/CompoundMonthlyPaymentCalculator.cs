@@ -13,6 +13,8 @@ namespace Financier.Common.Liabilities
                 throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {mortgage.InitiatedAt}");
             }
 
+            yield return new MonthlyPayment(mortgage, mortgage.InitiatedAt, mortgage.InitialValue, 0, 0);
+
             var monthlyPayment = Convert.ToDecimal(mortgage.MonthlyPayment);
             var balance = mortgage.InitialValue;
             var interestRate = mortgage.PeriodicAnnualInterestRate;
@@ -47,6 +49,7 @@ namespace Financier.Common.Liabilities
                         : extraPayment;
 
                     yield return new MonthlyPayment(mortgage, i, balance, 0, extraPayment);
+                    balance -= extraPayment;
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
@@ -9,6 +10,7 @@ namespace Financier.Common.Tests.Liabilities
     public class FixedRateMortgageTest
     {
         public Home Home { get; }
+        public DateTime PurchasedAt => Home.PurchasedAt;
         public Financier.Common.Liabilities.FixedRateMortgage Subject { get; }
 
         public FixedRateMortgageTest()
@@ -65,7 +67,10 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(300, 0)]
         public void Test_GetBalance(int monthCount, decimal expectedBalance)
         {
-            Assert.That(Subject.GetBalance(monthCount), Is.EqualTo(expectedBalance));
+            Assert.That(
+                Subject.GetBalance(PurchasedAt.AddMonths(monthCount))
+                , Is.EqualTo(expectedBalance)
+            );
         }
 
         [TestCase(1, 528.17)]
@@ -75,7 +80,12 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(300, 2.54)]
         public void Test_GetMonthlyInterestPayment(int monthCount, decimal expectedInterestPayment)
         {
-            Assert.That(Subject.GetMonthlyInterestPayment(monthCount), Is.EqualTo(expectedInterestPayment));
+            Assert.That(
+                Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
+                    .Select(payment => payment.Interest)
+                    .Last()
+                , Is.EqualTo(expectedInterestPayment)
+            );
         }
 
         [TestCase(1, 437.93)]
@@ -85,7 +95,12 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(300, 963.55)]
         public void Test_GetMonthlyPrincipalPayment(int monthCount, decimal expectedPrincipalPayment)
         {
-            Assert.That(Subject.GetMonthlyPrincipalPayment(monthCount), Is.EqualTo(expectedPrincipalPayment));
+            Assert.That(
+                Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
+                    .Select(payment => payment.Principal)
+                    .Last()
+                , Is.EqualTo(expectedPrincipalPayment)
+            );
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Financier.Common.Liabilities
 {
@@ -16,10 +17,23 @@ namespace Financier.Common.Liabilities
         {
             Mortgage = mortgage;
             At = at;
-            Interest = decimal.Round(interest, 2);
-            Principal = decimal.Round(principal, 2);
+            Interest = interest;
+            Principal = principal;
 
             Balance = previousBalance - Principal;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"{nameof(At)}: ({At})");
+            sb.AppendLine($"{nameof(Amount)}: ({Amount})");
+            sb.AppendLine($"{nameof(Interest)}: ({Interest})");
+            sb.AppendLine($"{nameof(Principal)}: ({Principal})");
+            sb.AppendLine($"{nameof(Balance)}: {Balance}");
+
+            return sb.ToString();
         }
     }
 }
