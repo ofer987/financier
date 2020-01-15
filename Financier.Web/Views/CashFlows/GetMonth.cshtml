@@ -35,7 +35,7 @@
     function request(year, month) {
       var client = new Apollo.lib.ApolloClient({
         networkInterface: Apollo.lib.createNetworkInterface({
-          uri: '/graphql/cash_flows',
+          uri: '/graphql/cashflows',
           transportBatching: true,
         }),
         connectToDevTools: true,
@@ -45,7 +45,7 @@
         .query({
           query: Apollo.gql`
             {
-              cash_flow(
+              cashflow(
                 year: ${year},
                 month: ${month}
               ) {
@@ -71,9 +71,9 @@
           var width = 960;
           var height = 500;
           new Chart(".charts #credit-costs", width, height)
-            .render(response.data.cash_flow.creditListings);
+            .render(response.data.cashflow.creditListings);
           new Chart(".charts #debit-costs", width, height)
-            .render(response.data.cash_flow.debitListings);
+            .render(response.data.cashflow.debitListings);
         });
     }
 
