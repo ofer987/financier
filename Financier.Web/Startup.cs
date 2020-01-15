@@ -9,6 +9,8 @@ using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
+using Financier.Web.GraphQL.Expenses;
+using Financier.Web.GraphQL.Liabilities;
 using Financier.Web.GraphQL.Tags;
 using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.ItemQueries;
@@ -41,6 +43,8 @@ namespace Financier.Web
             services.AddScoped<ItemSchema>();
             services.AddScoped<TagSchema>();
             services.AddScoped<ItemQuerySchema>();
+            services.AddScoped<FixedRateMortgageSchema>();
+            services.AddScoped<MyHomeSchema>();
 
             // Add GraphQL
             services
@@ -83,6 +87,8 @@ namespace Financier.Web
             app.UseGraphQL<ItemSchema>("/graphql/items");
             app.UseGraphQL<CashFlowSchema>("/graphql/cashflows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
+            app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
+            app.UseGraphQL<MyHomeSchema>("/graphql/home");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
