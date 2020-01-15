@@ -22,6 +22,7 @@ namespace Financier.Common.Liabilities
         public double PeriodicAnnualInterestRate => PeriodicMonthlyInterestRate * 12;
         public double EffectiveAnnualInterestRate => Math.Pow(PeriodicMonthlyInterestRate + 1, 12) - 1;
 
+        [Obsolete]
         public virtual double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
 
         public Mortgage(Home product, IMonthlyPaymentCalculator calculator, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
@@ -59,22 +60,12 @@ namespace Financier.Common.Liabilities
 
         public override decimal CostAt(int monthAfterInception)
         {
-            if (monthAfterInception <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
-            }
-
-            return Convert.ToDecimal(MonthlyPayment);
+            throw new NotImplementedException();
         }
 
         public override decimal CostBy(int monthAfterInception)
         {
-            if (monthAfterInception <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
-            }
-
-            return Convert.ToDecimal(MonthlyPayment) * monthAfterInception;
+            throw new NotImplementedException();
         }
 
         public bool IsMonthlyPayment(DateTime at)

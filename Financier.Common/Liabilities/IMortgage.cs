@@ -9,7 +9,7 @@ namespace Financier.Common.Liabilities
     {
         decimal BaseValue { get; }
         decimal InitialValue { get; }
-        double MonthlyPayment { get; }
+        [Obsolete] double MonthlyPayment { get; }
 
         DateTime InitiatedAt { get; }
         int AmortisationPeriodInMonths { get; }

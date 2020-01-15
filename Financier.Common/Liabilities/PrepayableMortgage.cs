@@ -23,6 +23,7 @@ namespace Financier.Common.Liabilities
         public double EffectiveAnnualInterestRate => BaseMortgage.EffectiveAnnualInterestRate;
 
         public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAnnualTotal;
+        [Obsolete]
         public double MonthlyPayment => BaseMortgage.MonthlyPayment;
 
         public PrepayableMortgage(IMortgage baseMortgage, IMonthlyPaymentCalculator calculator, decimal maximumAllowedPrepaymentPercentage = 0.10M)
