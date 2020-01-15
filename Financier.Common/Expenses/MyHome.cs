@@ -114,7 +114,7 @@ namespace Financier.Common.Expenses
         //     } while (paymentsCount > year * 12);
         // }
 
-        public MyHome(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
+        protected MyHome(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
         {
             Mortgage = mortgage;
             CashFlow = cashflow;
