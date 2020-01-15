@@ -6,11 +6,11 @@ namespace Financier.Common.Liabilities
 {
     public class MonthlyPaymentCalculator : IMonthlyPaymentCalculator
     {
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments(IMortgage mortgage, DateTime at)
+        public IEnumerable<MonthlyPayment> GetMonthlyPayments(IMortgage mortgage, DateTime endAt)
         {
-            if (at < mortgage.InitiatedAt)
+            if (endAt < mortgage.InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {mortgage.InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be at or later than {mortgage.InitiatedAt}");
             }
 
             yield return new MonthlyPayment(mortgage, mortgage.InitiatedAt, mortgage.InitialValue, 0, 0);
@@ -20,7 +20,7 @@ namespace Financier.Common.Liabilities
             var interestRate = mortgage.PeriodicAnnualInterestRate;
 
             var i = mortgage.InitiatedAt;
-            for (; balance > 0 && i < at; i = i.AddDays(1))
+            for (; balance > 0 && i < endAt; i = i.AddDays(1))
             {
                 if (mortgage.IsMonthlyPayment(i))
                 {
