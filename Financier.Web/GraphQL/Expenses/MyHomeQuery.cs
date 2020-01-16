@@ -68,12 +68,28 @@ namespace Financier.Web.GraphQL.Expenses
                 ),
                 resolve: context =>
                 {
-                    return new List<MonthlyPayment>();
+                    var homeName = context.GetArgument<string>(Keys.Name);
+                    var purchasedAt = context.GetArgument<DateTime>(Keys.PurchasedAt);
+                    var downPayment = context.GetArgument<decimal>(Keys.DownPayment);
+                    var home = new Home(homeName, purchasedAt, downPayment);
+
+                    var baseValue = context.GetArgument<decimal>(Keys.MortgageAmount);
+                    var interestRate = context.GetArgument<decimal>(Keys.InterestRate);
+                    var amortisationPeriodInMonths = context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
+                    var mortgage = new FixedRateMortgage(home, baseValue, interestRate, amortisationPeriodInMonths);
+
+                    var cashflow = CreateCashFlow();
+
+                    var initialCash = context.GetArgument<decimal>(Keys.InitialCash);
+                    var initialDebt = context.GetArgument<decimal>(Keys.InitialDebt);
+                    var financialStatement = MyHome.BuildStatementWithMortgage(mortgage, cashflow, initialCash, initialDebt);
+
+                    return financialStatement.Mortgage.GetMonthlyPayments();
                 }
             );
         }
 
-        private ICashFlow GetCashFlow()
+        private ICashFlow CreateCashFlow()
         {
             var startAt = Item.GetAll()
                 .OrderBy(item => item.At)

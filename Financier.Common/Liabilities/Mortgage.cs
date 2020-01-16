@@ -48,6 +48,11 @@ namespace Financier.Common.Liabilities
                 .Last();
         }
 
+        public IEnumerable<MonthlyPayment> GetMonthlyPayments()
+        {
+            return Calculator.GetMonthlyPayments(this);
+        }
+
         public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt)
         {
             return Calculator.GetMonthlyPayments(this, endAt);

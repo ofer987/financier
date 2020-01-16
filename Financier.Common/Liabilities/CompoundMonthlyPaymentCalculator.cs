@@ -6,6 +6,11 @@ namespace Financier.Common.Liabilities
 {
     public class MonthlyPaymentCalculator : IMonthlyPaymentCalculator
     {
+        public IEnumerable<MonthlyPayment> GetMonthlyPayments(IMortgage mortgage)
+        {
+            return GetMonthlyPayments(mortgage, DateTime.MaxValue);
+        }
+
         public IEnumerable<MonthlyPayment> GetMonthlyPayments(IMortgage mortgage, DateTime endAt)
         {
             if (endAt < mortgage.InitiatedAt)
