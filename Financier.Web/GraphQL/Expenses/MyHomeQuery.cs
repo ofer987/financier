@@ -113,7 +113,7 @@ namespace Financier.Web.GraphQL.Expenses
                         Name = Keys.Name,
                         DefaultValue = "Loud Train Lady"
                     },
-                    new QueryArgument<NonNullGraphType<DateGraphType>>
+                    new QueryArgument<NonNullGraphType<DecimalGraphType>>
                     {
                         Name = Keys.DownPayment
                     },
@@ -121,7 +121,7 @@ namespace Financier.Web.GraphQL.Expenses
                     {
                         Name = Keys.MortgageAmount
                     },
-                    new QueryArgument<NonNullGraphType<DateGraphType>>
+                    new QueryArgument<NonNullGraphType<DecimalGraphType>>
                     {
                         Name = Keys.InterestRate
                     },
