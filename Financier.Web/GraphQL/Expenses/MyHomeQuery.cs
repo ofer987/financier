@@ -78,13 +78,13 @@ namespace Financier.Web.GraphQL.Expenses
                     var amortisationPeriodInMonths = context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
                     var mortgage = new FixedRateMortgage(home, baseValue, interestRate, amortisationPeriodInMonths);
 
-                    var cashflow = CreateCashFlow();
+                    var cashFlow = CreateCashFlow();
 
                     var initialCash = context.GetArgument<decimal>(Keys.InitialCash);
                     var initialDebt = context.GetArgument<decimal>(Keys.InitialDebt);
                     var financialStatement = MyHome.BuildStatementWithPrepaybleMortgage(
                         mortgage,
-                        cashflow,
+                        cashFlow,
                         initialCash,
                         initialDebt
                     );
@@ -143,11 +143,11 @@ namespace Financier.Web.GraphQL.Expenses
                     var amortisationPeriodInMonths = context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
                     var mortgage = new FixedRateMortgage(home, baseValue, interestRate, amortisationPeriodInMonths);
 
-                    var cashflow = CreateCashFlow();
+                    var cashFlow = CreateCashFlow();
 
                     var initialCash = context.GetArgument<decimal>(Keys.InitialCash);
                     var initialDebt = context.GetArgument<decimal>(Keys.InitialDebt);
-                    var financialStatement = MyHome.BuildStatementWithMortgage(mortgage, cashflow, initialCash, initialDebt);
+                    var financialStatement = MyHome.BuildStatementWithMortgage(mortgage, cashFlow, initialCash, initialDebt);
 
                     return financialStatement.Mortgage.GetMonthlyPayments();
                 }

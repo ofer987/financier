@@ -18,16 +18,16 @@ namespace Financier.Common.Expenses
 
         private Payments Expenditures { get; } = new Payments();
 
-        public static MyHome BuildStatementWithMortgage(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
+        public static MyHome BuildStatementWithMortgage(IMortgage mortgage, ICashFlow cashFlow, decimal initialCash, decimal initialDebt)
         {
-            return new MyHome(mortgage, cashflow, initialCash, initialDebt);
+            return new MyHome(mortgage, cashFlow, initialCash, initialDebt);
         }
 
-        public static MyHome BuildStatementWithPrepaybleMortgage(IMortgage baseMortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
+        public static MyHome BuildStatementWithPrepaybleMortgage(IMortgage baseMortgage, ICashFlow cashFlow, decimal initialCash, decimal initialDebt)
         {
-            var mortgage = CreatePrepayableMortgage(baseMortgage, cashflow);
+            var mortgage = CreatePrepayableMortgage(baseMortgage, cashFlow);
 
-            var result = new MyHome(mortgage, cashflow, initialCash, initialDebt);
+            var result = new MyHome(mortgage, cashFlow, initialCash, initialDebt);
 
             // Hack!!!!
             foreach (var prepayment in mortgage.Prepayments.GetAll())
@@ -38,7 +38,7 @@ namespace Financier.Common.Expenses
             return result;
         }
 
-        private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashflow)
+        private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashFlow)
         {
             var result = new PrepayableMortgage(baseMortgage);
             var mortgageBalance = result.InitialValue;
@@ -54,7 +54,7 @@ namespace Financier.Common.Expenses
                 // FIXME: Is this API to retrieve the 12th month?
                 if (endOfMonth.Month == 12)
                 {
-                    var yearlyProfit = cashflow.DailyProfit * Convert.ToDecimal(endOfMonth.Subtract(startAt).TotalDays);
+                    var yearlyProfit = cashFlow.DailyProfit * Convert.ToDecimal(endOfMonth.Subtract(startAt).TotalDays);
 
                     // FIXME: Figure out correct amount
                     var prepayment = CreatePrepayment(
@@ -92,9 +92,9 @@ namespace Financier.Common.Expenses
                 : amount;
         }
 
-        // public MyHome(ICashFlow cashflow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
+        // public MyHome(ICashFlow cashFlow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
         // {
-        //     CashFlow = cashflow;
+        //     CashFlow = cashFlow;
         //     if (AnnualCashFlowProfit <= 0)
         //     {
         //         return;
@@ -114,10 +114,10 @@ namespace Financier.Common.Expenses
         //     } while (paymentsCount > year * 12);
         // }
 
-        protected MyHome(IMortgage mortgage, ICashFlow cashflow, decimal initialCash, decimal initialDebt)
+        protected MyHome(IMortgage mortgage, ICashFlow cashFlow, decimal initialCash, decimal initialDebt)
         {
             Mortgage = mortgage;
-            CashFlow = cashflow;
+            CashFlow = cashFlow;
             InitialCash = initialCash;
             InitialDebt = initialDebt;
         }

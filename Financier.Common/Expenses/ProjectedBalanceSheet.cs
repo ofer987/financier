@@ -6,14 +6,14 @@ namespace Financier.Common.Expenses
     {
         public ICashFlow CashFlow { get; }
 
-        public ProjectedBalanceSheet(ICashFlow cashflow, decimal cash, decimal debt) : base(cash, debt, DateTime.Now)
+        public ProjectedBalanceSheet(ICashFlow cashFlow, decimal cash, decimal debt) : base(cash, debt, DateTime.Now)
         {
-            CashFlow = cashflow;
+            CashFlow = cashFlow;
         }
 
-        public ProjectedBalanceSheet(ICashFlow cashflow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
+        public ProjectedBalanceSheet(ICashFlow cashFlow, decimal cash, decimal debt, DateTime at) : base(cash, debt, at)
         {
-            CashFlow = cashflow;
+            CashFlow = cashFlow;
         }
 
         public BalanceSheet GetProjectionAt(DateTime projectedAt)

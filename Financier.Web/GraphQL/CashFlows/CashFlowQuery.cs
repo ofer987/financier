@@ -17,7 +17,7 @@ namespace Financier.Web.GraphQL.CashFlows
         public CashFlowQuery()
         {
             Field<CashFlowType>(
-                "cashflow",
+                "getMonthlyCashFlow",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
@@ -38,7 +38,7 @@ namespace Financier.Web.GraphQL.CashFlows
             );
 
             Field<ListGraphType<CashFlowType>>(
-                "cashflows",
+                "getMonthlyCashFlows",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {

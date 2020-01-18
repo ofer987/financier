@@ -85,7 +85,7 @@ namespace Financier.Web
 
             app.UseGraphQL<TagSchema>("/graphql/tags");
             app.UseGraphQL<ItemSchema>("/graphql/items");
-            app.UseGraphQL<CashFlowSchema>("/graphql/cashflows");
+            app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
             app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
             app.UseGraphQL<MyHomeSchema>("/graphql/home");
