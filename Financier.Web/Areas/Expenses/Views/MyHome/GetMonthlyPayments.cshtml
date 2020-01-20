@@ -1,0 +1,174 @@
+<div class="expenses">
+  <div class="my-home">
+    <div class="input">
+      <div class="initial-cash">
+        Initial Cash:&nbsp;
+        <input id="initial-cash" class="decimal" />
+      </div>
+      <div class="initial-debt">
+        Initial Debt:&nbsp;
+        <input id="initial-debt" class="decimal" />
+      </div>
+      <div class="date-picker">
+        Purchased At:&nbsp;
+        <input id="purchased-at" class="day-picker" />
+      </div>
+      <div class="down-payment">
+        Down Payment:&nbsp;
+        <input id="down-payment" class="decimal">
+      </div>
+      <div class="interest-rate">
+        Interest Rate:&nbsp;
+        <input id="interest-rate" class="decimal" />
+      </div>
+      <div class="amortization">
+        Amortization Period (Months):&nbsp;
+        <input id="amortization" class="int" />
+      </div>
+      <div class="comparisons">
+        <div class="compare">
+          <input type="button" value="Compare" />
+        </div>
+      </div>
+      <div class="clear">
+        <input type="button" value="Clear" />
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="fixed-rate">
+      </div>
+
+      <div class="fixed-rate-with-prepayments">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/jquery-ui.min.js"></script>
+<script src="~/js/MonthPicker.min.js"></script>
+<script src="~/js/apollo-client.min.js"></script>
+<script src="~/js/lodash.min.js"></script>
+
+<script type="text/javascript">
+  'use strict';
+
+  (function() {
+    class Element {
+      constructor(selector) {
+        this.selector = selector;
+      }
+
+      getContainer() {
+        return $(this.selector);
+      }
+
+      clear() {
+        this.getContainer().empty();
+      }
+    }
+
+    class Results extends Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.details = new Details(`${selector} .details`, data);
+      }
+
+      render() {
+        this.details.render();
+      }
+
+      clear() {
+        this.details.clear();
+      }
+    }
+
+    class Input extends Element {
+      // TODO: inject the results component
+      constructor(selector, renderResults) {
+        super(selector);
+
+        this.compareButton = new Button(".compare input", () => {
+          this.request((data) => {
+            var results = new Results(".results", data);
+
+            renderResults(results);
+          });
+        });
+
+        // this.dates = new DateRange(".month-picker", new Date(2018, 11, 1), new Date(2019, 10, 1));
+        this.clearButton = new Button(".clear input", () => {
+          new Results(".results", []).clear();
+        });
+      }
+
+      render() {
+        // this.dates.render();
+      }
+
+      clear() {
+        // this.dates.clear();
+      }
+
+      // getFromDate() {
+      //   return this.dates.from();
+      // }
+      //
+      // getToDate() {
+      //   return this.dates.to();
+      // }
+
+      request(render) {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql/home',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
+        });
+
+        client
+          .query({
+            query: Apollo.gql`
+              query($tagNames: [String!]!, $fromYear: Int!, $fromMonth: Int!, $toYear: Int!, $toMonth: Int!) {
+                getFixedMortgagePayments(
+                  initialCash: $initialCash, 
+                  initialDebt: $initialDebt, 
+                  purchasedAt: $purchasedAt, 
+                  name: $name, 
+                  downPayment: $downPayment,
+                  mortgageAmount: $mortgageAmount,
+                  interestRate: $interestRate,
+                  amortisationPeriodInMonths: $amortizationPeriodInMonths
+                ) {
+                  at,
+                  amount
+                }
+              }
+            `,
+            variables: {
+              "initialCash": 250000.00,
+              "initialDebt": 500,
+              "purchasedAt": "2019-10-12",
+              "name": "Fart Man",
+              "downPayment": 30000,
+              "mortgageAmount": 328000,
+              "interestRate": 0.0319,
+              "amortizationPeriodInMonths": 300
+            }
+          })
+          .then(response => {
+            debugger;
+            // render(response.data.monthlyExpensesByTagNames);
+          });
+      }
+    }
+
+    var inputs = new Input(".input", (results) => {
+      results.clear();
+      results.render();
+    });
+    inputs.render();
+  })();
