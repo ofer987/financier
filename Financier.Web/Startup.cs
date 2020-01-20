@@ -95,6 +95,13 @@ namespace Financier.Web
 
             app.UseMvc(routes =>
             {
+                routes.MapAreaRoute(
+                    name: "Expenses/MyHome#GetMonthlyPayments",
+                    areaName: "Expenses",
+                    template: "expenses/my-home/get-monthly-payments",
+                    defaults: new { controller = "MyHome", action = "GetMonthlyPayments" }
+                );
+
                 routes.MapRoute(
                     name: "Items#Chart",
                     template: "Items/chart",

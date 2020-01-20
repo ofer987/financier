@@ -53,6 +53,22 @@ namespace Financier.Web.GraphQL.CashFlows
                     return GetMonthlyAnalysis(year).ToList();
                 }
             );
+
+            Field<CashFlowType>(
+                "getYearlyCashFlow",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.Year
+                    }
+                ),
+                resolve: context =>
+                {
+                    var year = context.GetArgument<int>(Keys.Year);
+
+                    return new YearlyCashFlow(year);
+                }
+            );
         }
 
         private IEnumerable<CashFlow> GetMonthlyAnalysis(int year)
