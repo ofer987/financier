@@ -4,8 +4,6 @@ namespace Financier.Common.Expenses
 {
     public class MonthlyCashFlow : CashFlow
     {
-        public DateTime At => StartAt;
-
         public MonthlyCashFlow(int year, int month, decimal threshold = DefaultThreshold)
         {
             StartAt = new DateTime(year, month, 1);

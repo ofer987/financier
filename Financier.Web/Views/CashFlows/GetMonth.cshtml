@@ -4,7 +4,7 @@
 <link href="~/css/site.css" rel="stylesheet">
 
 <div>
-  @Model.At.ToString("MMMM yyyy")
+  @Model.StartAt.ToString("MMMM yyyy")
 </div>
 
 <!-- bar chart -->
@@ -233,7 +233,7 @@
       //   });
     };
 
-    request(@(Model.At.Year), @(Model.At.Month));
+    request(@(Model.StartAt.Year), @(Model.StartAt.Month));
   })();
 </script>
 
