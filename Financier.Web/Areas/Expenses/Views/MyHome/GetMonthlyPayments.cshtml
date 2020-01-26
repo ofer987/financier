@@ -57,67 +57,88 @@
 <script src="~/js/apollo-client.min.js"></script>
 <script src="~/js/lodash.min.js"></script>
 
-<script type="text/javascript">
+<script type="module">
   'use strict';
 
+  import * as Elements from '/js/elements.js';
+
   (function() {
-    class Element {
-      constructor(selector) {
-        this.selector = selector;
-      }
-
-      getContainer() {
-        return $(this.selector);
-      }
-
-      clear() {
-        this.getContainer().empty();
-      }
-    }
-
-    class Input extends Element {
-      // TODO: inject the results component
-      constructor(selector, renderPayments) {
+    class Payments extends Elements.Element {
+      constructor(selector, data) {
         super(selector);
 
-        this.purchasedAt = new DatePicker(".purchased-at input", new Date(2018, 11, 1));
-        this.compareButton = new Button(".compare input", () => {
-          this.initialCash = $(".initial-cash input").val();
-          this.initialDebt = $(".initial-debt input").val();
-          this.amount = $(".amount input").val();
-          this.downPayment = $(".down-payment input").val();
-          this.interestRate = $(".interest-rate input").val();
-          this.amortization = $(".amortization input").val();
+        var data = _.map(data, item => {
+          var at = item["at"]
+            .split("-")
+            .map(v => +v);
 
-          this.request((data) => {
-            var results = new Payments(".results .fixed-rate", data);
-
-            renderPayments(results);
-          });
+          return {
+            "at": new Date(at[0], at[1] - 1, at[2]),
+            "amount": item["amount"]
+          };
         });
 
-        this.clearButton = new Button(".clear input", () => {
-          new Payments(".results", []).clear();
-        });
+        this.data = _.orderBy(data, item => item["at"], "asc");
       }
 
       render() {
-        this.purchasedAt.render();
+        var container = this.getContainer();
+
+        this.data.forEach(item => {
+          var id = Math.floor(Math.random() * 1000000).toString();
+          var element = `
+            <div id="${id}" class="payment" />
+          `;
+          container.append(element);
+
+          new Payment(`.payment#${id}`, item).render();
+        });
+      }
+    }
+
+    class Payment extends Elements.Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.data = data;
       }
 
-      clear() {
-        // this.dates.clear();
+      render() {
+        var container = this.getContainer();
+        var identifer = this.data["at"];
+        var paymentElement = `
+          <div class="payment">
+            <h1>${this.data["at"]}</h1>
+
+            <div class="at">
+              ${this.data["at"]}
+            </div>
+
+            <div class="amount">
+              ${this.data["amount"]}
+            </div>
+          </div>
+        `;
+
+        container.append(paymentElement);
+        //
+        // this
+        //   .createPaymentElement(`.items#${identifer}`, item.items)
+        //   .render();
       }
+    }
 
-      // getFromDate() {
-      //   return this.dates.from();
-      // }
-      //
-      // getToDate() {
-      //   return this.dates.to();
-      // }
+    class MyForm extends Elements.Form {
+      constructor(selector) {
+        super(selector);
 
-      request(render) {
+        this.purchasedAt = new Elements.DatePicker(".purchased-at input", new Date(2018, 11, 1));
+      }
+    }
+
+    var form = new MyForm(".input");
+    form.setSubmitButton(() => {
+      var request = (render) => {
         var client = new Apollo.lib.ApolloClient({
           networkInterface: Apollo.lib.createNetworkInterface({
             uri: '/graphql/home',
@@ -155,154 +176,36 @@
               }
             `,
             variables: {
-              "initialCash": this.initialDebt,
-              "initialDebt": this.initialDebt,
-              "purchasedAt": this.purchasedAt.toString(),
+              "initialCash": form.getInput("initial-cash").value,
+              "initialDebt": form.getInput("initial-debt").value,
+              "purchasedAt": form.purchasedAt.toString(),
               "name": "Fart Man",
-              "downPayment": this.downPayment,
-              "mortgageAmount": this.amount,
-              "interestRate": this.interestRate,
-              "amortizationPeriodInMonths": this.amortization
+              "downPayment": form.getInput("down-payment").value,
+              "mortgageAmount": form.getInput("amount").value,
+              "interestRate": form.getInput("interest-rate").value,
+              "amortizationPeriodInMonths": form.getInput("amortization").value
             }
           })
           .then(response => {
             render(response.data.getFixedMortgagePayments);
           });
-      }
-    }
+      };
+      request((data) => {
+        var results = new Payments(".results .fixed-rate", data);
 
-    class Button extends Element {
-      constructor(selector, action) {
-        super(selector);
-
-        this.getContainer().click(action);
-      }
-    }
-
-    class DatePicker extends Element {
-      constructor(selector, value) {
-        super(selector);
-
-        this.value = value;
-      }
-
-      render() {
-        // FIXME: use the getContainer function
-        this.getContainer().datepicker();
-        this.getContainer().val(`${this.value.getMonth()}/${this.value.getDay()}/${this.value.getFullYear()}`);
-      }
-
-      val() {
-        return new Date(this.year, this.month - 1, this.day);
-      }
-
-      toString() {
-        return this.getContainer().val()
-          .split("/")
-          .join("-");
-      }
-
-      toArray() {
-        return this.toString()
-          .split("/")
-          .map(v => +v);
-      }
-
-      get day() {
-        return this.toArray()[1];
-      }
-
-      get month() {
-        return this.toArray()[0];
-      }
-
-      get year() {
-        return this.toArray()[2];
-      }
-
-      clear() {
-        this.getContainer().val("");
-      }
-    }
-
-    class Payments extends Element {
-      constructor(selector, data) {
-        super(selector);
-
-        var data = _.map(data, item => {
-          var at = item["at"]
-            .split("-")
-            .map(v => +v);
-
-          return {
-            "at": new Date(at[0], at[1] - 1, at[2]),
-            "amount": item["amount"]
-          };
-        });
-
-        this.data = _.orderBy(data, item => item["at"], "asc");
-      }
-
-      render() {
-        var container = this.getContainer();
-
-        this.data.forEach(item => {
-          var id = Math.floor(Math.random() * 1000000).toString();
-          var element = `
-            <div id="${id}" class="payment" />
-          `;
-          container.append(element);
-
-          new Payment(`.payment#${id}`, item).render();
-        });
-      }
-    }
-
-    class Payment extends Element {
-      constructor(selector, data) {
-        super(selector);
-
-        this.data = data;
-      }
-
-      render() {
-        var container = this.getContainer();
-        var identifer = this.data["at"];
-        var paymentElement = `
-          <div class="payment">
-            <h1>${this.data["at"]}</h1>
-
-            <div class="at">
-              ${this.data["at"]}
-            </div>
-
-            <div class="amount">
-              ${this.data["amount"]}
-            </div>
-          </div>
-        `;
-
-        container.append(paymentElement);
-        //
-        // this
-        //   .createPaymentElement(`.items#${identifer}`, item.items)
-        //   .render();
-      }
-    }
-
-    var inputs = new Input(".input", (results) => {
-      results.clear();
-      results.render();
+        results.clear();
+        results.render();
+      })
     });
-    inputs.render();
+    form.render();
 
     var initValues = function() {
-      $(".initial-cash input").val(100);
-      $(".initial-debt input").val(50);
-      $(".down-payment input").val(10000);
-      $(".amount input").val(400000);
-      $(".interest-rate input").val(0.0314);
-      $(".amortization input").val(300);
+      form.getInput("initial-cash").value = 100;
+      form.getInput("initial-debt").value = 50;
+      form.getInput("down-payment").value = 10000;
+      form.getInput("amount").value = 400000;
+      form.getInput("interest-rate").value = 0.0314;
+      form.getInput("amortization").value = 300;
     };
 
     initValues();
