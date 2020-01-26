@@ -1,0 +1,26 @@
+.purchased-at table {
+  font-size: 1em;
+}
+
+.purchased-at .ui-draggable, .ui-droppable {
+  background-position: top;
+}
+
+.expenses .my-home .results {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.expenses .my-home .results .payment {
+  display: flex;
+  flex-flow: nowrap;
+  flex-flow: row nowrap;
+}
+
+.expenses .my-home .results .payment .at {
+  width: 50%;
+}
+
+.expenses .my-home .results .payment .amount {
+  width: 50%;
+}

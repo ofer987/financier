@@ -41,11 +41,11 @@
       </div>
     </div>
 
-    <div class="results">
-      <div class="fixed-rate">
+    <div>
+      <div class="results" id="fixed-rate">
       </div>
 
-      <div class="fixed-rate-with-prepayments">
+      <div class="results" id="fixed-rate-with-prepayments">
       </div>
     </div>
   </div>
@@ -53,7 +53,6 @@
 
 <script src="~/js/jquery.min.js"></script>
 <script src="~/js/jquery-ui.min.js"></script>
-<!-- <script src="~/js/MonthPicker.min.js"></script> -->
 <script src="~/js/apollo-client.min.js"></script>
 <script src="~/js/lodash.min.js"></script>
 
@@ -89,7 +88,7 @@
           var element = `
             <div id="${id}" class="payment" />
           `;
-          container.append(element);
+          this.appendNewChild(element);
 
           new Payment(`.payment#${id}`, item).render();
         });
@@ -108,10 +107,8 @@
         var identifer = this.data["at"];
         var paymentElement = `
           <div class="payment">
-            <h1>${this.data["at"]}</h1>
-
             <div class="at">
-              ${this.data["at"]}
+              ${this.data["at"].getFullYear()}-${this.data["at"].getMonth()+1}-${this.data["at"].getDate()}
             </div>
 
             <div class="amount">
@@ -191,7 +188,7 @@
           });
       };
       request((data) => {
-        var results = new Payments(".results .fixed-rate", data);
+        var results = new Payments(".results#fixed-rate", data);
 
         results.clear();
         results.render();
