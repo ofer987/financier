@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+Dir.glob('wwwroot/css/**/*.less').each do |less_path|
+  css_path = File.join(
+    File.dirname(less_path),
+    "#{File.basename(less_path, '.less')}.css"
+  )
+
+  system("lessc #{less_path} > #{css_path}")
+end
+
+exec('dotnet run')
