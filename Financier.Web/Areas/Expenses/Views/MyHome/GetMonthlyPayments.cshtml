@@ -60,6 +60,7 @@
   'use strict';
 
   import * as Elements from '/js/elements.js';
+  import * as Dates from '/js/formatted_date.js';
 
   (function() {
     class Payments extends Elements.Element {
@@ -72,7 +73,7 @@
             .map(v => +v);
 
           return {
-            "at": new Date(at[0], at[1] - 1, at[2]),
+            "at": new Dates.FormattedDate(at[0], at[1] - 1, at[2]),
             "amount": item["amount"]
           };
         });
@@ -108,11 +109,11 @@
         var paymentElement = `
           <div class="payment">
             <div class="at">
-              ${this.data["at"].getFullYear()}-${this.data["at"].getMonth()+1}-${this.data["at"].getDate()}
+              ${this.data["at"].toFormatted}
             </div>
 
             <div class="amount">
-              ${this.data["amount"]}
+              ${this.data["amount"].toFixed(2)}
             </div>
           </div>
         `;
