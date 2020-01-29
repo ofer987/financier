@@ -41,12 +41,7 @@
       </div>
     </div>
 
-    <div>
-      <div class="results" id="fixed-rate">
-      </div>
-
-      <div class="results" id="fixed-rate-with-prepayments">
-      </div>
+    <table class="results">
     </div>
   </div>
 </div>
@@ -64,10 +59,14 @@
 
   (function() {
     class Payments extends Elements.Element {
-      constructor(selector, data) {
+      constructor(selector) {
         super(selector);
 
-        var data = _.map(data, item => {
+        this.data = [];
+      }
+
+      push(paymentType, datum) {
+        var values = _.map(datum, item => {
           var at = item["at"]
             .split("-")
             .map(v => +v);
@@ -77,22 +76,92 @@
             "amount": item["amount"]
           };
         });
+        var values = _.orderBy(values, item => item["at"], "asc");
 
-        this.data = _.orderBy(data, item => item["at"], "asc");
+        this.data[paymentType] = _.groupBy(values, item => item["at"].getFullYear());
       }
 
       render() {
-        var container = this.getContainer();
+        this.renderHeader();
+        this.renderBody();
+      }
 
-        this.data.forEach(item => {
-          var id = Math.floor(Math.random() * 1000000).toString();
-          var element = `
-            <div id="${id}" class="payment" />
+      renderHeader() {
+        var start = `
+          <thead>
+            <tr>
+        `;
+        var rows = _.keys(this.data).map(name => {
+          return `
+            <th>${name}</th>
           `;
-          this.appendNewChild(element);
-
-          new Payment(`.payment#${id}`, item).render();
         });
+        var end = `
+            </tr>
+          </thead>
+        `;
+
+        var html = start + rows.join("\n") + end;
+        this.getContainer().append(html);
+      }
+
+      renderBody() {
+        var rows = this.years.map(year => {
+          var start = `
+            <tr id="${year}" class="year">
+          `;
+          var end = `
+            </tr>
+            <tr class="spacer"></tr>
+          `;
+          var yearlyData = _.values(this.data).map(datum => {
+            var element = "";
+            if (typeof(datum[year]) === "undefined") {
+              return `<td></td>`;
+            }
+
+            var startColumn = `
+              <td>
+            `;
+            var paymentElements = datum[year].map(payment => {
+              return `
+                <div class="payment">
+                  <div class="at">
+                    ${payment["at"].toFormatted}
+                  </div>
+
+                  <div class="amount">
+                    ${payment["amount"].toFixed(2)}
+                  </div>
+                </div>
+              `;
+            });
+            var endColumn = `
+              </td>
+            `;
+
+            return startColumn + paymentElements.join("\n") + endColumn;
+          });
+
+          return start + yearlyData.join("\n") + end;
+        });
+
+        this.getContainer().append(rows);
+      }
+
+      empty() {
+        this.data = [];
+        this.getContainer().empty();
+      }
+
+      clearView() {
+        this.getContainer().empty();
+      }
+
+      get years() {
+        var years = _.uniq(_.values(this.data).flatMap(datum => _.keys(datum).map(v => +v)));
+
+        return _.orderBy(years, year => year, "asc");
       }
     }
 
@@ -135,7 +204,9 @@
     }
 
     var form = new MyForm(".input");
+    var results = new Payments(".results");
     form.setSubmitButton(() => {
+      results.empty();
       var request = (name, render) => {
         var client = new Apollo.lib.ApolloClient({
           networkInterface: Apollo.lib.createNetworkInterface({
@@ -185,20 +256,20 @@
             }
           })
           .then(response => {
-            render(response.data[name]);
+            render(results, response.data[name]);
           });
       };
-      request("getFixedMortgagePayments", (data) => {
-        var results = new Payments(".results#fixed-rate", data);
+      request("getFixedMortgagePayments", (results, data) => {
+        results.push("Fixed Mortgage Payments", data);
 
-        results.clear();
+        results.clearView();
         results.render();
       });
 
-      request("getFixedMortgagePaymentsWithPrepayments", (data) => {
-        var results = new Payments(".results#fixed-rate-with-prepayments", data);
+      request("getFixedMortgagePaymentsWithPrepayments", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Prepayments", data);
 
-        results.clear();
+        results.clearView();
         results.render();
       });
     });

@@ -11,18 +11,33 @@
 .expenses .my-home {
   .results {
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: row nowrap;
+
+    tr {
+      vertical-align: super;
+
+      :not(td:last-child) {
+        padding-right: 2em;
+      }
+    }
+
+    tr.spacer {
+      height: 1em;
+    }
 
     .payment {
       display: flex;
       flex-flow: row nowrap;
+      font-family: courier;
 
       .at {
-        width: 50%;
+        width: 12em;
+        text-align: left;
       }
 
       .amount {
-        width: 50%;
+        width: 6em;
+        text-align: right;
       }
     }
   }
