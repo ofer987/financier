@@ -39,7 +39,7 @@ namespace Financier.Common.Tests.Models
                 1000.00M,
                 new DateTime(2020, 1, 1),
                 new DateTime(2019, 1, 1)
-            ).Returns(980.392156862745M);
+            ).Returns(980.39);
 
             yield return new TestCaseData(
                 0.00M,

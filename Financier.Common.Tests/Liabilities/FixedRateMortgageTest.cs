@@ -62,7 +62,7 @@ namespace Financier.Common.Tests.Liabilities
         }
 
         [TestCase(1, 199562.07)]
-        [TestCase(2, 199122.99)]
+        [TestCase(2, 199122.98)]
         [TestCase(5, 197798.76)]
         [TestCase(10, 195568.30)]
         [TestCase(300, 0)]
@@ -83,7 +83,7 @@ namespace Financier.Common.Tests.Liabilities
         {
             Assert.That(
                 Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
-                    .Select(payment => payment.Interest)
+                    .Select(payment => payment.Interest.Value)
                     .Last()
                 , Is.EqualTo(expectedInterestPayment)
             );
@@ -98,7 +98,7 @@ namespace Financier.Common.Tests.Liabilities
         {
             Assert.That(
                 Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
-                    .Select(payment => payment.Principal)
+                    .Select(payment => payment.Principal.Value)
                     .Last()
                 , Is.EqualTo(expectedPrincipalPayment)
             );

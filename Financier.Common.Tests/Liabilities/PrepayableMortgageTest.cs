@@ -25,7 +25,7 @@ namespace Financier.Common.Tests.Liabilities
             Mortgage = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
             Subject = new Financier.Common.Liabilities.PrepayableMortgage(Mortgage, 0.20M);
             Subject.AddPrepayment(new DateTime(2020, 1, 1), 30000.00M);
-            Subject.AddPrepayment(new DateTime(2020, 5, 1), 35000.00M);
+            Subject.AddPrepayment(new DateTime(2020, 5, 1), 10000.00M);
         }
 
         [Test]
@@ -38,12 +38,12 @@ namespace Financier.Common.Tests.Liabilities
         }
 
         [TestCase(1, 199562.07)]
-        [TestCase(2, 199122.99)]
+        [TestCase(2, 199122.98)]
         [TestCase(5, 197798.76)]
         [TestCase(10, 195568.30)]
         [TestCase(13, 164215.84)]
         [TestCase(14, 163683.41)]
-        [TestCase(18, 126447.16)]
+        [TestCase(18, 151513.19)]
         public void Test_GetBalance(int monthCount, decimal expectedBalance)
         {
             Assert.That(Subject.GetBalance(PurchasedAt.AddMonths(monthCount)), Is.EqualTo(expectedBalance));
@@ -53,13 +53,15 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2, 527.01)]
         [TestCase(5, 523.52)]
         [TestCase(10, 517.65)]
-        [TestCase(13, 514.09)]
-        [TestCase(18, 335.59)]
+        // Represents the principal-only payment (so no interest)
+        [TestCase(13, 0.00)]
+        [TestCase(14, 433.67)]
+        [TestCase(18, 401.61)]
         public void Test_GetMonthlyInterestPayment(int monthCount, decimal expectedInterestPayment)
         {
             Assert.That(
                 Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
-                    .Select(payment => payment.Interest)
+                    .Select(payment => payment.Interest.Value)
                     .Last()
                 , Is.EqualTo(expectedInterestPayment)
             );
@@ -69,14 +71,16 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2, 439.09)]
         [TestCase(5, 442.57)]
         [TestCase(10, 448.45)]
-        [TestCase(13, 30452.01)]
-        [TestCase(17, 35536.66)]
-        [TestCase(18, 630.50)]
+        // Get the prepayment (principal-only)
+        [TestCase(13, 30000.00)]
+        // Get the prepayment (principal-only)
+        [TestCase(17, 10000.00)]
+        [TestCase(18, 564.48)]
         public void Test_GetMonthlyPrincipalPayment(int monthCount, decimal expectedPrincipalPayment)
         {
             Assert.That(
                 Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
-                    .Select(payment => payment.Principal)
+                    .Select(payment => payment.Principal.Value)
                     .Last()
                 , Is.EqualTo(expectedPrincipalPayment)
             );

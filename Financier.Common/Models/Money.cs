@@ -29,7 +29,20 @@ namespace Financier.Common.Models
             return money.Value;
         }
 
-        public decimal Value { get; }
+        private decimal val;
+        public decimal Value
+        {
+            get
+            {
+                return val;
+            }
+
+            set
+            {
+                val = decimal.Round(value, 2);
+            }
+        }
+
         public DateTime At { get; }
 
         public Money(decimal val, DateTime at)
