@@ -15,14 +15,14 @@ namespace Financier.Common.Liabilities
 
         private IMortgage Mortgage { get; }
 
-        public MonthlyPayment(IMortgage mortgage, DateTime at, Money previousBalance, decimal interest, decimal principal)
+        public MonthlyPayment(IMortgage mortgage, DateTime at, decimal previousBalance, decimal interest, decimal principal)
         {
             Mortgage = mortgage;
             At = at;
             Interest = new Money(interest, At);
             Principal = new Money(principal, At);
 
-            Balance = previousBalance - Principal;
+            Balance = new Money(previousBalance - Principal, At);
         }
 
         public override string ToString()

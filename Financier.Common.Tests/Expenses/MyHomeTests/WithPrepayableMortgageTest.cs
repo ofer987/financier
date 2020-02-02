@@ -18,13 +18,14 @@ namespace Financier.Common.Tests.Expenses.MyHomeTests
         public WithPrepayableMortgageTest()
         {
             CashFlow = new DummyCashFlow(89.86M);
+            var purchasedAt = new DateTime(2019, 1, 1);
             var downpayment = 82000.00M;
             var mortgageAmount = 328000.00M;
+            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
-            var purchasedAt = new DateTime(2019, 1, 1);
 
             Home = new Home("first home", purchasedAt, downpayment);
-            BaseMortgage = new FixedRateMortgage(Home, mortgageAmount, preferredInterestRate, 300);
+            BaseMortgage = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
             Subject = MyHome.BuildStatementWithPrepaybleMortgage(BaseMortgage, CashFlow, 2000.00M, 6000.00M);
         }
 

@@ -74,9 +74,10 @@ namespace Financier.Web.GraphQL.Expenses
                     var home = new Home(homeName, purchasedAt, downPayment);
 
                     var baseValue = context.GetArgument<decimal>(Keys.MortgageAmount);
+                    var baseValueMoney = new Money(baseValue, purchasedAt);
                     var interestRate = context.GetArgument<decimal>(Keys.InterestRate);
                     var amortisationPeriodInMonths = context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
-                    var mortgage = new FixedRateMortgage(home, baseValue, interestRate, amortisationPeriodInMonths);
+                    var mortgage = new FixedRateMortgage(home, baseValueMoney, interestRate, amortisationPeriodInMonths);
 
                     var cashFlow = CreateCashFlow();
 
@@ -139,9 +140,10 @@ namespace Financier.Web.GraphQL.Expenses
                     var home = new Home(homeName, purchasedAt, downPayment);
 
                     var baseValue = context.GetArgument<decimal>(Keys.MortgageAmount);
+                    var baseValueMoney = new Money(baseValue, purchasedAt);
                     var interestRate = context.GetArgument<decimal>(Keys.InterestRate);
                     var amortisationPeriodInMonths = context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
-                    var mortgage = new FixedRateMortgage(home, baseValue, interestRate, amortisationPeriodInMonths);
+                    var mortgage = new FixedRateMortgage(home, baseValueMoney, interestRate, amortisationPeriodInMonths);
 
                     var cashFlow = CreateCashFlow();
 
