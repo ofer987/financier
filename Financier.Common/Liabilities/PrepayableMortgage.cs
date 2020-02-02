@@ -12,8 +12,8 @@ namespace Financier.Common.Liabilities
         public CappedPayments Prepayments { get; }
         public IMonthlyPaymentCalculator Calculator { get; }
 
-        public decimal BaseValue => BaseMortgage.BaseValue;
-        public decimal InitialValue => BaseMortgage.InitialValue;
+        public Money BaseValue => BaseMortgage.BaseValue;
+        public Money InitialValue => BaseMortgage.InitialValue;
         public DateTime InitiatedAt => BaseMortgage.InitiatedAt;
 
         public int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;

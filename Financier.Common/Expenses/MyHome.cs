@@ -41,7 +41,7 @@ namespace Financier.Common.Expenses
         private static PrepayableMortgage CreatePrepayableMortgage(IMortgage baseMortgage, ICashFlow cashFlow)
         {
             var result = new PrepayableMortgage(baseMortgage);
-            var mortgageBalance = result.InitialValue;
+            decimal mortgageBalance = result.InitialValue;
             var startAt = result.InitiatedAt;
             var at = startAt;
             while (mortgageBalance > 0.00M)

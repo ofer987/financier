@@ -21,7 +21,7 @@ namespace Financier.Common.Liabilities
             yield return new MonthlyPayment(mortgage, mortgage.InitiatedAt, mortgage.InitialValue, 0, 0);
 
             var monthlyPayment = Convert.ToDecimal(mortgage.MonthlyPayment);
-            var balance = mortgage.InitialValue;
+            decimal balance = mortgage.InitialValue;
             var interestRate = mortgage.PeriodicAnnualInterestRate;
 
             var i = mortgage.InitiatedAt;

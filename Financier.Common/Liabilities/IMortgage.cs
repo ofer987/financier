@@ -7,8 +7,8 @@ namespace Financier.Common.Liabilities
 {
     public interface IMortgage : ILiability
     {
-        decimal BaseValue { get; }
-        decimal InitialValue { get; }
+        Money BaseValue { get; }
+        Money InitialValue { get; }
         [Obsolete] double MonthlyPayment { get; }
 
         DateTime InitiatedAt { get; }

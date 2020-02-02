@@ -37,7 +37,7 @@ namespace Financier.Common.Models
             return 0.00M
                 + DownPayment 
                 + Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
-                    .Select(payment => payment.Principal)
+                    .Select(payment => payment.Principal.Value)
                     .Sum();
         }
 

@@ -1,24 +1,26 @@
 using System;
 using System.Text;
 
+using Financier.Common.Models;
+
 namespace Financier.Common.Liabilities
 {
     public class MonthlyPayment
     {
-        public decimal Amount => Interest + Principal;
-        public decimal Interest { get; }
-        public decimal Principal { get; }
-        public decimal Balance { get; }
+        public Money Amount => Interest + Principal;
+        public Money Interest { get; }
+        public Money Principal { get; }
+        public Money Balance { get; }
         public DateTime At { get; }
 
         private IMortgage Mortgage { get; }
 
-        public MonthlyPayment(IMortgage mortgage, DateTime at, decimal previousBalance, decimal interest, decimal principal)
+        public MonthlyPayment(IMortgage mortgage, DateTime at, Money previousBalance, decimal interest, decimal principal)
         {
             Mortgage = mortgage;
             At = at;
-            Interest = interest;
-            Principal = principal;
+            Interest = new Money(interest, At);
+            Principal = new Money(principal, At);
 
             Balance = previousBalance - Principal;
         }

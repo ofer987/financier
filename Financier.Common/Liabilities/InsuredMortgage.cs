@@ -9,9 +9,9 @@ namespace Financier.Common.Liabilities
         public double StartingDownPaymentPercentage => Convert.ToDouble(Product.DownPayment) / Convert.ToDouble(Product.DownPayment + InitialValue);
 
         // TODO Figure out the mathematical function for the insurance amount
-        public decimal Insurance { get; }
+        public Money Insurance { get; }
 
-        public override decimal InitialValue => BaseValue + Insurance;
+        public override Money InitialValue => BaseValue + Insurance;
 
         public InsuredMortgage(Home product, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product, baseValue, interestRate, amortisationPeriodInMonths)
         {
