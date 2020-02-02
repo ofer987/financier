@@ -1,6 +1,9 @@
 using System;
 
-public interface IInflation
+namespace Financier.Common.Models
 {
-    Money GetValueAt(Money source, DateTime targetAt);
+    public interface IInflation
+    {
+        Money GetValueAt(Money source, DateTime targetAt);
+    }
 }

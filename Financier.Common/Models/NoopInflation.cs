@@ -1,9 +1,12 @@
 using System;
 
-public class NoopInflation : IInflation
+namespace Financier.Common.Models
 {
-    public Money GetValueAt(Money source, DateTime targetAt)
+    public class NoopInflation : IInflation
     {
-        return source;
+        public Money GetValueAt(Money source, DateTime targetAt)
+        {
+            return source;
+        }
     }
 }
