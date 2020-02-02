@@ -9,10 +9,10 @@ namespace Financier.Web.GraphQL.Liabilities
     {
         public MonthlyPaymentType(IDataLoaderContextAccessor _accessor)
         {
-            Field(t => t.Amount, nullable: false, type: typeof(DecimalGraphType));
-            Field(t => t.Interest, nullable: false, type: typeof(DecimalGraphType));
-            Field(t => t.Principal, nullable: false, type: typeof(DecimalGraphType));
-            Field(t => t.Balance, nullable: false, type: typeof(DecimalGraphType));
+            Field("amount", t => t.Amount.Value, nullable: false, type: typeof(DecimalGraphType));
+            Field("interest", t => t.Interest.Value, nullable: false, type: typeof(DecimalGraphType));
+            Field("principal", t => t.Principal.Value, nullable: false, type: typeof(DecimalGraphType));
+            Field("balance", t => t.Balance.Value, nullable: false, type: typeof(DecimalGraphType));
             Field(t => t.At, nullable: false, type: typeof(DateGraphType));
         }
     }

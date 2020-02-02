@@ -24,6 +24,7 @@ namespace Financier.Web.GraphQL.Expenses
             public static string MortgageAmount = "mortgageAmount";
             public static string InterestRate = "interestRate";
             public static string AmortisationPeriodInMonths = "amortisationPeriodInMonths";
+            public static string InflationType = "inflationType";
         }
 
         public MyHomeQuery()
@@ -64,6 +65,11 @@ namespace Financier.Web.GraphQL.Expenses
                     {
                         Name = Keys.AmortisationPeriodInMonths,
                         DefaultValue = 300
+                    },
+                    new QueryArgument<InflationType>
+                    {
+                        Name = Keys.InflationType,
+                        DefaultValue = InflationTypes.NoopInflation
                     }
                 ),
                 resolve: context =>
@@ -90,7 +96,12 @@ namespace Financier.Web.GraphQL.Expenses
                         initialDebt
                     );
 
-                    return financialStatement.Mortgage.GetMonthlyPayments();
+                    var inflationType = context.GetArgument<InflationTypes>(Keys.InflationType);
+                    var inflation = Inflations.GetInflation(inflationType);
+
+                    return financialStatement.Mortgage.GetMonthlyPayments()
+                        .Select(payment => payment.GetValueAt(inflation, purchasedAt))
+                        .ToList();
                 }
             );
 
@@ -130,6 +141,11 @@ namespace Financier.Web.GraphQL.Expenses
                     {
                         Name = Keys.AmortisationPeriodInMonths,
                         DefaultValue = 300
+                    },
+                    new QueryArgument<InflationType>
+                    {
+                        Name = Keys.InflationType,
+                        DefaultValue = InflationTypes.NoopInflation
                     }
                 ),
                 resolve: context =>
@@ -151,7 +167,12 @@ namespace Financier.Web.GraphQL.Expenses
                     var initialDebt = context.GetArgument<decimal>(Keys.InitialDebt);
                     var financialStatement = MyHome.BuildStatementWithMortgage(mortgage, cashFlow, initialCash, initialDebt);
 
-                    return financialStatement.Mortgage.GetMonthlyPayments();
+                    var inflationType = context.GetArgument<InflationTypes>(Keys.InflationType);
+                    var inflation = Inflations.GetInflation(inflationType);
+
+                    return financialStatement.Mortgage.GetMonthlyPayments()
+                        .Select(payment => payment.GetValueAt(inflation, purchasedAt))
+                        .ToList();
                 }
             );
         }

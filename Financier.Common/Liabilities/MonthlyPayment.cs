@@ -5,13 +5,14 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
+    // TODO: Rename to Payment
     public class MonthlyPayment
     {
         public Money Amount => Interest + Principal;
-        public Money Interest { get; }
-        public Money Principal { get; }
-        public Money Balance { get; }
-        public DateTime At { get; }
+        public Money Interest { get; private set; }
+        public Money Principal { get; private set; }
+        public Money Balance { get; private set; }
+        public DateTime At { get; private set; }
 
         private IMortgage Mortgage { get; }
 
@@ -23,6 +24,23 @@ namespace Financier.Common.Liabilities
             Principal = new Money(principal, At);
 
             Balance = new Money(previousBalance - Principal, At);
+        }
+
+        private MonthlyPayment()
+        {
+        }
+
+        // TODO: write tests against this
+        public MonthlyPayment GetValueAt(IInflation inflation, DateTime inflatedAt)
+        {
+            // TODO: how should new MonthlyPayment objects be created?
+            return new MonthlyPayment
+            {
+                At = At,
+                Principal = Principal.GetValueAt(inflation, inflatedAt),
+                Interest = Interest.GetValueAt(inflation, inflatedAt),
+                Balance = Balance.GetValueAt(inflation, inflatedAt)
+            };
         }
 
         public override string ToString()
