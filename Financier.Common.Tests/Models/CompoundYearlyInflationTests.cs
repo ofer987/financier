@@ -37,6 +37,12 @@ namespace Financier.Common.Tests.Models
 
             yield return new TestCaseData(
                 1000.00M,
+                new DateTime(2020, 2, 1),
+                new DateTime(2020, 1, 1)
+            ).Returns(1000.00M);
+
+            yield return new TestCaseData(
+                1000.00M,
                 new DateTime(2020, 1, 1),
                 new DateTime(2019, 1, 1)
             ).Returns(980.39);

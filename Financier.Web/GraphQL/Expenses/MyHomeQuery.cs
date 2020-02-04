@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 
-using Financier.Common.Expenses.Models;
 using Financier.Common.Models;
 using Financier.Common.Expenses;
 using Financier.Common.Liabilities;
-using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.Liabilities;
 
 namespace Financier.Web.GraphQL.Expenses
