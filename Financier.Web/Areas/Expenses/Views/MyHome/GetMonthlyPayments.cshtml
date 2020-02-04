@@ -62,10 +62,14 @@
       constructor(selector) {
         super(selector);
 
-        this.data = [];
+        this.data = {};
       }
 
-      push(paymentType, datum) {
+      get orderedData() {
+        return _.orderBy(this.data, datum => datum["order"]);
+      }
+
+      push(paymentType, order, datum) {
         var values = _.map(datum, item => {
           var at = item["at"]
             .split("-")
@@ -78,7 +82,11 @@
         });
         var values = _.orderBy(values, item => item["at"], "asc");
 
-        this.data[paymentType] = _.groupBy(values, item => item["at"].getFullYear());
+        this.data[paymentType] = {
+          "order": order,
+          "paymentType": paymentType,
+          "values": _.groupBy(values, item => item["at"].getFullYear())
+        };
       }
 
       render() {
@@ -91,9 +99,9 @@
           <thead>
             <tr>
         `;
-        var rows = _.keys(this.data).map(name => {
+        var rows = this.orderedData.map(datum => {
           return `
-            <th>${name}</th>
+            <th>${datum["paymentType"]}</th>
           `;
         });
         var end = `
@@ -114,7 +122,7 @@
             </tr>
             <tr class="spacer"></tr>
           `;
-          var yearlyData = _.values(this.data).map(datum => {
+          var yearlyData = this.orderedData.map(datum => datum["values"]).map(datum => {
             var element = "";
             if (typeof(datum[year]) === "undefined") {
               return `<td></td>`;
@@ -150,7 +158,7 @@
       }
 
       empty() {
-        this.data = [];
+        this.data = {}
         this.getContainer().empty();
       }
 
@@ -159,7 +167,7 @@
       }
 
       get years() {
-        var years = _.uniq(_.values(this.data).flatMap(datum => _.keys(datum).map(v => +v)));
+        var years = _.uniq(this.orderedData.flatMap(datum => datum["values"]).flatMap(values => _.keys(values)).map(v => +v));
 
         return _.orderBy(years, year => year, "asc");
       }
@@ -207,7 +215,7 @@
     var results = new Payments(".results");
     form.setSubmitButton(() => {
       results.empty();
-      var request = (name, render) => {
+      var request = (name, inflationType, render) => {
         var client = new Apollo.lib.ApolloClient({
           networkInterface: Apollo.lib.createNetworkInterface({
             uri: '/graphql/home',
@@ -237,7 +245,8 @@
                   downPayment: $downPayment,
                   mortgageAmount: $mortgageAmount,
                   interestRate: $interestRate,
-                  amortisationPeriodInMonths: $amortizationPeriodInMonths
+                  amortisationPeriodInMonths: $amortizationPeriodInMonths,
+                  inflationType: ${inflationType}
                 ) {
                   at,
                   amount
@@ -259,15 +268,29 @@
             render(results, response.data[name]);
           });
       };
-      request("getFixedMortgagePayments", (results, data) => {
-        results.push("Fixed Mortgage Payments", data);
+      request("getFixedMortgagePayments", "NOOP_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments", 0, data);
 
         results.clearView();
         results.render();
       });
 
-      request("getFixedMortgagePaymentsWithPrepayments", (results, data) => {
-        results.push("Fixed Mortgage Payments w/Prepayments", data);
+      request("getFixedMortgagePayments", "COMPOUND_YEARLY_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Inflation", 1, data);
+
+        results.clearView();
+        results.render();
+      });
+
+      request("getFixedMortgagePaymentsWithPrepayments", "NOOP_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Prepayments", 2, data);
+
+        results.clearView();
+        results.render();
+      });
+
+      request("getFixedMortgagePaymentsWithPrepayments", "COMPOUND_YEARLY_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Prepayments w/Inflation", 3, data);
 
         results.clearView();
         results.render();
