@@ -9,8 +9,10 @@ using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
+using Financier.Web.GraphQL.Expenses;
+using Financier.Web.GraphQL.Liabilities;
 using Financier.Web.GraphQL.Tags;
-using Financier.Web.GraphQL.Statements;
+using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.ItemQueries;
 using Financier.Web.GraphQL.Items;
 
@@ -37,10 +39,12 @@ namespace Financier.Web
             });
 
             services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
-            services.AddScoped<StatementSchema>();
+            services.AddScoped<CashFlowSchema>();
             services.AddScoped<ItemSchema>();
             services.AddScoped<TagSchema>();
             services.AddScoped<ItemQuerySchema>();
+            services.AddScoped<FixedRateMortgageSchema>();
+            services.AddScoped<MyHomeSchema>();
 
             // Add GraphQL
             services
@@ -81,14 +85,23 @@ namespace Financier.Web
 
             app.UseGraphQL<TagSchema>("/graphql/tags");
             app.UseGraphQL<ItemSchema>("/graphql/items");
-            app.UseGraphQL<StatementSchema>("/graphql/statements");
+            app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
+            app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
+            app.UseGraphQL<MyHomeSchema>("/graphql/home");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
             app.UseMvc(routes =>
             {
+                routes.MapAreaRoute(
+                    name: "Expenses/MyHome#GetMonthlyPayments",
+                    areaName: "Expenses",
+                    template: "expenses/my-home/get-monthly-payments",
+                    defaults: new { controller = "MyHome", action = "GetMonthlyPayments" }
+                );
+
                 routes.MapRoute(
                     name: "Items#Chart",
                     template: "Items/chart",
@@ -96,15 +109,15 @@ namespace Financier.Web
                 );
 
                 routes.MapRoute(
-                    name: "Statements#GetYear",
-                    template: "Statements/year/{year}",
-                    defaults: new { controller = "Statements", action = "GetYear" }
+                    name: "CashFlows#GetYear",
+                    template: "CashFlows/year/{year}",
+                    defaults: new { controller = "CashFlows", action = "GetYear" }
                 );
 
                 routes.MapRoute(
-                    name: "Statements#GetMonth",
-                    template: "Statements/year/{year}/month/{month}",
-                    defaults: new { controller = "Statements", action = "GetMonth" }
+                    name: "CashFlows#GetMonth",
+                    template: "CashFlows/year/{year}/month/{month}",
+                    defaults: new { controller = "CashFlows", action = "GetMonth" }
                 );
 
                 routes.MapRoute(

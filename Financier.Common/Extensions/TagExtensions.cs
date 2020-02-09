@@ -19,7 +19,10 @@ namespace Financier.Common.Extensions
 
         public static bool IsInternalTransfer(this Tag tag)
         {
-            return tag.Name == "transfer" || tag.Name == "internal";
+            return false
+                || tag.Name == "transfer"
+                || tag.Name == "internal"
+                || tag.Name == "investments";
         }
     }
 }

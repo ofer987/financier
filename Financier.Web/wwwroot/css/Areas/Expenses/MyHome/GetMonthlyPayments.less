@@ -1,0 +1,53 @@
+.purchased-at {
+  table {
+    font-size: 1em;
+  }
+
+  .ui-draggable, .ui-droppable {
+    background-position: top;
+  }
+}
+
+.expenses .my-home {
+  .results {
+    display: flex;
+    flex-flow: row nowrap;
+
+    tr {
+      vertical-align: super;
+
+      :not(td:last-child) {
+        padding-right: 2em;
+      }
+    }
+
+    tr.spacer {
+      height: 1em;
+    }
+
+    td.year {
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    td.total {
+      font-family: courier;
+    }
+
+    .payment {
+      display: flex;
+      flex-flow: row nowrap;
+      font-family: courier;
+
+      .at {
+        width: 12em;
+        text-align: left;
+      }
+
+      .amount {
+        width: 6em;
+        text-align: right;
+      }
+    }
+  }
+}

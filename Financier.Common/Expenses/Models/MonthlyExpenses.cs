@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Financier.Common.Models.Expenses
 {
-    public class MonthlyExpenses : Liability
+    public class MonthlyExpenses : Liability<IProduct>
     {
         // TODO: place in configuration file or should be configurable somehow
         public const decimal YearlyInflationRate = 2.00M;

@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Financier.Common.Expenses.MonthlyCashFlow>
+
+<link href="~/css/site.css" rel="stylesheet">
+
+
+@foreach (var month in Model)
+{
+  <div>
+    @month.StartAt.ToString("MMMM yyyy")
+  </div>
+  <div>
+    <div>
+      <h1>
+        Credits:&nbsp;@(month.CreditAmountTotal)
+      </h1>
+
+      <h1>
+        Debits:&nbsp;@(month.DebitAmountTotal)
+      </h1>
+
+      <h1>
+        Profit:&nbsp;@(month.ProfitAmountTotal)
+      </h1>
+    </div>
+  </div>
+}

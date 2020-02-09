@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Financier.Common.Actions;
+using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Flows
 {
@@ -25,7 +25,7 @@ namespace Financier.Common.Flows
             return Actions
                 .Where(action => action.At <= at)
                 .OrderBy(action => action.At)
-                .Aggregate(StartingBalance, (balance, action) => balance + action.TotalBy(at));
+                .Aggregate(StartingBalance, (balance, action) => balance + action.PriceAt(at));
         }
     }
 }

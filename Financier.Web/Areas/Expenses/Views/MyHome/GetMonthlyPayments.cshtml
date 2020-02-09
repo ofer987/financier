@@ -1,0 +1,439 @@
+<link rel="stylesheet" href="~/css/Areas/Expenses/MyHome/GetMonthlyPayments.css">
+
+<div class="expenses">
+  <div class="my-home">
+    <div class="input">
+      <div class="initial-cash">
+        Initial Cash:&nbsp;
+        <input id="initial-cash" class="decimal" />
+      </div>
+      <div class="initial-debt">
+        Initial Debt:&nbsp;
+        <input id="initial-debt" class="decimal" />
+      </div>
+      <div class="purchased-at">
+        Purchased At:&nbsp;
+        <input id="purchased-at" class="day-picker" />
+      </div>
+      <div class="down-payment">
+        Down Payment:&nbsp;
+        <input id="down-payment" class="decimal">
+      </div>
+      <div class="amount">
+        Amount:&nbsp;
+        <input id="amount" class="decimal">
+      </div>
+      <div class="interest-rate">
+        Interest Rate:&nbsp;
+        <input id="interest-rate" class="decimal" />
+      </div>
+      <div class="amortization">
+        Amortization Period (Months):&nbsp;
+        <input id="amortization" class="int" />
+      </div>
+      <div class="comparisons">
+        <div class="compare">
+          <input type="button" value="Compare" />
+        </div>
+      </div>
+      <div class="clear">
+        <input type="button" value="Clear" />
+      </div>
+    </div>
+
+    <table class="results">
+    </div>
+  </div>
+</div>
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/jquery-ui.min.js"></script>
+<script src="~/js/apollo-client.min.js"></script>
+<script src="~/js/lodash.min.js"></script>
+
+<script type="module">
+  'use strict';
+
+  import * as Elements from '/js/elements.js';
+  import * as Dates from '/js/formatted_date.js';
+
+  (function() {
+    class Payments extends Elements.Element {
+      constructor(selector) {
+        super(selector);
+
+        this.data = {};
+      }
+
+      get orderedData() {
+        return _.orderBy(this.data, item => item.order);
+      }
+
+      push(paymentType, order, datum) {
+        var values = _.map(datum, item => {
+          var at = item["at"]
+            .split("-")
+            .map(v => +v);
+
+          return {
+            "at": new Dates.FormattedDate(at[0], at[1] - 1, at[2]),
+            "amount": item["amount"]
+          };
+        });
+        var values = _.orderBy(values, item => item["at"], "asc");
+        var dataByYear = _.groupBy(values, item => item["at"].getFullYear())
+        var yearlyDataList = _.map(dataByYear, (amounts, year) => new YearlyData(year, amounts));
+
+        this.data[paymentType] = new PaymentsData(order, paymentType, yearlyDataList);
+      }
+
+      render() {
+        this.renderHeader();
+        this.renderBody();
+      }
+
+      renderHeader() {
+        var start = `
+          <thead>
+            <tr>
+        `;
+        var emptyColumn = `
+          <th></th>
+        `;
+        var columns = this.orderedData.map(datum => {
+          return `
+            <th>${datum.type}</th>
+          `;
+        });
+        var end = `
+            </tr>
+          </thead>
+        `;
+
+        var html = ""
+          + start 
+          + emptyColumn
+          + columns.join("\n") 
+          + end;
+        this.getContainer().append(html);
+      }
+
+      renderBody() {
+        var rows = this.years
+          .map(year => {
+            var start = `
+                <tr id="${year}" class="year">
+              `;
+
+            var yearColumn = `
+              <td class="year">${year}</td>
+            `;
+            var columnElements = this.orderedData
+              .map(item => item.getPaymentsForYear(year))
+              .map(yearlyData => {
+                var startColumn = `
+                  <td>
+                `;
+                var paymentElements = yearlyData.amounts.map(payment => {
+                  return `
+                    <div class="payment">
+                      <div class="at">
+                        ${payment.at.toFormatted}
+                      </div>
+
+                      <div class="amount">
+                        ${payment.amount.toFixed(2)}
+                      </div>
+                    </div>
+                  `;
+                });
+                var totalElement = `
+                  <div class="payment total">
+                    <span>Total:&nbsp;${yearlyData.total.toFixed(2)}</span>
+                  </div>
+                `;
+                var endColumn = `
+                  </td>
+                `;
+
+                return ""
+                  + startColumn 
+                  + paymentElements.join("\n") 
+                  + totalElement
+                  + endColumn;
+              });
+            var end = `
+              </tr>
+              <tr class="spacer"></tr>
+            `;
+
+            return ""
+              + start 
+              + yearColumn
+              + columnElements.join("\n") 
+              + end;
+          });
+
+        this.getContainer().append(rows);
+        this.getContainer().append(this.getTotalRow());
+      }
+
+      getTotalRow() {
+        var start = `
+          <tr>
+        `;
+        var emptyColumn = `
+          <td></td>
+        `;
+        var columns = this.orderedData
+          .map(datum => datum.total.toFixed(2))
+          .map(total => `<td class="total">Total:&nbsp;${total}</td>`);
+        var end = `
+          </tr>
+        `;
+
+        return ""
+          + start
+          + emptyColumn
+          + columns
+          + end;
+      }
+
+      empty() {
+        this.data = {}
+        this.getContainer().empty();
+      }
+
+      clearView() {
+        this.getContainer().empty();
+      }
+
+      get years() {
+        return _.orderBy(
+          _.uniq(
+            this.orderedData
+              .flatMap(item => item.years)
+              .flatMap(item => item.year)
+          )
+        );
+      }
+    }
+
+    class Payment extends Elements.Element {
+      constructor(selector, data) {
+        super(selector);
+
+        this.data = data;
+      }
+
+      render() {
+        var container = this.getContainer();
+        var identifer = this.data["at"];
+        var paymentElement = `
+          <div class="payment">
+            <div class="at">
+              ${this.data["at"].toFormatted}
+            </div>
+
+            <div class="amount">
+              ${this.data["amount"].toFixed(2)}
+            </div>
+          </div>
+        `;
+
+        container.append(paymentElement);
+        //
+        // this
+        //   .createPaymentElement(`.items#${identifer}`, item.items)
+        //   .render();
+      }
+    }
+
+    class YearlyData {
+      constructor(year, amounts) {
+        this.year = +year;
+        this.amounts = (amounts || []).map(item => {
+          if (typeof(item) === 'object') {
+            return new PaymentData(item.at, item.amount)
+          } else {
+            return item;
+          }
+        });
+      }
+
+      get total() {
+        return _.sum(this.amounts.map(item => +item.amount));
+      }
+
+      get isNull() {
+        return false;
+      }
+    }
+
+    class NullYearlyData {
+      constructor() {
+        this.year = -1;
+        this.amounts = [];
+      }
+
+      get total() {
+        return 0;
+      }
+
+      get isNull() {
+        return true;
+      }
+    }
+
+    class PaymentData {
+      constructor(at, amount) {
+        this.at = at;
+        this.amount = amount;
+      }
+
+      get isNull() {
+        return false;
+      }
+    }
+
+    class NullPaymentData {
+      constructor() {
+        this.at = new Date(0, 0, 0);
+        this.amount = 0.00;
+      }
+
+      get isNull() {
+        return true;
+      }
+    }
+
+    class PaymentsData {
+      constructor(order, type, years) {
+        this.order = order || -1;
+        this.type = type || "";
+        this.years = years || [];
+      }
+
+      getPaymentsForYear(year) {
+        var payments = this.years
+          .filter(datum => datum.year == year)
+
+        if ((payments || []).length < 1) {
+          return new NullYearlyData();
+        }
+
+        return payments[0];
+      }
+
+      get total() {
+        return _.sum(this.years.map(year => year.total));
+      }
+    }
+
+    class MyForm extends Elements.Form {
+      constructor(selector) {
+        super(selector);
+
+        this.purchasedAt = new Elements.DatePicker(".purchased-at input", new Date(2018, 11, 1));
+      }
+    }
+
+    var form = new MyForm(".input");
+    var results = new Payments(".results");
+    form.setSubmitButton(() => {
+      results.empty();
+      var request = (name, inflationType, render) => {
+        var client = new Apollo.lib.ApolloClient({
+          networkInterface: Apollo.lib.createNetworkInterface({
+            uri: '/graphql/home',
+            transportBatching: true,
+          }),
+          connectToDevTools: true,
+        });
+
+        client
+          .query({
+            query: Apollo.gql`
+              query(
+                $initialCash: Decimal!,
+                $initialDebt: Decimal!,
+                $purchasedAt: Date!,
+                $name: String!,
+                $downPayment: Decimal!,
+                $mortgageAmount: Decimal!,
+                $interestRate: Decimal!,
+                $amortizationPeriodInMonths: Int!
+              ) {
+                ${name}(
+                  initialCash: $initialCash,
+                  initialDebt: $initialDebt,
+                  purchasedAt: $purchasedAt,
+                  name: $name,
+                  downPayment: $downPayment,
+                  mortgageAmount: $mortgageAmount,
+                  interestRate: $interestRate,
+                  amortisationPeriodInMonths: $amortizationPeriodInMonths,
+                  inflationType: ${inflationType}
+                ) {
+                  at,
+                  amount
+                }
+              }
+            `,
+            variables: {
+              "initialCash": form.getInput("initial-cash").value,
+              "initialDebt": form.getInput("initial-debt").value,
+              "purchasedAt": form.purchasedAt.toString(),
+              "name": "Fart Man",
+              "downPayment": form.getInput("down-payment").value,
+              "mortgageAmount": form.getInput("amount").value,
+              "interestRate": form.getInput("interest-rate").value,
+              "amortizationPeriodInMonths": form.getInput("amortization").value
+            }
+          })
+          .then(response => {
+            render(results, response.data[name]);
+          });
+      };
+      request("getFixedMortgagePayments", "NOOP_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments", 0, data);
+
+        results.clearView();
+        results.render();
+      });
+
+      request("getFixedMortgagePayments", "COMPOUND_YEARLY_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Inflation", 1, data);
+
+        results.clearView();
+        results.render();
+      });
+
+      request("getFixedMortgagePaymentsWithPrepayments", "NOOP_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Prepayments", 2, data);
+
+        results.clearView();
+        results.render();
+      });
+
+      request("getFixedMortgagePaymentsWithPrepayments", "COMPOUND_YEARLY_INFLATION", (results, data) => {
+        results.push("Fixed Mortgage Payments w/Prepayments w/Inflation", 3, data);
+
+        results.clearView();
+        results.render();
+      });
+    });
+    form.render();
+
+    var initValues = function() {
+      form.getInput("initial-cash").value = 100;
+      form.getInput("initial-debt").value = 50;
+      form.getInput("down-payment").value = 10000;
+      form.getInput("amount").value = 400000;
+      form.getInput("interest-rate").value = 0.0314;
+      form.getInput("amortization").value = 300;
+    };
+
+    initValues();
+  })();
+</script>

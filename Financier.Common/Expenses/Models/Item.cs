@@ -53,7 +53,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.IsCredit)
+                    .Where(item => item.Type == ItemTypes.Credit)
                     .Where(item => item.At >= from)
                     .Where(item => item.At < to)
                     // .Reject(item => item.Tags.HasCreditCardPayent())
@@ -69,7 +69,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                     .ThenInclude(it => it.Tag)
-                    .Where(item => item.IsDebit)
+                    .Where(item => item.Type == ItemTypes.Debit)
                     .Where(item => item.At >= from)
                     .Where(item => item.At < to)
                     // .Reject(item => item.Tags.HasCreditCardPayent())
@@ -143,6 +143,10 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public ItemTypes Type => Amount >= 0
+            ? ItemTypes.Debit
+            : ItemTypes.Credit;
+
         [Key]
         [Required]
         public Guid Id { get; set; }
@@ -160,11 +164,11 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public decimal Amount { get; set; }
 
-        public virtual decimal TheRealAmount 
+        public virtual decimal TheRealAmount
         {
             get
             {
-                if (IsCredit)
+                if (Type == ItemTypes.Credit)
                 {
                     return 0.00M - Amount;
                 }
@@ -185,9 +189,6 @@ namespace Financier.Common.Expenses.Models
         public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 
         public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
-
-        public bool IsDebit => Amount >= 0;
-        public bool IsCredit => Amount < 0;
 
         public Item(Guid id, Guid statementId, string itemId, string description, DateTime at, decimal amount)
         {
@@ -288,7 +289,7 @@ namespace Financier.Common.Expenses.Models
 
         private string AmountString()
         {
-            if (IsCredit)
+            if (Type == ItemTypes.Credit)
             {
                 return $"Credit of {(TheRealAmount).ToString("C")}";
             }

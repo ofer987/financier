@@ -128,7 +128,7 @@
         client
           .query({
             query: Apollo.gql`
-            query($tagNames: [String!], $fromYear: Int!, $fromMonth: Int!, $toYear: Int!, $toMonth: Int!){
+            query($tagNames: [String!]!, $fromYear: Int!, $fromMonth: Int!, $toYear: Int!, $toMonth: Int!) {
               monthlyExpensesByTagNames(
                 tagNames: $tagNames,
                 fromYear: $fromYear,

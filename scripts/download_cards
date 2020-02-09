@@ -44,7 +44,7 @@ class Cards
   end
 
   def process(user, year, month)
-    cards_for(user).each do |card|
+    cards_for(user, year, month).each do |card|
       begin
         content = statement(card, year, month)
 
@@ -71,7 +71,7 @@ class Cards
     IO.write path, content, write: 'wb'
   end
 
-  def cards_for(user)
+  def cards_for(user, _year, _month)
     self.cards.select { |c| c['user'] == user }
   end
 
@@ -89,6 +89,18 @@ class BankCards < Cards
     BmoBankPage
       .new(cookie)
       .statement(card['id'], card['number'], DateTime.new(year, month, 1), DateTime.new(year, month, card['billing_day']))
+  end
+
+  def cards_for(user, year, month)
+    end_of_month = DateTime.new(year, month, 1)
+      .next_month
+      .prev_day
+      .to_date
+    now = DateTime.now.to_date
+
+    return [] if now <= end_of_month
+    self.cards
+      .select { |c| c['user'] == user }
   end
 end
 

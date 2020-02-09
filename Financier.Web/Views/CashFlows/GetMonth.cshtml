@@ -1,0 +1,282 @@
+﻿@model Financier.Common.Expenses.MonthlyCashFlow
+@using Financier.Common.Extensions
+
+<link href="~/css/site.css" rel="stylesheet">
+
+<div>
+  @Model.StartAt.ToString("MMMM yyyy")
+</div>
+
+<!-- bar chart -->
+<div class="charts">
+  <h2>
+    Credits
+  </h2>
+  <svg class="chart" id="credit-costs">
+  </svg>
+  <h2>
+    Debits
+  </h2>
+  <svg class="chart" id="debit-costs">
+  </svg>
+</div>
+
+<link href="~/css/chart.css" rel="stylesheet">
+
+<script src="~/js/apollo-client.min.js"></script>
+<script src="~/js/d3.min.js"></script>
+<script src="~/js/d3-axis.min.js"></script>
+</script>
+
+<script type="text/javascript">
+  'use strict';
+
+  (function() {
+    function request(year, month) {
+      var client = new Apollo.lib.ApolloClient({
+        networkInterface: Apollo.lib.createNetworkInterface({
+          uri: '/graphql/cash-flows',
+          transportBatching: true,
+        }),
+        connectToDevTools: true,
+      });
+
+      client
+        .query({
+          query: Apollo.gql`
+            {
+              getMonthlyCashFlow(
+                year: ${year},
+                month: ${month}
+              ) {
+                creditListings {
+                  tags {
+                    name
+                  }
+                  amount
+                }
+                debitListings {
+                  tags {
+                    name
+                  }
+                  amount
+                }
+                creditAmountTotal
+              }
+            }
+          `
+        })
+        .then(response => {
+
+          var width = 960;
+          var height = 500;
+          new Chart(".charts #credit-costs", width, height)
+            .render(response.data.getMonthlyCashFlow.creditListings);
+          new Chart(".charts #debit-costs", width, height)
+            .render(response.data.getMonthlyCashFlow.debitListings);
+        });
+    }
+
+    function Chart(selector, width, height) {
+      this.margins = {
+        top: 20,
+        right: 30,
+        bottom: 30,
+        left: 40
+      };
+
+      this.selector = selector;
+      this.width = width - this.margins.left - this.margins.right;
+      this.height = height - this.margins.top - this.margins.bottom;
+    }
+
+    Chart.prototype.xBand = function(costs) {
+      if (typeof(costs) !== "object") {
+        debugger;
+      }
+      var amounts = costs
+        .map(x => x.amount)
+
+      var scale = d3.scaleBand()
+        .domain(amounts)
+        .range([0, this.width]);
+
+      return scale;
+
+      // return d3.scaleLinear()
+      //   .domain([0, d3.max(amounts, d => d.value)])
+      //   .range([this.height, 0]);
+    };
+
+    Chart.prototype.xScale = function(costs) {
+      if (typeof(costs) !== "object") {
+        debugger;
+      }
+
+      var amounts = costs
+        .map(x => x.amount);
+      var scale = d3.scaleLinear()
+        .range([this.width, 0])
+        .domain([d3.max(amounts, d => d), 0]);
+        // .range(costs => {
+        //   return 400;
+        //   // var text = d.tags
+        //   //   .map(tag => tag.name)
+        //   //   .join(", ");
+        //   //
+        //   // return `${text} (${d.amount})`;
+        // });
+
+      return scale;
+
+      // return d3.scaleLinear()
+      //   .domain([0, d3.max(amounts, d => d.value)])
+      //   .range([this.height, 0]);
+    };
+
+    Chart.prototype.yScale = function(costs) {
+      if (typeof(costs) !== 'object') {
+        debugger;
+      }
+      var amounts = costs
+        .map(x => x.amount)
+
+      var scale = d3.scaleLinear()
+        .range([this.height, 0])
+        .domain([0, d3.max(amounts, d => d)]);
+
+      return scale;
+
+      // return scale(costs);
+
+      // return d3.scaleLinear()
+      //   .domain([0, d3.max(amounts, d => d.value)])
+      //   .range([this.height, 0]);
+    };
+
+    Chart.prototype.xAxis = function(costs, selectedScale) {
+      var numbers = [];
+      for (var i = 0; i < this.costs; i += 1) {
+        numbers.push(i + 1);
+      }
+
+      // debugger;
+      return d3.axisBottom()
+        .ticks(10)
+        // .scale(selectedScale());
+        .scale(
+          d3.scaleBand()
+            .domain(costs.map(d => {
+              var text = d.tags
+                .map(tag => tag.name)
+                .join(", ");
+
+              return `${text} (${d.amount})`;
+            }))
+            .range([0, this.width])
+        );
+    };
+
+    Chart.prototype.yAxis = function(selectedScale) {
+      return d3.axisLeft()
+        .scale(selectedScale());
+        // .scale(this.yScale);
+    };
+
+    Chart.prototype.render = function(costs) {
+      var barWidth = this.width / costs.length;
+      var barChart = d3.select(this.selector)
+        .attr("width", this.width + this.margins.left + this.margins.right)
+        .attr("height", this.height + this.margins.top + this.margins.bottom)
+        .append("g")
+          .attr("transform", `translate(${this.margins.left}, ${this.margins.top})`);
+
+      // FIXME: just pass xScale as a value
+      barChart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", `translate(0, ${this.height})`)
+        .call(this.xAxis(costs, () => this.xScale(costs)));
+
+      // FIXME: just pass yScale as a value
+      barChart.append("g")
+        .attr("class", "y axis")
+        // .call(s => this.yAxis((d) => { debugger; return this.yScale(costs); }));
+        .call(this.yAxis(() => this.yScale(costs)));
+
+      // debugger;
+      var bar = barChart.selectAll(".bar")
+          .data(costs.map(d => d.amount))
+        .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", d => this.xBand(costs)(d))
+          .attr("y", d => this.yScale(costs)(d))
+          .attr("height", d => this.height - this.yScale(costs)(d))
+          .attr("width", barWidth);
+      
+        // .attr("transform", (d, i) => { /* debugger; */ return `translate(${i * barWidth}, 0)`; });
+
+      // bar.append("rect")
+      //   .attr("y", d => { /* debugger; */ return this.yScale(costs)(d.amount); })
+      //   .attr("height", d => { /* debugger; */ return this.height - this.yScale(costs)(d.amount) })
+      //   .attr("width", barWidth - 1);
+      //
+      // bar.append("text")
+      //   .attr("x", barWidth / 2)
+      //   .attr("y", d => this.yScale(costs)(d.amount) + 3)
+      //   .attr("dy", ".75em")
+      //   .text(d => {
+      //     var text = d.tags
+      //       .map(tag => tag.name)
+      //       .join(", ");
+      //
+      //     return `${text} (${d.amount})`;
+      //   });
+    };
+
+    request(@(Model.StartAt.Year), @(Model.StartAt.Month));
+  })();
+</script>
+
+<div>
+  <div>
+    <h1>
+      Credits:&nbsp;@(Model.CreditAmountTotal)
+    </h1>
+
+    <h1>
+      Debits:&nbsp;@(Model.DebitAmountTotal)
+    </h1>
+
+    <h1>
+      Profit:&nbsp;@(Model.ProfitAmountTotal)
+    </h1>
+  </div>
+  <div class="tag-costs">
+    <h2>Credits</h2>
+    @foreach (var listing in Model.CreditListings.OrderBy(tc => tc.Amount))
+    {
+    <div class="flex-container">
+      <div class="flex-item flex-tags">
+        @(listing.Tags.Select(tag => tag.Name).Join(", "))
+      </div>
+      <div class="flex-item flex-amount">
+        @((listing.Amount / Model.CreditAmountTotal).ToString("#0.00 %"))
+      </div>
+    </div>
+    }
+  </div>
+  <div class="tag-costs">
+    <h2>Debits</h2>
+    @foreach (var listing in Model.DebitListings.OrderBy(tc => tc.Amount))
+    {
+    <div class="flex-container">
+      <div class="flex-item flex-tags">
+        @(listing.Tags.Select(tag => tag.Name).Join(", "))
+      </div>
+      <div class="flex-item flex-amount">
+        @((listing.Amount / Model.DebitAmountTotal).ToString("#0.00 %"))
+      </div>
+    </div>
+    }
+  </div>
+</div>

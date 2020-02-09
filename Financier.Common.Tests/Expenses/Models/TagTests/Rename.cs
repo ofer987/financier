@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Financier.Common.Tests.Expenses.Models.TagTests
 {
-    public class Rename : Fixture
+    public class Rename : DatabaseFixture
     {
         [Test]
         [TestCase("fun", "super-fun")]

@@ -20,28 +20,28 @@ namespace Financier.Web.GraphQL.ItemQueries
         public ItemQueryQuery()
         {
             Field<ListGraphType<MonthlyItemResultType>>(
-                    "monthlyExpensesByTagNames",
-                    arguments: new QueryArguments(
-                        new QueryArgument<ListGraphType<NonNullGraphType<StringGraphType>>>
-                        {
-                            Name = Keys.TagNames,
-                        },
-                        new QueryArgument<NonNullGraphType<IntGraphType>>
-                        {
-                            Name = Keys.FromMonth
-                        },
-                        new QueryArgument<NonNullGraphType<IntGraphType>>
-                        {
-                            Name = Keys.FromYear
-                        },
-                        new QueryArgument<NonNullGraphType<IntGraphType>>
-                        {
-                            Name = Keys.ToMonth
-                        },
-                        new QueryArgument<NonNullGraphType<IntGraphType>>
-                        {
-                            Name = Keys.ToYear
-                        }),
+                "monthlyExpensesByTagNames",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ListGraphType<NonNullGraphType<StringGraphType>>>>
+                    {
+                        Name = Keys.TagNames,
+                    },
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.FromMonth
+                    },
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.FromYear
+                    },
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.ToMonth
+                    },
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.ToYear
+                    }),
             resolve: context =>
              {
                  var tagNames = context.GetArgument<List<string>>(Keys.TagNames);
@@ -51,10 +51,10 @@ namespace Financier.Web.GraphQL.ItemQueries
                  var toYear = context.GetArgument<int>(Keys.ToYear);
 
                  return new ItemQuery(
-                         tagNames,
-                         new DateTime(fromYear, fromMonth, 1),
-                         new DateTime(toYear, toMonth, 1),
-                         false
+                     tagNames,
+                     new DateTime(fromYear, fromMonth, 1),
+                     new DateTime(toYear, toMonth, 1),
+                     ItemTypes.Debit
                  ).GetResultsOrderedByMonth();
              }
             );

@@ -6,13 +6,13 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
 {
-    public class Query : Fixture
+    public class Query : DatabaseFixture
     {
         [TestCase(
             new[] { "fun" },
             new[] {
-                MyFactories.DanCard.June.Items.PorscheItemId,
-                MyFactories.DanCard.June.Items.FerrariItemId
+                ModelFactories.DanCard.June.Items.PorscheItemId,
+                ModelFactories.DanCard.June.Items.FerrariItemId
             },
             2019,
             5,
@@ -22,8 +22,8 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         [TestCase(
             new[] { "fast" },
             new[] {
-                MyFactories.DanCard.June.Items.PorscheItemId,
-                MyFactories.RonCard.CrazyStatement.Items.LamboItemId
+                ModelFactories.DanCard.June.Items.PorscheItemId,
+                ModelFactories.RonCard.CrazyStatement.Items.LamboItemId
             },
             2019,
             5,
@@ -59,7 +59,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var result = new ItemQuery(tagNames, fro, to, false).GetResults();
+            var result = new ItemQuery(tagNames, fro, to, ItemTypes.Debit).GetResults();
 
             Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
@@ -67,9 +67,9 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         [TestCase(
             new[] { "salary" },
             new[] {
-                MyFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
-                MyFactories.SavingsCard.June.Items.DanSalaryItemId,
-                MyFactories.SavingsCard.June.Items.EdithSalaryItemId,
+                ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
+                ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
+                ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
             },
             2019,
             6,
@@ -79,10 +79,11 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         [TestCase(
             new[] { "salary" },
             new[] {
-                MyFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
-                MyFactories.SavingsCard.June.Items.DanSalaryItemId,
-                MyFactories.SavingsCard.July.Items.ChildCareBenefitItemId,
-                MyFactories.SavingsCard.June.Items.EdithSalaryItemId,
+                ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
+                ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
+                ModelFactories.SavingsCard.July.Items.DanSalaryItemId,
+                ModelFactories.SavingsCard.July.Items.ChildCareBenefitItemId,
+                ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
             },
             2019,
             6,
@@ -118,7 +119,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
-            var result = new ItemQuery(tagNames, fro, to, true).GetResults();
+            var result = new ItemQuery(tagNames, fro, to, ItemTypes.Credit).GetResults();
 
             Assert.That(result.Items, Is.EquivalentTo(expectedItems));
         }
