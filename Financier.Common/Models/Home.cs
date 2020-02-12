@@ -10,7 +10,7 @@ namespace Financier.Common.Models
     {
         public DateTime PurchasedAt { get; }
         public decimal Valuation { get; }
-        public decimal DownPayment { get; }
+        public Money DownPayment { get; }
         public IMortgage Financing { get; }
 
         public override IEnumerable<ILiability> Liabilities
@@ -24,7 +24,7 @@ namespace Financier.Common.Models
         public Home(string name, DateTime purchasedAt, decimal downPayment) : base(name)
         {
             PurchasedAt = purchasedAt;
-            DownPayment = downPayment;
+            DownPayment = new Money(downPayment, PurchasedAt);
         }
 
         public Home(string name, DateTime purchasedAt, decimal downPayment, FixedRateMortgage mortgage) : this(name, purchasedAt, downPayment)
