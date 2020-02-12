@@ -7,7 +7,7 @@ namespace Financier.Web.GraphQL.Expenses
     {
         public MyHomeSchema(IDependencyResolver resolver) : base(resolver)
         {
-            Query = resolver.Resolve<MyHomeQuery>();
+            Query = resolver.Resolve<BalanceSheetQuery>();
         }
     }
 }
