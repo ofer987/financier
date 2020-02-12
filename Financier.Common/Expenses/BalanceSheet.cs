@@ -1,135 +1,55 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Financier.Common.Expenses.Actions;
 using Financier.Common.Models;
-using Financier.Common.Extensions;
-using ActionTypes = Financier.Common.Expenses.Actions.Types;
 
 namespace Financier.Common.Expenses
 {
     public class BalanceSheet
     {
-        public decimal InitialCash { get; }
-        public decimal InitialDebt { get; }
-        public DateTime At { get; }
+        public Money InitialCash { get; }
+        public Money InitialDebt { get; }
+        public ICashFlow CashFlow { get; }
+        public decimal DailyProfit => CashFlow.DailyProfit;
+        public Home Home { get; }
 
-        public IReadOnlyList<IAsset> Assets { get; }
-        public IReadOnlyList<ILiability> Liabilities { get; }
-
-        public IList<IAction> Actions { get; }
-
-        public BalanceSheet(decimal cash, decimal debt, DateTime at)
+        public BalanceSheet(Money cash, Money debt, ICashFlow cashFlow)
         {
             InitialCash = cash;
             InitialDebt = debt;
-            At = at;
         }
 
-        public BalanceSheet(decimal cash, decimal debt) : this(cash, debt, DateTime.Now)
+        public decimal GetAssets(IInflation inflation, DateTime at)
         {
+            var result = 0.00M
+                + InitialCash.GetValueAt(inflation, at)
+                + Home.DownPayment.GetValueAt(inflation, at)
+                + Home.Financing.GetMonthlyPayments(at)
+                    .Select(payment => payment.Principal.GetValueAt(inflation, at).Value)
+                    .Sum();
+
+            return decimal.Round(result, 2);
         }
 
-        public virtual decimal GetBalance(DateTime at)
+        public decimal GetLiabilities(IInflation inflation, DateTime at)
         {
-            throw new NotImplementedException();
+            var result = 0.00M
+                + InitialDebt.GetValueAt(inflation, at)
+                + Home.Financing.GetBalance(at);
+
+            return decimal.Round(result, 2);
+        }
+
+        public decimal GetNetWorth(IInflation inflation, DateTime at)
+        {
+            return 0.00M
+                + GetAssets(inflation, at) 
+                - GetLiabilities(inflation, at);
         }
 
         public virtual decimal GetBalance(int months)
         {
             throw new NotImplementedException();
-        }
-
-        public void OneTimePurchase(SimpleProduct product, DateTime at)
-        {
-            Actions.Add(new Actions.OneTimeAction(ActionTypes.Purchase, product, at));
-        }
-
-        public void Purchase(IProduct product, decimal price, DateTime at)
-        {
-            // TODO: How should we handle repeat purchases?
-            // TODO: should they be indicated by the same IProduct.Id?
-            // TODO: or should they have a unique IProduct.Id
-            Actions.Add(new Actions.Action(ActionTypes.Purchase, product, price, at));
-        }
-
-        public decimal GetValue()
-        {
-            var chronologicalActions = Actions
-                .OrderBy(action => action.At)
-                .Where(action => action.At < At);
-
-            var total = InitialCash - InitialDebt;
-            foreach (var action in chronologicalActions)
-            {
-                switch (action.Type)
-                {
-                    case ActionTypes.Purchase:
-                        total -= action.PriceAt(action.At);
-                        break;
-                    case ActionTypes.Sale:
-                        total += action.PriceAt(action.At);
-                        break;
-                }
-            }
-
-            return total;
-        }
-
-        public void Sell(IProduct existingProduct, decimal price, DateTime at)
-        {
-            // TODO: create NullProduct class
-            var purchase = GetPurchase(existingProduct);
-
-            if (at <= purchase.At)
-            {
-                throw new Exception($"Error, cannot remove a product at ({at}) before it purchased at ({purchase.At})");
-            }
-
-            Actions.Add(new Actions.Action(ActionTypes.Sale, existingProduct, price, at));
-        }
-
-        public void Sell(IProduct existingProduct, DateTime at)
-        {
-            // TODO: create NullProduct class
-            var purchase = GetPurchase(existingProduct);
-
-            Sell(existingProduct, purchase.Price, at);
-        }
-
-        public Actions.IAction GetPurchase(IProduct existingProduct)
-        {
-            var associatedActions = Actions
-                .OrderBy(action => action.At)
-                .Where(action => action.Product == existingProduct);
-
-            if (associatedActions.Empty())
-            {
-                throw new Exception($"Error! the product ({existingProduct}) was never even purchased!");
-            }
-
-            var lastAction = associatedActions.Last();
-
-            if (lastAction.Type == ActionTypes.Sale)
-            {
-                throw new Exception($"Error! the product ({existingProduct}) has already been sold at ({lastAction.At})");
-            }
-
-            return lastAction;
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine($"Balance Sheet (as of {At.ToString("D")})");
-            sb.AppendLine($"Cash:\t{InitialCash.ToString("#0.00")}");
-            sb.AppendLine($"Debt:\t{InitialDebt.ToString("#0.00")}");
-            sb.AppendLine($"Total:\t{GetValue().ToString("#0.00")}");
-
-            return sb.ToString();
         }
     }
 }
