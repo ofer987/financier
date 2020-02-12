@@ -42,7 +42,7 @@ namespace Financier.Common.Liabilities
             Prepayments = new CappedPayments(InitialValue * maximumAllowedPrepaymentPercentage);
         }
 
-        public decimal GetBalance(DateTime at)
+        public Money GetBalance(DateTime at)
         {
             return GetMonthlyPayments(at)
                 .Select(payment => payment.Balance)

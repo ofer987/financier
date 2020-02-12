@@ -20,7 +20,7 @@ namespace Financier.Common.Liabilities
         double PeriodicAnnualInterestRate { get; }
         double EffectiveAnnualInterestRate { get; }
 
-        decimal GetBalance(DateTime at);
+        Money GetBalance(DateTime at);
         IEnumerable<MonthlyPayment> GetMonthlyPayments();
         IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt);
         IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day);

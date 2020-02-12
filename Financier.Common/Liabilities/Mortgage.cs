@@ -41,7 +41,7 @@ namespace Financier.Common.Liabilities
             InterestRate = interestRate;
         }
 
-        public decimal GetBalance(DateTime at)
+        public Money GetBalance(DateTime at)
         {
             return GetMonthlyPayments(at)
                 .Select(payment => payment.Balance)
