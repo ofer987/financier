@@ -23,14 +23,14 @@ namespace Financier.Common.Tests.Expenses
             var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
 
-            var startAt = purchasedAt;
-            var initialCash = new Money(10000.00M, startAt);
-            var initialDebt = new Money(5000.00M, startAt);
-            Home = new Home("first home", purchasedAt, downpayment);
+            var initiatedAt = purchasedAt;
+            var initialCash = new Money(10000.00M, initiatedAt);
+            var initialDebt = new Money(5000.00M, initiatedAt);
             CashFlow = new DummyCashFlow(89.86M);
             Mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
 
-            Subject = new BalanceSheet(initialCash, initialCash, CashFlow, Home);
+            Home = new Home("first home", purchasedAt, downpayment, Mortgage);
+            Subject = new BalanceSheet(initialCash, initialCash, CashFlow, initiatedAt, Home);
         }
 
         // TODO: calculate just the mortgage payments
