@@ -15,7 +15,7 @@ namespace Financier.Common.Tests.Liabilities
         public FixedRateMortgageTest()
         {
             var purchasedAt = new DateTime(2019, 1, 1);
-            var mortgageAmount = 200000.00M;
+            var mortgageAmount = 328000.00M;
             var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
 
@@ -44,8 +44,8 @@ namespace Financier.Common.Tests.Liabilities
         public void Test_PeriodicAnnualInterestRate()
         {
             Assert.That(
-                decimal.Round(Convert.ToDecimal(Subject.PeriodicAnnualInterestRate), 6),
-                Is.EqualTo(0.03169M)
+                decimal.Round(Convert.ToDecimal(Subject.PeriodicAnnualInterestRate), 4),
+                Is.EqualTo(0.0319M)
             );
         }
 
@@ -53,34 +53,26 @@ namespace Financier.Common.Tests.Liabilities
         public void Test_MonthlyPayment()
         {
             Assert.That(
-                decimal.Round(Convert.ToDecimal(Subject.MonthlyPayment), 6),
-                Is.EqualTo(966.096364M)
+                decimal.Round(
+                    Convert.ToDecimal(Subject.MonthlyPayment),
+                    2
+                ),
+                Is.EqualTo(1584.40)
             );
         }
 
-        [TestCase(1, 199562.07)]
-        [TestCase(2, 199122.98)]
-        [TestCase(5, 197798.76)]
-        [TestCase(10, 195568.30)]
-        [TestCase(300, 0)]
-        public void Test_GetBalance(int monthCount, decimal expectedBalance)
-        {
-            Assert.That(
-                Subject.GetBalance(PurchasedAt.AddMonths(monthCount))
-                , Is.EqualTo(expectedBalance)
-            );
-        }
-
-        [TestCase(2019, 1, 1, -332000)]
-        [TestCase(2019, 1, 15, -330023.76)]
-        [TestCase(2019, 1, 31, -328586.00)]
-        [TestCase(2019, 2, 1, -328496.14)]
-        [TestCase(2019, 2, 2, -327686.18)]
-        [TestCase(2019, 12, 31, -319255.27 - 4000 + 89.86 * 364)]
-        [TestCase(2020, 1, 1, -319255.27 - 4000 + 89.86 * 365)]
-        [TestCase(2020, 1, 2, -318513.97 - 4000 + 89.86 * 366)]
-        [TestCase(2020, 2, 1, -318513.97 - 4000 + 89.86 * 396)]
-        [TestCase(2044, 1, 1, 0 - 4000 + 89.86 * 9131)]
+        [TestCase(2019, 1, 1, 328000)]
+        [TestCase(2019, 1, 15, 327287.54)]
+        [TestCase(2019, 1, 31, 327287.54)]
+        [TestCase(2019, 2, 1, 327287.54)]
+        [TestCase(2019, 2, 2, 326573.18)]
+        [TestCase(2019, 12, 31, 319324.30)]
+        [TestCase(2020, 1, 1, 319324.30)]
+        [TestCase(2020, 1, 2, 318588.78)]
+        [TestCase(2044, 1, 1, 1659.12)]
+        [TestCase(2044, 2, 1, 79.13)]
+        [TestCase(2044, 3, 1, 0)]
+        [TestCase(2045, 1, 1, 0)]
         public void Test_GetBalance(int year, int month, int day, decimal expected)
         {
             var purchasedAt = new DateTime(2019, 1, 1);
@@ -90,72 +82,37 @@ namespace Financier.Common.Tests.Liabilities
             var mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
 
             Assert.That(
-                mortgage.GetBalance(new DateTime(year, month, day)),
+                mortgage.GetBalance(new DateTime(year, month, day)).Value,
                 Is.EqualTo(expected)
             );
         }
 
-        [TestCase(1, 528.17)]
-        [TestCase(2, 527.01)]
-        [TestCase(5, 523.52)]
-        [TestCase(10, 517.65)]
-        [TestCase(300, 2.54)]
+        [TestCase(1, 871.93)]
+        [TestCase(2, 870.04)]
+        [TestCase(5, 864.33)]
+        [TestCase(10, 854.71)]
+        [TestCase(300, 8.60)]
         public void Test_GetMonthlyInterestPayment(int monthCount, decimal expectedInterestPayment)
         {
             Assert.That(
-                Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
+                Subject.GetMonthlyPayments()
                     .Select(payment => payment.Interest.Value)
-                    .Last()
+                    .ToList()[monthCount]
                 , Is.EqualTo(expectedInterestPayment)
             );
         }
 
-        [TestCase(1, 437.93)]
-        [TestCase(2, 439.09)]
-        [TestCase(5, 442.57)]
-        [TestCase(10, 448.45)]
-        [TestCase(300, 963.55)]
+        [TestCase(1, 712.46)]
+        [TestCase(2, 714.36)]
+        [TestCase(5, 720.07)]
+        [TestCase(10, 729.69)]
+        [TestCase(300, 1575.80)]
         public void Test_GetMonthlyPrincipalPayment(int monthCount, decimal expectedPrincipalPayment)
         {
             Assert.That(
-                Subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
+                Subject.GetMonthlyPayments()
                     .Select(payment => payment.Principal.Value)
-                    .Last()
-                , Is.EqualTo(expectedPrincipalPayment)
-            );
-        }
-
-        [TestCase(1, 712.46)]
-        public void Test_GetMonthlyPrincipalPayment_309_9_FourWinds(int monthCount, decimal expectedPrincipalPayment)
-        {
-            var purchasedAt = new DateTime(2019, 1, 1);
-            var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
-            var preferredInterestRate = 0.0319M;
-
-            var subject = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
-            Assert.That(
-                subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
-                    .Select(payment => payment.Principal.Value)
-                    .Last()
-                , Is.EqualTo(expectedPrincipalPayment)
-            );
-        }
-
-
-        [TestCase(1, 871.93)]
-        public void Test_GetMonthlyInterestPayment_309_9_FourWinds(int monthCount, decimal expectedPrincipalPayment)
-        {
-            var purchasedAt = new DateTime(2019, 1, 1);
-            var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
-            var preferredInterestRate = 0.0319M;
-
-            var subject = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
-            Assert.That(
-                subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
-                    .Select(payment => payment.Interest.Value)
-                    .Last()
+                    .ToList()[monthCount]
                 , Is.EqualTo(expectedPrincipalPayment)
             );
         }
