@@ -2,14 +2,9 @@ using System;
 
 namespace Financier.Common.Models
 {
-    public abstract class Liability<T> : ILiability where T : IProduct
+    public abstract class Liability : ILiability
     {
-        public T Product { get; }
-
-        public Liability(T product)
-        {
-            Product = product;
-        }
+        protected Liability() {}
 
         public abstract decimal CostAt(int monthAfterInception);
 

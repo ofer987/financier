@@ -12,20 +12,17 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
     public class BuildTest
     {
         public PrepayableMortgageBuilder Subject { get; }
-        public Home Home { get; }
         public FixedRateMortgage BaseMortgage { get; }
         public PrepayableMortgage Result { get; }
 
         public BuildTest()
         {
             var purchasedAt = new DateTime(2019, 1, 1);
-            var downpayment = 82000.00M;
             var mortgageAmount = 328000.00M;
             var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
 
-            Home = new Home("first home", purchasedAt, downpayment);
-            BaseMortgage = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
+            BaseMortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
             Subject = new PrepayableMortgageBuilder(BaseMortgage);
             Result = Subject.Build();
         }

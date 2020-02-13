@@ -9,20 +9,17 @@ namespace Financier.Common.Tests.Liabilities
 {
     public class PrepayableMortgageTest
     {
-        public Home Home { get; }
-        public DateTime PurchasedAt => Home.PurchasedAt;
+        public DateTime PurchasedAt => Subject.InitiatedAt;
         public Financier.Common.Liabilities.FixedRateMortgage Mortgage { get; }
         public Financier.Common.Liabilities.PrepayableMortgage Subject { get; }
 
         public PrepayableMortgageTest()
         {
             var purchasedAt = new DateTime(2019, 1, 1);
-            var downpayment = 50000.00M;
             var mortgageAmount = 200000.00M;
             var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
-            Home = new Home("first home", purchasedAt, downpayment);
-            Mortgage = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
+            Mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
             Subject = new Financier.Common.Liabilities.PrepayableMortgage(Mortgage, 0.20M);
             Subject.AddPrepayment(new DateTime(2020, 1, 1), 30000.00M);
             Subject.AddPrepayment(new DateTime(2020, 5, 1), 10000.00M);
