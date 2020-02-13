@@ -8,7 +8,6 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
 {
-    // TODO:Rename this file and others to *Tests
     public class BuildTest
     {
         public PrepayableMortgageBuilder Subject { get; }
@@ -44,7 +43,7 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
         [TestCase(2026, 6, 1, 1302.56)]
         [TestCase(2026, 7, 1, 1302.56)]
         [TestCase(2026, 10, 1, 1302.56)]
-        public void Test_GetLatestPayment(int year, int month, int day, decimal expected)
+        public void Test_GetLatestPayment_IsAmount(int year, int month, int day, decimal expected)
         {
             Assert.That(
                 Result.GetMonthlyPayments(new DateTime(year, month, day))
@@ -52,6 +51,21 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
                     .Select(amount => amount.Value)
                     .Last(),
                 Is.EqualTo(expected)
+            );
+        }
+
+        [TestCase(2019, 1, 2, 2019, 1, 1)]
+        [TestCase(2026, 5, 1, 2026, 4, 1)]
+        [TestCase(2026, 6, 1, 2026, 5, 1)]
+        [TestCase(2026, 7, 1, 2026, 5, 1)]
+        [TestCase(2026, 10, 1, 2026, 5, 1)]
+        public void Test_GetLatestPayment_IsLatestDate(int year, int month, int day, int latestYear, int latestMonth, int latestDay)
+        {
+            Assert.That(
+                Result.GetMonthlyPayments(new DateTime(year, month, day))
+                    .Select(payment => payment.At)
+                    .Last(),
+                Is.EqualTo(new DateTime(latestYear, latestMonth, latestDay))
             );
         }
     }
