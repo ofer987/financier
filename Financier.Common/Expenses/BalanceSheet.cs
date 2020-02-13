@@ -13,10 +13,11 @@ namespace Financier.Common.Expenses
         public decimal DailyProfit => CashFlow.DailyProfit;
         public Home Home { get; }
 
-        public BalanceSheet(Money cash, Money debt, ICashFlow cashFlow)
+        public BalanceSheet(Money cash, Money debt, ICashFlow cashFlow, Home home)
         {
             InitialCash = cash;
             InitialDebt = debt;
+            Home = home;
         }
 
         public decimal GetAssets(IInflation inflation, DateTime at)

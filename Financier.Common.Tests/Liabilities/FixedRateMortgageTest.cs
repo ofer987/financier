@@ -9,20 +9,17 @@ namespace Financier.Common.Tests.Liabilities
 {
     public class FixedRateMortgageTest
     {
-        public Home Home { get; }
-        public DateTime PurchasedAt => Home.PurchasedAt;
+        public DateTime PurchasedAt => Subject.InitiatedAt;
         public Financier.Common.Liabilities.FixedRateMortgage Subject { get; }
 
         public FixedRateMortgageTest()
         {
             var purchasedAt = new DateTime(2019, 1, 1);
-            var downpayment = 50000.00M;
             var mortgageAmount = 200000.00M;
             var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
 
-            Home = new Home("first home", purchasedAt, downpayment);
-            Subject = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
+            Subject = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
         }
 
         [Test]
@@ -90,7 +87,7 @@ namespace Financier.Common.Tests.Liabilities
             var mortgageAmount = 328000.00M;
             var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
-            var mortgage = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
+            var mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
 
             Assert.That(
                 mortgage.GetBalance(new DateTime(year, month, day)),

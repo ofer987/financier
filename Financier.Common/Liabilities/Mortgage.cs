@@ -6,14 +6,14 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public abstract class Mortgage : Liability<Home>, IMortgage
+    public abstract class Mortgage : Liability, IMortgage
     {
         public IMonthlyPaymentCalculator Calculator { get; }
 
         public virtual Money BaseValue { get; }
         public virtual Money InitialValue => BaseValue;
 
-        public DateTime InitiatedAt => Product.PurchasedAt;
+        public DateTime InitiatedAt { get; }
         public int AmortisationPeriodInMonths { get; }
         public decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
@@ -25,20 +25,18 @@ namespace Financier.Common.Liabilities
         [Obsolete]
         public virtual double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
 
-        public Mortgage(Home product, IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        public Mortgage(IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
         {
             Calculator = calculator;
-            BaseValue = baseValue;
-            AmortisationPeriodInMonths = amortisationPeriodInMonths;
-            InterestRate = interestRate;
         }
 
-        public Mortgage(Home product, Money baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        public Mortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt)
         {
             Calculator = new MonthlyPaymentCalculator();
             BaseValue = baseValue;
             AmortisationPeriodInMonths = amortisationPeriodInMonths;
             InterestRate = interestRate;
+            InitiatedAt = initiatedAt;
         }
 
         public Money GetBalance(DateTime at)

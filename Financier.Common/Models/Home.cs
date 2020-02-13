@@ -27,7 +27,7 @@ namespace Financier.Common.Models
             DownPayment = new Money(downPayment, PurchasedAt);
         }
 
-        public Home(string name, DateTime purchasedAt, decimal downPayment, FixedRateMortgage mortgage) : this(name, purchasedAt, downPayment)
+        public Home(string name, DateTime purchasedAt, decimal downPayment, IMortgage mortgage) : this(name, purchasedAt, downPayment)
         {
             Financing = mortgage;
         }

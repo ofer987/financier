@@ -28,9 +28,9 @@ namespace Financier.Common.Tests.Expenses
             var initialDebt = new Money(5000.00M, startAt);
             Home = new Home("first home", purchasedAt, downpayment);
             CashFlow = new DummyCashFlow(89.86M);
-            Mortgage = new FixedRateMortgage(Home, mortgageAmountMoney, preferredInterestRate, 300);
+            Mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
 
-            Subject = new BalanceSheet(initialCash, initialCash, CashFlow);
+            Subject = new BalanceSheet(initialCash, initialCash, CashFlow, Home);
         }
 
         // TODO: calculate just the mortgage payments
