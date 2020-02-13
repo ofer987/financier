@@ -17,7 +17,7 @@ namespace Financier.Common.Liabilities
         decimal QuotedInterestRate { get; }
 
         double PeriodicMonthlyInterestRate { get; }
-        double PeriodicAnnualInterestRate { get; }
+        decimal PeriodicAnnualInterestRate { get; }
         double EffectiveAnnualInterestRate { get; }
 
         Money GetBalance(DateTime at);

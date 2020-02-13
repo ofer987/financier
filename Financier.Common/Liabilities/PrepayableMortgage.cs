@@ -21,7 +21,7 @@ namespace Financier.Common.Liabilities
         public decimal QuotedInterestRate => BaseMortgage.QuotedInterestRate;
 
         public double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
-        public double PeriodicAnnualInterestRate => BaseMortgage.PeriodicAnnualInterestRate;
+        public decimal PeriodicAnnualInterestRate => BaseMortgage.PeriodicAnnualInterestRate;
         public double EffectiveAnnualInterestRate => BaseMortgage.EffectiveAnnualInterestRate;
 
         public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAnnualTotal;

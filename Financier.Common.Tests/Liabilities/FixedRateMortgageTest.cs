@@ -124,5 +124,52 @@ namespace Financier.Common.Tests.Liabilities
                 , Is.EqualTo(expectedPrincipalPayment)
             );
         }
+
+        [TestCase(1, 712.46)]
+        public void Test_GetMonthlyPrincipalPayment_309_9_FourWinds(int monthCount, decimal expectedPrincipalPayment)
+        {
+            var purchasedAt = new DateTime(2019, 1, 1);
+            var mortgageAmount = 328000.00M;
+            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
+            var preferredInterestRate = 0.0319M;
+
+            var subject = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
+            Assert.That(
+                subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
+                    .Select(payment => payment.Principal.Value)
+                    .Last()
+                , Is.EqualTo(expectedPrincipalPayment)
+            );
+        }
+
+
+        [TestCase(1, 871.93)]
+        public void Test_GetMonthlyInterestPayment_309_9_FourWinds(int monthCount, decimal expectedPrincipalPayment)
+        {
+            var purchasedAt = new DateTime(2019, 1, 1);
+            var mortgageAmount = 328000.00M;
+            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
+            var preferredInterestRate = 0.0319M;
+
+            var subject = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
+            Assert.That(
+                subject.GetMonthlyPayments(PurchasedAt.AddMonths(monthCount))
+                    .Select(payment => payment.Interest.Value)
+                    .Last()
+                , Is.EqualTo(expectedPrincipalPayment)
+            );
+        }
+
+        [TestCase(0.0319, 300, 0.002640836774)]
+        public void Test_PeriodicMonthlyInterestRate(decimal interestRate, int amortisationPeriodInMonths, decimal expected)
+        {
+            var purchasedAt = new DateTime(2019, 1, 1);
+            var subject = new FixedRateMortgage(new Money(100000, purchasedAt), interestRate, 300, purchasedAt);
+
+            Assert.That(
+                decimal.Round(Convert.ToDecimal(subject.PeriodicMonthlyInterestRate), 12),
+                Is.EqualTo(expected)
+            );
+        }
     }
 }
