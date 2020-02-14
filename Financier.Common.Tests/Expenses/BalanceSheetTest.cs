@@ -27,7 +27,7 @@ namespace Financier.Common.Tests.Expenses
             var initialDebt = new Money(5000.00M, initiatedAt);
             CashFlow = new DummyCashFlow(89.86M);
 
-            Subject = new BalanceSheet(initialCash, initialCash, CashFlow, initiatedAt);
+            Subject = new BalanceSheet(initialCash, initialDebt, CashFlow, initiatedAt);
             var firstMortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
             var firstHome = new Home("first home", purchasedAt, downpayment, firstMortgage);
             Subject.AddHome(firstHome);
