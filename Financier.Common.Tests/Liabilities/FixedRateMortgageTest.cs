@@ -57,7 +57,7 @@ namespace Financier.Common.Tests.Liabilities
                     Convert.ToDecimal(Subject.MonthlyPayment),
                     2
                 ),
-                Is.EqualTo(1584.40)
+                Is.EqualTo(1584.40M)
             );
         }
 
@@ -75,14 +75,8 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2045, 1, 1, 0)]
         public void Test_GetBalance(int year, int month, int day, decimal expected)
         {
-            var purchasedAt = new DateTime(2019, 1, 1);
-            var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
-            var preferredInterestRate = 0.0319M;
-            var mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
-
             Assert.That(
-                mortgage.GetBalance(new DateTime(year, month, day)).Value,
+                Subject.GetBalance(new DateTime(year, month, day)).Value,
                 Is.EqualTo(expected)
             );
         }
