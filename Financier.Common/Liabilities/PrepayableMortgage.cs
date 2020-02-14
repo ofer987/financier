@@ -78,7 +78,7 @@ namespace Financier.Common.Liabilities
             return Convert.ToDecimal(MonthlyPayment);
         }
 
-        public decimal CostAt(DateTime at)
+        public decimal GetCostAt(DateTime at)
         {
             throw new NotImplementedException();
         }

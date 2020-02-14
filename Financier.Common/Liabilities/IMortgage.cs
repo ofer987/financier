@@ -5,7 +5,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public interface IMortgage : ILiability
+    public interface IMortgage
     {
         Money BaseValue { get; }
         Money InitialValue { get; }

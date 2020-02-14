@@ -13,14 +13,6 @@ namespace Financier.Common.Models
         public Money DownPayment { get; }
         public IMortgage Financing { get; }
 
-        public override IEnumerable<ILiability> Liabilities
-        {
-            get
-            {
-                yield return Financing;
-            }
-        }
-
         public Home(string name, DateTime purchasedAt, decimal downPayment) : base(name)
         {
             PurchasedAt = purchasedAt;
@@ -32,20 +24,19 @@ namespace Financier.Common.Models
             Financing = mortgage;
         }
 
-        public decimal GetValueBy(int months)
+        public override IEnumerable<Money> GetValueAt(DateTime at)
         {
-            return 0.00M
-                + DownPayment 
-                + Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
-                    .Select(payment => payment.Principal.Value)
-                    .Sum();
+            yield return DownPayment;
+
+            foreach (var principal in Financing.GetMonthlyPayments(at).Select(payment => payment.Principal))
+            {
+                yield return principal;
+            }
         }
 
-        public decimal GetRemainingMortgageAmount(int months)
+        public override IEnumerable<Money> GetCostAt(DateTime at)
         {
-            return Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
-                .Select(payment => payment.Balance)
-                .Last();
+            yield return Financing.GetBalance(at);
         }
     }
 }
