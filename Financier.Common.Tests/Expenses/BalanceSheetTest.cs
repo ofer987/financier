@@ -90,6 +90,13 @@ namespace Financier.Common.Tests.Expenses
             );
         }
 
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 5000)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 5000 + 327287.54)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 5000 + 327287.54)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 5000 + 326573.18)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 2, 5000 + 317851.30)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 5000 + 317851.30)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 5000 + 317851.30 + 327287.54)]
         public void Test_GetLiabilities(InflationTypes inflationType, int year, int month, int day, decimal expected)
         {
             var inflation = Inflations.GetInflation(inflationType);
