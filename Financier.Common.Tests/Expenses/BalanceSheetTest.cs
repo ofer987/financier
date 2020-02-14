@@ -106,6 +106,8 @@ namespace Financier.Common.Tests.Expenses
             );
         }
 
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 10000.00 + 89.86 * 0 - 5000)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 10000.00 + 82000.00 + 10148.70 + 89.86 * (35 + 364) + 82000 + 712.46 - 5000 - 317851.30 - 327287.54)]
         public void Test_GetNetWorth(InflationTypes inflationType, int year, int month, int day, decimal expected)
         {
             var inflation = Inflations.GetInflation(inflationType);
