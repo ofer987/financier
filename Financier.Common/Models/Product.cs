@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Financier.Common.Models
 {
-    public abstract class Product : IProduct
+    public abstract class Product : IProduct, IAsset, ILiability
     {
         // TODO: place in configuration file or should be configurable somehow
         // TODO place in a configuration file or pass in as constructor parameter
@@ -16,15 +16,14 @@ namespace Financier.Common.Models
         public Guid Id { get; }
         public string Name { get; }
 
-        // What to do with these?
-        public virtual IList<IAsset> Assets { get; } = new List<IAsset>();
-        public virtual IEnumerable<ILiability> Liabilities { get; } = new List<ILiability>();
-
         protected Product(string name)
         {
             Id = Guid.NewGuid();
             Name = name;
         }
+
+        public abstract IEnumerable<Money> GetValueAt(DateTime at);
+        public abstract IEnumerable<Money> GetCostAt(DateTime at);
 
         public override string ToString()
         {

@@ -43,9 +43,8 @@ namespace Financier.Common.Expenses
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
             foreach (var home in Homes.Where(item => at > item.PurchasedAt))
             {
-                result += home.DownPayment.GetValueAt(inflation, at);
-                result += home.Financing.GetMonthlyPayments(at)
-                    .Select(payment => payment.Principal.GetValueAt(inflation, at).Value)
+                result += home.GetValueAt(at)
+                    .Select(item => item.GetValueAt(inflation, at).Value)
                     .Sum();
             }
 
@@ -60,11 +59,13 @@ namespace Financier.Common.Expenses
             }
 
             var result = 0.00M;
-            result += InitialDebt.GetValueAt(inflation, at);
+            result += InitialDebt.GetValueAt(inflation, at).Value;
 
             foreach (var home in Homes.Where(item => at > item.PurchasedAt))
             {
-                result += home.Financing.GetBalance(at);
+                result += home.GetCostAt(at)
+                    .Select(item => item.GetValueAt(inflation, at).Value)
+                    .Sum();
             }
 
             return decimal.Round(result, 2);

@@ -6,7 +6,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public abstract class Mortgage : Liability, IMortgage
+    public abstract class Mortgage : IMortgage
     {
         public IMonthlyPaymentCalculator Calculator { get; }
 
@@ -59,16 +59,6 @@ namespace Financier.Common.Liabilities
         public IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
         {
             return Enumerable.Empty<decimal>();
-        }
-
-        public override decimal CostAt(int monthAfterInception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override decimal CostBy(int monthAfterInception)
-        {
-            throw new NotImplementedException();
         }
 
         public bool IsMonthlyPayment(DateTime at)
