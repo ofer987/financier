@@ -2,7 +2,6 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using Financier.Common.Expenses;
-using Financier.Common.Models;
 using Financier.Web.GraphQL.CashFlows;
 
 namespace Financier.Web.GraphQL.Expenses

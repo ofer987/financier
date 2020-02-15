@@ -8,14 +8,21 @@ namespace Financier.Common.Expenses
 {
     public class BalanceSheet
     {
-        public DateTime InitiatedAt { get; }
-        public Money InitialCash { get; }
-        public Money InitialDebt { get; }
-        public ICashFlow CashFlow { get; }
+        public DateTime InitiatedAt { get; set; }
+        public Money InitialCash { get; set; } = Money.Zero;
+        public Money InitialDebt { get; set; } = Money.Zero;
+        public ICashFlow CashFlow { get; set; }
         public decimal DailyProfit => CashFlow.DailyProfit;
+        public Dictionary<DateTime, IList<Money>> CashAdjustments = new Dictionary<DateTime, IList<Money>>();
 
         private List<Home> homes { get; } = new List<Home>();
         public IReadOnlyList<Home> Homes => homes.AsReadOnly();
+
+        public BalanceSheet(ICashFlow cashFlow, DateTime initiatedAt)
+        {
+            CashFlow = cashFlow;
+            InitiatedAt = initiatedAt;
+        }
 
         public BalanceSheet(Money cash, Money debt, ICashFlow cashFlow, DateTime initiatedAt)
         {
@@ -31,6 +38,18 @@ namespace Financier.Common.Expenses
             homes.Add(home);
         }
 
+        public void AddCashAdjustment(DateTime at, Money cash)
+        {
+            if (CashAdjustments.ContainsKey(at))
+            {
+                CashAdjustments[at].Add(cash);
+            }
+            else
+            {
+                CashAdjustments.Add(at, new List<Money> { cash });
+            }
+        }
+
         public decimal GetAssets(IInflation inflation, DateTime at)
         {
             if (at < InitiatedAt)
@@ -39,6 +58,7 @@ namespace Financier.Common.Expenses
             }
 
             var result = 0.00M;
+            // TODO: add cash adjustments
             result += InitialCash.GetValueAt(inflation, at);
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
             foreach (var home in Homes.Where(item => at > item.PurchasedAt))
@@ -85,9 +105,17 @@ namespace Financier.Common.Expenses
             return result;
         }
 
-        public virtual decimal GetBalance(int months)
+        public decimal GetCashAt(DateTime at)
         {
-            throw new NotImplementedException();
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            return 0.00M
+                + InitialCash.Value
+                - InitialDebt
+                + CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
         }
     }
 }
