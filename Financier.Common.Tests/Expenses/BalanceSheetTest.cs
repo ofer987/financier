@@ -10,31 +10,60 @@ namespace Financier.Common.Tests.Expenses
     // TODO:Rename this file and others to *Tests
     public class BalanceSheetTest
     {
+        public DateTime InitiatedAt => Subject.InitiatedAt;
         public ICashFlow CashFlow { get; private set; }
         public BalanceSheet Subject { get; private set; }
 
         [SetUp]
         public void Init()
         {
-            var purchasedAt = new DateTime(2019, 1, 1);
+            var initiatedAt = new DateTime(2019, 1, 1);
             var downpayment = 82000.00M;
             var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
+            var mortgageAmountMoney = new Money(mortgageAmount, initiatedAt);
             var preferredInterestRate = 0.0319M;
 
-            var initiatedAt = purchasedAt;
             var initialCash = new Money(10000.00M, initiatedAt);
             var initialDebt = new Money(5000.00M, initiatedAt);
+
             CashFlow = new DummyCashFlow(89.86M);
-
             Subject = new BalanceSheet(initialCash, initialDebt, CashFlow, initiatedAt);
-            var firstMortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
-            var firstHome = new Home("first home", purchasedAt, downpayment, firstMortgage);
-            Subject.AddHome(firstHome);
 
-            var secondMortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, new DateTime(2020, 2, 3));
-            var secondHome = new Home("second home", new DateTime(2020, 2, 3), downpayment, secondMortgage);
-            Subject.AddHome(secondHome);
+            {
+                var purchasedAt = initiatedAt;
+                var mortgage = new FixedRateMortgage(
+                    mortgageAmountMoney,
+                    preferredInterestRate,
+                    300,
+                    purchasedAt
+                );
+                var home = new Home(
+                    "first home",
+                    purchasedAt,
+                    new Money(downpayment + mortgageAmountMoney, purchasedAt),
+                    new Money(downpayment, purchasedAt),
+                    mortgage
+                );
+                Subject.AddHome(home);
+            }
+
+            {
+                var purchasedAt = new DateTime(2020, 2, 3);
+                var mortgage = new FixedRateMortgage(
+                    mortgageAmountMoney,
+                    preferredInterestRate,
+                    300,
+                    purchasedAt
+                );
+                var home = new Home(
+                    "second home",
+                    purchasedAt,
+                    new Money(downpayment + mortgageAmountMoney, purchasedAt),
+                    new Money(downpayment, purchasedAt),
+                    mortgage
+                );
+                Subject.AddHome(home);
+            }
         }
 
         [Test]
@@ -116,6 +145,59 @@ namespace Financier.Common.Tests.Expenses
                 Subject.GetNetWorth(inflation, new DateTime(year, month, day)),
                 Is.EqualTo(expected)
             );
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        public void Test_AddHome_CannotAddHomeBeforeInitiation(int daysBeforeInitiation)
+        {
+            var purchasedAt = InitiatedAt.AddDays(0 - daysBeforeInitiation);
+            var mortgageAmount = 328000.00M;
+            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
+            var preferredInterestRate = 0.0319M;
+            var downPayment = 10000.00M;
+            var mortgage = new FixedRateMortgage(
+                mortgageAmountMoney,
+                preferredInterestRate,
+                300,
+                purchasedAt
+            );
+            var home = new Home(
+                "first home",
+                purchasedAt,
+                new Money(downPayment + mortgageAmountMoney, purchasedAt),
+                new Money(downPayment, purchasedAt),
+                mortgage
+            );
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => Subject.AddHome(home));
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void Test_AddHome_AfterInitiation_Succeeds(int daysAfterInitiation)
+        {
+            var purchasedAt = InitiatedAt.AddDays(daysAfterInitiation);
+            var mortgageAmount = 328000.00M;
+            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
+            var preferredInterestRate = 0.0319M;
+            var downPayment = 10000.00M;
+            var mortgage = new FixedRateMortgage(
+                mortgageAmountMoney,
+                preferredInterestRate,
+                300,
+                purchasedAt
+            );
+            var home = new Home(
+                "first home",
+                purchasedAt,
+                new Money(downPayment + mortgageAmountMoney, purchasedAt),
+                new Money(downPayment, purchasedAt),
+                mortgage
+            );
+
+            Assert.DoesNotThrow(() => Subject.AddHome(home));
         }
     }
 }

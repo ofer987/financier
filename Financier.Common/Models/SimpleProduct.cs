@@ -6,10 +6,8 @@ namespace Financier.Common.Models
 {
     public class SimpleProduct : Product
     {
-        public decimal Price { get; }
-        public SimpleProduct(string name, decimal price) : base(name)
+        public SimpleProduct(string name, Money price) : base(name, price)
         {
-            Price = price;
         }
 
         public override IEnumerable<Money> GetValueAt(DateTime at)

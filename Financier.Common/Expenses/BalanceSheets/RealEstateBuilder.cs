@@ -7,6 +7,7 @@ namespace Financier.Common.Expenses.BalanceSheets
 {
     public class RealEstateBuilder
     {
+        private DateTime InitiatedAt => Result.InitiatedAt;
         private BalanceSheet Result { get; set; }
 
         public RealEstateBuilder(ICashFlow cashFlow, DateTime at)
@@ -28,18 +29,32 @@ namespace Financier.Common.Expenses.BalanceSheets
             return Result;
         }
 
-        public BalanceSheet AddHomeWithFixedRateMortgage(DateTime purchasedAt, Money purchasePrice)
+        public RealEstateBuilder AddHomeWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation)
         {
+            var purchasePriceWhenPurchased = new Money(purchasePriceAtInitiation, InitiatedAt)
+                .GetValueAt(new CompoundYearlyInflation(0.05M), purchasedAt);
             var availableCash = Result.GetCashAt(purchasedAt);
-            var downPayment = availableCash < purchasePrice
+            var downPaymentAmount = availableCash < purchasePriceAtInitiation
                 ? availableCash
-                : purchasePrice;
-            var home = new Home("foobar", purchasedAt, downPayment, CreateFixedRateMortgage(purchasePrice.Value - downPayment, purchasedAt));
+                : purchasePriceAtInitiation;
+            var mortgage = CreateFixedRateMortgage(
+                purchasePriceWhenPurchased.Value - downPaymentAmount,
+                purchasedAt
+            );
+            
+
+            var home = new Home(
+                "foobar",
+                purchasedAt,
+                new Money(purchasePriceWhenPurchased, purchasedAt),
+                new Money(downPaymentAmount, purchasedAt),
+                mortgage
+            );
 
             Result.AddHome(home);
-            Result.AddCashAdjustment(purchasedAt, new Money(downPayment, purchasedAt));
+            Result.AddCashAdjustment(purchasedAt, new Money(downPaymentAmount, purchasedAt));
 
-            return Result;
+            return this;
         }
 
         private IMortgage CreateFixedRateMortgage(decimal amount, DateTime at)

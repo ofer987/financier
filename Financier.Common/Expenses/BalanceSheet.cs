@@ -35,6 +35,11 @@ namespace Financier.Common.Expenses
 
         public void AddHome(Home home)
         {
+            if (home.PurchasedAt < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(home.PurchasedAt), home.PurchasedAt, $"The home's PurchasedAt cannot be before {InitiatedAt}");
+            }
+
             homes.Add(home);
         }
 

@@ -4,7 +4,14 @@ namespace Financier.Common.Models
 {
     public class CompoundYearlyInflation : IInflation
     {
-        public const decimal YearlyInflation = 0.02M;
+        private const decimal DefaultRate = 0.02M;
+
+        public decimal Rate { get; }
+
+        public CompoundYearlyInflation(decimal rate = DefaultRate)
+        {
+            Rate = rate;
+        }
 
         public Money GetValueAt(Money source, DateTime targetAt)
         {
@@ -22,7 +29,7 @@ namespace Financier.Common.Models
                 );
                 totalYears = 0 - totalYears;
             }
-            var targetValue = Convert.ToDouble(source.Value) * Math.Pow(Convert.ToDouble(1.00M + YearlyInflation), Convert.ToDouble(totalYears));
+            var targetValue = Convert.ToDouble(source.Value) * Math.Pow(Convert.ToDouble(1.00M + Rate), Convert.ToDouble(totalYears));
 
             return new Money(Convert.ToDecimal(targetValue), targetAt);
         }
