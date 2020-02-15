@@ -6,5 +6,7 @@ namespace Financier.Common.Models
     {
         Guid Id { get; }
         string Name { get; }
+
+        Money Price { get; }
     }
 }

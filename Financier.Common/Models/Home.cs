@@ -13,15 +13,15 @@ namespace Financier.Common.Models
         public Money DownPayment { get; }
         public IMortgage Financing { get; }
 
-        public Home(string name, DateTime purchasedAt, decimal downPayment) : base(name)
-        {
-            PurchasedAt = purchasedAt;
-            DownPayment = new Money(downPayment, PurchasedAt);
-        }
-
-        public Home(string name, DateTime purchasedAt, decimal downPayment, IMortgage mortgage) : this(name, purchasedAt, downPayment)
+        public Home(string name, DateTime purchasedAt, Money purchasePrice, Money downPayment, IMortgage mortgage) : this(name, purchasedAt, purchasePrice, downPayment)
         {
             Financing = mortgage;
+        }
+
+        public Home(string name, DateTime purchasedAt, Money purchasePrice, Money downPayment) : base(name, purchasePrice)
+        {
+            PurchasedAt = purchasedAt;
+            DownPayment = downPayment;
         }
 
         public override IEnumerable<Money> GetValueAt(DateTime at)

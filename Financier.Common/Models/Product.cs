@@ -16,10 +16,14 @@ namespace Financier.Common.Models
         public Guid Id { get; }
         public string Name { get; }
 
-        protected Product(string name)
+        public Money Price { get; }
+
+        protected Product(string name, Money price)
         {
             Id = Guid.NewGuid();
             Name = name;
+
+            Price = price;
         }
 
         public abstract IEnumerable<Money> GetValueAt(DateTime at);
