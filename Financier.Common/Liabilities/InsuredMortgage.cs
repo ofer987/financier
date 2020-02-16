@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Financier.Common.Models;
 
@@ -25,6 +26,7 @@ namespace Financier.Common.Liabilities
         // TODO Figure out the mathematical function for the insurance amount
         public Money Insurance { get; }
         public Money InitialValue => BaseValue + Insurance;
+        public double MonthlyPayment => BaseMortgage.MonthlyPayment;
 
         public static void ValidateInsuranceRate(decimal maximumInsuranceRate)
         {
@@ -48,5 +50,31 @@ namespace Financier.Common.Liabilities
             var insuranceValue = InitialValue.Value * (maximumInsuranceRate - InsuranceRate) / 4.0M;
             Insurance = new Money(insuranceValue, InitialValue.At);
         }
+
+        public bool IsMonthlyPayment(DateTime at)
+        {
+            return BaseMortgage.IsMonthlyPayment(at);
+        }
+
+        public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt)
+        {
+            return BaseMortgage.GetMonthlyPayments(endAt);
+        }
+
+        public IEnumerable<MonthlyPayment> GetMonthlyPayments()
+        {
+            return BaseMortgage.GetMonthlyPayments();
+        }
+
+        public IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
+        {
+            return BaseMortgage.GetPrincipalOnlyPayments(year, month, day);
+        }
+
+        public Money GetBalance(DateTime at)
+        {
+            return BaseMortgage.GetBalance(at);
+        }
+
     }
 }
