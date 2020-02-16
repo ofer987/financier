@@ -8,14 +8,15 @@ namespace Financier.Common.Liabilities
 {
     public abstract class Mortgage : IMortgage
     {
-        public IMonthlyPaymentCalculator Calculator { get; }
+        // TODO: move functionality into Mortgage
+        public IMonthlyPaymentCalculator Calculator { get; protected set; }
 
-        public virtual Money BaseValue { get; }
+        private Money BaseValue { get; }
         public virtual Money InitialValue => BaseValue;
 
-        public DateTime InitiatedAt { get; }
-        public int AmortisationPeriodInMonths { get; }
-        public decimal InterestRate { get; }
+        public virtual DateTime InitiatedAt { get; }
+        public virtual int AmortisationPeriodInMonths { get; }
+        public virtual decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
 
         public abstract double PeriodicMonthlyInterestRate { get; }
@@ -38,6 +39,10 @@ namespace Financier.Common.Liabilities
             InitiatedAt = initiatedAt;
         }
 
+        protected Mortgage()
+        {
+        }
+
         public Money GetBalance(DateTime at)
         {
             return GetMonthlyPayments(at)
@@ -55,7 +60,7 @@ namespace Financier.Common.Liabilities
             return Calculator.GetMonthlyPayments(this, endAt);
         }
 
-        public IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
+        public virtual IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
         {
             return Enumerable.Empty<decimal>();
         }
