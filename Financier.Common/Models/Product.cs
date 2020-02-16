@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Financier.Common.Models
@@ -31,7 +32,13 @@ namespace Financier.Common.Models
 
         public override string ToString()
         {
-            return $"Product ({nameof(Id)} = {Id})";
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"{GetType().Name}:");
+            sb.AppendLine($"\t{nameof(Name)}: ({Name})");
+            sb.AppendLine($"\t{nameof(Id)}: ({Id})");
+
+            return sb.ToString();
         }
 
         public override int GetHashCode()
