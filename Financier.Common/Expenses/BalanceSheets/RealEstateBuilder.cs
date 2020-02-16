@@ -64,9 +64,12 @@ namespace Financier.Common.Expenses.BalanceSheets
             var downPaymentAmount = availableCash < purchasePriceAtInitiation
                 ? availableCash
                 : purchasePriceAtInitiation;
-            var mortgage = CreateFixedRateMortgage(
-                purchasePriceWhenPurchased.Value - downPaymentAmount,
-                purchasedAt
+            var mortgage = Mortgages.GetFixedRateMortgage(
+                new Money(purchasePriceWhenPurchased.Value - downPaymentAmount, purchasedAt),
+                0.0319M,
+                300,
+                purchasedAt,
+                new Money(downPaymentAmount, purchasedAt)
             );
 
             var home = new Home(
@@ -81,11 +84,6 @@ namespace Financier.Common.Expenses.BalanceSheets
             Result.AddCashAdjustment(purchasedAt, new Money(downPaymentAmount, purchasedAt));
 
             return this;
-        }
-
-        private IMortgage CreateFixedRateMortgage(decimal amount, DateTime at)
-        {
-            return new FixedRateMortgage(new Money(amount, at), 0.0319M, 300, at);
         }
 
         public BalanceSheet Build()
