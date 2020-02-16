@@ -41,14 +41,14 @@ namespace Financier.Common.Liabilities
             ValidateInsuranceRate(maximumInsuranceRate);
 
             BaseMortgage = baseMortgage;
-            InsuranceRate = downPayment.Value / (downPayment.Value + InitialValue.Value);
+            InsuranceRate = downPayment.Value / (downPayment.Value + baseMortgage.InitialValue.Value);
             if (InsuranceRate > maximumInsuranceRate)
             {
-                throw new ArgumentOutOfRangeException(nameof(downPayment), $"The down payment cannot exceed more than {maximumInsuranceRate} of the home value {InitialValue.Value + downPayment.Value}");
+                throw new ArgumentOutOfRangeException(nameof(downPayment), $"The down payment cannot exceed more than {maximumInsuranceRate} of the home value {baseMortgage.InitialValue.Value + downPayment.Value}");
             }
 
-            var insuranceValue = InitialValue.Value * (maximumInsuranceRate - InsuranceRate) / 4.0M;
-            Insurance = new Money(insuranceValue, InitialValue.At);
+            var insuranceValue = BaseValue.Value * (maximumInsuranceRate - InsuranceRate) / 4.0M;
+            Insurance = new Money(insuranceValue, BaseValue.At);
         }
 
         public bool IsMonthlyPayment(DateTime at)
