@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Financier.Common.Models
 {
@@ -8,5 +9,7 @@ namespace Financier.Common.Models
         string Name { get; }
 
         Money Price { get; }
+
+        IEnumerable<Money> GetValueAt(DateTime at);
     }
 }
