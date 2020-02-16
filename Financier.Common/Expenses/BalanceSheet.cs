@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Financier.Common.Models;
+using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Expenses
 {
@@ -17,6 +18,13 @@ namespace Financier.Common.Expenses
 
         private List<Home> homes { get; } = new List<Home>();
         public IReadOnlyList<Home> Homes => homes.AsReadOnly();
+
+        private List<IAction> actions { get; } = new List<IAction>();
+        public IReadOnlyList<IAction> Actions => actions.AsReadOnly();
+        public IEnumerable<IAction> Purchases => Actions
+            .Where(item => item.Type == Types.Purchase);
+        public IEnumerable<IAction> Sales => Actions
+            .Where(item => item.Type == Types.Sale);
 
         public BalanceSheet(ICashFlow cashFlow, DateTime initiatedAt)
         {
@@ -35,15 +43,20 @@ namespace Financier.Common.Expenses
 
         public void AddHome(Home home)
         {
+            // TODO: Verify that home is not already purchased
+
             if (home.PurchasedAt < InitiatedAt)
             {
                 throw new ArgumentOutOfRangeException(nameof(home.PurchasedAt), home.PurchasedAt, $"The home's PurchasedAt cannot be before {InitiatedAt}");
             }
 
+            actions.Add(new Purchase(home, home.PurchasedAt));
+
+            // TODO: maybe this can be a derived value
             homes.Add(home);
         }
 
-        public void SellHome(Home home)
+        public void SellHome(Home home, Money salePrice, DateTime soldAt)
         {
             if (!homes.Any(item => item == home))
             {
@@ -51,6 +64,8 @@ namespace Financier.Common.Expenses
             }
 
             // TODO: complete later
+            actions.Add(new Sale(home, salePrice, soldAt));
+            homes.Remove(homes.Where(item => item == home).First());
         }
 
         public void AddCashAdjustment(DateTime at, Money cash)
@@ -76,11 +91,29 @@ namespace Financier.Common.Expenses
             // TODO: add cash adjustments
             result += InitialCash.GetValueAt(inflation, at);
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
-            foreach (var home in Homes.Where(item => at > item.PurchasedAt))
+
+            // TODO: test me
+            foreach (var purchase in Purchases.Where(item => item.At <= at).OrderBy(item => item.At))
             {
-                result += home.GetValueAt(at)
+                var product = purchase.Product;
+                var sale = Sales
+                    .Where(item => item.At >= purchase.At)
+                    .OrderBy(item => item.At)
+                    .First();
+
+                var endAt = sale != null
+                    ? sale.At
+                    : at;
+
+                result += product.GetValueAt(endAt)
                     .Select(item => item.GetValueAt(inflation, at).Value)
                     .Sum();
+            }
+
+            // TODO: test me!
+            foreach(var sale in Sales.Where(item => item.At <= at).OrderBy(item => item.At))
+            {
+                result += sale.Price.GetValueAt(inflation, at).Value;
             }
 
             return decimal.Round(result, 2);
