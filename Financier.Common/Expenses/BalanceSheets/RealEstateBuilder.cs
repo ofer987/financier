@@ -29,7 +29,34 @@ namespace Financier.Common.Expenses.BalanceSheets
             return Result;
         }
 
-        public RealEstateBuilder AddHomeWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation)
+        public RealEstateBuilder AddCondoWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation)
+        {
+            return AddHomeWithFixedRateMortgage(
+                purchasedAt,
+                purchasePriceAtInitiation,
+                new CompoundYearlyInflation(0.05M)
+            );
+        }
+
+        public RealEstateBuilder AddCondoTownhouseWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation)
+        {
+            return AddHomeWithFixedRateMortgage(
+                purchasedAt,
+                purchasePriceAtInitiation,
+                new CompoundYearlyInflation(0.08M)
+            );
+        }
+
+        public RealEstateBuilder AddFreeholdWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation)
+        {
+            return AddHomeWithFixedRateMortgage(
+                purchasedAt,
+                purchasePriceAtInitiation,
+                new CompoundYearlyInflation(0.10M)
+            );
+        }
+
+        private RealEstateBuilder AddHomeWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation, IInflation inflation)
         {
             var purchasePriceWhenPurchased = new Money(purchasePriceAtInitiation, InitiatedAt)
                 .GetValueAt(new CompoundYearlyInflation(0.05M), purchasedAt);
@@ -41,7 +68,6 @@ namespace Financier.Common.Expenses.BalanceSheets
                 purchasePriceWhenPurchased.Value - downPaymentAmount,
                 purchasedAt
             );
-            
 
             var home = new Home(
                 "foobar",
