@@ -43,6 +43,16 @@ namespace Financier.Common.Expenses
             homes.Add(home);
         }
 
+        public void SellHome(Home home)
+        {
+            if (!homes.Any(item => item == home))
+            {
+                throw new ArgumentException($"This {GetType().Name} does not contain the specified home {home}", nameof(home));
+            }
+
+            // TODO: complete later
+        }
+
         public void AddCashAdjustment(DateTime at, Money cash)
         {
             if (CashAdjustments.ContainsKey(at))
