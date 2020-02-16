@@ -56,6 +56,12 @@ namespace Financier.Common.Expenses.BalanceSheets
             );
         }
 
+        public RealEstateBuilder SellHome(Home home, DateTime soldAt, Money soldPrice)
+        {
+            // TODO: implement me!
+            return this;
+        }
+
         private RealEstateBuilder AddHomeWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation, IInflation inflation)
         {
             var purchasePriceWhenPurchased = new Money(purchasePriceAtInitiation, InitiatedAt)
