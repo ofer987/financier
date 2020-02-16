@@ -5,28 +5,22 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public class InsuredMortgage : IMortgage
+    public class InsuredMortgage : Mortgage
     {
         public const decimal DefaultMaximumInsuranceRate = 0.20M;
 
         public decimal InsuranceRate { get; }
         public IMortgage BaseMortgage { get; }
 
-        public Money BaseValue => BaseMortgage.BaseValue;
-        public DateTime InitiatedAt => BaseMortgage.InitiatedAt;
-
-        public int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
-        public decimal InterestRate => BaseMortgage.InterestRate;
-        public decimal QuotedInterestRate => BaseMortgage.QuotedInterestRate;
-
-        public double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
-        public decimal PeriodicAnnualInterestRate => BaseMortgage.PeriodicAnnualInterestRate;
-        public double EffectiveAnnualInterestRate => BaseMortgage.EffectiveAnnualInterestRate;
-
-        // TODO Figure out the mathematical function for the insurance amount
         public Money Insurance { get; }
-        public Money InitialValue => BaseValue + Insurance;
-        public double MonthlyPayment => BaseMortgage.MonthlyPayment;
+        private Money BaseValue => BaseMortgage.InitialValue;
+        public override Money InitialValue => BaseValue + Insurance;
+        public override DateTime InitiatedAt => BaseMortgage.InitiatedAt;
+
+        public override int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
+        public override decimal InterestRate => BaseMortgage.InterestRate;
+
+        public override double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
 
         public static void ValidateInsuranceRate(decimal maximumInsuranceRate)
         {
@@ -41,6 +35,7 @@ namespace Financier.Common.Liabilities
             ValidateInsuranceRate(maximumInsuranceRate);
 
             BaseMortgage = baseMortgage;
+            Calculator = BaseMortgage.Calculator;
             InsuranceRate = downPayment.Value / (downPayment.Value + baseMortgage.InitialValue.Value);
             if (InsuranceRate > maximumInsuranceRate)
             {
@@ -51,30 +46,9 @@ namespace Financier.Common.Liabilities
             Insurance = new Money(insuranceValue, BaseValue.At);
         }
 
-        public bool IsMonthlyPayment(DateTime at)
-        {
-            return BaseMortgage.IsMonthlyPayment(at);
-        }
-
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt)
-        {
-            return BaseMortgage.GetMonthlyPayments(endAt);
-        }
-
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments()
-        {
-            return BaseMortgage.GetMonthlyPayments();
-        }
-
-        public IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
+        public override IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
         {
             return BaseMortgage.GetPrincipalOnlyPayments(year, month, day);
         }
-
-        public Money GetBalance(DateTime at)
-        {
-            return BaseMortgage.GetBalance(at);
-        }
-
     }
 }
