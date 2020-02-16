@@ -9,7 +9,6 @@ namespace Financier.Common.Expenses.Actions
         Types Type { get; }
         IProduct Product { get; }
         DateTime At { get; }
-        decimal Price { get; }
-        decimal PriceAt(DateTime at);
+        Money Price { get; }
     }
 }
