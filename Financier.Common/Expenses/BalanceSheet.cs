@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Financier.Common.Extensions;
 using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
 
@@ -86,6 +87,10 @@ namespace Financier.Common.Expenses
             result += InitialCash.GetValueAt(inflation, at);
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
 
+            result += CashAdjustments
+                .SelectMany(pair => pair.Value)
+                .InflatedValue(inflation, at);
+
             foreach (var action in ProductHistory.GetHistories().SelectMany(history => history))
             {
                 switch (action.Type)
@@ -93,8 +98,7 @@ namespace Financier.Common.Expenses
                     case Types.Purchase:
                         result -= action.Price.GetValueAt(inflation, at).Value;
                         result += action.Product.GetValueAt(at)
-                            .Select(val => val.GetValueAt(inflation, at).Value)
-                            .Sum();
+                            .InflatedValue(inflation, at);
                         break;
                     case Types.Sale:
                         result += action.Price.GetValueAt(inflation, at).Value;
@@ -104,7 +108,23 @@ namespace Financier.Common.Expenses
                 }
             }
 
+            result += GetValueOfOwnedProducts(inflation, at);
+
             return decimal.Round(result, 2);
+        }
+
+        public decimal GetValueOfOwnedProducts(IInflation inflation, DateTime at)
+        {
+            return GetOwnedProducts(at)
+                .SelectMany(product => product.GetValueAt(at))
+                .InflatedValue(inflation, at);
+        }
+
+        public decimal GetCostOfOwnedProducts(IInflation inflation, DateTime at)
+        {
+            return GetOwnedProducts(at)
+                .SelectMany(product => product.GetCostAt(at))
+                .InflatedValue(inflation, at);
         }
 
         public decimal GetLiabilities(IInflation inflation, DateTime at)
@@ -122,17 +142,23 @@ namespace Financier.Common.Expenses
                 switch (action.Type)
                 {
                     case Types.Purchase:
-                        result += action.Product.GetCostAt(at)
-                            .Select(val => val.GetValueAt(inflation, at).Value)
-                            .Sum();
+                        // result += action.Product.GetCostAt(at)
+                        //     .Total(inflation, at);
                         break;
                     case Types.Sale:
+                        // TODO: Pay off debts
+                        // Convert soldPrice to 1) Assets (add to cash), and
+                        // 2) to liabilities (how much I owe others)
+                        // 3) pay off liabilities right away (i.e., remove from cash)
+                        // 4) convert remaining liabilities into debt (i.e., a debt product)
                         // result += action.Price.GetValueAt(inflation, at).Value;
                         break;
                     case Types.Null:
                         break;
                 }
             }
+
+            result += GetCostOfOwnedProducts(inflation, at);
 
             return decimal.Round(result, 2);
         }
