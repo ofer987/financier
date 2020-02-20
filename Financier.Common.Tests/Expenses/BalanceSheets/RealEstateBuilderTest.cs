@@ -33,36 +33,36 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 Is.TypeOf<RealEstateBuilder>()
             );
         }
+        //
+        // [Test]
+        // public void Test_AddCondoWithFixedRateMortgage_HasHome()
+        // {
+        //     var purchasedAt = new DateTime(2019, 1, 1);
+        //     var purchasePrice = new Money(2000.00M, purchasedAt);
+        //
+        //     var balanceSheet = Subject
+        //         .AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice)
+        //         .Build();
+        //
+        //     Assert.That(balanceSheet.Homes.Count, Is.EqualTo(1));
+        // }
 
-        [Test]
-        public void Test_AddCondoWithFixedRateMortgage_HasHome()
-        {
-            var purchasedAt = new DateTime(2019, 1, 1);
-            var purchasePrice = new Money(2000.00M, purchasedAt);
-
-            var balanceSheet = Subject
-                .AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice)
-                .Build();
-
-            Assert.That(balanceSheet.Homes.Count, Is.EqualTo(1));
-        }
-
-        [TestCase(2019, 1, 1, 100.00, 100.00)]
-        [TestCase(2020, 1, 1, 100.00, 105.00)]
-        [TestCase(2021, 1, 1, 100.00, 110.25)]
-        [TestCase(2021, 2, 1, 100.00, 110.25)]
-        [TestCase(2020, 1, 1, 200.00, 210.00)]
-        public void Test_AddCondoWithFixedRateMortgage_FuturePurchasePriceIsInflated(int year, int month, int day, decimal purchasePriceAtInitiation, decimal expected)
-        {
-            var purchasedAt = new DateTime(year, month, day);
-            var purchasePrice = purchasePriceAtInitiation;
-
-            var balanceSheet = Subject
-                .AddCondoWithFixedRateMortgage(purchasedAt, purchasePriceAtInitiation)
-                .Build();
-
-            var actualAbsoluteHomePrice = balanceSheet.Homes[0].Price.Value;
-            Assert.That(actualAbsoluteHomePrice, Is.EqualTo(expected));
-        }
+        // [TestCase(2019, 1, 1, 100.00, 100.00)]
+        // [TestCase(2020, 1, 1, 100.00, 105.00)]
+        // [TestCase(2021, 1, 1, 100.00, 110.25)]
+        // [TestCase(2021, 2, 1, 100.00, 110.25)]
+        // [TestCase(2020, 1, 1, 200.00, 210.00)]
+        // public void Test_AddCondoWithFixedRateMortgage_FuturePurchasePriceIsInflated(int year, int month, int day, decimal purchasePriceAtInitiation, decimal expected)
+        // {
+        //     var purchasedAt = new DateTime(year, month, day);
+        //     var purchasePrice = purchasePriceAtInitiation;
+        //
+        //     var balanceSheet = Subject
+        //         .AddCondoWithFixedRateMortgage(purchasedAt, purchasePriceAtInitiation)
+        //         .Build();
+        //
+        //     var actualAbsoluteHomePrice = balanceSheet.Homes[0].Price.Value;
+        //     Assert.That(actualAbsoluteHomePrice, Is.EqualTo(expected));
+        // }
     }
 }
