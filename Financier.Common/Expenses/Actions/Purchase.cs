@@ -28,7 +28,7 @@ namespace Financier.Common.Expenses.Actions
             }
         }
 
-        public Purchase(IProduct product, DateTime at) : base(Types.Purchase, product, product.Price, at)
+        public Purchase(Product product, DateTime at) : base(Types.Purchase, product, product.Price, at)
         {
         }
     }
