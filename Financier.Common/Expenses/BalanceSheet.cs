@@ -20,6 +20,7 @@ namespace Financier.Common.Expenses
         public IReadOnlyList<Home> Homes => homes.AsReadOnly();
 
         private List<IAction> actions { get; } = new List<IAction>();
+        public Activity ProductHistory { get; } = new Activity();
         public IReadOnlyList<IAction> Actions => actions.AsReadOnly();
         public IEnumerable<IAction> Purchases => Actions
             .Where(item => item.Type == Types.Purchase);

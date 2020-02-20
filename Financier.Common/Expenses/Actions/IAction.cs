@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Financier.Common.Models;
 
@@ -10,5 +11,15 @@ namespace Financier.Common.Expenses.Actions
         IProduct Product { get; }
         DateTime At { get; }
         Money Price { get; }
+
+        IAction Next { get; set; }
+
+        bool IsSold { get; }
+        bool IsLastAction { get; }
+        bool CanBuy { get; }
+        bool CanSell { get; }
+        bool IsNull { get; }
+
+        IEnumerable<IAction> GetActions();
     }
 }

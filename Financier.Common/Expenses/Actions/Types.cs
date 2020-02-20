@@ -1,4 +1,4 @@
 namespace Financier.Common.Expenses.Actions
 {
-    public enum Types { Purchase = 0, Sale }
+    public enum Types { Null = 0, Purchase, Sale }
 }
