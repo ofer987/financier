@@ -57,5 +57,41 @@ namespace Financier.Common.Models
         {
             return inflation.GetValueAt(this, targetAt);
         }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode() & At.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Money;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (Value != other.Value || At != other.At)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool operator ==(Money x, Money y)
+        {
+            if (object.ReferenceEquals(x, null))
+            {
+                return (object.ReferenceEquals(y, null));
+            }
+
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(Money x, Money y)
+        {
+            return !(x == y);
+        }
     }
 }
