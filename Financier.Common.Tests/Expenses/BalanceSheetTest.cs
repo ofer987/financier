@@ -44,7 +44,7 @@ namespace Financier.Common.Tests.Expenses
                     new Money(downpayment, purchasedAt),
                     mortgage
                 );
-                Subject.AddHome(home);
+                Subject.Buy(home);
             }
 
             {
@@ -62,7 +62,7 @@ namespace Financier.Common.Tests.Expenses
                     new Money(downpayment, purchasedAt),
                     mortgage
                 );
-                Subject.AddHome(home);
+                Subject.Buy(home);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Financier.Common.Tests.Expenses
                 mortgage
             );
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => Subject.AddHome(home));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Subject.Buy(home));
         }
 
         [TestCase(0)]
@@ -197,7 +197,7 @@ namespace Financier.Common.Tests.Expenses
                 mortgage
             );
 
-            Assert.DoesNotThrow(() => Subject.AddHome(home));
+            Assert.DoesNotThrow(() => Subject.Buy(home));
         }
     }
 }

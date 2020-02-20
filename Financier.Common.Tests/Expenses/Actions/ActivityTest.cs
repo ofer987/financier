@@ -9,7 +9,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 {
     public class ActivityTest
     {
-        public IProduct Television { get; private set; }
+        public Product Television { get; private set; }
 
         [SetUp]
         public void Init()

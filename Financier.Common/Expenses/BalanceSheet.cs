@@ -16,16 +16,10 @@ namespace Financier.Common.Expenses
         public decimal DailyProfit => CashFlow.DailyProfit;
         public Dictionary<DateTime, IList<Money>> CashAdjustments = new Dictionary<DateTime, IList<Money>>();
 
-        private List<Home> homes { get; } = new List<Home>();
-        public IReadOnlyList<Home> Homes => homes.AsReadOnly();
+        // private List<Home> homes { get; } = new List<Home>();
+        // public IReadOnlyList<Home> Homes => homes.AsReadOnly();
 
-        private List<IAction> actions { get; } = new List<IAction>();
         public Activity ProductHistory { get; } = new Activity();
-        public IReadOnlyList<IAction> Actions => actions.AsReadOnly();
-        public IEnumerable<IAction> Purchases => Actions
-            .Where(item => item.Type == Types.Purchase);
-        public IEnumerable<IAction> Sales => Actions
-            .Where(item => item.Type == Types.Sale);
 
         public BalanceSheet(ICashFlow cashFlow, DateTime initiatedAt)
         {
@@ -42,42 +36,36 @@ namespace Financier.Common.Expenses
             CashFlow = cashFlow;
         }
 
-        public void AddHome(Home home)
+        public void Buy(Home home)
         {
-            // TODO: Verify that home is not already purchased
-
             if (home.PurchasedAt < InitiatedAt)
             {
                 throw new ArgumentOutOfRangeException(nameof(home.PurchasedAt), home.PurchasedAt, $"The home's PurchasedAt cannot be before {InitiatedAt}");
             }
 
-            actions.Add(new Purchase(home, home.PurchasedAt));
-
-            // TODO: maybe this can be a derived value
-            homes.Add(home);
+            ProductHistory.Buy(home, home.PurchasedAt);
         }
 
-        public void SellHome(Home home, Money salePrice, DateTime soldAt)
+        public void Sell(Home home, Money salePrice, DateTime soldAt)
         {
-            if (!homes.Any(item => item == home))
+            if (soldAt < InitiatedAt)
             {
-                throw new ArgumentException($"This {GetType().Name} does not contain the specified home {home}", nameof(home));
+                throw new ArgumentOutOfRangeException(nameof(soldAt), soldAt, $"The home cannot be sold before before {InitiatedAt}");
             }
 
             // TODO: complete later
-            actions.Add(new Sale(home, salePrice, soldAt));
-            homes.Remove(homes.Where(item => item == home).First());
+            ProductHistory.Sell(home, salePrice, soldAt);
         }
 
         public void AddCashAdjustment(DateTime at, Money cash)
         {
-            if (CashAdjustments.ContainsKey(at))
+            if (!CashAdjustments.TryGetValue(at, out var list))
             {
-                CashAdjustments[at].Add(cash);
+                CashAdjustments.Add(at, new List<Money> { cash });
             }
             else
             {
-                CashAdjustments.Add(at, new List<Money> { cash });
+                list.Add(cash);
             }
         }
 
@@ -93,28 +81,22 @@ namespace Financier.Common.Expenses
             result += InitialCash.GetValueAt(inflation, at);
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
 
-            // TODO: test me
-            foreach (var purchase in Purchases.Where(item => item.At <= at).OrderBy(item => item.At))
+            foreach (var action in ProductHistory.GetHistories().SelectMany(history => history))
             {
-                var product = purchase.Product;
-                var sale = Sales
-                    .Where(item => item.At >= purchase.At)
-                    .OrderBy(item => item.At)
-                    .First();
-
-                var endAt = sale != null
-                    ? sale.At
-                    : at;
-
-                result += product.GetValueAt(endAt)
-                    .Select(item => item.GetValueAt(inflation, at).Value)
-                    .Sum();
-            }
-
-            // TODO: test me!
-            foreach(var sale in Sales.Where(item => item.At <= at).OrderBy(item => item.At))
-            {
-                result += sale.Price.GetValueAt(inflation, at).Value;
+                switch (action.Type)
+                {
+                    case Types.Purchase:
+                        result -= action.Price.GetValueAt(inflation, at).Value;
+                        result += action.Product.GetValueAt(at)
+                            .Select(val => val.GetValueAt(inflation, at).Value)
+                            .Sum();
+                        break;
+                    case Types.Sale:
+                        result += action.Price.GetValueAt(inflation, at).Value;
+                        break;
+                    case Types.Null:
+                        break;
+                }
             }
 
             return decimal.Round(result, 2);
@@ -130,11 +112,21 @@ namespace Financier.Common.Expenses
             var result = 0.00M;
             result += InitialDebt.GetValueAt(inflation, at).Value;
 
-            foreach (var home in Homes.Where(item => at > item.PurchasedAt))
+            foreach (var action in ProductHistory.GetHistories().SelectMany(history => history))
             {
-                result += home.GetCostAt(at)
-                    .Select(item => item.GetValueAt(inflation, at).Value)
-                    .Sum();
+                switch (action.Type)
+                {
+                    case Types.Purchase:
+                        result += action.Product.GetCostAt(at)
+                            .Select(val => val.GetValueAt(inflation, at).Value)
+                            .Sum();
+                        break;
+                    case Types.Sale:
+                        // result += action.Price.GetValueAt(inflation, at).Value;
+                        break;
+                    case Types.Null:
+                        break;
+                }
             }
 
             return decimal.Round(result, 2);

@@ -86,7 +86,7 @@ namespace Financier.Common.Expenses.BalanceSheets
                 mortgage
             );
 
-            Result.AddHome(home);
+            Result.Buy(home);
             Result.AddCashAdjustment(purchasedAt, new Money(downPaymentAmount, purchasedAt));
 
             return this;

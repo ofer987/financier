@@ -11,7 +11,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 {
     public class ActionTest
     {
-        public static IProduct Television { get; } = new SimpleProduct("house", new Money(40.00M, new DateTime(2020, 1, 1)));
+        public static Product Television { get; } = new SimpleProduct("house", new Money(40.00M, new DateTime(2020, 1, 1)));
 
         [SetUp]
         public void Init()

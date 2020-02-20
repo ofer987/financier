@@ -8,11 +8,18 @@ namespace Financier.Common.Expenses.Actions
 {
     public class Activity
     {
-        private Dictionary<Guid, IAction> purchases = new Dictionary<Guid, IAction>();
+        private Dictionary<IProduct, IAction> purchases = new Dictionary<IProduct, IAction>();
+
+        public IEnumerable<IEnumerable<IAction>> GetHistories()
+        {
+            return purchases
+                .Select(purchase => purchase.Key)
+                .Select(GetHistory);
+        }
 
         public IEnumerable<IAction> GetHistory(IProduct product)
         {
-            if (!purchases.TryGetValue(product.Id, out var firstAction))
+            if (!purchases.TryGetValue(product, out var firstAction))
             {
                 yield break;
             }
@@ -23,11 +30,11 @@ namespace Financier.Common.Expenses.Actions
             };
         }
 
-        public void Buy(IProduct product, DateTime purchasedAt)
+        public void Buy(Product product, DateTime purchasedAt)
         {
-            if (!purchases.TryGetValue(product.Id, out var firstAction))
+            if (!purchases.TryGetValue(product, out var firstAction))
             {
-                purchases[product.Id] = new Purchase(product, purchasedAt); 
+                purchases[product] = new Purchase(product, purchasedAt); 
 
                 return;
             }
@@ -41,9 +48,9 @@ namespace Financier.Common.Expenses.Actions
             lastAction.Next = new Purchase(product, purchasedAt);
         }
 
-        public void Sell(IProduct product, Money salePrice, DateTime soldAt)
+        public void Sell(Product product, Money salePrice, DateTime soldAt)
         {
-            if (!purchases.TryGetValue(product.Id, out var firstAction))
+            if (!purchases.TryGetValue(product, out var firstAction))
             {
                 throw new InvalidOperationException($"Cannot sell the product {product} because it has not been purchased yet");
             }

@@ -8,7 +8,7 @@ namespace Financier.Common.Expenses.Actions
     public interface IAction
     {
         Types Type { get; }
-        IProduct Product { get; }
+        Product Product { get; }
         DateTime At { get; }
         Money Price { get; }
 
