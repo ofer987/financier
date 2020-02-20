@@ -69,5 +69,10 @@ namespace Financier.Common.Liabilities
         {
             return at.Day == InitiatedAt.Day;
         }
+
+        public IEnumerable<Money> GetCostAt(DateTime at)
+        {
+            yield return GetBalance(at);
+        }
     }
 }

@@ -17,9 +17,6 @@ namespace Financier.Common.Expenses
         public decimal DailyProfit => CashFlow.DailyProfit;
         public Dictionary<DateTime, IList<Money>> CashAdjustments = new Dictionary<DateTime, IList<Money>>();
 
-        // private List<Home> homes { get; } = new List<Home>();
-        // public IReadOnlyList<Home> Homes => homes.AsReadOnly();
-
         public Activity ProductHistory { get; } = new Activity();
 
         public BalanceSheet(ICashFlow cashFlow, DateTime initiatedAt)
@@ -35,6 +32,11 @@ namespace Financier.Common.Expenses
             InitialDebt = debt;
 
             CashFlow = cashFlow;
+        }
+
+        public CashFlowStatement GetCashFlowStatement(DateTime startAt, DateTime endAt)
+        {
+            return new CashFlowStatement(ProductHistory, startAt, endAt);
         }
 
         public void Buy(Home home)
@@ -86,28 +88,6 @@ namespace Financier.Common.Expenses
             // TODO: add cash adjustments
             result += InitialCash.GetValueAt(inflation, at);
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
-
-            result += CashAdjustments
-                .SelectMany(pair => pair.Value)
-                .InflatedValue(inflation, at);
-
-            foreach (var action in ProductHistory.GetHistories().SelectMany(history => history))
-            {
-                switch (action.Type)
-                {
-                    case Types.Purchase:
-                        result -= action.Price.GetValueAt(inflation, at).Value;
-                        result += action.Product.GetValueAt(at)
-                            .InflatedValue(inflation, at);
-                        break;
-                    case Types.Sale:
-                        result += action.Price.GetValueAt(inflation, at).Value;
-                        break;
-                    case Types.Null:
-                        break;
-                }
-            }
-
             result += GetValueOfOwnedProducts(inflation, at);
 
             return decimal.Round(result, 2);
@@ -136,28 +116,6 @@ namespace Financier.Common.Expenses
 
             var result = 0.00M;
             result += InitialDebt.GetValueAt(inflation, at).Value;
-
-            foreach (var action in ProductHistory.GetHistories().SelectMany(history => history))
-            {
-                switch (action.Type)
-                {
-                    case Types.Purchase:
-                        // result += action.Product.GetCostAt(at)
-                        //     .Total(inflation, at);
-                        break;
-                    case Types.Sale:
-                        // TODO: Pay off debts
-                        // Convert soldPrice to 1) Assets (add to cash), and
-                        // 2) to liabilities (how much I owe others)
-                        // 3) pay off liabilities right away (i.e., remove from cash)
-                        // 4) convert remaining liabilities into debt (i.e., a debt product)
-                        // result += action.Price.GetValueAt(inflation, at).Value;
-                        break;
-                    case Types.Null:
-                        break;
-                }
-            }
-
             result += GetCostOfOwnedProducts(inflation, at);
 
             return decimal.Round(result, 2);

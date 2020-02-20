@@ -5,7 +5,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public interface IMortgage
+    public interface IMortgage : ILiability
     {
         IMonthlyPaymentCalculator Calculator { get; }
 
