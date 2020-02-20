@@ -8,7 +8,7 @@ namespace Financier.Common.Expenses.Actions
 {
     public class Activity
     {
-        private Dictionary<IProduct, IAction> purchases = new Dictionary<IProduct, IAction>();
+        private Dictionary<Product, IAction> purchases = new Dictionary<Product, IAction>();
 
         public IEnumerable<IEnumerable<IAction>> GetHistories()
         {
@@ -17,7 +17,37 @@ namespace Financier.Common.Expenses.Actions
                 .Select(GetHistory);
         }
 
-        public IEnumerable<IAction> GetHistory(IProduct product)
+        public IEnumerable<Product> GetOwnedProducts(DateTime at)
+        {
+            foreach (var pair in purchases)
+            {
+                var product = pair.Key;
+
+                var owned = false;
+                // TODO: should the operator be exclusive or inclusive?
+                foreach (var action in GetHistory(product).Where(action => action.At <= at))
+                {
+                    switch (action.Type)
+                    {
+                        case Types.Purchase:
+                            owned = true;
+                            break;
+                        case Types.Sale:
+                            owned = false;
+                            break;
+                        case Types.Null:
+                            break;
+                    }
+                }
+
+                if (owned)
+                {
+                    yield return product;
+                }
+            }
+        }
+
+        public IEnumerable<IAction> GetHistory(Product product)
         {
             if (!purchases.TryGetValue(product, out var firstAction))
             {

@@ -69,6 +69,11 @@ namespace Financier.Common.Expenses
             }
         }
 
+        public IEnumerable<Product> GetOwnedProducts(DateTime at)
+        {
+            return ProductHistory.GetOwnedProducts(at);
+        }
+
         public decimal GetAssets(IInflation inflation, DateTime at)
         {
             if (at < InitiatedAt)
