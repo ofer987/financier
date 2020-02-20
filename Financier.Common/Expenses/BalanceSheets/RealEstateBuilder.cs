@@ -87,7 +87,7 @@ namespace Financier.Common.Expenses.BalanceSheets
             );
 
             Result.Buy(home);
-            Result.AddCashAdjustment(purchasedAt, new Money(downPaymentAmount, purchasedAt));
+            Result.AddCashAdjustment(purchasedAt, new Money(0 -downPaymentAmount, purchasedAt));
 
             return this;
         }
