@@ -13,6 +13,8 @@ namespace Financier.Common.Tests.Expenses
         public DateTime InitiatedAt => Subject.InitiatedAt;
         public ICashFlow CashFlow { get; private set; }
         public BalanceSheet Subject { get; private set; }
+        public Home FirstHome { get; private set; }
+        public Home SecondHome { get; private set; }
 
         [SetUp]
         public void Init()
@@ -37,14 +39,14 @@ namespace Financier.Common.Tests.Expenses
                     300,
                     purchasedAt
                 );
-                var home = new Home(
+                FirstHome = new Home(
                     "first home",
                     purchasedAt,
                     new Money(downpayment + mortgageAmountMoney, purchasedAt),
                     new Money(downpayment, purchasedAt),
                     mortgage
                 );
-                Subject.Buy(home);
+                Subject.Buy(FirstHome);
             }
 
             {
@@ -55,14 +57,14 @@ namespace Financier.Common.Tests.Expenses
                     300,
                     purchasedAt
                 );
-                var home = new Home(
+                SecondHome = new Home(
                     "second home",
                     purchasedAt,
                     new Money(downpayment + mortgageAmountMoney, purchasedAt),
                     new Money(downpayment, purchasedAt),
                     mortgage
                 );
-                Subject.Buy(home);
+                Subject.Buy(SecondHome);
             }
         }
 
@@ -198,6 +200,62 @@ namespace Financier.Common.Tests.Expenses
             );
 
             Assert.DoesNotThrow(() => Subject.Buy(home));
+        }
+
+        [Test]
+        public void Test_GetValueOfOwnedProducts()
+        {
+            Assert.That(
+                Subject.GetValueOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
+                Is.EqualTo(5000.00M)
+            );
+            Assert.That(
+                Subject.GetValueOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
+                Is.EqualTo(5000.00M)
+            );
+
+            var firstHomeSoldAt = new DateTime(2022, 2, 3);
+            Subject.Sell(
+                FirstHome,
+                new Money(500000.00M, new DateTime(2020, 12, 1)),
+                firstHomeSoldAt
+            );
+            Assert.That(
+                Subject.GetValueOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(-1)),
+                Is.EqualTo(5000.00M)
+            );
+            Assert.That(
+                Subject.GetValueOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(1)),
+                Is.EqualTo(5000.00M)
+            );
+        }
+
+        [Test]
+        public void Test_GetCostOfOwnedProducts()
+        {
+            Assert.That(
+                Subject.GetCostOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
+                Is.EqualTo(5000.00M)
+            );
+            Assert.That(
+                Subject.GetCostOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
+                Is.EqualTo(5000.00M)
+            );
+
+            var firstHomeSoldAt = new DateTime(2022, 2, 3);
+            Subject.Sell(
+                FirstHome,
+                new Money(500000.00M, new DateTime(2020, 12, 1)),
+                firstHomeSoldAt
+            );
+            Assert.That(
+                Subject.GetCostOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(-1)),
+                Is.EqualTo(5000.00M)
+            );
+            Assert.That(
+                Subject.GetCostOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(1)),
+                Is.EqualTo(5000.00M)
+            );
         }
     }
 }
