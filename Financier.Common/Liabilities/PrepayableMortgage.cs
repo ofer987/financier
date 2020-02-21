@@ -78,26 +78,6 @@ namespace Financier.Common.Liabilities
             return Convert.ToDecimal(MonthlyPayment);
         }
 
-        public decimal GetCostAt(DateTime at)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CostBy(int monthAfterInception)
-        {
-            if (monthAfterInception <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
-            }
-
-            return Convert.ToDecimal(MonthlyPayment) * monthAfterInception;
-        }
-
-        public decimal CostBy(DateTime at)
-        {
-            throw new NotImplementedException();
-        }
-
         public void AddPrepayment(DateTime at, decimal amount)
         {
             Prepayments.Add(at, amount);
@@ -119,6 +99,11 @@ namespace Financier.Common.Liabilities
             {
                 Console.WriteLine($"{prepayment.Item1}: {prepayment.Item2}");
             }
+        }
+
+        public IEnumerable<Money> GetCostAt(DateTime at)
+        {
+            yield return GetBalance(at);
         }
     }
 }

@@ -8,11 +8,11 @@ using Financier.Common.Models;
 namespace Financier.Common.Tests.Expenses
 {
     // TODO:Rename this file and others to *Tests
-    public class BalanceSheetTest
+    public class CashFlowStatementTest
     {
         public DateTime InitiatedAt => Subject.InitiatedAt;
         public ICashFlow CashFlow { get; private set; }
-        public BalanceSheet Subject { get; private set; }
+        public CashFlowStatement Subject { get; private set; }
         public Home FirstHome { get; private set; }
         public Home SecondHome { get; private set; }
 
