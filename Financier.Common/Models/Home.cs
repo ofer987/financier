@@ -36,7 +36,7 @@ namespace Financier.Common.Models
 
         public override IEnumerable<Money> GetCostAt(DateTime at)
         {
-            return Financing.GetCostAt(at);
+            return Enumerable.Empty<Money>();
         }
     }
 }

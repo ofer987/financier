@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
 
 namespace Financier.Common.Models
 {
-    public interface IProduct
+    public interface IProduct : IAsset, ILiability
     {
         Guid Id { get; }
         string Name { get; }
 
         Money Price { get; }
-
-        IEnumerable<Money> GetValueAt(DateTime at);
     }
 }

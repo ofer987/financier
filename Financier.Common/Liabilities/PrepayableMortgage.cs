@@ -15,6 +15,9 @@ namespace Financier.Common.Liabilities
         private Money BaseValue => BaseMortgage.InitialValue;
         public Money InitialValue => BaseValue;
         public DateTime InitiatedAt => BaseMortgage.InitiatedAt;
+        public Guid Id => BaseMortgage.Id;
+        public string Name => BaseMortgage.Name;
+        public Money Price => BaseMortgage.Price;
 
         public int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
         public decimal InterestRate => BaseMortgage.InterestRate;
@@ -78,6 +81,16 @@ namespace Financier.Common.Liabilities
             return Convert.ToDecimal(MonthlyPayment);
         }
 
+        public IEnumerable<Money> GetCostAt(DateTime at)
+        {
+            yield return GetBalance(at);
+        }
+
+        public IEnumerable<Money> GetValueAt(DateTime at)
+        {
+            return Enumerable.Empty<Money>();
+        }
+
         public void AddPrepayment(DateTime at, decimal amount)
         {
             Prepayments.Add(at, amount);
@@ -99,11 +112,6 @@ namespace Financier.Common.Liabilities
             {
                 Console.WriteLine($"{prepayment.Item1}: {prepayment.Item2}");
             }
-        }
-
-        public IEnumerable<Money> GetCostAt(DateTime at)
-        {
-            yield return GetBalance(at);
         }
     }
 }

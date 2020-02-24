@@ -2,27 +2,28 @@ using System;
 
 using Financier.Common.Models;
 using Financier.Common.Liabilities;
+using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Expenses.BalanceSheets
 {
     public class RealEstateBuilder
     {
         private DateTime InitiatedAt => Result.InitiatedAt;
-        private BalanceSheet Result { get; set; }
+        private Activity Result { get; set; }
 
         public RealEstateBuilder(ICashFlow cashFlow, DateTime at)
         {
-            Result = new BalanceSheet(cashFlow, at);
+            Result = new Activity(cashFlow, at);
         }
 
-        public BalanceSheet SetInitialCash(Money cash)
+        public Activity SetInitialCash(Money cash)
         {
             Result.InitialCash = cash;
 
             return Result;
         }
 
-        public BalanceSheet SetInitialDebt(Money debt)
+        public Activity SetInitialDebt(Money debt)
         {
             Result.InitialDebt = debt;
 
@@ -62,6 +63,11 @@ namespace Financier.Common.Expenses.BalanceSheets
             return this;
         }
 
+        public Activity Build()
+        {
+            return Result;
+        }
+
         private RealEstateBuilder AddHomeWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation, IInflation inflation)
         {
             var purchasePriceWhenPurchased = new Money(purchasePriceAtInitiation, InitiatedAt)
@@ -86,15 +92,10 @@ namespace Financier.Common.Expenses.BalanceSheets
                 mortgage
             );
 
-            Result.Buy(home);
-            Result.AddCashAdjustment(purchasedAt, new Money(0 -downPaymentAmount, purchasedAt));
+            Result.Buy(home, purchasedAt);
+            Result.Buy(mortgage, purchasedAt);
 
             return this;
-        }
-
-        public BalanceSheet Build()
-        {
-            return Result;
         }
     }
 }

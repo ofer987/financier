@@ -28,7 +28,7 @@ namespace Financier.Common.Expenses.Actions
             }
         }
 
-        public Sale(Product product, Money price, DateTime at) : base(Types.Sale, product, price, at)
+        public Sale(IProduct product, Money price, DateTime at) : base(Types.Sale, product, price, at)
         {
         }
     }

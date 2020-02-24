@@ -2,13 +2,40 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using Financier.Common.Extensions;
 using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
     public class Activity
     {
-        private Dictionary<Product, IAction> purchases = new Dictionary<Product, IAction>();
+        public DateTime InitiatedAt { get; set; }
+        public Money InitialCash { get; set; } = Money.Zero;
+        public Money InitialDebt { get; set; } = Money.Zero;
+        public ICashFlow CashFlow { get; set; }
+
+        private Dictionary<IProduct, IAction> purchases = new Dictionary<IProduct, IAction>();
+
+        public Activity(DateTime initiatedAt)
+        {
+            CashFlow = new DummyCashFlow(0.00M);
+            InitiatedAt = InitiatedAt;
+        }
+
+        public Activity(ICashFlow cashFlow, DateTime initiatedAt)
+        {
+            CashFlow = cashFlow;
+            InitiatedAt = initiatedAt;
+        }
+
+        public Activity(Money cash, Money debt, ICashFlow cashFlow, DateTime initiatedAt)
+        {
+            InitiatedAt = initiatedAt;
+            InitialCash = cash;
+            InitialDebt = debt;
+
+            CashFlow = cashFlow;
+        }
 
         public IEnumerable<IEnumerable<IAction>> GetHistories()
         {
@@ -17,7 +44,7 @@ namespace Financier.Common.Expenses.Actions
                 .Select(GetHistory);
         }
 
-        public IEnumerable<Product> GetOwnedProducts(DateTime at)
+        public IEnumerable<IProduct> GetOwnedProducts(DateTime at)
         {
             foreach (var pair in purchases)
             {
@@ -47,7 +74,7 @@ namespace Financier.Common.Expenses.Actions
             }
         }
 
-        public IEnumerable<IAction> GetHistory(Product product)
+        public IEnumerable<IAction> GetHistory(IProduct product)
         {
             if (!purchases.TryGetValue(product, out var firstAction))
             {
@@ -60,8 +87,13 @@ namespace Financier.Common.Expenses.Actions
             };
         }
 
-        public void Buy(Product product, DateTime purchasedAt)
+        public void Buy(IProduct product, DateTime purchasedAt)
         {
+            if (purchasedAt < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(purchasedAt), purchasedAt, $"The product cannot be purchased before {InitiatedAt}");
+            }
+
             if (!purchases.TryGetValue(product, out var firstAction))
             {
                 purchases[product] = new Purchase(product, purchasedAt); 
@@ -78,8 +110,13 @@ namespace Financier.Common.Expenses.Actions
             lastAction.Next = new Purchase(product, purchasedAt);
         }
 
-        public void Sell(Product product, Money salePrice, DateTime soldAt)
+        public void Sell(IProduct product, Money salePrice, DateTime soldAt)
         {
+            if (soldAt < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(soldAt), soldAt, $"The product cannot be sold before {InitiatedAt}");
+            }
+
             if (!purchases.TryGetValue(product, out var firstAction))
             {
                 throw new InvalidOperationException($"Cannot sell the product {product} because it has not been purchased yet");
@@ -92,6 +129,34 @@ namespace Financier.Common.Expenses.Actions
             }
 
             lastAction.Next = new Sale(product, salePrice, soldAt);
+        }
+
+        public decimal GetValueOfOwnedProducts(IInflation inflation, DateTime at)
+        {
+            return GetOwnedProducts(at)
+                .SelectMany(product => product.GetValueAt(at))
+                .InflatedValue(inflation, at);
+        }
+
+        public decimal GetCostOfOwnedProducts(IInflation inflation, DateTime at)
+        {
+            return GetOwnedProducts(at)
+                .SelectMany(product => product.GetCostAt(at))
+                .InflatedValue(inflation, at);
+        }
+
+        public decimal GetCashAt(DateTime at)
+        {
+            // TODO: or maybe it should construct a balance sheet to know cash reserves?
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            return 0.00M
+                + InitialCash.Value
+                - InitialDebt
+                + CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
         }
     }
 }

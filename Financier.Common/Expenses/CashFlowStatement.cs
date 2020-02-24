@@ -21,7 +21,7 @@ namespace Financier.Common.Expenses
         // private List<Home> homes { get; } = new List<Home>();
         // public IReadOnlyList<Home> Homes => homes.AsReadOnly();
 
-        public Activity ProductHistory { get; } = new Activity();
+        // public Activity ProductHistory { get; } = new Activity();
 
         public CashFlowStatement(IDictionary<DateTime, IList<Money>> cashAdjustments, Activity productHistory, DateTime startAt, DateTime endAt) : this(productHistory, startAt, endAt)
         {
@@ -38,27 +38,27 @@ namespace Financier.Common.Expenses
             StartAt = startAt;
             EndAt = endAt;
 
-            ProductHistory = productHistory;
+            // ProductHistory = productHistory;
         }
 
-        public IEnumerable<Money> GetCashChanges()
-        {
-            foreach (var action in ProductHistory.GetHistories()
-                                                 .SelectMany(action => action)
-                                                 .OrderBy(action => action.At))
-            {
-                switch (action.Type)
-                {
-                    case Types.Purchase:
-                        yield return new Money(0 - action.Price.Value, action.Price.At);
-                        break;
-                    case Types.Sale:
-                        yield return action.Price;
-                        break;
-                    case Types.Null:
-                        break;
-                }
-            }
-        }
+        // public IEnumerable<Money> GetCashChanges()
+        // {
+        //     foreach (var action in ProductHistory.GetHistories()
+        //                                          .SelectMany(action => action)
+        //                                          .OrderBy(action => action.At))
+        //     {
+        //         switch (action.Type)
+        //         {
+        //             case Types.Purchase:
+        //                 yield return new Money(0 - action.Price.Value, action.Price.At);
+        //                 break;
+        //             case Types.Sale:
+        //                 yield return action.Price;
+        //                 break;
+        //             case Types.Null:
+        //                 break;
+        //         }
+        //     }
+        // }
     }
 }

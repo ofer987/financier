@@ -11,6 +11,11 @@ namespace Financier.Common.Liabilities
         // TODO: move functionality into Mortgage
         public IMonthlyPaymentCalculator Calculator { get; protected set; }
 
+        public virtual Guid Id { get; }
+        public string Name => string.Empty;
+
+        public Money Price => new Money(0 - InitialValue.Value, InitialValue.At);
+
         private Money BaseValue { get; }
         public virtual Money InitialValue => BaseValue;
 
@@ -25,12 +30,12 @@ namespace Financier.Common.Liabilities
 
         public virtual double MonthlyPayment => (Convert.ToDouble(InitialValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, 0 - AmortisationPeriodInMonths));
 
-        public Mortgage(IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
+        protected Mortgage(IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
         {
             Calculator = calculator;
         }
 
-        public Mortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt)
+        protected Mortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this()
         {
             Calculator = new MonthlyPaymentCalculator();
             BaseValue = baseValue;
@@ -41,6 +46,7 @@ namespace Financier.Common.Liabilities
 
         protected Mortgage()
         {
+            Id = Guid.NewGuid();
         }
 
         public Money GetBalance(DateTime at)
@@ -68,6 +74,11 @@ namespace Financier.Common.Liabilities
         public bool IsMonthlyPayment(DateTime at)
         {
             return at.Day == InitiatedAt.Day;
+        }
+
+        public IEnumerable<Money> GetValueAt(DateTime at)
+        {
+            return Enumerable.Empty<Money>();
         }
 
         public IEnumerable<Money> GetCostAt(DateTime at)

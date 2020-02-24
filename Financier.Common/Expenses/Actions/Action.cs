@@ -8,7 +8,7 @@ namespace Financier.Common.Expenses.Actions
     public abstract class Action : IAction
     {
         public Types Type { get; }
-        public Product Product { get; }
+        public IProduct Product { get; }
         public Money Price { get; }
         public virtual DateTime At { get; }
 
@@ -32,7 +32,7 @@ namespace Financier.Common.Expenses.Actions
             }
         }
 
-        protected Action(Types type, Product product, Money price, DateTime at)
+        protected Action(Types type, IProduct product, Money price, DateTime at)
         {
             Type = type;
             Product = product;
