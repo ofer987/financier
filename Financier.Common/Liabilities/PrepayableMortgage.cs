@@ -6,30 +6,22 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public class PrepayableMortgage : IMortgage, IPrepayable
+    public class PrepayableMortgage : Mortgage, IPrepayable
     {
         public IMortgage BaseMortgage { get; }
         public CappedPayments Prepayments { get; }
-        public IMonthlyPaymentCalculator Calculator { get; }
 
         private Money BaseValue => BaseMortgage.InitialValue;
-        public Money InitialValue => BaseValue;
-        public DateTime InitiatedAt => BaseMortgage.InitiatedAt;
-        public Guid Id => BaseMortgage.Id;
-        public string Name => BaseMortgage.Name;
-        public Money Price => BaseMortgage.Price;
+        public override Money InitialValue => BaseValue;
+        public override DateTime InitiatedAt => BaseMortgage.InitiatedAt;
+        public override Guid Id => BaseMortgage.Id;
+        public override string Name => BaseMortgage.Name;
 
-        public int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
-        public decimal InterestRate => BaseMortgage.InterestRate;
-        public decimal QuotedInterestRate => BaseMortgage.QuotedInterestRate;
-
-        public double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
-        public decimal PeriodicAnnualInterestRate => BaseMortgage.PeriodicAnnualInterestRate;
-        public double EffectiveAnnualInterestRate => BaseMortgage.EffectiveAnnualInterestRate;
+        public override int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
+        public override decimal InterestRate => BaseMortgage.InterestRate;
+        public override double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
 
         public decimal MaximumAllowedPrepaymentTotal => Prepayments.MaximumAnnualTotal;
-
-        public double MonthlyPayment => BaseMortgage.MonthlyPayment;
 
         public PrepayableMortgage(IMortgage baseMortgage, IMonthlyPaymentCalculator calculator, decimal maximumAllowedPrepaymentPercentage = 0.10M)
         {
@@ -45,50 +37,13 @@ namespace Financier.Common.Liabilities
             Prepayments = new CappedPayments(InitialValue * maximumAllowedPrepaymentPercentage);
         }
 
-        public Money GetBalance(DateTime at)
-        {
-            return GetMonthlyPayments(at)
-                .Select(payment => payment.Balance)
-                .Last();
-        }
-
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments()
-        {
-            return Calculator.GetMonthlyPayments(this);
-        }
-
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt)
-        {
-            return Calculator.GetMonthlyPayments(this, endAt);
-        }
-
-        public IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
+        public override IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
         {
             var startAt = new DateTime(year, month, day);
             var endAt = startAt.AddDays(1);
 
             return GetPrepayments(startAt, endAt)
                 .Select(payment => payment.Item2);
-        }
-
-        public decimal CostAt(int monthAfterInception)
-        {
-            if (monthAfterInception <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(monthAfterInception), "Should be greater than 0");
-            }
-
-            return Convert.ToDecimal(MonthlyPayment);
-        }
-
-        public IEnumerable<Money> GetCostAt(DateTime at)
-        {
-            yield return GetBalance(at);
-        }
-
-        public IEnumerable<Money> GetValueAt(DateTime at)
-        {
-            return Enumerable.Empty<Money>();
         }
 
         public void AddPrepayment(DateTime at, decimal amount)
@@ -99,19 +54,6 @@ namespace Financier.Common.Liabilities
         public IEnumerable<ValueTuple<DateTime, decimal>> GetPrepayments(DateTime startAt, DateTime endAt)
         {
             return Prepayments.GetRange(startAt, endAt);
-        }
-
-        public bool IsMonthlyPayment(DateTime at)
-        {
-            return BaseMortgage.IsMonthlyPayment(at);
-        }
-
-        public void PrintPrepayments()
-        {
-            foreach (var prepayment in Prepayments.GetAll())
-            {
-                Console.WriteLine($"{prepayment.Item1}: {prepayment.Item2}");
-            }
         }
     }
 }
