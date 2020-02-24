@@ -121,6 +121,14 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             });
         }
 
+        // Move to ActivityTests/CashFlowStatementTest
+        [TestCase(2020, 1, 1, 2021, 1, 1, 85000)]
+        public void Test_GetActions(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, decimal expectedTotal)
+        {
+            var startAt = new DateTime(startYear, startMonth, startDay);
+            var endAt = new DateTime(endYear, endMonth, endDay);
+        }
+
         [Test]
         public void Test_GetOwnedProducts()
         {
@@ -212,6 +220,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             );
         }
 
+        // TODO: move tests to ActivityTests/BalanceSheets
         [Test]
         public void Test_GetCostOfOwnedProducts()
         {

@@ -10,6 +10,7 @@ using Financier.Common.Models;
 namespace Financier.Common.Tests.Expenses
 {
     // TODO:Rename this file and others to *Tests
+    // TODO: move tests to ActivityTests/BalanceSheets
     public class BalanceSheetTest
     {
         public DateTime InitiatedAt => Subject.InitiatedAt;
@@ -89,9 +90,11 @@ namespace Financier.Common.Tests.Expenses
         [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 10000.00 + 82000.00 + 712.46 + 89.86 * 1)]
         [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 10000.00 + 82000.00 + 712.46 + 89.86 * 14)]
         [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 10000.00 + 82000.00 + 712.46 + 714.36 + 89.86 * 33)]
-        [TestCase(InflationTypes.NoopInflation, 2020, 2, 2, 10000.00 + 82000.00 + 10148.70 + 89.86 * (33 + 364))]
-        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 10000.00 + 82000.00 + 10148.70 + 89.86 * (34 + 364))]
-        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 10000.00 + 82000.00 + 10148.70 + 89.86 * (35 + 364) + 82000 + 712.46)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 2, 10000.00 + 82000.00 + 10148.70 + 89.86 * (33 + 364))]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 3, cash + cashflow * time + cash from sale 10000.00 + 82000.00 + 10148.70 + 89.86 * (33 + 364))]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, cash + cashflow * time + cash from sale 10000.00 + 82000.00 + 10148.70 + 89.86 * (33 + 364))]
+        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 10000.00 + 82000.00 + 10148.70 + 89.86 * (34 + 364))]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, cash + cashflow * time + cash from sale 10000.00 + 82000.00 + 10148.70 + 89.86 * (33 + 364)) + mortgage - house price + first mortgage principal]
         public void Test_GetAssets(InflationTypes inflationType, int year, int month, int day, decimal expected)
         {
             var inflation = Inflations.GetInflation(inflationType);
@@ -202,13 +205,15 @@ namespace Financier.Common.Tests.Expenses
         //     }
         // }
         //
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 5000)]
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 5000 + 327287.54)]
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 5000 + 327287.54)]
-        // [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 5000 + 326573.18)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 2, 5000 + 317851.30)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 5000 + 317851.30)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 5000 + 317851.30 + 327287.54)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 10000.00 + 89.86 * 0)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 10000.00 + 82000.00 + 712.46 + 89.86 * 1)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 10000.00 + 82000.00 + 712.46 + 89.86 * 14)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 10000.00 + 82000.00 + 712.46 + 714.36 + 89.86 * 33)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 2, first mortgage balance)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 3, 0]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 0)]
+        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 10000.00 + 82000.00 + 10148.70 + 89.86 * (34 + 364))]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, second home mortgage balance]
         // public void Test_GetLiabilities(InflationTypes inflationType, int year, int month, int day, decimal expected)
         // {
         //     var inflation = Inflations.GetInflation(inflationType);
@@ -230,113 +235,5 @@ namespace Financier.Common.Tests.Expenses
         //     );
         // }
         //
-        // [TestCase(1)]
-        // [TestCase(2)]
-        // public void Test_AddHome_CannotAddHomeBeforeInitiation(int daysBeforeInitiation)
-        // {
-        //     var purchasedAt = InitiatedAt.AddDays(0 - daysBeforeInitiation);
-        //     var mortgageAmount = 328000.00M;
-        //     var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
-        //     var preferredInterestRate = 0.0319M;
-        //     var downPayment = 10000.00M;
-        //     var mortgage = new FixedRateMortgage(
-        //         mortgageAmountMoney,
-        //         preferredInterestRate,
-        //         300,
-        //         purchasedAt
-        //     );
-        //     var home = new Home(
-        //         "first home",
-        //         purchasedAt,
-        //         new Money(downPayment + mortgageAmountMoney, purchasedAt),
-        //         new Money(downPayment, purchasedAt),
-        //         mortgage
-        //     );
-        //
-        //     Assert.Throws<ArgumentOutOfRangeException>(() => Subject.Buy(home));
-        // }
-        //
-        // [TestCase(0)]
-        // [TestCase(1)]
-        // [TestCase(2)]
-        // public void Test_AddHome_AfterInitiation_Succeeds(int daysAfterInitiation)
-        // {
-        //     var purchasedAt = InitiatedAt.AddDays(daysAfterInitiation);
-        //     var mortgageAmount = 328000.00M;
-        //     var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
-        //     var preferredInterestRate = 0.0319M;
-        //     var downPayment = 10000.00M;
-        //     var mortgage = new FixedRateMortgage(
-        //         mortgageAmountMoney,
-        //         preferredInterestRate,
-        //         300,
-        //         purchasedAt
-        //     );
-        //     var home = new Home(
-        //         "third home",
-        //         purchasedAt,
-        //         new Money(downPayment + mortgageAmountMoney, purchasedAt),
-        //         new Money(downPayment, purchasedAt),
-        //         mortgage
-        //     );
-        //
-        //     Assert.DoesNotThrow(() => Subject.Buy(home));
-        // }
-        //
-        // [Test]
-        // public void Test_GetValueOfOwnedProducts()
-        // {
-        //     Assert.That(
-        //         Subject.GetValueOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        //     Assert.That(
-        //         Subject.GetValueOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        //
-        //     var firstHomeSoldAt = new DateTime(2022, 2, 3);
-        //     Subject.Sell(
-        //         FirstHome,
-        //         new Money(500000.00M, new DateTime(2020, 12, 1)),
-        //         firstHomeSoldAt
-        //     );
-        //     Assert.That(
-        //         Subject.GetValueOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(-1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        //     Assert.That(
-        //         Subject.GetValueOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        // }
-        //
-        // [Test]
-        // public void Test_GetCostOfOwnedProducts()
-        // {
-        //     Assert.That(
-        //         Subject.GetCostOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        //     Assert.That(
-        //         Subject.GetCostOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        //
-        //     var firstHomeSoldAt = new DateTime(2022, 2, 3);
-        //     Subject.Sell(
-        //         FirstHome,
-        //         new Money(500000.00M, new DateTime(2020, 12, 1)),
-        //         firstHomeSoldAt
-        //     );
-        //     Assert.That(
-        //         Subject.GetCostOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(-1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        //     Assert.That(
-        //         Subject.GetCostOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(1)),
-        //         Is.EqualTo(5000.00M)
-        //     );
-        // }
     }
 }
