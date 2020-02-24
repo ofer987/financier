@@ -12,26 +12,28 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public Product Television { get; private set; }
         public Product Stand { get; private set; }
         public Product House { get; private set; }
+        public Activity Activity { get; private set; }
+        public static DateTime InitiatedAt = new DateTime(2020, 1, 1);
 
         [SetUp]
         public void Init()
         {
-            Television = new SimpleProduct("television", new Money(40.00M, new DateTime(2020, 1, 1)));
-            Stand = new SimpleProduct("stand", new Money(20.00M, new DateTime(2020, 1, 1)));
-            House = new SimpleProduct("stand", new Money(5000.00M, new DateTime(2020, 1, 1)));
+            Television = new SimpleProduct("television", new Money(40.00M, InitiatedAt));
+            Stand = new SimpleProduct("stand", new Money(20.00M, InitiatedAt));
+            House = new SimpleProduct("stand", new Money(5000.00M, InitiatedAt));
+
+            Activity = new Activity(InitiatedAt);
         }
 
         [Test]
         public void Test_GetHistory()
         {
-            var activity = new Activity();
+            Activity.Buy(Television, new DateTime(2020, 1, 1));
+            Activity.Sell(Television, new Money(50.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 2, 1));
+            Activity.Buy(Television, new DateTime(2020, 3, 1));
+            Activity.Sell(Television, new Money(60.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 4, 1));
 
-            activity.Buy(Television, new DateTime(2020, 1, 1));
-            activity.Sell(Television, new Money(50.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 2, 1));
-            activity.Buy(Television, new DateTime(2020, 3, 1));
-            activity.Sell(Television, new Money(60.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 4, 1));
-
-            var actions = activity.GetHistory(Television).ToList();
+            var actions = Activity.GetHistory(Television).ToList();
             Assert.That(actions[0].Product, Is.EqualTo(Television));
             Assert.That(actions[0].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actions[0].Price, Is.EqualTo(new Money(40.00M, new DateTime(2020, 1, 1))));
@@ -49,110 +51,120 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         [Test]
         public void Test_Sell_CannotSellANonPurchasedProduct()
         {
-            var activity = new Activity();
-
             Assert.Throws<InvalidOperationException>(() =>
             {
-                activity.Sell(Television, new Money(100.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 5, 1));
+                Activity.Sell(Television, new Money(100.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 5, 1));
             });
         }
 
         [Test]
         public void Test_Sell_CannotSellAProductTwice()
         {
-            var activity = new Activity();
-            activity.Buy(Television, new DateTime(2020, 1, 1));
-            activity.Sell(Television, new Money(100.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 5, 1));
+            Activity.Buy(Television, new DateTime(2020, 1, 1));
+            Activity.Sell(Television, new Money(100.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 5, 1));
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                activity.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1));
+                Activity.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1));
             });
         }
 
         [Test]
         public void Test_Purchase_CannotPurchaseAProductTwice()
         {
-            var activity = new Activity();
-            activity.Buy(Television, new DateTime(2020, 1, 1));
+            Activity.Buy(Television, new DateTime(2020, 1, 1));
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                activity.Buy(Television, new DateTime(2020, 2, 1));
+                Activity.Buy(Television, new DateTime(2020, 2, 1));
             });
         }
 
         [Test]
         public void Test_Purchase_CannotPurchaseAProductBeforeItWasSold()
         {
-            var activity = new Activity();
-            activity.Buy(Television, new DateTime(2020, 1, 1));
-            activity.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1));
+            Activity.Buy(Television, new DateTime(2020, 1, 1));
+            Activity.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1));
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                activity.Buy(Television, new DateTime(2020, 5, 1));
+                Activity.Buy(Television, new DateTime(2020, 5, 1));
             });
         }
 
         [Test]
         public void Test_Sell_CannotSellAProductBeforeItWasPurchased()
         {
-            var activity = new Activity();
-            activity.Buy(Television, new DateTime(2020, 1, 1));
+            Activity.Buy(Television, new DateTime(2020, 1, 1));
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                activity.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2019, 12, 1));
+                Activity.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2019, 12, 1));
+            });
+        }
+
+        public void Test_Buy_CannotBuyBeforeInitiatedAt()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                Activity.Buy(Television, InitiatedAt.AddDays(-1));
+            });
+        }
+
+        public void Test_Sell_CannotSellBeforeInitiatedAt()
+        {
+            Activity.Buy(Television, InitiatedAt);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                Activity.Sell(Television, new Money(100.00M, InitiatedAt), InitiatedAt.AddDays(-1));
             });
         }
 
         [Test]
         public void Test_GetOwnedProducts()
         {
-            var activity = new Activity();
+            Activity.Buy(Television, new DateTime(2020, 1, 1));
+            Activity.Sell(Television, new Money(50.00M, new DateTime(2020, 2, 1)), new DateTime(2020, 2, 1));
+            Activity.Buy(Television, new DateTime(2020, 3, 1));
+            Activity.Sell(Television, new Money(60.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 4, 1));
+            Activity.Buy(Television, new DateTime(2020, 8, 1));
 
-            activity.Buy(Television, new DateTime(2020, 1, 1));
-            activity.Sell(Television, new Money(50.00M, new DateTime(2020, 2, 1)), new DateTime(2020, 2, 1));
-            activity.Buy(Television, new DateTime(2020, 3, 1));
-            activity.Sell(Television, new Money(60.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 4, 1));
-            activity.Buy(Television, new DateTime(2020, 8, 1));
+            Activity.Buy(Stand, new DateTime(2020, 3, 20));
+            Activity.Sell(Stand, new Money(100.00M, new DateTime(2022, 2, 1)), new DateTime(2022, 2, 1));
 
-            activity.Buy(Stand, new DateTime(2020, 3, 20));
-            activity.Sell(Stand, new Money(100.00M, new DateTime(2022, 2, 1)), new DateTime(2022, 2, 1));
-
-            activity.Buy(House, new DateTime(2022, 1, 1));
+            Activity.Buy(House, new DateTime(2022, 1, 1));
 
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2019, 12, 31)),
+                Activity.GetOwnedProducts(new DateTime(2019, 12, 31)),
                 Is.EquivalentTo(Enumerable.Empty<Product>())
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2020, 1, 1)),
+                Activity.GetOwnedProducts(new DateTime(2020, 1, 1)),
                 Is.EquivalentTo(new[] { Television })
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2020, 1, 2)),
+                Activity.GetOwnedProducts(new DateTime(2020, 1, 2)),
                 Is.EquivalentTo(new[] { Television })
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2020, 2, 1)),
+                Activity.GetOwnedProducts(new DateTime(2020, 2, 1)),
                 Is.EquivalentTo(Enumerable.Empty<Product>())
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2020, 2, 2)),
+                Activity.GetOwnedProducts(new DateTime(2020, 2, 2)),
                 Is.EquivalentTo(Enumerable.Empty<Product>())
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2020, 3, 2)),
+                Activity.GetOwnedProducts(new DateTime(2020, 3, 2)),
                 Is.EquivalentTo(new[] { Television })
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2020, 3, 21)),
+                Activity.GetOwnedProducts(new DateTime(2020, 3, 21)),
                 Is.EquivalentTo(new[] { Television, Stand })
             );
             Assert.That(
-                activity.GetOwnedProducts(new DateTime(2022, 1, 2)),
+                Activity.GetOwnedProducts(new DateTime(2022, 1, 2)),
                 Is.EquivalentTo(new[] { Television, Stand, House })
             );
         }

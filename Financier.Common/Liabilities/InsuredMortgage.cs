@@ -9,6 +9,8 @@ namespace Financier.Common.Liabilities
     {
         public const decimal DefaultMaximumInsuranceRate = 0.20M;
 
+        public override Guid Id => BaseMortgage.Id;
+
         public decimal InsuranceRate { get; }
         public IMortgage BaseMortgage { get; }
 
