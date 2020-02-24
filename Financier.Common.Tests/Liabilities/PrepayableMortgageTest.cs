@@ -29,7 +29,7 @@ namespace Financier.Common.Tests.Liabilities
         [Test]
         public void Test_AddPrepayment_CannotAddOver10Percent()
         {
-            Assert.Throws<OverPaymentException>(() => 
+            Assert.Throws<OverPaymentException>(() =>
             {
                 Subject.AddPrepayment(new DateTime(2019, 12, 30), 1.00M);
             });
@@ -54,7 +54,16 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2019, 12, 31, 319324.30)]
         [TestCase(2020, 1, 1, 286524.31)]
         [TestCase(2020, 1, 2, 285701.59)]
-        [TestCase(2037, 7, 1, 65.18)]
+        [TestCase(2021, 1, 1, 243706.02)]
+        [TestCase(2021, 12, 31, 232301.69)]
+        [TestCase(2022, 1, 1, 199501.69)]
+        [TestCase(2023, 1, 1, 153866.43)]
+        [TestCase(2024, 1, 1, 106753.94)]
+        [TestCase(2025, 1, 1, 58116.39)]
+        [TestCase(2026, 1, 1, 7904.41)]
+        [TestCase(2026, 6, 1, 45.81)]
+        [TestCase(2026, 6, 2, 0)]
+        [TestCase(2037, 7, 1, 0)]
         [TestCase(2037, 7, 2, 0)]
         [TestCase(2037, 8, 1, 0)]
         [TestCase(2037, 9, 1, 0)]
@@ -63,6 +72,12 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2044, 1, 1, 0)]
         public void Test_GetBalance(int year, int month, int day, decimal expected)
         {
+            Subject.AddPrepayment(new DateTime(2021, 12, 31), 32800.00M);
+            Subject.AddPrepayment(new DateTime(2022, 12, 31), 32800.00M);
+            Subject.AddPrepayment(new DateTime(2023, 12, 31), 32800.00M);
+            Subject.AddPrepayment(new DateTime(2024, 12, 31), 32800.00M);
+            Subject.AddPrepayment(new DateTime(2025, 12, 31), 32800.00M);
+            Subject.AddPrepayment(new DateTime(2026, 12, 31), 32800.00M);
             Assert.That(
                 Subject.GetBalance(new DateTime(year, month, day)).Value,
                 Is.EqualTo(expected)

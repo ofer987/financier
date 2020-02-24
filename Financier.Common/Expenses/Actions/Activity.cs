@@ -37,11 +37,11 @@ namespace Financier.Common.Expenses.Actions
             CashFlow = cashFlow;
         }
 
-        public IEnumerable<IEnumerable<IAction>> GetHistories()
+        public IEnumerable<IAction> GetHistories()
         {
             return purchases
                 .Select(purchase => purchase.Key)
-                .Select(GetHistory);
+                .SelectMany(GetHistory);
         }
 
         public IEnumerable<IProduct> GetOwnedProducts(DateTime at)
@@ -51,8 +51,7 @@ namespace Financier.Common.Expenses.Actions
                 var product = pair.Key;
 
                 var owned = false;
-                // TODO: should the operator be exclusive or inclusive?
-                foreach (var action in GetHistory(product).Where(action => action.At <= at))
+                foreach (var action in GetHistory(product).Where(action => action.At < at))
                 {
                     switch (action.Type)
                     {
@@ -76,15 +75,12 @@ namespace Financier.Common.Expenses.Actions
 
         public IEnumerable<IAction> GetHistory(IProduct product)
         {
-            if (!purchases.TryGetValue(product, out var firstAction))
+            if (purchases.TryGetValue(product, out var firstAction))
             {
-                yield break;
+                return firstAction.GetActions();
             }
 
-            foreach (var action in firstAction.GetActions())
-            {
-                yield return action;
-            };
+            return Enumerable.Empty<IAction>();
         }
 
         public void Buy(IProduct product, DateTime purchasedAt)
@@ -96,7 +92,7 @@ namespace Financier.Common.Expenses.Actions
 
             if (!purchases.TryGetValue(product, out var firstAction))
             {
-                purchases[product] = new Purchase(product, purchasedAt); 
+                purchases[product] = new Purchase(product, purchasedAt);
 
                 return;
             }
@@ -129,6 +125,73 @@ namespace Financier.Common.Expenses.Actions
             }
 
             lastAction.Next = new Sale(product, salePrice, soldAt);
+        }
+
+        public decimal GetCash(IInflation inflation, DateTime at)
+        {
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            var result = 0.00M;
+            result += InitialCash.GetValueAt(inflation, at);
+            result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
+            result += GetHistories()
+                .Where(action => action.At >= InitiatedAt)
+                .Where(action => action.At < at)
+                .Select(action => action.Price)
+                .InflatedValue(inflation, at);
+
+            return decimal.Round(result, 2);
+        }
+
+        public decimal GetAssets(IInflation inflation, DateTime at)
+        {
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            var result = 0.00M;
+            result += InitialCash.GetValueAt(inflation, at);
+            result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
+            result += GetHistories()
+                .Where(action => action.At >= InitiatedAt)
+                .Where(action => action.At < at)
+                .Select(action => action.Price)
+                .InflatedValue(inflation, at);
+            result += GetValueOfOwnedProducts(inflation, at);
+
+            return decimal.Round(result, 2);
+        }
+
+        public decimal GetLiabilities(IInflation inflation, DateTime at)
+        {
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            var result = 0.00M;
+            result += InitialDebt.GetValueAt(inflation, at).Value;
+            result += GetCostOfOwnedProducts(inflation, at);
+
+            return decimal.Round(result, 2);
+        }
+
+        public decimal GetNetWorth(IInflation inflation, DateTime at)
+        {
+            if (at < InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+            }
+
+            var result = 0.00M;
+            result += GetAssets(inflation, at);
+            result -= GetLiabilities(inflation, at);
+
+            return result;
         }
 
         public decimal GetValueOfOwnedProducts(IInflation inflation, DateTime at)

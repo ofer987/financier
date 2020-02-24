@@ -31,7 +31,7 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
         [TestCase(2019, 1, 31, 1584.39)]
         [TestCase(2019, 2, 1, 1584.39)]
         [TestCase(2019, 2, 2, 1584.40)]
-        [TestCase(2019, 12, 31, 1584.39)]
+        [TestCase(2019, 12, 31, 1584.40)]
         [TestCase(2020, 1, 1, 32800.00)]
         [TestCase(2020, 1, 2, 1584.40)]
         [TestCase(2020, 2, 1, 1584.40)]
@@ -39,10 +39,10 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
         [TestCase(2021, 1, 1, 32800)]
         [TestCase(2021, 1, 2, 1584.40)]
         [TestCase(2026, 4, 1, 1584.40)]
-        [TestCase(2026, 5, 1, 1584.39)]
-        [TestCase(2026, 6, 1, 1302.56)]
-        [TestCase(2026, 7, 1, 1302.56)]
-        [TestCase(2026, 10, 1, 1302.56)]
+        [TestCase(2026, 5, 1, 1584.40)]
+        [TestCase(2026, 6, 1, 1584.40)]
+        [TestCase(2026, 7, 1, 45.93)]
+        [TestCase(2026, 10, 1, 45.93)]
         public void Test_GetLatestPayment_IsAmount(int year, int month, int day, decimal expected)
         {
             Assert.That(
@@ -57,8 +57,8 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
         [TestCase(2019, 1, 2, 2019, 1, 1)]
         [TestCase(2026, 5, 1, 2026, 4, 1)]
         [TestCase(2026, 6, 1, 2026, 5, 1)]
-        [TestCase(2026, 7, 1, 2026, 5, 1)]
-        [TestCase(2026, 10, 1, 2026, 5, 1)]
+        [TestCase(2026, 7, 1, 2026, 6, 1)]
+        [TestCase(2026, 10, 1, 2026, 6, 1)]
         public void Test_GetLatestPayment_IsLatestDate(int year, int month, int day, int latestYear, int latestMonth, int latestDay)
         {
             Assert.That(

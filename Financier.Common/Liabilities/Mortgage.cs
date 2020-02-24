@@ -12,7 +12,7 @@ namespace Financier.Common.Liabilities
         public IMonthlyPaymentCalculator Calculator { get; protected set; }
 
         public virtual Guid Id { get; }
-        public string Name => string.Empty;
+        public virtual string Name => string.Empty;
 
         public Money Price => new Money(0 - InitialValue.Value, InitialValue.At);
 

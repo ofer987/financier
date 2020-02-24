@@ -93,5 +93,10 @@ namespace Financier.Common.Models
         {
             return !(x == y);
         }
+
+        public override string ToString()
+        {
+            return $"{Value} at {At}";
+        }
     }
 }

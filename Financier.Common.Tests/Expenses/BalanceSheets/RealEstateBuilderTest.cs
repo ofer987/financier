@@ -36,7 +36,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         }
 
         [Test]
-        public void Test_AddCondoWithFixedRateMortgage_HasHome()
+        public void Test_AddCondoWithFixedRateMortgage_HasHomeAndMortgage()
         {
             var purchasedAt = new DateTime(2019, 1, 1);
             var purchasePrice = new Money(2000.00M, purchasedAt);
@@ -47,7 +47,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
 
             Assert.That(
                 balanceSheet.GetOwnedProducts(new DateTime(2019, 1, 2)).Count(),
-                Is.EqualTo(1)
+                Is.EqualTo(2)
             );
         }
 
