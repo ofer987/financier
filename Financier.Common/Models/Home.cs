@@ -26,12 +26,8 @@ namespace Financier.Common.Models
 
         public override IEnumerable<Money> GetValueAt(DateTime at)
         {
-            yield return DownPayment;
-
-            foreach (var principal in Financing.GetMonthlyPayments(at).Select(payment => payment.Principal))
-            {
-                yield return principal;
-            }
+            return Financing.GetMonthlyPayments(at)
+                .Select(payment => payment.Principal);
         }
 
         public override IEnumerable<Money> GetCostAt(DateTime at)
