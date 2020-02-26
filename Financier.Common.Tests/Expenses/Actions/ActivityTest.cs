@@ -121,14 +121,6 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             });
         }
 
-        // Move to ActivityTests/CashFlowStatementTest
-        [TestCase(2020, 1, 1, 2021, 1, 1, 85000)]
-        public void Test_GetActions(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, decimal expectedTotal)
-        {
-            var startAt = new DateTime(startYear, startMonth, startDay);
-            var endAt = new DateTime(endYear, endMonth, endDay);
-        }
-
         [Test]
         public void Test_GetOwnedProducts()
         {
@@ -174,94 +166,6 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             Assert.That(
                 Subject.GetOwnedProducts(new DateTime(2022, 1, 2)),
                 Is.EquivalentTo(new[] { Television, Stand, House })
-            );
-        }
-
-        [Test]
-        public void Test_GetValueOfOwnedProducts()
-        {
-            var televisionPurchasedAt = new DateTime(2020, 1, 1);
-            var televisionSoldAt = televisionPurchasedAt.AddYears(2);
-
-            var housePurchasedAt = televisionPurchasedAt.AddYears(1);
-            var houseSoldAt = housePurchasedAt.AddYears(2);
-
-            // Television
-            Assert.That(
-                Subject.GetValueOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-                Is.EqualTo(5000.00M)
-            );
-
-            // Television
-            Assert.That(
-                Subject.GetValueOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-                Is.EqualTo(5000.00M)
-            );
-
-            // Television + House
-
-
-            // House
-
-            // Nothing
-            var firstHomeSoldAt = new DateTime(2022, 2, 3);
-            Subject.Sell(
-                FirstHome,
-                new Money(500000.00M, new DateTime(2020, 12, 1)),
-                firstHomeSoldAt
-            );
-            Assert.That(
-                Subject.GetValueOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(-1)),
-                Is.EqualTo(5000.00M)
-            );
-            Assert.That(
-                Subject.GetValueOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(1)),
-                Is.EqualTo(5000.00M)
-            );
-        }
-
-        // TODO: move tests to ActivityTests/BalanceSheets
-        [Test]
-        public void Test_GetCostOfOwnedProducts()
-        {
-            var televisionPurchasedAt = new DateTime(2020, 1, 1);
-            var televisionSoldAt = televisionPurchasedAt.AddYears(2);
-
-            var housePurchasedAt = televisionPurchasedAt.AddYears(1);
-            var houseSoldAt = housePurchasedAt.AddYears(2);
-
-            // Television
-
-            // Television
-
-            // Television + House
-
-
-            // House
-
-            // Nothing
-            Assert.That(
-                Subject.GetCostOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-                Is.EqualTo(5000.00M)
-            );
-            Assert.That(
-                Subject.GetCostOfOwnedProducts(new NoopInflation(), new DateTime(2020, 12, 1)),
-                Is.EqualTo(5000.00M)
-            );
-
-            var firstHomeSoldAt = new DateTime(2022, 2, 3);
-            Subject.Sell(
-                FirstHome,
-                new Money(500000.00M, new DateTime(2020, 12, 1)),
-                firstHomeSoldAt
-            );
-            Assert.That(
-                Subject.GetCostOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(-1)),
-                Is.EqualTo(5000.00M)
-            );
-            Assert.That(
-                Subject.GetCostOfOwnedProducts(new NoopInflation(), firstHomeSoldAt.AddDays(1)),
-                Is.EqualTo(5000.00M)
             );
         }
     }
