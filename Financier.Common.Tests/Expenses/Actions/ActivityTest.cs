@@ -121,30 +121,6 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             });
         }
 
-        public void Test_Purchase_SetNext_CannotBeBefore()
-        {
-            var buy = new Purchase(Television, InitiatedAt);
-
-            var salePrice = new Money(100.00M, InitiatedAt);
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                buy.Next = new Sale(Television, salePrice, InitiatedAt.AddDays(-1));
-            });
-        }
-
-        public void Test_Sale_SetNext_CannotBeBefore()
-        {
-            var buy = new Purchase(Television, InitiatedAt);
-            var salePrice = new Money(100.00M, InitiatedAt);
-            var sale = new Sale(Television, salePrice, InitiatedAt.AddDays(1));
-            buy.Next = sale;
-
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                sale.Next = new Purchase(Television, InitiatedAt);
-            });
-        }
-
         [Test]
         public void Test_GetOwnedProducts()
         {
