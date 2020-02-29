@@ -10,6 +10,7 @@ namespace Financier.Common.Expenses.Actions
         Types Type { get; }
         IProduct Product { get; }
         DateTime At { get; }
+        Money CashFlow { get; }
         Money Price { get; }
 
         IAction Next { get; set; }

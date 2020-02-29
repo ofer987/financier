@@ -137,10 +137,14 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 
             Assert.That(
                 Subject.GetOwnedProducts(new DateTime(2019, 12, 31)),
-                Is.EquivalentTo(Enumerable.Empty<Product>())
+                Is.Empty
             );
             Assert.That(
                 Subject.GetOwnedProducts(new DateTime(2020, 1, 1)),
+                Is.Empty
+            );
+            Assert.That(
+                Subject.GetOwnedProducts(new DateTime(2020, 1, 1).AddSeconds(1)),
                 Is.EquivalentTo(new[] { Television })
             );
             Assert.That(
@@ -148,12 +152,12 @@ namespace Financier.Common.Tests.Expenses.ActionTests
                 Is.EquivalentTo(new[] { Television })
             );
             Assert.That(
-                Subject.GetOwnedProducts(new DateTime(2020, 2, 1)),
-                Is.EquivalentTo(Enumerable.Empty<Product>())
+                Subject.GetOwnedProducts(new DateTime(2020, 2, 1).AddMilliseconds(1)),
+                Is.Empty
             );
             Assert.That(
                 Subject.GetOwnedProducts(new DateTime(2020, 2, 2)),
-                Is.EquivalentTo(Enumerable.Empty<Product>())
+                Is.Empty
             );
             Assert.That(
                 Subject.GetOwnedProducts(new DateTime(2020, 3, 2)),

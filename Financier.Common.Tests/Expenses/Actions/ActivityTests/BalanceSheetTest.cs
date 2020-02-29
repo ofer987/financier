@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
@@ -58,10 +57,9 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
             {
                 var soldAt = new DateTime(2020, 1, 3);
                 Subject.Sell(FirstHome, new Money(500000.00M, soldAt), soldAt);
-                var leftOverMortgageBalance = 0 - FirstHome.Financing.GetBalance(soldAt).Value;
                 Subject.Sell(
                     FirstHome.Financing,
-                    new Money(leftOverMortgageBalance, soldAt),
+                    FirstHome.Financing.GetBalance(soldAt).Reverse,
                     soldAt
                 );
             }
@@ -87,14 +85,14 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
         }
 
         [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 10000.00 + 89.86 * 0)]
-        [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 10000.00 + 82000.00 + 712.46 + 89.86 * 1)]
-        [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 10000.00 + 82000.00 + 712.46 + 89.86 * 14)]
-        [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 10000.00 + 82000.00 + 712.46 + 714.36 + 89.86 * 33)]
-        [TestCase(InflationTypes.NoopInflation, 2020, 1, 2, 10000.00 + 82000.00 + 9411.22 + 89.86 * 366)]
-        [TestCase(InflationTypes.NoopInflation, 2020, 1, 3, 10000.00 + 82000.00 + 9411.22 + 89.86 * 367)]
-        [TestCase(InflationTypes.NoopInflation, 2020, 1, 4, 10000.00 + 82000.00 + 89.86 * 368 + 500000.00 - 318588.78)]
-        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 10000.00 + 82000.00 + 89.86 * 398 + 500000.00 - 318588.78)]
-        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 10000.00 + 82000.00 + 89.86 * 399 + 500000.00 - 318588.78 + 82000 + 712.46)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 10000.00 + 712.46 + 89.86 * 1)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 10000.00 + 712.46 + 89.86 * 14)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 10000.00 + 712.46 + 714.36 + 89.86 * 33)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 2, 10000.00 + 9411.22 + 89.86 * 366)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 3, 10000.00 + 9411.22 + 89.86 * 367)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 4, 10000.00 - 82000 + 89.86 * 368 + 500000.00 - 318588.78)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 10000.00 - 82000 + 89.86 * 398 + 500000.00 - 318588.78)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 10000.00 - 82000 + 89.86 * 399 + 500000.00 - 318588.78 + 712.46)]
         public void Test_GetAssets(InflationTypes inflationType, int year, int month, int day, decimal expected)
         {
             var inflation = Inflations.GetInflation(inflationType);
@@ -105,15 +103,15 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
             );
         }
 
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 10000.00 + 89.86 * 0)]
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 10000.00 + 82000.00 + 712.46 + 89.86 * 1)]
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 10000.00 + 82000.00 + 712.46 + 89.86 * 14)]
-        // [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 10000.00 + 82000.00 + 712.46 + 714.36 + 89.86 * 33)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 1, 2, 10000.00 + 82000.00 + 9411.22 + 89.86 * 366)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 1, 3, 10000.00 + 82000.00 + 9411.22 + 89.86 * 367)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 1, 4, 10000.00 + 82000.00 + 89.86 * 368 + 500000.00 - 318588.78)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 10000.00 + 82000.00 + 89.86 * 398 + 500000.00 - 318588.78)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 10000.00 + 82000.00 + 89.86 * 399 + 500000.00 - 318588.78 + 82000 + 712.46)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 5000.00)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 2, 5000.00 + 327287.54)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 15, 5000.00 + 327287.54)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 2, 3, 5000.00 + 326573.18)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 2, 5000.00 + 318588.78)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 3, 5000.00 + 318588.78)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 1, 4, 5000.00)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 3, 5000.00)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 5000.00 + 327287.54)]
         public void Test_GetLiabilities(InflationTypes inflationType, int year, int month, int day, decimal expected)
         {
             var inflation = Inflations.GetInflation(inflationType);
@@ -123,8 +121,8 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
             );
         }
 
-        // [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 10000.00 + 89.86 * 0 - 5000)]
-        // [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, 10000.00 + 82000.00 + 10148.70 + 89.86 * (35 + 364) + 82000 + 712.46 - 5000 - 317851.30 - 327287.54)]
+        [TestCase(InflationTypes.NoopInflation, 2019, 1, 1, 10000.00 - 5000)]
+        [TestCase(InflationTypes.NoopInflation, 2020, 2, 4, (10000.00 - 82000.00 + 89.86 * 399 + 500000.00 - 318588.78 + 712.46) - (5000.00 + 327287.54))]
         public void Test_GetNetWorth(InflationTypes inflationType, int year, int month, int day, decimal expected)
         {
             var inflation = Inflations.GetInflation(inflationType);

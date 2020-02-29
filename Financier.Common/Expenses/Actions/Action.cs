@@ -9,7 +9,8 @@ namespace Financier.Common.Expenses.Actions
     {
         public Types Type { get; }
         public IProduct Product { get; }
-        public Money Price { get; }
+        public virtual Money CashFlow => Price;
+        public Money Price { get; } = Money.Zero;
         public virtual DateTime At { get; }
 
         public abstract bool IsSold { get; }

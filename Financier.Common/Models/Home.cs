@@ -26,8 +26,15 @@ namespace Financier.Common.Models
 
         public override IEnumerable<Money> GetValueAt(DateTime at)
         {
-            return Financing.GetMonthlyPayments(at)
-                .Select(payment => payment.Principal);
+            if (PurchasedAt < at)
+            {
+                yield return DownPayment;
+            }
+
+            foreach (var payment in Financing.GetMonthlyPayments(at))
+            {
+                yield return payment.Principal;
+            }
         }
 
         public override IEnumerable<Money> GetCostAt(DateTime at)

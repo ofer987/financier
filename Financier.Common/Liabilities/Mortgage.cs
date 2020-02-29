@@ -14,7 +14,7 @@ namespace Financier.Common.Liabilities
         public virtual Guid Id { get; }
         public virtual string Name => string.Empty;
 
-        public Money Price => new Money(0 - InitialValue.Value, InitialValue.At);
+        public Money Price => InitialValue.Reverse;
 
         private Money BaseValue { get; }
         public virtual Money InitialValue => BaseValue;

@@ -29,6 +29,9 @@ namespace Financier.Common.Models
             return money.Value;
         }
 
+        public static Money Zero = new Money(0.00M, DateTime.MinValue);
+
+        public DateTime At { get; }
         private decimal val;
         public decimal Value
         {
@@ -43,9 +46,7 @@ namespace Financier.Common.Models
             }
         }
 
-        public static Money Zero = new Money(0.00M, DateTime.MinValue);
-
-        public DateTime At { get; }
+        public Money Reverse => new Money(0 - Value, At);
 
         public Money(decimal val, DateTime at)
         {
