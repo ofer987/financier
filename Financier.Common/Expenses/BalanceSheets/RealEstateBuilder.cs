@@ -72,7 +72,7 @@ namespace Financier.Common.Expenses.BalanceSheets
         {
             var purchasePriceWhenPurchased = new Money(purchasePriceAtInitiation, InitiatedAt)
                 .GetValueAt(new CompoundYearlyInflation(0.05M), purchasedAt);
-            var availableCash = Result.GetCashAt(purchasedAt);
+            var availableCash = Result.GetCash(inflation, purchasedAt);
             var downPaymentAmount = availableCash < purchasePriceAtInitiation
                 ? availableCash
                 : purchasePriceAtInitiation;

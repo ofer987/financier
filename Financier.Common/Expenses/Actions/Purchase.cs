@@ -9,6 +9,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool IsSold => Next.Type == Types.Sale;
         public override bool CanBuy => false;
         public override bool CanSell => true;
+        public override Money CashFlow => Price.Reverse;
 
         public override IAction Next
         {
@@ -22,6 +23,11 @@ namespace Financier.Common.Expenses.Actions
                 if (value.Type != Types.Sale)
                 {
                     throw new InvalidOperationException($"The product {Product} should be sold first");
+                }
+
+                if (value.At < At)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value.At), value.At, $"The product {value.Product} should not be purchased before ({At})");
                 }
 
                 next = value;

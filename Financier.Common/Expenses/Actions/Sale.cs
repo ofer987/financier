@@ -24,6 +24,11 @@ namespace Financier.Common.Expenses.Actions
                     throw new InvalidOperationException($"The product {Product} should be purchased first");
                 }
 
+                if (value.At < At)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value.At), value.At, $"The product {value.Product} should not be sold before ({At})");
+                }
+
                 next = value;
             }
         }
