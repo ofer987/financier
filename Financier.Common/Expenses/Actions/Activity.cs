@@ -146,7 +146,7 @@ namespace Financier.Common.Expenses.Actions
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
                 .Select(action => action.CashFlow)
-                .InflatedValue(inflation, at);
+                .TotalInflatedValue(inflation, at);
 
 
             return decimal.Round(result, 2);
@@ -166,7 +166,7 @@ namespace Financier.Common.Expenses.Actions
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
                 .Select(action => action.CashFlow)
-                .InflatedValue(inflation, at);
+                .TotalInflatedValue(inflation, at);
             result += GetValueOfOwnedProducts(inflation, at);
 
 
@@ -205,14 +205,14 @@ namespace Financier.Common.Expenses.Actions
         {
             return GetOwnedProducts(at)
                 .SelectMany(product => product.GetValueAt(at))
-                .InflatedValue(inflation, at);
+                .TotalInflatedValue(inflation, at);
         }
 
         public decimal GetCostOfOwnedProducts(IInflation inflation, DateTime at)
         {
             return GetOwnedProducts(at)
                 .SelectMany(product => product.GetCostAt(at))
-                .InflatedValue(inflation, at);
+                .TotalInflatedValue(inflation, at);
         }
     }
 }

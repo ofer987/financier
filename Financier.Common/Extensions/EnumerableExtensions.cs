@@ -49,7 +49,7 @@ namespace Financier.Common.Extensions
             return !self.Any();
         }
 
-        public static decimal InflatedValue<T>(this IEnumerable<T> self, IInflation inflation, DateTime at) where T : Money
+        public static decimal TotalInflatedValue<T>(this IEnumerable<T> self, IInflation inflation, DateTime at) where T : Money
         {
             return self
                 .Select(item => item.GetValueAt(inflation, at))
