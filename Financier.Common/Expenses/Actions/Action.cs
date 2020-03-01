@@ -1,17 +1,39 @@
 using System;
+using System.Collections.Generic;
 
 using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
-    public class Action : IAction
+    public abstract class Action : IAction
     {
         public Types Type { get; }
         public IProduct Product { get; }
-        public decimal Price { get; }
-        public DateTime At { get; }
+        public virtual Money CashFlow => Price;
+        public Money Price { get; } = Money.Zero;
+        public virtual DateTime At { get; }
 
-        public Action(Types type, IProduct product, decimal price, DateTime at)
+        public abstract bool IsSold { get; }
+        public bool IsLastAction => Next.IsNull;
+        public abstract bool CanBuy { get; }
+        public abstract bool CanSell { get; }
+        public virtual bool IsNull => false;
+
+        protected IAction next = NullAction.Instance;
+        public virtual IAction Next
+        {
+            get
+            {
+                return next;
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        protected Action(Types type, IProduct product, Money price, DateTime at)
         {
             Type = type;
             Product = product;
@@ -19,9 +41,17 @@ namespace Financier.Common.Expenses.Actions
             At = at;
         }
 
-        public decimal PriceAt(DateTime at)
+        protected Action(Types type)
         {
-            return Price;
+            Type = type;
+        }
+
+        public IEnumerable<IAction> GetActions()
+        {
+            for (IAction i = this; !i.IsNull; i = i.Next)
+            {
+                yield return i;
+            }
         }
     }
 }

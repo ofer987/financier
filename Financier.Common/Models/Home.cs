@@ -10,42 +10,36 @@ namespace Financier.Common.Models
     {
         public DateTime PurchasedAt { get; }
         public decimal Valuation { get; }
-        public decimal DownPayment { get; }
+        public Money DownPayment { get; }
         public IMortgage Financing { get; }
 
-        public override IEnumerable<ILiability> Liabilities
+        public Home(string name, DateTime purchasedAt, Money purchasePrice, Money downPayment, IMortgage mortgage) : this(name, purchasedAt, purchasePrice, downPayment)
         {
-            get
-            {
-                yield return Financing;
-            }
+            Financing = mortgage;
         }
 
-        public Home(string name, DateTime purchasedAt, decimal downPayment) : base(name)
+        public Home(string name, DateTime purchasedAt, Money purchasePrice, Money downPayment) : base(name, purchasePrice)
         {
             PurchasedAt = purchasedAt;
             DownPayment = downPayment;
         }
 
-        public Home(string name, DateTime purchasedAt, decimal downPayment, FixedRateMortgage mortgage) : this(name, purchasedAt, downPayment)
+        public override IEnumerable<Money> GetValueAt(DateTime at)
         {
-            Financing = mortgage;
+            if (PurchasedAt < at)
+            {
+                yield return DownPayment;
+            }
+
+            foreach (var payment in Financing.GetMonthlyPayments(at))
+            {
+                yield return payment.Principal;
+            }
         }
 
-        public decimal GetValueBy(int months)
+        public override IEnumerable<Money> GetCostAt(DateTime at)
         {
-            return 0.00M
-                + DownPayment 
-                + Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
-                    .Select(payment => payment.Principal.Value)
-                    .Sum();
-        }
-
-        public decimal GetRemainingMortgageAmount(int months)
-        {
-            return Financing.GetMonthlyPayments(PurchasedAt.AddMonths(months))
-                .Select(payment => payment.Balance)
-                .Last();
+            return Enumerable.Empty<Money>();
         }
     }
 }

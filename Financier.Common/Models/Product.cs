@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Financier.Common.Models
@@ -16,19 +17,28 @@ namespace Financier.Common.Models
         public Guid Id { get; }
         public string Name { get; }
 
-        // What to do with these?
-        public virtual IList<IAsset> Assets { get; } = new List<IAsset>();
-        public virtual IEnumerable<ILiability> Liabilities { get; } = new List<ILiability>();
+        public Money Price { get; }
 
-        protected Product(string name)
+        protected Product(string name, Money price)
         {
             Id = Guid.NewGuid();
             Name = name;
+
+            Price = price;
         }
+
+        public abstract IEnumerable<Money> GetValueAt(DateTime at);
+        public abstract IEnumerable<Money> GetCostAt(DateTime at);
 
         public override string ToString()
         {
-            return $"Product ({nameof(Id)} = {Id})";
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"{GetType().Name}:");
+            sb.AppendLine($"\t{nameof(Name)}: ({Name})");
+            sb.AppendLine($"\t{nameof(Id)}: ({Id})");
+
+            return sb.ToString();
         }
 
         public override int GetHashCode()

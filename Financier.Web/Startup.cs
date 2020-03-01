@@ -44,7 +44,7 @@ namespace Financier.Web
             services.AddScoped<TagSchema>();
             services.AddScoped<ItemQuerySchema>();
             services.AddScoped<FixedRateMortgageSchema>();
-            services.AddScoped<MyHomeSchema>();
+            services.AddScoped<BalanceSheetSchema>();
 
             // Add GraphQL
             services
@@ -88,7 +88,7 @@ namespace Financier.Web
             app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
             app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
-            app.UseGraphQL<MyHomeSchema>("/graphql/home");
+            app.UseGraphQL<BalanceSheetSchema>("/graphql/balance-sheet");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());

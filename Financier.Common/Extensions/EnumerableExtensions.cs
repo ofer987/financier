@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Financier.Common.Models;
+
 namespace Financier.Common.Extensions
 {
     public static class EnumerableExtensions
@@ -45,6 +47,14 @@ namespace Financier.Common.Extensions
         public static bool Empty<T>(this IEnumerable<T> self)
         {
             return !self.Any();
+        }
+
+        public static decimal TotalInflatedValue<T>(this IEnumerable<T> self, IInflation inflation, DateTime at) where T : Money
+        {
+            return self
+                .Select(item => item.GetValueAt(inflation, at))
+                .Select(adjusted => adjusted.Value)
+                .Sum();
         }
     }
 }

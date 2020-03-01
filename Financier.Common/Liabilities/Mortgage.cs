@@ -6,42 +6,50 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public abstract class Mortgage : Liability<Home>, IMortgage
+    public abstract class Mortgage : IMortgage
     {
-        public IMonthlyPaymentCalculator Calculator { get; }
+        // TODO: move functionality into Mortgage
+        public IMonthlyPaymentCalculator Calculator { get; protected set; }
 
-        public virtual Money BaseValue { get; }
+        public virtual Guid Id { get; }
+        public virtual string Name => string.Empty;
+
+        public Money Price => InitialValue.Reverse;
+
+        private Money BaseValue { get; }
         public virtual Money InitialValue => BaseValue;
 
-        public DateTime InitiatedAt => Product.PurchasedAt;
-        public int AmortisationPeriodInMonths { get; }
-        public decimal InterestRate { get; }
+        public virtual DateTime InitiatedAt { get; }
+        public virtual int AmortisationPeriodInMonths { get; }
+        public virtual decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
 
         public abstract double PeriodicMonthlyInterestRate { get; }
-        public double PeriodicAnnualInterestRate => PeriodicMonthlyInterestRate * 12;
+        public decimal PeriodicAnnualInterestRate => QuotedInterestRate;
         public double EffectiveAnnualInterestRate => Math.Pow(PeriodicMonthlyInterestRate + 1, 12) - 1;
 
-        [Obsolete]
-        public virtual double MonthlyPayment => (Convert.ToDouble(BaseValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, - AmortisationPeriodInMonths));
+        public virtual double MonthlyPayment => (Convert.ToDouble(InitialValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, 0 - AmortisationPeriodInMonths));
 
-        public Mortgage(Home product, IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        protected Mortgage(IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
         {
             Calculator = calculator;
-            BaseValue = baseValue;
-            AmortisationPeriodInMonths = amortisationPeriodInMonths;
-            InterestRate = interestRate;
         }
 
-        public Mortgage(Home product, Money baseValue, decimal interestRate, int amortisationPeriodInMonths) : base(product)
+        protected Mortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this()
         {
             Calculator = new MonthlyPaymentCalculator();
             BaseValue = baseValue;
             AmortisationPeriodInMonths = amortisationPeriodInMonths;
             InterestRate = interestRate;
+            InitiatedAt = initiatedAt;
         }
 
-        public decimal GetBalance(DateTime at)
+        protected Mortgage()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        public Money GetBalance(DateTime at)
         {
             return GetMonthlyPayments(at)
                 .Select(payment => payment.Balance)
@@ -58,24 +66,24 @@ namespace Financier.Common.Liabilities
             return Calculator.GetMonthlyPayments(this, endAt);
         }
 
-        public IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
+        public virtual IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
         {
             return Enumerable.Empty<decimal>();
-        }
-
-        public override decimal CostAt(int monthAfterInception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override decimal CostBy(int monthAfterInception)
-        {
-            throw new NotImplementedException();
         }
 
         public bool IsMonthlyPayment(DateTime at)
         {
             return at.Day == InitiatedAt.Day;
+        }
+
+        public IEnumerable<Money> GetValueAt(DateTime at)
+        {
+            return Enumerable.Empty<Money>();
+        }
+
+        public IEnumerable<Money> GetCostAt(DateTime at)
+        {
+            yield return GetBalance(at);
         }
     }
 }

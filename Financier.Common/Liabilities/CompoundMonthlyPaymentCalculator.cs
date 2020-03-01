@@ -29,7 +29,7 @@ namespace Financier.Common.Liabilities
             {
                 if (mortgage.IsMonthlyPayment(i))
                 {
-                    var interestPayment = Convert.ToDecimal(Convert.ToDouble(balance) * interestRate / 12);
+                    var interestPayment = balance * interestRate / 12;
                     var principalPayment = monthlyPayment - interestPayment;
 
                     principalPayment = principalPayment > balance

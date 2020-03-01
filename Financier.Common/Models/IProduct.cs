@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 
 namespace Financier.Common.Models
 {
-    public interface IProduct
+    public interface IProduct : IAsset, ILiability
     {
         Guid Id { get; }
         string Name { get; }
 
-        IList<IAsset> Assets { get; }
-        IEnumerable<ILiability> Liabilities { get; }
+        Money Price { get; }
     }
 }

@@ -5,11 +5,12 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    public interface IMortgage : ILiability
+    public interface IMortgage : IProduct
     {
-        Money BaseValue { get; }
+        IMonthlyPaymentCalculator Calculator { get; }
+
         Money InitialValue { get; }
-        [Obsolete] double MonthlyPayment { get; }
+        double MonthlyPayment { get; }
 
         DateTime InitiatedAt { get; }
         int AmortisationPeriodInMonths { get; }
@@ -17,10 +18,10 @@ namespace Financier.Common.Liabilities
         decimal QuotedInterestRate { get; }
 
         double PeriodicMonthlyInterestRate { get; }
-        double PeriodicAnnualInterestRate { get; }
+        decimal PeriodicAnnualInterestRate { get; }
         double EffectiveAnnualInterestRate { get; }
 
-        decimal GetBalance(DateTime at);
+        Money GetBalance(DateTime at);
         IEnumerable<MonthlyPayment> GetMonthlyPayments();
         IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt);
         IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day);
