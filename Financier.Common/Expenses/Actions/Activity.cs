@@ -148,7 +148,6 @@ namespace Financier.Common.Expenses.Actions
                 .Select(action => action.CashFlow)
                 .TotalInflatedValue(inflation, at);
 
-
             return decimal.Round(result, 2);
         }
 
@@ -168,7 +167,6 @@ namespace Financier.Common.Expenses.Actions
                 .Select(action => action.CashFlow)
                 .TotalInflatedValue(inflation, at);
             result += GetValueOfOwnedProducts(inflation, at);
-
 
             return decimal.Round(result, 2);
         }
