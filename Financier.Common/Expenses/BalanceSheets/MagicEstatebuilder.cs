@@ -46,13 +46,21 @@ namespace Financier.Common.Expenses.BalanceSheets
             }
 
             // Does not take into account inflation
-            var purchasedAt = HasCashAt(purchasePriceAtInitiation);
-            var mortgageAmount = new Money(
-                (100 - downPaymentPercentage) * purchasePriceAtInitiation,
-                InitiatedAt
-            ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
+            Func<DateTime, decimal> downPaymentAmountFunc = (at) => 
+            {
+                return new Money(
+                    downPaymentPercentage * purchasePriceAtInitiation,
+                    InitiatedAt
+                ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), at).Value;
+            };
+
+            var purchasedAt = HasCashAt(downPaymentAmountFunc);
             var downPaymentAmount = new Money(
                 downPaymentPercentage * purchasePriceAtInitiation,
+                InitiatedAt
+            ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
+            var mortgageAmount = new Money(
+                (100 - downPaymentPercentage) * purchasePriceAtInitiation,
                 InitiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var fullAmount = new Money(
@@ -93,12 +101,12 @@ namespace Financier.Common.Expenses.BalanceSheets
             return Result;
         }
 
-        public DateTime HasCashAt(decimal expected)
+        public DateTime HasCashAt(Func<DateTime, decimal> expected)
         {
             var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
             for (var i = At; true; i = i.GetNext())
             {
-                if (Result.GetCash(inflation, i) >= expected)
+                if (Result.GetCash(inflation, i) >= expected(i))
                 {
                     return i;
                 }
