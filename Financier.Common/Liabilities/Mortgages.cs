@@ -15,13 +15,7 @@ namespace Financier.Common.Liabilities
                 initiatedAt
             );
 
-            var downPaymentRate = downPayment.Value / (baseValue.Value + downPayment.Value);
-            if (InsuredMortgage.IsInsured(downPaymentRate))
-            {
-                return new InsuredMortgage(result, downPayment);
-            }
-
-            return result;
+            return ConvertToInsuredMortgageIfInsurable(result, downPayment);
         }
 
         public static IMortgage GetVariableRateMortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt, Money downPayment, decimal maximumInsuranceRate = InsuredMortgage.MaximumInsuranceRate)
@@ -33,13 +27,25 @@ namespace Financier.Common.Liabilities
                 initiatedAt
             );
 
-            var downPaymentRate = downPayment.Value / (baseValue.Value + downPayment.Value);
-            if (InsuredMortgage.IsInsured(downPaymentRate))
-            {
-                return new InsuredMortgage(result, downPayment);
-            }
+            return ConvertToInsuredMortgageIfInsurable(result, downPayment);
+        }
 
-            return result;
+        private static IMortgage ConvertToInsuredMortgageIfInsurable(IMortgage mortgage, decimal downPayment)
+        {
+            // TODO: Maybe use Money instead of decimal?
+            var downPaymentRate = downPayment / (mortgage.InitialValue.Value + downPayment);
+            var insuranceTypeRequired = InsuredMortgage.IsInsurable(downPaymentRate);
+
+            switch (insuranceTypeRequired)
+            {
+                case InsuranceTypes.DownPaymentLow:
+                    throw new InvalidDownPaymentRateException(downPaymentRate);
+                case InsuranceTypes.Insurable:
+                    return new InsuredMortgage(mortgage, downPayment);
+                case InsuranceTypes.NotRequired:
+                default:
+                    return mortgage;
+            }
         }
     }
 }

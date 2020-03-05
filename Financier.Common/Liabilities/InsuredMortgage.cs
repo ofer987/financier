@@ -25,27 +25,40 @@ namespace Financier.Common.Liabilities
 
         public override double PeriodicMonthlyInterestRate => BaseMortgage.PeriodicMonthlyInterestRate;
 
-        public static bool IsInsured(decimal rate)
+        public static InsuranceTypes IsInsurable(decimal rate)
         {
-            return rate >= MinimumInsuranceRate && rate < MaximumInsuranceRate;
+            if (rate < MinimumInsuranceRate)
+            {
+                return InsuranceTypes.DownPaymentLow;
+            }
+            else if (rate >= MinimumInsuranceRate && rate < MaximumInsuranceRate)
+            {
+                return InsuranceTypes.Insurable;
+            }
+
+            return InsuranceTypes.NotRequired;
         }
 
         public static void ValidateInsuranceRate(decimal rate)
         {
-            if (!IsInsured(rate))
+            if (IsInsurable(rate) != InsuranceTypes.Insurable)
             {
-                throw new ArgumentOutOfRangeException(nameof(rate), $"Should be between {MinimumInsuranceRate}% and {MaximumInsuranceRate}%");
+                throw new InvalidDownPaymentRateException(rate);
             }
         }
 
-        public InsuredMortgage(IMortgage baseMortgage, Money downPayment)
+        public InsuredMortgage(IMortgage baseMortgage, Money downPayment) : this(baseMortgage, downPayment.Value)
         {
-            var rate = downPayment.Value / (downPayment.Value + baseMortgage.InitialValue.Value);
+        }
+
+        public InsuredMortgage(IMortgage baseMortgage, decimal downPayment)
+        {
+            var rate = downPayment / (downPayment + baseMortgage.InitialValue.Value);
             ValidateInsuranceRate(rate);
 
             BaseMortgage = baseMortgage;
             Calculator = BaseMortgage.Calculator;
-            InsuranceRate = downPayment.Value / (downPayment.Value + baseMortgage.InitialValue.Value);
+            InsuranceRate = downPayment / (downPayment + baseMortgage.InitialValue.Value);
 
             Insurance = new Money(
                 GetInsurance(baseMortgage.InitialValue, downPayment),
