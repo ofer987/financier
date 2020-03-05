@@ -6,10 +6,8 @@ namespace Financier.Common.Liabilities
 {
     public class Mortgages
     {
-        public static IMortgage GetFixedRateMortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt, Money downPayment, decimal maximumInsuranceRate = InsuredMortgage.DefaultMaximumInsuranceRate)
+        public static IMortgage GetFixedRateMortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt, Money downPayment)
         {
-            InsuredMortgage.ValidateInsuranceRate(maximumInsuranceRate);
-
             var result = new FixedRateMortgage(
                 baseValue,
                 interestRate,
@@ -17,18 +15,17 @@ namespace Financier.Common.Liabilities
                 initiatedAt
             );
 
-            if ((downPayment.Value / (baseValue.Value + downPayment.Value)) < maximumInsuranceRate)
+            var downPaymentRate = downPayment.Value / (baseValue.Value + downPayment.Value);
+            if (InsuredMortgage.IsInsured(downPaymentRate))
             {
-                return new InsuredMortgage(result, downPayment, maximumInsuranceRate);
+                return new InsuredMortgage(result, downPayment);
             }
 
             return result;
         }
 
-        public static IMortgage GetVariableRateMortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt, Money downPayment, decimal maximumInsuranceRate = InsuredMortgage.DefaultMaximumInsuranceRate)
+        public static IMortgage GetVariableRateMortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt, Money downPayment, decimal maximumInsuranceRate = InsuredMortgage.MaximumInsuranceRate)
         {
-            InsuredMortgage.ValidateInsuranceRate(maximumInsuranceRate);
-
             var result = new VariableRateMortgage(
                 baseValue,
                 interestRate,
@@ -36,9 +33,10 @@ namespace Financier.Common.Liabilities
                 initiatedAt
             );
 
-            if ((downPayment.Value / (baseValue.Value + downPayment.Value)) < maximumInsuranceRate)
+            var downPaymentRate = downPayment.Value / (baseValue.Value + downPayment.Value);
+            if (InsuredMortgage.IsInsured(downPaymentRate))
             {
-                return new InsuredMortgage(result, downPayment, maximumInsuranceRate);
+                return new InsuredMortgage(result, downPayment);
             }
 
             return result;
