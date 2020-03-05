@@ -9,14 +9,13 @@ namespace Financier.Common.Expenses.BalanceSheets
 {
     public class MagicEstateBuilder
     {
-        private DateTime InitiatedAt => Result.InitiatedAt;
         private DateTime At;
         private Activity Result { get; set; }
 
         public MagicEstateBuilder(ICashFlow cashFlow, DateTime at)
         {
             Result = new Activity(cashFlow, at);
-            At = InitiatedAt;
+            At = at;
         }
 
         public MagicEstateBuilder SetInitialCash(Money cash)
@@ -45,27 +44,30 @@ namespace Financier.Common.Expenses.BalanceSheets
                 throw new ArgumentOutOfRangeException(nameof(downPaymentPercentage), downPaymentPercentage, "Should be between 0.00 and 100.00 per cent (inclusive)");
             }
 
+            // Baseline for prices
+            var initiatedAt = At;
+
             // Does not take into account inflation
             Func<DateTime, decimal> downPaymentAmountFunc = (at) => 
             {
                 return new Money(
                     downPaymentPercentage * purchasePriceAtInitiation,
-                    InitiatedAt
+                    initiatedAt
                 ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), at).Value;
             };
 
-            var purchasedAt = HasCashAt(downPaymentAmountFunc);
+            var purchasedAt = HasCashAt(downPaymentAmountFunc, initiatedAt);
             var downPaymentAmount = new Money(
                 downPaymentPercentage * purchasePriceAtInitiation,
-                InitiatedAt
+                initiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var mortgageAmount = new Money(
                 (100 - downPaymentPercentage) * purchasePriceAtInitiation,
-                InitiatedAt
+                initiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var fullAmount = new Money(
                 purchasePriceAtInitiation,
-                InitiatedAt
+                initiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var mortgage = Mortgages.GetFixedRateMortgage(
                 mortgageAmount.Reverse,
@@ -85,7 +87,7 @@ namespace Financier.Common.Expenses.BalanceSheets
             Result.Buy(mortgage, purchasedAt);
             Result.Buy(home, purchasedAt);
 
-            At = At.GetNext();
+            At = purchasedAt.GetNext();
 
             return this;
         }
@@ -101,76 +103,16 @@ namespace Financier.Common.Expenses.BalanceSheets
             return Result;
         }
 
-        public DateTime HasCashAt(Func<DateTime, decimal> expected)
+        public DateTime HasCashAt(Func<DateTime, decimal> expected, DateTime startAt)
         {
             var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
-            for (var i = At; true; i = i.GetNext())
+            for (var i = startAt; true; i = i.GetNext())
             {
                 if (Result.GetCash(inflation, i) >= expected(i))
                 {
                     return i;
                 }
             }
-        }
-
-        public DateTime FindWhenHasCash(decimal expected)
-        {
-            if (expected < 0.00M)
-            {
-                throw new ArgumentOutOfRangeException(nameof(expected), expected, "Should not be negative value");
-            }
-
-            var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
-
-            var at = InitiatedAt;
-            at = FindWhenHasAtLeastCash(expected, at);
-            at = FindWhenHasAtMostCash(expected, at);
-
-            return at;
-        }
-
-        private DateTime FindWhenHasAtLeastCash(decimal expected, DateTime startAt)
-        {
-            if (expected < 0.00M)
-            {
-                throw new ArgumentOutOfRangeException(nameof(expected), expected, "Should not be negative value");
-            }
-
-            var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
-
-            decimal actual = decimal.MinValue;
-            DateTime at;
-            for (at = startAt; actual >= expected; at = at.AddYears(1))
-            {
-                actual = Result.GetCash(inflation, at);
-            }
-
-            return at;
-        }
-
-        private DateTime FindWhenHasAtMostCash(decimal expected, DateTime endAt)
-        {
-            if (expected < 0.00M)
-            {
-                throw new ArgumentOutOfRangeException(nameof(expected), expected, "Should not be negative value");
-            }
-
-            var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
-
-            decimal actual = decimal.MaxValue;
-
-            // TODO: fixme
-            DateTime at = endAt;
-            DateTime nextAt = endAt;
-            while (Result.GetCash(inflation, nextAt) >= expected)
-            {
-                at = nextAt;
-                nextAt = at.AddMonths(-1);
-
-                actual = Result.GetCash(inflation, nextAt);
-            }
-
-            return at;
         }
     }
 }
