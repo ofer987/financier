@@ -19,7 +19,7 @@ namespace Financier.Common.Expenses.Actions
         public Activity(DateTime initiatedAt)
         {
             CashFlow = new DummyCashFlow(0.00M);
-            InitiatedAt = InitiatedAt;
+            InitiatedAt = initiatedAt;
         }
 
         public Activity(ICashFlow cashFlow, DateTime initiatedAt)
@@ -117,11 +117,12 @@ namespace Financier.Common.Expenses.Actions
             lastAction.Next = new Sale(product, salePrice, soldAt);
         }
 
+        // Refactor me
         public decimal GetCash(IInflation inflation, DateTime startAt, DateTime endAt)
         {
-            if (endAt < startAt)
+            if (endAt <= startAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be at or later than {startAt}");
+                throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be later than {startAt}");
             }
 
             var result = 0.00M;
@@ -133,9 +134,9 @@ namespace Financier.Common.Expenses.Actions
 
         public decimal GetCash(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -153,9 +154,9 @@ namespace Financier.Common.Expenses.Actions
 
         public decimal GetAssets(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -173,9 +174,9 @@ namespace Financier.Common.Expenses.Actions
 
         public decimal GetLiabilities(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -187,9 +188,9 @@ namespace Financier.Common.Expenses.Actions
 
         public decimal GetNetWorth(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;

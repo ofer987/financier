@@ -27,7 +27,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         [Test]
         public void Test_AddCondoWithFixedRateMortgage_ReturnsBuilder()
         {
-            var purchasedAt = new DateTime(2019, 1, 1);
+            var purchasedAt = new DateTime(2019, 1, 2);
             var purchasePrice = new Money(2000.00M, purchasedAt);
 
             Assert.That(
@@ -41,7 +41,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         [Test]
         public void Test_AddCondoWithFixedRateMortgage_HasHomeAndMortgage()
         {
-            var purchasedAt = new DateTime(2019, 1, 1);
+            var purchasedAt = new DateTime(2019, 1, 2);
             var purchasePrice = new Money(2000.00M, purchasedAt);
 
             var balanceSheet = Subject
@@ -55,11 +55,11 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             );
         }
 
-        [TestCase(2019, 1, 1, 100.00, 100.00)]
-        [TestCase(2020, 1, 1, 100.00, 105.00)]
-        [TestCase(2021, 1, 1, 100.00, 110.25)]
-        [TestCase(2021, 2, 1, 100.00, 110.25)]
-        [TestCase(2020, 1, 1, 200.00, 210.00)]
+        [TestCase(2019, 1, 2, 100.00, 100.00)]
+        [TestCase(2020, 1, 2, 100.00, 105.00)]
+        [TestCase(2021, 1, 2, 100.00, 110.25)]
+        [TestCase(2021, 2, 2, 100.00, 110.25)]
+        [TestCase(2020, 1, 2, 200.00, 210.00)]
         public void Test_AddCondoWithFixedRateMortgage_FuturePurchasePriceIsInflated(int year, int month, int day, decimal purchasePriceAtInitiation, decimal expected)
         {
             var purchasedAt = new DateTime(year, month, day);
@@ -70,7 +70,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .AddCondoWithFixedRateMortgage(purchasedAt, purchasePriceAtInitiation)
                 .Build();
 
-            var condo = balanceSheet.GetOwnedProducts(purchasedAt.GetNext()).First();
+            var condo = balanceSheet.GetOwnedProducts(purchasedAt).First();
             var actualAbsoluteHomePrice = condo.Price.Value;
             Assert.That(actualAbsoluteHomePrice, Is.EqualTo(expected));
         }
