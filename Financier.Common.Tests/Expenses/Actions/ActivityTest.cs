@@ -18,7 +18,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         [SetUp]
         public void Init()
         {
-            Television = new SimpleProduct("television", new Money(40.00M, InitiatedAt));
+            Television = new SimpleProduct("television", new Money(40.00M, InitiatedAt.AddDays(10)));
             Stand = new SimpleProduct("stand", new Money(20.00M, InitiatedAt));
             House = new SimpleProduct("stand", new Money(5000.00M, InitiatedAt));
             InitiatedAt = new DateTime(2019, 1, 1);
@@ -37,13 +37,13 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var actions = Subject.GetHistory(Television).ToList();
             Assert.That(actions[0].Product, Is.EqualTo(Television));
             Assert.That(actions[0].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[0].Price, Is.EqualTo(new Money(40.00M, InitiatedAt)));
+            Assert.That(actions[0].Price, Is.EqualTo(new Money(40.00M, InitiatedAt.AddDays(10))));
             Assert.That(actions[1].Product, Is.EqualTo(Television));
             Assert.That(actions[1].Type, Is.EqualTo(Types.Sale));
             Assert.That(actions[1].Price, Is.EqualTo(new Money(50.00M, new DateTime(2020, 1, 1))));
             Assert.That(actions[2].Product, Is.EqualTo(Television));
             Assert.That(actions[2].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[2].Price, Is.EqualTo(new Money(40.00M, InitiatedAt)));
+            Assert.That(actions[2].Price, Is.EqualTo(new Money(40.00M, InitiatedAt.AddDays(10))));
             Assert.That(actions[3].Product, Is.EqualTo(Television));
             Assert.That(actions[3].Type, Is.EqualTo(Types.Sale));
             Assert.That(actions[3].Price, Is.EqualTo(new Money(60.00M, new DateTime(2020, 1, 1))));
