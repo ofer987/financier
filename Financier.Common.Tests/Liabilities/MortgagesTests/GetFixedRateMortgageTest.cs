@@ -22,7 +22,6 @@ namespace Financier.Common.Tests.Liabilities.MortgagesTests
             AmortisationPeriodInMonths = 300;
         }
 
-        [TestCase(0.00)]
         [TestCase(40000.00)]
         [TestCase(80000.00)]
         [TestCase(81000.00)]

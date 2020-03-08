@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
+using Financier.Common.Extensions;
 using Financier.Common.Expenses.BalanceSheets;
 using Financier.Common.Models;
 
@@ -30,7 +31,9 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             var purchasePrice = new Money(2000.00M, purchasedAt);
 
             Assert.That(
-                Subject.AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice),
+                Subject
+                    .SetInitialCash(purchasePrice)
+                    .AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice),
                 Is.TypeOf<RealEstateBuilder>()
             );
         }
@@ -42,6 +45,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             var purchasePrice = new Money(2000.00M, purchasedAt);
 
             var balanceSheet = Subject
+                .SetInitialCash(purchasePrice)
                 .AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice)
                 .Build();
 
@@ -62,10 +66,11 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             var purchasePrice = purchasePriceAtInitiation;
 
             var balanceSheet = Subject
+                .SetInitialCash(new Money(purchasePrice, purchasedAt))
                 .AddCondoWithFixedRateMortgage(purchasedAt, purchasePriceAtInitiation)
                 .Build();
 
-            var condo = balanceSheet.GetOwnedProducts(purchasedAt).First();
+            var condo = balanceSheet.GetOwnedProducts(purchasedAt.GetNext()).First();
             var actualAbsoluteHomePrice = condo.Price.Value;
             Assert.That(actualAbsoluteHomePrice, Is.EqualTo(expected));
         }
