@@ -44,6 +44,11 @@ namespace Financier.Common.Expenses.Actions
                 .SelectMany(GetHistory);
         }
 
+        public IEnumerable<IProduct> GetOwnedProducts()
+        {
+            return GetOwnedProducts(DateTime.MaxValue);
+        }
+
         public IEnumerable<IProduct> GetOwnedProducts(DateTime at)
         {
             foreach (var pair in purchases)

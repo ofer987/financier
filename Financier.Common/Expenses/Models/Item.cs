@@ -68,11 +68,23 @@ namespace Financier.Common.Expenses.Models
             {
                 return db.Items
                     .Include(item => item.ItemTags)
-                    .ThenInclude(it => it.Tag)
+                        .ThenInclude(it => it.Tag)
                     .Where(item => item.Type == ItemTypes.Debit)
                     .Where(item => item.At >= from)
                     .Where(item => item.At < to)
                     // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Reject(item => item.Tags.HasInternalTransfer())
+                    .ToArray();
+            }
+        }
+
+        public static IEnumerable<Item> FindExternalItems()
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -84,7 +96,7 @@ namespace Financier.Common.Expenses.Models
             {
                 return db.Items
                     .Include(item => item.ItemTags)
-                    .ThenInclude(it => it.Tag)
+                        .ThenInclude(it => it.Tag)
                     .Where(item => item.At >= from)
                     .Where(item => item.At < to)
                     // .Reject(item => item.Tags.HasCreditCardPayent())

@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 using Financier.Common.Models;
 using Financier.Common.Liabilities;
@@ -9,13 +11,28 @@ namespace Financier.Common.Expenses.BalanceSheets
 {
     public class MagicEstateBuilder
     {
-        private DateTime At;
+        public DateTime InitiatedAt { get; private set; }
+        private DateTime At { get; set; }
         private Activity Result { get; set; }
 
-        public MagicEstateBuilder(ICashFlow cashFlow, DateTime at)
+        public MagicEstateBuilder(ICashFlow cashFlow, DateTime initiatedAt)
         {
-            Result = new Activity(cashFlow, at);
-            At = at;
+            Result = new Activity(cashFlow, initiatedAt);
+            InitiatedAt = At = initiatedAt;
+        }
+
+        public IEnumerable<Home> GetHomes()
+        {
+            return Result.GetOwnedProducts()
+                .Where(product => product.GetType() == typeof(Home))
+                .Cast<Home>();
+        }
+
+        public MagicEstateBuilder SetInitialCash(decimal cash)
+        {
+            Result.InitialCash = new Money(cash, InitiatedAt);
+
+            return this;
         }
 
         public MagicEstateBuilder SetInitialCash(Money cash)
@@ -32,37 +49,43 @@ namespace Financier.Common.Expenses.BalanceSheets
             return this;
         }
 
-        public MagicEstateBuilder AddCondoWithFixedRateMortgageAtDownPaymentPercentage(decimal purchasePriceAtInitiation, decimal downPaymentPercentage, decimal interestRate = 0.0319M)
+        public MagicEstateBuilder AddCondoWithFixedRateMortgageAtDownPaymentPercentage(decimal purchasePriceAtInitiation, decimal downPaymentRate, decimal interestRate = 0.0319M)
+        {
+            return AddHomeWithFixedRateMortgageAtDownPaymentPercentage(0.05M, purchasePriceAtInitiation, downPaymentRate, interestRate);
+        }
+
+        private MagicEstateBuilder AddHomeWithFixedRateMortgageAtDownPaymentPercentage(decimal appreciationRate, decimal purchasePriceAtInitiation, decimal downPaymentRate, decimal interestRate = 0.0319M)
         {
             if (purchasePriceAtInitiation < 0.00M)
             {
                 throw new ArgumentOutOfRangeException(nameof(purchasePriceAtInitiation), purchasePriceAtInitiation, "Should be at or greater than 0.00");
             }
 
-            if (downPaymentPercentage < 0.00M || downPaymentPercentage > 100.00M)
+            if (downPaymentRate < 0.00M || downPaymentRate > 1.00M)
             {
-                throw new ArgumentOutOfRangeException(nameof(downPaymentPercentage), downPaymentPercentage, "Should be between 0.00 and 100.00 per cent (inclusive)");
+                throw new ArgumentOutOfRangeException(nameof(downPaymentRate), downPaymentRate, "Should be between 0.00 and 1.00 (inclusive)");
             }
 
             // Baseline for prices
             var initiatedAt = At;
 
             // Does not take into account inflation
-            Func<DateTime, decimal> downPaymentAmountFunc = (at) => 
+            Func<DateTime, decimal> downPaymentAmountFunc = (at) =>
             {
                 return new Money(
-                    downPaymentPercentage * purchasePriceAtInitiation,
+                    downPaymentRate * purchasePriceAtInitiation,
                     initiatedAt
                 ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), at).Value;
             };
 
             var purchasedAt = HasCashAt(downPaymentAmountFunc, initiatedAt);
+            // Console.WriteLine($"Purchased at {purchasedAt} with {Result.GetCash(Inflations.NoopInflation, purchasedAt)}");
             var downPaymentAmount = new Money(
-                downPaymentPercentage * purchasePriceAtInitiation,
+                downPaymentRate * purchasePriceAtInitiation,
                 initiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var mortgageAmount = new Money(
-                (100 - downPaymentPercentage) * purchasePriceAtInitiation,
+                (1 - downPaymentRate) * purchasePriceAtInitiation,
                 initiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var fullAmount = new Money(
@@ -70,7 +93,7 @@ namespace Financier.Common.Expenses.BalanceSheets
                 initiatedAt
             ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
             var mortgage = Mortgages.GetFixedRateMortgage(
-                mortgageAmount.Reverse,
+                mortgageAmount,
                 0.0319M,
                 300,
                 purchasedAt,
@@ -94,7 +117,11 @@ namespace Financier.Common.Expenses.BalanceSheets
 
         public MagicEstateBuilder SellHome(Home home, DateTime soldAt, Money soldPrice)
         {
-            // TODO: implement me!
+            var mortgage = home.Financing;
+            Result.Sell(mortgage, mortgage.GetBalance(soldAt), soldAt);
+
+            Result.Sell(home, soldPrice, soldAt);
+
             return this;
         }
 
@@ -108,9 +135,21 @@ namespace Financier.Common.Expenses.BalanceSheets
             var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
             for (var i = startAt; true; i = i.GetNext())
             {
-                if (Result.GetCash(inflation, i) >= expected(i))
+                try
                 {
-                    return i;
+                    if (Result.GetCash(inflation, i) >= expected(i))
+                    {
+                        return i;
+                    }
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                }
+                catch (OverflowException)
+                {
+                    // Console.WriteLine($"Crashed at {i}");
+
+                    throw;
                 }
             }
         }
