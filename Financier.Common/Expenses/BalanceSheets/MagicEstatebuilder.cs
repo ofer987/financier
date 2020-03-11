@@ -49,12 +49,12 @@ namespace Financier.Common.Expenses.BalanceSheets
             return this;
         }
 
-        public MagicEstateBuilder AddCondoWithFixedRateMortgageAtDownPaymentPercentage(decimal purchasePriceAtInitiation, decimal downPaymentRate, decimal interestRate = 0.0319M)
+        public MagicEstateBuilder AddCondoWithFixedRateMortgageAtDownPaymentPercentage(string name, decimal purchasePriceAtInitiation, decimal downPaymentRate, decimal interestRate = 0.0319M)
         {
-            return AddHomeWithFixedRateMortgageAtDownPaymentPercentage(0.05M, purchasePriceAtInitiation, downPaymentRate, interestRate);
+            return AddHomeWithFixedRateMortgageAtDownPaymentPercentage(name, 0.05M, purchasePriceAtInitiation, downPaymentRate, interestRate);
         }
 
-        private MagicEstateBuilder AddHomeWithFixedRateMortgageAtDownPaymentPercentage(decimal appreciationRate, decimal purchasePriceAtInitiation, decimal downPaymentRate, decimal interestRate = 0.0319M)
+        private MagicEstateBuilder AddHomeWithFixedRateMortgageAtDownPaymentPercentage(string name, decimal appreciationRate, decimal purchasePriceAtInitiation, decimal downPaymentRate, decimal interestRate = 0.0319M)
         {
             if (purchasePriceAtInitiation < 0.00M)
             {
@@ -100,7 +100,7 @@ namespace Financier.Common.Expenses.BalanceSheets
                 downPaymentAmount
             );
             var home = new Home(
-                "Condo",
+                name,
                 purchasedAt,
                 fullAmount,
                 downPaymentAmount,
@@ -123,6 +123,30 @@ namespace Financier.Common.Expenses.BalanceSheets
             Result.Sell(home, soldPrice, soldAt);
 
             return this;
+        }
+
+        public MagicEstateBuilder SellHome(string name, DateTime soldAt, Money soldPrice)
+        {
+            Home home;
+            try
+            {
+                home = GetHomes().First(item => item.Name == name);
+            }
+            catch (InvalidOperationException)
+            {
+                throw new ArgumentException("Either home has already been sold or home has never been purchased", nameof(name));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new ArgumentException("Either home has already been sold or home has never been purchased", nameof(name));
+            }
+
+            if (soldAt <= home.PurchasedAt)
+            {
+                throw new ArgumentException("A home should be sold after it has been purchased", nameof(name));
+            }
+
+            return SellHome(home, soldAt, soldPrice);
         }
 
         public Activity Build()
