@@ -19,12 +19,13 @@ namespace Financier.Cli.BalanceSheets
 
             var cashFlow = GetCashFlow();
             var startAt = cashFlow.StartAt;
-
-            var activity = BuyOneHouse(cashFlow, startAt);
-            var consumerPriceIndex = new CompoundYearlyInflation(0.02M);
             var atTwentyYears = startAt.AddYears(20);
-            var netWorth = activity.GetNetWorth(consumerPriceIndex, atTwentyYears);
-            var cash = activity.GetCash(consumerPriceIndex, atTwentyYears);
+
+            var activity = BuyAndSellOneHouse(cashFlow, startAt, atTwentyYears);
+            var consumerPriceIndex = new CompoundYearlyInflation(0.02M);
+
+            var netWorth = activity.GetNetWorth(consumerPriceIndex, atTwentyYears.AddDays(1));
+            var cash = activity.GetCash(consumerPriceIndex, atTwentyYears.AddDays(1));
 
             var condoPurchase = activity.GetHistories()
                 .Where(action => action.Type == Types.Purchase)
@@ -52,7 +53,6 @@ namespace Financier.Cli.BalanceSheets
                 .Select(item => item.Amount)
                 .Select(amount => 0.00M - amount);
 
-
             return new SimpleCashFlow(amounts, first.At, last.At);
         }
 
@@ -63,11 +63,16 @@ namespace Financier.Cli.BalanceSheets
         //     return result;
         // }
 
-        private static Activity BuyOneHouse(ICashFlow cashFlow, DateTime startAt)
+        private static Activity BuyAndSellOneHouse(ICashFlow cashFlow, DateTime startAt, DateTime soldAt)
         {
+            var condoAppreciation = new CompoundYearlyInflation(0.05M);
+            var soldPrice = new Money(500000, startAt)
+                .GetValueAt(condoAppreciation, soldAt);
+
             return new MagicEstateBuilder(cashFlow, startAt)
-                .SetInitialCash(0000.00M)
-                .AddCondoWithFixedRateMortgageAtDownPaymentPercentage(500000, 0.10M)
+                .SetInitialCash(50000.00M)
+                .AddCondoWithFixedRateMortgageAtDownPaymentPercentage("first", 500000, 0.20M)
+                .SellHome("first", soldAt, soldPrice)
                 .Build();
         }
     }
