@@ -24,13 +24,14 @@ namespace Financier.Cli.BalanceSheets
             Console.WriteLine(startAt);
             Console.WriteLine($"Daily profit: {cashFlow.DailyProfit}");
 
+            var previousCash = 0.00M;
             for (var downPaymentRate = 0.05M; downPaymentRate <= 0.20M; downPaymentRate += 0.05M)
             {
-                PrintCashFlow(downPaymentRate, cashFlow, startAt, atTwentyYears);
+                previousCash = PrintCashFlow(downPaymentRate, cashFlow, startAt, atTwentyYears, previousCash);
             }
         }
 
-        private static void PrintCashFlow(decimal downPaymentRate, ICashFlow cashFlow, DateTime startedAt, DateTime soldAt)
+        private static decimal PrintCashFlow(decimal downPaymentRate, ICashFlow cashFlow, DateTime startedAt, DateTime soldAt, decimal previousCash)
         {
             var activity = BuyAndSellOneHouse(cashFlow, startedAt, soldAt, downPaymentRate);
             var consumerPriceIndex = new CompoundYearlyInflation(0.02M);
@@ -44,25 +45,18 @@ namespace Financier.Cli.BalanceSheets
                 .First();
 
             Console.WriteLine($"\tPurchased with {downPaymentRate * 100} per cent down at {condoPurchase.At} after 20 years");
-            Console.WriteLine($"- Cash:\t{cash}");
+            Console.WriteLine($"\t- Cash:\t\t{cash}");
+            if (previousCash != 0.00M)
+            {
+                Console.WriteLine($"\t- %+- Change:\t{((cash / previousCash) - 1).ToString("#0.00 %")}");
+            }
+
+            return cash;
         }
 
         private static ICashFlow GetCashFlow()
         {
             return new DummyCashFlow(50.00M);
-            var items = Item.FindExternalItems();
-
-            var first = items
-                .OrderBy(item => item.At)
-                .First();
-            var last = items
-                .OrderBy(item => item.At)
-                .Last();
-            var amounts = items
-                .Select(item => item.Amount)
-                .Select(amount => 0.00M - amount);
-
-            return new SimpleCashFlow(amounts, first.At, last.At);
         }
 
         // private static Activity GetActivity(ICashFlow cashFlow, DateTime startAt)
