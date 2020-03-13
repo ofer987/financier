@@ -144,12 +144,16 @@ namespace Financier.Common.Expenses.Actions
         {
             if (endAt <= startAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be later than {startAt}");
+                throw new ArgumentOutOfRangeException(nameof(endAt), endAt, $"Should be later than {startAt}");
             }
 
             var result = 0.00M;
-            result += GetCash(inflation, endAt);
-            result -= GetCash(inflation, startAt);
+            result += CashFlow.DailyProfit * endAt.Subtract(startAt).Days;
+            result += GetHistories()
+                .Where(action => action.At >= startAt)
+                .Where(action => action.At < endAt)
+                .Select(action => action.CashFlow)
+                .TotalInflatedValue(inflation, endAt);
 
             return decimal.Round(result, 2);
         }
@@ -158,7 +162,7 @@ namespace Financier.Common.Expenses.Actions
         {
             if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
