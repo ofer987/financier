@@ -7,12 +7,29 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
-    public class Activity
+    public class Activity : ICashFlow
     {
-        public DateTime InitiatedAt { get; set; }
+        public DateTime InitiatedAt { get; }
         public Money InitialCash { get; set; } = Money.Zero;
         public Money InitialDebt { get; set; } = Money.Zero;
         public ICashFlow CashFlow { get; set; }
+
+        decimal? dailyProfit = null;
+        public decimal DailyProfit
+        {
+            get
+            {
+                if (dailyProfit.HasValue)
+                {
+                    return dailyProfit.Value;
+                }
+
+                var endAt = GetHistories().Last().At;
+                dailyProfit = GetCash(Inflations.NoopInflation, endAt);
+
+                return dailyProfit.Value;
+            }
+        }
 
         private Dictionary<IProduct, IAction> purchases = new Dictionary<IProduct, IAction>();
 
@@ -155,6 +172,11 @@ namespace Financier.Common.Expenses.Actions
                 .TotalInflatedValue(inflation, at);
 
             return decimal.Round(result, 2);
+        }
+
+        public decimal GetCash(DateTime startAt, DateTime endAt)
+        {
+            return GetCash(Inflations.NoopInflation, startAt, endAt);
         }
 
         public decimal GetAssets(IInflation inflation, DateTime at)

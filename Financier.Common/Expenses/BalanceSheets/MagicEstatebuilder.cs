@@ -68,30 +68,27 @@ namespace Financier.Common.Expenses.BalanceSheets
 
             // Baseline for prices
             var initiatedAt = At;
+            var homeInflation = Inflations.CondoPriceIndex;
 
-            // Does not take into account inflation
-            Func<DateTime, decimal> downPaymentAmountFunc = (at) =>
-            {
-                return new Money(
-                    downPaymentRate * purchasePriceAtInitiation,
-                    initiatedAt
-                ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), at).Value;
-            };
-
-            var purchasedAt = HasCashAt(downPaymentAmountFunc, initiatedAt);
-            // Console.WriteLine($"Purchased at {purchasedAt} with {Result.GetCash(Inflations.NoopInflation, purchasedAt)}");
+            var purchasedAt = new CashFinder(
+                Result,
+                initiatedAt
+            ).HasAvailableCashAt(
+                downPaymentRate * purchasePriceAtInitiation,
+                homeInflation
+            );
             var downPaymentAmount = new Money(
                 downPaymentRate * purchasePriceAtInitiation,
                 initiatedAt
-            ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
+            ).GetValueAt(homeInflation, purchasedAt);
             var mortgageAmount = new Money(
                 (1 - downPaymentRate) * purchasePriceAtInitiation,
                 initiatedAt
-            ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
+            ).GetValueAt(homeInflation, purchasedAt);
             var fullAmount = new Money(
                 purchasePriceAtInitiation,
                 initiatedAt
-            ).GetValueAt(Inflations.GetInflation(InflationTypes.CompoundYearlyInflation, 0.05M), purchasedAt);
+            ).GetValueAt(homeInflation, purchasedAt);
             var mortgage = Mortgages.GetFixedRateMortgage(
                 mortgageAmount,
                 0.0319M,
@@ -152,30 +149,6 @@ namespace Financier.Common.Expenses.BalanceSheets
         public Activity Build()
         {
             return Result;
-        }
-
-        public DateTime HasCashAt(Func<DateTime, decimal> expected, DateTime startAt)
-        {
-            var inflation = Inflations.GetInflation(InflationTypes.NoopInflation);
-            for (var i = startAt; true; i = i.GetNext())
-            {
-                try
-                {
-                    if (Result.GetCash(inflation, i) >= expected(i))
-                    {
-                        return i;
-                    }
-                }
-                catch (ArgumentOutOfRangeException)
-                {
-                }
-                catch (OverflowException)
-                {
-                    // Console.WriteLine($"Crashed at {i}");
-
-                    throw;
-                }
-            }
         }
     }
 }

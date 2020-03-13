@@ -1,8 +1,8 @@
 namespace Financier.Common.Expenses
 {
-    public class DummyCashFlow : ICashFlow
+    public class DummyCashFlow : BaseCashFlow
     {
-        public decimal DailyProfit { get; }
+        public override decimal DailyProfit { get; }
 
         public DummyCashFlow(decimal dailyProfit)
         {
