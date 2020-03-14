@@ -4,18 +4,18 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
-    public class SimplePurchaseStrategy : IPurchaseStrategy
+    public class SimpleSaleStrategy : ISaleStrategy
     {
         public Money Requested { get; }
 
-        public SimplePurchaseStrategy(Money requested)
+        public SimpleSaleStrategy(Money requested)
         {
             Requested = requested;
         }
 
         public IEnumerable<Money> GetReturnedPrice()
         {
-            yield return Requested.Reverse;
+            yield return Requested;
         }
     }
 }

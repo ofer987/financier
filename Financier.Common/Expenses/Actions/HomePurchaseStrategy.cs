@@ -19,9 +19,9 @@ namespace Financier.Common.Expenses.Actions
 
         public IEnumerable<Money> GetReturnedPrice()
         {
-            yield return Requested;
+            yield return Requested.Reverse;
 
-            foreach (var fee in GetFees())
+            foreach (var fee in GetFees().Select(item => item.Reverse))
             {
                 yield return fee;
             }
