@@ -16,18 +16,18 @@ namespace Financier.Common.Expenses.BalanceSheets
             Result = new Activity(cashFlow, at);
         }
 
-        public Activity SetInitialCash(Money cash)
+        public RealEstateBuilder SetInitialCash(Money cash)
         {
             Result.InitialCash = cash;
 
-            return Result;
+            return this;
         }
 
-        public Activity SetInitialDebt(Money debt)
+        public RealEstateBuilder SetInitialDebt(Money debt)
         {
             Result.InitialDebt = debt;
 
-            return Result;
+            return this;
         }
 
         public RealEstateBuilder AddCondoWithFixedRateMortgage(DateTime purchasedAt, decimal purchasePriceAtInitiation)

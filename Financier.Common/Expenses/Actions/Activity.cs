@@ -7,19 +7,36 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
-    public class Activity
+    public class Activity : ICashFlow
     {
-        public DateTime InitiatedAt { get; set; }
+        public DateTime InitiatedAt { get; }
         public Money InitialCash { get; set; } = Money.Zero;
         public Money InitialDebt { get; set; } = Money.Zero;
         public ICashFlow CashFlow { get; set; }
+
+        decimal? dailyProfit = null;
+        public decimal DailyProfit
+        {
+            get
+            {
+                if (dailyProfit.HasValue)
+                {
+                    return dailyProfit.Value;
+                }
+
+                var endAt = GetHistories().Last().At;
+                dailyProfit = GetCash(Inflations.NoopInflation, endAt);
+
+                return dailyProfit.Value;
+            }
+        }
 
         private Dictionary<IProduct, IAction> purchases = new Dictionary<IProduct, IAction>();
 
         public Activity(DateTime initiatedAt)
         {
             CashFlow = new DummyCashFlow(0.00M);
-            InitiatedAt = InitiatedAt;
+            InitiatedAt = initiatedAt;
         }
 
         public Activity(ICashFlow cashFlow, DateTime initiatedAt)
@@ -42,6 +59,11 @@ namespace Financier.Common.Expenses.Actions
             return purchases
                 .Select(purchase => purchase.Key)
                 .SelectMany(GetHistory);
+        }
+
+        public IEnumerable<IProduct> GetOwnedProducts()
+        {
+            return GetOwnedProducts(DateTime.MaxValue);
         }
 
         public IEnumerable<IProduct> GetOwnedProducts(DateTime at)
@@ -117,25 +139,30 @@ namespace Financier.Common.Expenses.Actions
             lastAction.Next = new Sale(product, salePrice, soldAt);
         }
 
+        // Refactor me
         public decimal GetCash(IInflation inflation, DateTime startAt, DateTime endAt)
         {
-            if (endAt < startAt)
+            if (endAt <= startAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be at or later than {startAt}");
+                throw new ArgumentOutOfRangeException(nameof(endAt), endAt, $"Should be later than {startAt}");
             }
 
             var result = 0.00M;
-            result += GetCash(inflation, endAt);
-            result -= GetCash(inflation, startAt);
+            result += CashFlow.DailyProfit * endAt.Subtract(startAt).Days;
+            result += GetHistories()
+                .Where(action => action.At >= startAt)
+                .Where(action => action.At < endAt)
+                .Select(action => action.CashFlow)
+                .TotalInflatedValue(inflation, endAt);
 
             return decimal.Round(result, 2);
         }
 
         public decimal GetCash(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -148,15 +175,19 @@ namespace Financier.Common.Expenses.Actions
                 .Select(action => action.CashFlow)
                 .TotalInflatedValue(inflation, at);
 
-
             return decimal.Round(result, 2);
+        }
+
+        public decimal GetCash(DateTime startAt, DateTime endAt)
+        {
+            return GetCash(Inflations.NoopInflation, startAt, endAt);
         }
 
         public decimal GetAssets(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -169,15 +200,14 @@ namespace Financier.Common.Expenses.Actions
                 .TotalInflatedValue(inflation, at);
             result += GetValueOfOwnedProducts(inflation, at);
 
-
             return decimal.Round(result, 2);
         }
 
         public decimal GetLiabilities(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -189,9 +219,9 @@ namespace Financier.Common.Expenses.Actions
 
         public decimal GetNetWorth(IInflation inflation, DateTime at)
         {
-            if (at < InitiatedAt)
+            if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be at or later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;

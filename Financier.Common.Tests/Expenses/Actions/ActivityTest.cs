@@ -13,14 +13,15 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public Product Stand { get; private set; }
         public Product House { get; private set; }
         public Activity Subject { get; private set; }
-        public static DateTime InitiatedAt = new DateTime(2020, 1, 1);
+        public DateTime InitiatedAt { get; private set; }
 
         [SetUp]
         public void Init()
         {
-            Television = new SimpleProduct("television", new Money(40.00M, InitiatedAt));
+            Television = new SimpleProduct("television", new Money(40.00M, InitiatedAt.AddDays(10)));
             Stand = new SimpleProduct("stand", new Money(20.00M, InitiatedAt));
             House = new SimpleProduct("stand", new Money(5000.00M, InitiatedAt));
+            InitiatedAt = new DateTime(2019, 1, 1);
 
             Subject = new Activity(InitiatedAt);
         }
@@ -36,13 +37,13 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var actions = Subject.GetHistory(Television).ToList();
             Assert.That(actions[0].Product, Is.EqualTo(Television));
             Assert.That(actions[0].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[0].Price, Is.EqualTo(new Money(40.00M, new DateTime(2020, 1, 1))));
+            Assert.That(actions[0].Price, Is.EqualTo(new Money(40.00M, InitiatedAt.AddDays(10))));
             Assert.That(actions[1].Product, Is.EqualTo(Television));
             Assert.That(actions[1].Type, Is.EqualTo(Types.Sale));
             Assert.That(actions[1].Price, Is.EqualTo(new Money(50.00M, new DateTime(2020, 1, 1))));
             Assert.That(actions[2].Product, Is.EqualTo(Television));
             Assert.That(actions[2].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[2].Price, Is.EqualTo(new Money(40.00M, new DateTime(2020, 1, 1))));
+            Assert.That(actions[2].Price, Is.EqualTo(new Money(40.00M, InitiatedAt.AddDays(10))));
             Assert.That(actions[3].Product, Is.EqualTo(Television));
             Assert.That(actions[3].Type, Is.EqualTo(Types.Sale));
             Assert.That(actions[3].Price, Is.EqualTo(new Money(60.00M, new DateTime(2020, 1, 1))));
@@ -103,6 +104,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             });
         }
 
+        [Test]
         public void Test_Buy_CannotBuyBeforeInitiatedAt()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -111,6 +113,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             });
         }
 
+        [Test]
         public void Test_Sell_CannotSellBeforeInitiatedAt()
         {
             Subject.Buy(Television, InitiatedAt);
@@ -118,6 +121,36 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 Subject.Sell(Television, new Money(100.00M, InitiatedAt), InitiatedAt.AddDays(-1));
+            });
+        }
+
+        [Test]
+        public void Test_BeforeInitiatedAt_ThrowsException()
+        {
+            var inflation = Inflations.NoopInflation;
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                Subject.GetCash(inflation, InitiatedAt.AddDays(-1));
+            });
+        }
+
+        [Test]
+        public void Test_AtInitiatedAt_ThrowsException()
+        {
+            var inflation = Inflations.NoopInflation;
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                Subject.GetCash(inflation, InitiatedAt);
+            });
+        }
+
+        [Test]
+        public void Test_AfterInitiatedAt_DoesNotThrowException()
+        {
+            var inflation = Inflations.NoopInflation;
+            Assert.DoesNotThrow(() =>
+            {
+                Subject.GetCash(inflation, InitiatedAt.AddDays(1));
             });
         }
 

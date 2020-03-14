@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Cli.Deletion", "F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Web", "Financier.Web\Financier.Web.csproj", "{13DDFF90-8E57-4565-B95A-B8B6619A3326}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Cli.BalanceSheet", "Financier.Cli.BalanceSheets\Financier.Cli.BalanceSheet.csproj", "{6D6F1530-031C-4E0F-894A-AA3D55184A0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Cli.BalanceSheets", "Financier.Cli.BalanceSheets\Financier.Cli.BalanceSheets.csproj", "{6D6F1530-031C-4E0F-894A-AA3D55184A0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

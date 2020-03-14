@@ -31,5 +31,15 @@ namespace Financier.Common.Extensions
 
             return target.Subtract(beginningOfYear).Days;
         }
+
+        public static DateTime GetNext(this DateTime self)
+        {
+            return self.AddMonths(1);
+        }
+
+        public static DateTime GetPrevious(this DateTime self)
+        {
+            return self.AddMonths(-1);
+        }
     }
 }

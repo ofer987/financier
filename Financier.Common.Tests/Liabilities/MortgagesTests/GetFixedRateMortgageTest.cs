@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
@@ -23,39 +22,36 @@ namespace Financier.Common.Tests.Liabilities.MortgagesTests
             AmortisationPeriodInMonths = 300;
         }
 
-        [TestCase(0.20, 0.00)]
-        [TestCase(0.20, 40000.00)]
-        [TestCase(0.20, 80000.00)]
-        [TestCase(0.20, 81000.00)]
-        [TestCase(0.20, 81999.99)]
-        public void Test_GetsInsuredMortgage(decimal maximumInsuranceRate, decimal downPayment)
+        [TestCase(40000.00)]
+        [TestCase(80000.00)]
+        [TestCase(81000.00)]
+        [TestCase(81999.99)]
+        public void Test_GetsInsuredMortgage(decimal downPayment)
         {
             var actual = Mortgages.GetFixedRateMortgage(
                 MortgageValue,
                 InterestRate,
                 AmortisationPeriodInMonths,
                 PurchasedAt,
-                new Money(downPayment, PurchasedAt),
-                maximumInsuranceRate
+                new Money(downPayment, PurchasedAt)
             );
 
             Assert.That(actual, Is.TypeOf<InsuredMortgage>());
         }
 
-        [TestCase(0.20, 82000)]
-        [TestCase(0.20, 83000.00)]
-        [TestCase(0.20, 400000.00)]
-        [TestCase(0.10, 41000.00)]
-        public void Test_GetsFixedRateMortgage(decimal maximumInsuranceRate, decimal downPayment)
+        [TestCase(82000)]
+        [TestCase(83000.00)]
+        [TestCase(400000.00)]
+        [TestCase(82000.00)]
+        public void Test_GetsFixedRateMortgage(decimal downPayment)
         {
             var actual = Mortgages.GetFixedRateMortgage(
-                    MortgageValue,
-                    InterestRate,
-                    AmortisationPeriodInMonths,
-                    PurchasedAt,
-                    new Money(downPayment, PurchasedAt),
-                    maximumInsuranceRate
-                    );
+                MortgageValue,
+                InterestRate,
+                AmortisationPeriodInMonths,
+                PurchasedAt,
+                new Money(downPayment, PurchasedAt)
+            );
 
             Assert.That(actual, Is.TypeOf<FixedRateMortgage>());
         }

@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
+using Financier.Common.Extensions;
 using Financier.Common.Expenses.BalanceSheets;
 using Financier.Common.Models;
 
@@ -26,11 +27,13 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         [Test]
         public void Test_AddCondoWithFixedRateMortgage_ReturnsBuilder()
         {
-            var purchasedAt = new DateTime(2019, 1, 1);
+            var purchasedAt = new DateTime(2019, 1, 2);
             var purchasePrice = new Money(2000.00M, purchasedAt);
 
             Assert.That(
-                Subject.AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice),
+                Subject
+                    .SetInitialCash(purchasePrice)
+                    .AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice),
                 Is.TypeOf<RealEstateBuilder>()
             );
         }
@@ -38,10 +41,11 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         [Test]
         public void Test_AddCondoWithFixedRateMortgage_HasHomeAndMortgage()
         {
-            var purchasedAt = new DateTime(2019, 1, 1);
+            var purchasedAt = new DateTime(2019, 1, 2);
             var purchasePrice = new Money(2000.00M, purchasedAt);
 
             var balanceSheet = Subject
+                .SetInitialCash(purchasePrice)
                 .AddCondoWithFixedRateMortgage(purchasedAt, purchasePrice)
                 .Build();
 
@@ -51,17 +55,18 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             );
         }
 
-        [TestCase(2019, 1, 1, 100.00, 100.00)]
-        [TestCase(2020, 1, 1, 100.00, 105.00)]
-        [TestCase(2021, 1, 1, 100.00, 110.25)]
-        [TestCase(2021, 2, 1, 100.00, 110.25)]
-        [TestCase(2020, 1, 1, 200.00, 210.00)]
+        [TestCase(2019, 1, 2, 100.00, 100.00)]
+        [TestCase(2020, 1, 2, 100.00, 105.00)]
+        [TestCase(2021, 1, 2, 100.00, 110.25)]
+        [TestCase(2021, 2, 2, 100.00, 110.25)]
+        [TestCase(2020, 1, 2, 200.00, 210.00)]
         public void Test_AddCondoWithFixedRateMortgage_FuturePurchasePriceIsInflated(int year, int month, int day, decimal purchasePriceAtInitiation, decimal expected)
         {
             var purchasedAt = new DateTime(year, month, day);
             var purchasePrice = purchasePriceAtInitiation;
 
             var balanceSheet = Subject
+                .SetInitialCash(new Money(purchasePrice, purchasedAt))
                 .AddCondoWithFixedRateMortgage(purchasedAt, purchasePriceAtInitiation)
                 .Build();
 
