@@ -2,6 +2,8 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
+using Financier.Common.Expenses.Actions;
+
 namespace Financier.Common.Models
 {
     public abstract class Product : IProduct
@@ -29,6 +31,8 @@ namespace Financier.Common.Models
 
         public abstract IEnumerable<Money> GetValueAt(DateTime at);
         public abstract IEnumerable<Money> GetCostAt(DateTime at);
+
+        public IPurchaseStrategy GetPurchaseStrategy();
 
         public override string ToString()
         {
