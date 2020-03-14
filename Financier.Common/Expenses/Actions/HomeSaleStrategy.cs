@@ -1,34 +1,40 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+using Financier.Common.Models;
+
 namespace Financier.Common.Expenses.Actions
 {
     public class HomeSaleStrategy : ISaleStrategy
     {
-        public decimal Requested { get; }
+        public Money Requested { get; }
+        public DateTime At => Requested.At;
 
-        public HomeSaleStrategy(decimal requested)
+        public HomeSaleStrategy(Money requested)
         {
             Requested = requested;
         }
 
-        public decimal GetReturnedPrice(decimal requested)
+        public IEnumerable<Money> GetReturnedPrice()
         {
-            var result = 0.00M;
-            result += Requested;
-            result -= GetFees();
-
-            return decimal.Round(result, 2);
+            yield return Requested;
+            
+            foreach (var fee in GetFees().Select(item => item.Reverse))
+            {
+                yield return fee;
+            }
         }
 
-        public decimal GetFees()
+        public IEnumerable<Money> GetFees()
         {
-            var result = 0.00M;
-            result += GetRealtorFees();
-
-            return decimal.Round(result, 2);
+            return Enumerable.Empty<Money>()
+                .Concat(GetRealtorFees());
         }
 
-        public decimal GetRealtorFees()
+        public IEnumerable<Money> GetRealtorFees()
         {
-            return 0.05M * Requested;
+            yield return new Money(0.05M * Requested.Value, At);
         }
     }
 }

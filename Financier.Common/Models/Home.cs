@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using Financier.Common.Expenses.Actions;
 using Financier.Common.Liabilities;
 
 namespace Financier.Common.Models
@@ -22,6 +23,17 @@ namespace Financier.Common.Models
         {
             PurchasedAt = purchasedAt;
             DownPayment = downPayment;
+        }
+
+        public override IPurchaseStrategy GetPurchaseStrategy()
+        {
+            return new HomePurchaseStrategy(Price);
+        }
+
+        public override ISaleStrategy GetSaleStrategy()
+        {
+            // TODO: need to pass the sale price. This is the purchase price
+            return new HomeSaleStrategy(Price);
         }
 
         public override IEnumerable<Money> GetValueAt(DateTime at)

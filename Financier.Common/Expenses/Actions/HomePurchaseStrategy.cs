@@ -1,46 +1,52 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+using Financier.Common.Models;
+
 namespace Financier.Common.Expenses.Actions
 {
     public class HomePurchaseStrategy : IPurchaseStrategy
     {
-        public decimal Requested { get; }
+        public Money Requested { get; }
+        public DateTime At => Requested.At;
 
-        public HomePurchaseStrategy(decimal requested)
+        public HomePurchaseStrategy(Money requested)
         {
             Requested = requested;
         }
 
-        public decimal GetReturnedPrice(decimal requested)
+        public IEnumerable<Money> GetReturnedPrice()
         {
-            var result = 0.00M;
-            result += Requested;
-            result -= GetFees();
+            yield return Requested;
 
-            return decimal.Round(result, 2);
+            foreach (var fee in GetFees())
+            {
+                yield return fee;
+            }
         }
 
-        public decimal GetFees()
+        public IEnumerable<Money> GetFees()
         {
-            var result = 0.00M;
-            result += GetNotaryFees();
-            result += GetMunicipalTaxes();
-            result += GetMovingFees();
-
-            return decimal.Round(result, 2);
+            return Enumerable.Empty<Money>()
+                .Concat(GetNotaryFees())
+                .Concat(GetMunicipalTaxes())
+                .Concat(GetMovingFees());
         }
 
-        public decimal GetNotaryFees()
+        public IEnumerable<Money> GetNotaryFees()
         {
-            return 1000.00M;
+            yield return new Money(1000.00M, At);
         }
 
-        public decimal GetMunicipalTaxes()
+        public IEnumerable<Money> GetMunicipalTaxes()
         {
-            return 8500.00M;
+            yield return new Money(8500.00M, At);
         }
 
-        public decimal GetMovingFees()
+        public IEnumerable<Money> GetMovingFees()
         {
-            return 800.00M;
+            yield return new Money(800.00M, At);
         }
     }
 }
