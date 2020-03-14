@@ -87,14 +87,14 @@ namespace Financier.Common.Liabilities
             yield return GetBalance(at);
         }
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy()
+        public virtual IPurchaseStrategy GetPurchaseStrategy(Money price)
         {
-            return new SimplePurchaseStrategy(Price);
+            return new SimplePurchaseStrategy(price);
         }
 
-        public virtual ISaleStrategy GetSaleStrategy()
+        public virtual ISaleStrategy GetSaleStrategy(Money price)
         {
-            return new SimpleSaleStrategy(Price);
+            return new SimpleSaleStrategy(price);
         }
     }
 }

@@ -32,14 +32,14 @@ namespace Financier.Common.Models
         public abstract IEnumerable<Money> GetValueAt(DateTime at);
         public abstract IEnumerable<Money> GetCostAt(DateTime at);
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy()
+        public virtual IPurchaseStrategy GetPurchaseStrategy(Money price)
         {
-            return new SimplePurchaseStrategy(Price);
+            return new SimplePurchaseStrategy(price);
         }
 
-        public virtual ISaleStrategy GetSaleStrategy()
+        public virtual ISaleStrategy GetSaleStrategy(Money price)
         {
-            return new SimpleSaleStrategy(Price);
+            return new SimpleSaleStrategy(price);
         }
 
         public override string ToString()

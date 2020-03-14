@@ -25,15 +25,15 @@ namespace Financier.Common.Models
             DownPayment = downPayment;
         }
 
-        public override IPurchaseStrategy GetPurchaseStrategy()
+        public override IPurchaseStrategy GetPurchaseStrategy(Money price)
         {
-            return new HomePurchaseStrategy(Price);
+            return new HomePurchaseStrategy(price);
         }
 
-        public override ISaleStrategy GetSaleStrategy()
+        public override ISaleStrategy GetSaleStrategy(Money price)
         {
             // TODO: need to pass the sale price. This is the purchase price
-            return new HomeSaleStrategy(Price);
+            return new HomeSaleStrategy(price);
         }
 
         public override IEnumerable<Money> GetValueAt(DateTime at)

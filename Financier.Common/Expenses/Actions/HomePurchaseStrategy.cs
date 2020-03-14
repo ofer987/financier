@@ -8,6 +8,7 @@ namespace Financier.Common.Expenses.Actions
 {
     public class HomePurchaseStrategy : IPurchaseStrategy
     {
+        public static DateTime BaseDate = new DateTime(2018, 1, 1);
         public Money Requested { get; }
         public DateTime At => Requested.At;
 
@@ -36,17 +37,17 @@ namespace Financier.Common.Expenses.Actions
 
         public IEnumerable<Money> GetNotaryFees()
         {
-            yield return new Money(1000.00M, At);
+            yield return new Money(1000.00M, BaseDate);
         }
 
         public IEnumerable<Money> GetMunicipalTaxes()
         {
-            yield return new Money(8500.00M, At);
+            yield return new Money(8500.00M, BaseDate);
         }
 
         public IEnumerable<Money> GetMovingFees()
         {
-            yield return new Money(800.00M, At);
+            yield return new Money(800.00M, BaseDate);
         }
     }
 }

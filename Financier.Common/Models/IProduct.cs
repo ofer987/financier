@@ -11,7 +11,7 @@ namespace Financier.Common.Models
 
         Money Price { get; }
 
-        IPurchaseStrategy GetPurchaseStrategy();
-        ISaleStrategy GetSaleStrategy();
+        IPurchaseStrategy GetPurchaseStrategy(Money price);
+        ISaleStrategy GetSaleStrategy(Money price);
     }
 }
