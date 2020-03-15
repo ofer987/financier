@@ -16,87 +16,100 @@ namespace Financier.Common.Tests.Liabilities
             get
             {
                 yield return new TestCaseData(
-                    20000,
+                    20000.00M,
                     new[] {
-                    ValueTuple.Create(new DateTime(2019, 1, 1), 10000),
-                    ValueTuple.Create(new DateTime(2019, 2, 1), 10000)
+                        ValueTuple.Create(new DateTime(2019, 1, 1), 10000.00M),
+                        ValueTuple.Create(new DateTime(2019, 2, 1), 10000.00M)
                     },
                     new DateTime(2019, 1, 1),
                     new DateTime(2019, 12, 1),
-                    20000
-                );
-
-                yield return new TestCaseData(
-                    20000,
                     new[] {
-                    ValueTuple.Create(new DateTime(2019, 1, 1), 10000),
-                    ValueTuple.Create(new DateTime(2019, 2, 1), 20000)
-                    },
-                    new DateTime(2019, 1, 1),
-                    new DateTime(2019, 12, 1),
-                    10000
-                );
-            }
-        }
-
-        public IEnumerable GetRangeEmptyTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(
-                    20000,
-                    new DateTime(2019, 1, 1),
-                    new DateTime(2019, 12, 1),
-                    new[] {
-                    ValueTuple.Create(new DateTime(2019, 1, 1), 10000),
-                    ValueTuple.Create(new DateTime(2019, 2, 1), 20000)
+                        ValueTuple.Create(new DateTime(2019, 1, 1), 10000.00M),
+                        ValueTuple.Create(new DateTime(2019, 2, 1), 10000.00M)
                     }
                 );
 
                 yield return new TestCaseData(
-                    20000,
+                    20000.00M,
+                    new[] {
+                        ValueTuple.Create(new DateTime(2019, 1, 1), 10000.00M),
+                        ValueTuple.Create(new DateTime(2019, 2, 1), 5000.00M)
+                    },
                     new DateTime(2019, 1, 1),
                     new DateTime(2019, 12, 1),
-                    new ValueTuple<DateTime, decimal>[] {
-                    }
-                );
-
-                yield return new TestCaseData(
-                    100,
-                    new DateTime(2019, 1, 1),
-                    new DateTime(2019, 12, 1),
-                    new ValueTuple<DateTime, decimal>[] {
+                    new[] {
+                        ValueTuple.Create(new DateTime(2019, 1, 1), 10000.00M),
+                        ValueTuple.Create(new DateTime(2019, 2, 1), 5000.00M)
                     }
                 );
             }
         }
 
-        public IEnumerable GetRangeInvalidTestCases
+        public static IEnumerable GetRangeEmptyTestCases
         {
             get
             {
                 yield return new TestCaseData(
-                    100,
+                    20000.00M,
+                    new DateTime(2019, 1, 1),
+                    new DateTime(2019, 12, 1)
+                );
+
+                yield return new TestCaseData(
+                    100.00M,
+                    new DateTime(2019, 1, 1),
+                    new DateTime(2019, 12, 1)
+                );
+            }
+        }
+
+        public static IEnumerable GetRangeInvalidTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    100.00M,
                     new DateTime(2019, 2, 1),
-                    new DateTime(2019, 1, 1)
+                    new DateTime(2019, 1, 1),
+                    typeof(ArgumentOutOfRangeException)
                 );
 
                 yield return new TestCaseData(
-                    0,
+                    0.00M,
                     new DateTime(2019, 1, 1),
-                    new DateTime(2019, 2, 1)
+                    new DateTime(2019, 2, 1),
+                    typeof(ArgumentOutOfRangeException)
                 );
 
                 yield return new TestCaseData(
-                    -100,
+                    -100.00M,
                     new DateTime(2019, 1, 1),
-                    new DateTime(2019, 2, 1)
+                    new DateTime(2019, 2, 1),
+                    typeof(ArgumentOutOfRangeException)
+                );
+
+            }
+        }
+
+        public static IEnumerable AddInvalidTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    20000.00M,
+                    new DateTime(2019, 1, 1),
+                    new DateTime(2019, 12, 1),
+                    new[] {
+                        ValueTuple.Create(new DateTime(2019, 1, 1), 100000.00M),
+                        ValueTuple.Create(new DateTime(2019, 2, 1), 20001.00M)
+                    },
+                    typeof(OverPaymentException)
                 );
             }
         }
 
         [TestCaseSource(nameof(GetRangePositiveTestCases))]
-        public void Test_Add_and_GetRange(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts, IEnumerable<ValueTuple<DateTime, decimal>> expected)
+        public void Test_Add_and_GetRange(decimal total, IEnumerable<ValueTuple<DateTime, decimal>> amounts, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> expected)
         {
             Subject = new CappedPayments(total);
 
@@ -109,23 +122,28 @@ namespace Financier.Common.Tests.Liabilities
         }
 
         [TestCaseSource(nameof(GetRangeEmptyTestCases))]
-        public void Test_Add_and_GetRange_Empty(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts)
+        public void Test_Add_and_GetRange_Empty(decimal total, DateTime startAt, DateTime endAt)
+        {
+            Subject = new CappedPayments(total);
+
+            Assert.That(Subject.GetRange(startAt, endAt), Is.Empty);
+        }
+
+        [TestCaseSource(nameof(GetRangeInvalidTestCases))]
+        public void Test_Add_and_GetRange_ThrowsUp(decimal total, DateTime startAt, DateTime endAt, Type expectedExceptionType)
+        {
+            Assert.Throws(expectedExceptionType, () => new CappedPayments(total).GetRange(startAt, endAt));
+        }
+
+        [TestCaseSource(nameof(AddInvalidTestCases))]
+        public void Test_Add_ThrowsUp(decimal total, DateTime startAt, DateTime endAt, IEnumerable<ValueTuple<DateTime, decimal>> amounts, Type expectedExceptionType)
         {
             Subject = new CappedPayments(total);
 
             foreach (var amount in amounts)
             {
-                Subject.Add(amount.Item1, amount.Item2);
+                Assert.Throws(expectedExceptionType, () => Subject.Add(amount.Item1, amount.Item2));
             }
-
-            Assert.That(Subject.GetRange(startAt, endAt), Is.Empty);
-        }
-
-
-        [TestCaseSource(nameof(GetRangeInvalidTestCases))]
-        public void Test_Add_and_GetRange_ThrowsUp(decimal total, DateTime startAt, DateTime endAt)
-        {
-            Assert.That(new CappedPayments(total).GetRange(startAt, endAt), Throws.Exception);
         }
     }
 }
