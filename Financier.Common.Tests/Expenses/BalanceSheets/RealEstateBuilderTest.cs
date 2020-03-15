@@ -50,7 +50,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .Build();
 
             Assert.That(
-                balanceSheet.GetOwnedProducts(new DateTime(2019, 1, 2)).Count(),
+                balanceSheet.GetOwnedProducts(new DateTime(2019, 1, 3)).Count(),
                 Is.EqualTo(2)
             );
         }
@@ -70,9 +70,11 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .AddCondoWithFixedRateMortgage(purchasedAt, purchasePriceAtInitiation)
                 .Build();
 
-            var condo = balanceSheet.GetOwnedProducts(purchasedAt).First();
+            var condo = balanceSheet.GetOwnedProducts(purchasedAt.GetNext()).First();
             var actualAbsoluteHomePrice = condo.Price.Value;
             Assert.That(actualAbsoluteHomePrice, Is.EqualTo(expected));
         }
+
+        // TODO: verify that buying and selling a house adds and removes the mortgage correctly
     }
 }

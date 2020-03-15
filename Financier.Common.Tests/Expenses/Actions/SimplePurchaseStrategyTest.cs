@@ -14,8 +14,8 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
         }
 
-        [TestCase(2000.00, 2019, 1, 1, 2000.00)]
-        [TestCase(1000.00, 2019, 1, 2, 1000.00)]
+        [TestCase(2000.00, 2019, 1, 1, -2000.00)]
+        [TestCase(1000.00, 2019, 1, 2, -1000.00)]
         public void Test_GetReturnedPrice(decimal requestedPrice, int year, int month, int day, decimal expected)
         {
             var requested = new Money(
