@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Financier.Common.Models;
 
@@ -11,7 +12,13 @@ namespace Financier.Common.Expenses.Actions
         public override bool CanSell => false;
         public override bool IsNull => true;
         public override DateTime At => DateTime.MinValue;
-        public override Money CashFlow => Money.Zero;
+        public override IEnumerable<Money> Transactions 
+        {
+            get
+            {
+                yield return Money.Zero;
+            }
+        }
 
         public static NullAction Instance = new NullAction();
 

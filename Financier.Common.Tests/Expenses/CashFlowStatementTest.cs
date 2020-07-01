@@ -84,15 +84,14 @@ namespace Financier.Common.Tests.Expenses
             }
         }
 
-        [TestCase(2019, 1, 1, 2019, 1, 1, 0.00)]
-        [TestCase(2019, 1, 1, 2019, 1, 2, -82000 + 89.86 * 1)]
-        [TestCase(2019, 1, 1, 2019, 1, 31, -82000 + 89.86 * 30)]
-        [TestCase(2019, 1, 1, 2019, 2, 28, -82000 + 89.86 * 58)]
+        [TestCase(2019, 1, 1, 2019, 1, 2, -82000 + 89.86 * 1 - (1000.00 + 8500 + 800))]
+        [TestCase(2019, 1, 1, 2019, 1, 31, -82000 + 89.86 * 30 - (1000.00 + 8500 + 800))]
+        [TestCase(2019, 1, 1, 2019, 2, 28, -82000 + 89.86 * 58 - (1000.00 + 8500 + 800))]
         [TestCase(2019, 2, 1, 2019, 2, 28, 0 + 89.86 * 27)]
-        [TestCase(2019, 2, 1, 2020, 1, 4, 0 + 89.86 * 337 + 500000 - 318588.78)]
-        [TestCase(2019, 2, 1, 2020, 2, 3, 0 + 89.86 * 367 + 500000 - 318588.78)]
-        [TestCase(2019, 2, 1, 2020, 2, 4, 0 + 89.86 * 368 + 500000 - 318588.78 - 82000)]
-        [TestCase(2020, 2, 1, 2020, 2, 4, 89.86 * 3 - 82000)]
+        [TestCase(2019, 2, 1, 2020, 1, 4, 0 + 89.86 * 337 + 500000 - 318588.78 - (500000 * 0.05))]
+        [TestCase(2019, 2, 1, 2020, 2, 3, 0 + 89.86 * 367 + 500000 - 318588.78 - (500000 * 0.05))]
+        [TestCase(2019, 2, 1, 2020, 2, 4, 0 + 89.86 * 368 + 500000 - 318588.78 - 82000 - (1000.00 + 8500 + 800) - (500000 * 0.05))]
+        [TestCase(2020, 2, 1, 2020, 2, 4, 89.86 * 3 - 82000 - (1000.00 + 8500 + 800))]
         public void Test_GetCash(int startYear, int startMonth, int startDay,
             int endYear, int endMonth, int endDay,
             decimal expected)
@@ -101,7 +100,11 @@ namespace Financier.Common.Tests.Expenses
             var endAt = new DateTime(endYear, endMonth, endDay);
 
             Assert.That(
-                Subject.GetCash(Inflations.GetInflation(InflationTypes.NoopInflation), startAt, endAt),
+                Subject.GetCash(
+                    Inflations.NoopInflation,
+                    startAt,
+                    endAt
+                ),
                 Is.EqualTo(expected)
             );
         }

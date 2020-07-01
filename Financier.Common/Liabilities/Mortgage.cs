@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Financier.Common.Models;
+using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Liabilities
 {
@@ -84,6 +85,16 @@ namespace Financier.Common.Liabilities
         public IEnumerable<Money> GetCostAt(DateTime at)
         {
             yield return GetBalance(at);
+        }
+
+        public virtual IPurchaseStrategy GetPurchaseStrategy(Money price)
+        {
+            return new SimplePurchaseStrategy(price);
+        }
+
+        public virtual ISaleStrategy GetSaleStrategy(Money price)
+        {
+            return new SimpleSaleStrategy(price);
         }
     }
 }
