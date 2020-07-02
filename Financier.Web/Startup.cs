@@ -57,6 +57,10 @@ namespace Financier.Web
                 .AddGraphTypes(ServiceLifetime.Scoped)
                 .AddDataLoader();
 
+            // TODO: use the latest MVC routing
+            // Please see
+            // https://docs.microsoft.com/en-us/aspnet/core/migration/22-to-30
+            // https://docs.microsoft.com/en-us/aspnet/core/migration/30-to-31
             services
                 .AddMvc(options => options.EnableEndpointRouting = false);
             // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
