@@ -58,7 +58,7 @@ namespace Financier.Web
                 .AddDataLoader();
 
             services
-                .AddMvc();
+                .AddMvc(options => options.EnableEndpointRouting = false);
             // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //
             services
