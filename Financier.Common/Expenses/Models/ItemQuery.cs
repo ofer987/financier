@@ -47,10 +47,10 @@ namespace Financier.Common.Expenses.Models
                     join it in db.ItemTags on i.Id equals it.ItemId
                     join t in db.Tags on it.TagId equals t.Id
                     where true
-                        && i.At >= From
-                        && i.At < To
                         && i.Type == ItemType
                         && TagNames.Any(tagName => tagName == t.Name)
+                        && i.PostedAt >= From
+                        && i.PostedAt < To
                     select i
                 )
                 .Include(item => item.ItemTags)
@@ -68,7 +68,7 @@ namespace Financier.Common.Expenses.Models
         public IEnumerable<MonthlyItemResult> GetResultsOrderedByMonth()
         {
             var monthlyItems = GetResults().Items
-                .GroupBy(item => new DateTime(item.At.Year, item.At.Month, 1))
+                .GroupBy(item => new DateTime(item.PostedAt.Year, item.PostedAt.Month, 1))
                 .ToDictionary(items => items.Key, items => items.AsEnumerable());
 
             var startAt = new DateTime(From.Year, From.Month, 1);

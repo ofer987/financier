@@ -19,9 +19,10 @@ namespace Financier.Common.Expenses
                 items = db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .Where(item => item.PostedAt >= startAt)
+                    .Where(item => item.PostedAt < endAt)
+                    .AsEnumerable()
                     .Where(item => item.Type == itemType)
-                    .Where(item => item.At >= startAt)
-                    .Where(item => item.At < endAt)
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
