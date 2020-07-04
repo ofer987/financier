@@ -101,19 +101,23 @@ namespace Financier.Common.Expenses.Models
                     // Transfer existing ItemTags of this Tag to the other one
                     // TODO: can we use the `ItemTags` property?
                     var existingItemTags =
-                        from itemTags in db.ItemTags
-                        join tags in db.Tags on itemTags.TagId equals tags.Id
-                        where tags.Name == Name
-                        select itemTags;
+                        (
+                         from itemTags in db.ItemTags
+                         join tags in db.Tags on itemTags.TagId equals tags.Id
+                         where tags.Name == Name
+                         select itemTags
+                        ).ToArray();
                     foreach (var itemTag in existingItemTags)
                     {
                         // Can I just use existingRenamedTag?
                         var itemsThatHaveNewName =
-                            from itemTags in db.ItemTags
-                            join tags in db.Tags on itemTags.TagId equals tags.Id
-                            join items in db.Items on itemTags.ItemId equals items.Id
-                            where tags.Name == renamedTag.Name
-                            select items;
+                            (
+                             from itemTags in db.ItemTags
+                             join tags in db.Tags on itemTags.TagId equals tags.Id
+                             join items in db.Items on itemTags.ItemId equals items.Id
+                             where tags.Name == renamedTag.Name
+                             select items
+                            ).ToArray();
                         if (itemsThatHaveNewName.Select(item => item.Id).Contains(itemTag.ItemId))
                         {
                             continue;
