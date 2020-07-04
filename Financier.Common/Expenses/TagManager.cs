@@ -27,7 +27,6 @@ namespace Financier.Common.Expenses
                 foreach (var name in names)
                 {
                     var tag = db.Tags
-                        .DefaultIfEmpty(null)
                         .FirstOrDefault(t => t.Name == name);
 
                     if (tag == null)
