@@ -31,7 +31,6 @@ namespace Financier.Common.Expenses.Models
             using (var db = new Context())
             {
                 var tag = db.Tags
-                    .DefaultIfEmpty(null)
                     .FirstOrDefault(t => t.Name == name);
 
                 if (tag != null)
@@ -89,7 +88,6 @@ namespace Financier.Common.Expenses.Models
             using (var db = new Context())
             {
                 var existingRenamedTag = db.Tags
-                    .DefaultIfEmpty(null)
                     .FirstOrDefault(tag => tag.Name == renamedTag.Name);
                 if (existingRenamedTag == null)
                 {
