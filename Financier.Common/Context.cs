@@ -9,13 +9,9 @@ namespace Financier.Common
     public class Context : DbContext
     {
         public DbSet<Card> Cards { get; set; }
-
         public DbSet<Statement> Statements { get; set; }
-
         public DbSet<Item> Items { get; set; }
-
         public DbSet<Tag> Tags { get; set; }
-
         public DbSet<ItemTag> ItemTags { get; set; }
 
         public static Environments Environment = Environments.Dev;
