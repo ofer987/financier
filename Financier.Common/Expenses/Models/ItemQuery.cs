@@ -47,10 +47,13 @@ namespace Financier.Common.Expenses.Models
                     join it in db.ItemTags on i.Id equals it.ItemId
                     join t in db.Tags on it.TagId equals t.Id
                     where true
-                        && i.Type == ItemType
-                        && TagNames.Any(tagName => tagName == t.Name)
                         && i.PostedAt >= From
                         && i.PostedAt < To
+                        && (
+                            ItemType == ItemTypes.Debit && i.Amount >= 0
+                            || ItemType == ItemTypes.Credit && i.Amount < 0
+                        )
+                        && TagNames.Any(tagName => tagName == t.Name)
                     select i
                 )
                 .Include(item => item.ItemTags)

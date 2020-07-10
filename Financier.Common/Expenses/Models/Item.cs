@@ -53,10 +53,9 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.Type == ItemTypes.Credit)
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
-                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Where(item => item.Amount < 0)
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -69,10 +68,10 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.Type == ItemTypes.Debit)
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
-                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Where(item => item.Amount >= 0)
+                    .Reject(item => item.Tags.HasCreditCardPayment())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }

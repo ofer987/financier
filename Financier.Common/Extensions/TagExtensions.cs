@@ -7,7 +7,7 @@ namespace Financier.Common.Extensions
 {
     public static class TagExtensions
     {
-        public static bool HasCreditCardPayent(this IEnumerable<Tag> tags)
+        public static bool HasCreditCardPayment(this IEnumerable<Tag> tags)
         {
             return tags.Any(tag => tag.Name == "credit-card-payment");
         }
