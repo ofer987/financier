@@ -98,7 +98,7 @@ namespace Financier.Common.Expenses.Models
                         .ThenInclude(it => it.Tag)
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
-                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Reject(item => item.Tags.HasCreditCardPayment())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
