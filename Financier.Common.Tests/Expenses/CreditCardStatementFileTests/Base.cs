@@ -40,11 +40,11 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 1,'5191230192755321',20181101,20181105,13.37,EMA TEI TORONTO ON
         2,'5191230192755321',20181103,20181105,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
                     new Card
-                      {
-                          Id = Guid.NewGuid(),
-                          Number = "5191230192755321",
-                          CardType = CardTypes.Credit,
-                          Statements = new List<Statement>
+                    {
+                        Id = Guid.NewGuid(),
+                        Number = "5191230192755321",
+                        CardType = CardTypes.Credit,
+                        Statements = new List<Statement>
                           {
                               new Statement
                               {
@@ -71,7 +71,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                                   }
                               }
                           }
-                      });
+                    });
 
                 yield return new TestCaseData(
                         new DateTime(2019, 1, 1),
@@ -80,10 +80,10 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                         2,'6171230192725321',20180602,20180602,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
                         new Card
                         {
-                        Id = Guid.NewGuid(),
-                        Number = "6171230192725321",
-                        CardType = CardTypes.Credit,
-                        Statements = new List<Statement>
+                            Id = Guid.NewGuid(),
+                            Number = "6171230192725321",
+                            CardType = CardTypes.Credit,
+                            Statements = new List<Statement>
                         {
                         new Statement
                         {
@@ -162,7 +162,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     var actual = db.Statements
                         .Include(stmt => stmt.Card)
                         .Include(stmt => stmt.Items)
-                        .First();
+                        .FirstOrDefault();
 
                     Assert.That(actual.Card, Is.EqualTo(expectedCard));
                 }
@@ -188,7 +188,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     db.SaveChanges();
 
                     db.Database.EnsureCreated();
-                    db.Cards.Add(new Financier.Common.Expenses.Models.Card 
+                    db.Cards.Add(new Financier.Common.Expenses.Models.Card
                     {
                         Id = Guid.NewGuid(),
                         CardType = CardTypes.Credit,
@@ -207,7 +207,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     var actual = db.Statements
                         .Include(stmt => stmt.Card)
                         .Include(stmt => stmt.Items)
-                        .First();
+                        .FirstOrDefault();
 
                     Assert.That(actual.Card, Is.EqualTo(expectedCard));
                 }
@@ -233,90 +233,6 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementFile_SaveItem_TwoContexts_OutOfSync()
-        {
-            try
-            {
-                using (var db = new Context())
-                {
-                    db.Database.EnsureCreated();
-                    var card = new Financier.Common.Expenses.Models.Card 
-                    { 
-                        Id = Guid.NewGuid(),
-                        Number = "1234",
-                        Statements = new List<Statement>() 
-                    };
-                    db.Cards.Add(card);
-
-                    var statement = new Statement
-                    {
-                        Card = card,
-                        Id = Guid.NewGuid(),
-                        PostedAt = DateTime.Now,
-                        Items = new List<Item>()
-                    };
-                    card.Statements.Add(statement);
-                    db.Statements.Add(statement);
-                    db.SaveChanges();
-
-                    var item1 = new Item
-                    {
-                        ItemId = Guid.NewGuid().ToString(),
-                        Amount = 10.0M,
-                        Description = "Transaction 1",
-                        Statement = statement,
-                        TransactedAt = new DateTime(2018, 1, 1),
-                        PostedAt = new DateTime(2018, 1, 2),
-                        Id = Guid.NewGuid()
-                    };
-                    using (var db2 = new Context())
-                    {
-                        db2.Items.Add(item1);
-                        Assert.Throws<Microsoft.EntityFrameworkCore.DbUpdateException>(() => db2.SaveChanges());
-                    }
-
-                    var item2 = new Item
-                    {
-                        Amount = 10.0M,
-                        Description = "Transaction 2",
-                        Statement = statement,
-                        TransactedAt = new DateTime(2018, 1, 1),
-                        PostedAt = new DateTime(2018, 1, 2),
-                        ItemId = Guid.NewGuid().ToString(),
-                        Id = Guid.NewGuid()
-                    };
-                    statement.Items.Add(item2);
-
-                    db.SaveChanges();
-
-                    var newCard = new Financier.Common.Expenses.Models.Card 
-                    { 
-                        Id = Guid.NewGuid(),
-                        Number = "1235",
-                        Statements = new List<Statement>() 
-                    };
-                    db.Cards.Add(newCard);
-
-                    var newStatement = new Statement
-                    {
-                        Card = card,
-                        Id = Guid.NewGuid(),
-                        PostedAt = new DateTime(2019, 2, 1),
-                        Items = new List<Item>()
-                    };
-                    newCard.Statements.Add(newStatement);
-
-                    db.SaveChanges();
-                    Assert.IsTrue(true);
-                }
-            }
-            catch (Exception exception)
-            {
-                Assert.Fail(exception.Message);
-            }
-        }
-
-        [Test]
         public void Test_Expenses_CreditCardStatementFile_SaveCard()
         {
             try
@@ -324,11 +240,11 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Expenses.Models.Card 
-                    { 
+                    var card = new Financier.Common.Expenses.Models.Card
+                    {
                         Id = Guid.NewGuid(),
-                           Number = "1234",
-                           Statements = new List<Statement>() 
+                        Number = "1234",
+                        Statements = new List<Statement>()
                     };
                     db.Cards.Add(card);
                     db.SaveChanges();
@@ -337,9 +253,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                         var newStatement = new Statement
                         {
                             Card = card,
-                                 Id = Guid.NewGuid(),
-                                 PostedAt = new DateTime(2019, 2, 1),
-                                 Items = new List<Item>()
+                            Id = Guid.NewGuid(),
+                            PostedAt = new DateTime(2019, 2, 1),
+                            Items = new List<Item>()
                         };
                         db.Statements.Add(newStatement);
                         db.SaveChanges();
@@ -349,9 +265,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                         var newStatement = new Statement
                         {
                             Card = card,
-                                 Id = Guid.NewGuid(),
-                                 PostedAt = new DateTime(2019, 2, 2),
-                                 Items = new List<Item>()
+                            Id = Guid.NewGuid(),
+                            PostedAt = new DateTime(2019, 2, 2),
+                            Items = new List<Item>()
                         };
                         db.Statements.Add(newStatement);
                         db.SaveChanges();
@@ -372,11 +288,11 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Expenses.Models.Card 
-                    { 
+                    var card = new Financier.Common.Expenses.Models.Card
+                    {
                         Id = Guid.NewGuid(),
-                           Number = "1234",
-                           Statements = new List<Statement>() 
+                        Number = "1234",
+                        Statements = new List<Statement>()
                     };
                     db.Cards.Add(card);
                     db.SaveChanges();
@@ -384,9 +300,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     var newStatement = new Statement
                     {
                         Card = card,
-                             Id = Guid.NewGuid(),
-                             PostedAt = new DateTime(2019, 2, 1),
-                             Items = new List<Item>()
+                        Id = Guid.NewGuid(),
+                        PostedAt = new DateTime(2019, 2, 1),
+                        Items = new List<Item>()
                     };
                     db.Statements.Add(newStatement);
                     db.SaveChanges();
@@ -402,7 +318,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     };
                     record.CreateItem(newStatement.Id);
 
-                    var dbItem = db.Items.First(i => i.TheRealAmount == 10.00M);
+                    var dbItem = db.Items.FirstOrDefault(i => i.Amount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));
                 }
             }
@@ -421,11 +337,11 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
-                    var card = new Financier.Common.Expenses.Models.Card 
-                    { 
+                    var card = new Financier.Common.Expenses.Models.Card
+                    {
                         Id = Guid.NewGuid(),
-                           Number = "1234",
-                           Statements = new List<Statement>() 
+                        Number = "1234",
+                        Statements = new List<Statement>()
                     };
                     db.Cards.Add(card);
                     db.SaveChanges();
