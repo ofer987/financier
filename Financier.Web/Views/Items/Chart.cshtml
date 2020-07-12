@@ -141,7 +141,7 @@
                 amount,
                 items {
                   description,
-                  at,
+                  postedAt,
                   amount
                 }
               }
@@ -509,7 +509,7 @@
         };
 
         this.selector = selector;
-        this.data = _.orderBy(data, item => getDate(item.at), "asc");
+        this.data = _.orderBy(data, item => getDate(item.postedAt), "asc");
       }
 
       render() {
@@ -518,7 +518,7 @@
           var html = `
           <div class="item">
             <div class="date">
-              ${item.at}
+              ${item.postedAt}
             </div>
             <div class="description">
               ${item.description}
