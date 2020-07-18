@@ -21,6 +21,20 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static IEnumerable<DateTime> GetAllMonths()
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Select(item => new Tuple<int, int>(item.PostedAt.Year, item.PostedAt.Month))
+                    .Distinct()
+                    .AsEnumerable()
+                    .Select(item => new DateTime(item.Item1, item.Item2, 1))
+                    .OrderBy(postedAt => postedAt)
+                    .ToArray();
+            }
+        }
+
         public static IEnumerable<Item> GetAllBy(DateTime from, DateTime to)
         {
             using (var db = new Context())
