@@ -102,6 +102,8 @@ namespace Financier.Web
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
+            // Please note that some of these routes are deprecated
+            // TODO: Remove the deprecated routes
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -151,6 +153,7 @@ namespace Financier.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
 
+                // TODO: remove me?????
                 routes.MapRoute(
                     name: "MonthlyStatements.Get",
                     template: "MonthlyStatements/Get/year/{year}",
