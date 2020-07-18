@@ -1,0 +1,12 @@
+@model IEnumerable<System.DateTime>
+
+<p>
+  Foobar
+</p>
+
+<div>
+  @foreach (var at in Model)
+  {
+    <div class="at">@at.ToString()</div>
+  }
+</div>
