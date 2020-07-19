@@ -1,14 +1,58 @@
 @model IEnumerable<System.DateTime>
 
-<p>
-  All Items by Year-Month
-</p>
+<h1>Financier</h1>
 
 <div>
-  @foreach (var at in Model)
-  {
-    <div class="at">
-      <a href="/AllItems/Get/year/@at.Year/month/@at.Month">@at.Year-@at.Month</a>
-    </div>
-  }
+  <h2>Charts</h2>
+
+  <a href="/Items/chart">Charts</a>
+</div>
+
+<div>
+  <h2>Monthly Payments</h2>
+  <p><b>Note</b>: Does not work</p>
+
+  <a href="/expenses/my-home/get-monthly-payments">Monthly Payments</a>
+</div>
+
+<div>
+  <p>
+    All Items by Year
+  </p>
+
+  <div>
+    @foreach (var year in Model.Select(item => item.Year).Distinct())
+    {
+      <div class="year" id="@year">
+        <div>@year</div>
+        <div class="all-items">
+          <a href="/AllItems/Get/year/@year">All Items</a>
+        </div>
+        <div class="cash-flows">
+          <a href="/CashFlows/year/@year">Cash Flows</a>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<div>
+  <p>
+    All Items by Year-Month
+  </p>
+
+  <div>
+    @foreach (var at in Model)
+    {
+      <div id="@at.Year-@at.Month">
+        <div>@at.Year-@at.Month</div>
+        <div class="all-items">
+          <a href="/AllItems/Get/year/@at.Year/month/@at.Month">All Items</a>
+        </div>
+        <div class="cash-flows">
+          <a href="/CashFlows/year/@at.Year/month/@at.Month">Cash Flows</a>
+        </div>
+      </div>
+    }
+  </div>
 </div>
