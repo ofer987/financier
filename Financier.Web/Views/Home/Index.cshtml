@@ -1,12 +1,14 @@
 @model IEnumerable<System.DateTime>
 
 <p>
-  Foobar
+  All Items by Year-Month
 </p>
 
 <div>
   @foreach (var at in Model)
   {
-    <div class="at">@at.ToString()</div>
+    <div class="at">
+      <a href="/AllItems/Get/year/@at.Year/month/@at.Month">@at.Year-@at.Month</a>
+    </div>
   }
 </div>
