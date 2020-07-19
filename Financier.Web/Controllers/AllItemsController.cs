@@ -44,7 +44,7 @@ namespace Financier.Web.Controllers
             return Financier.Common.Expenses.Models.Item
                 .GetAllBy(From, To)
                 .Select(model => new ViewModels.Item(model))
-                .OrderBy(model => model.At);
+                .OrderBy(model => model.Model.PostedAt);
         }
     }
 }
