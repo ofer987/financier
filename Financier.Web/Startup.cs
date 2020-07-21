@@ -154,13 +154,6 @@ namespace Financier.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
 
-                // TODO: remove me?????
-                routes.MapRoute(
-                    name: "MonthlyStatements.Get",
-                    template: "MonthlyStatements/Get/year/{year}",
-                    defaults: new { controller = "MonthlyStatements", action = "Get" }
-                );
-
                 routes.MapRouteAnalyzer("/routes");
             });
         }
