@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GraphQL;
@@ -22,7 +23,7 @@ namespace Financier.Web
     {
         public Startup(IConfiguration configuration)
         {
-            Context.Environment = Environments.Dev;
+            Context.Environment = Financier.Common.Environments.Dev;
             Configuration = configuration;
         }
 
@@ -33,10 +34,7 @@ namespace Financier.Web
         {
             services.Configure<KestrelServerOptions>(options =>
             {
-                // NOTE this is temporary as part of the transition from 
-                // .NET Core 2.2 to 3.1
-                // TODO switch to asynchronous IO!!!
-                options.AllowSynchronousIO = true;
+                options.AllowSynchronousIO = false;
             });
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -76,7 +74,7 @@ namespace Financier.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
