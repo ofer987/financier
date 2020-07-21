@@ -34,7 +34,10 @@ namespace Financier.Web
         {
             services.Configure<KestrelServerOptions>(options =>
             {
-                options.AllowSynchronousIO = false;
+                // This needs to be enabled because GraphQL 2.4's
+                // JSON serialiser is synchronous
+                // TODO: set to false after upgrading to GraphQL 3
+                options.AllowSynchronousIO = true;
             });
             services.Configure<CookiePolicyOptions>(options =>
             {
