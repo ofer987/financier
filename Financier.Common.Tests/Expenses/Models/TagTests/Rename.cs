@@ -120,7 +120,7 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
 
             using (var db = new Context())
             {
-                Assert.That(db.Tags.DefaultIfEmpty(null).FirstOrDefault(t => t.Name == "super-fun"), Is.Not.EqualTo(null));
+                Assert.That(db.Tags.FirstOrDefault(t => t.Name == "super-fun"), Is.Not.EqualTo(null));
             }
         }
 

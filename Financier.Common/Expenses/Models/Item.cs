@@ -21,6 +21,20 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static IEnumerable<DateTime> GetAllMonths()
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Select(item => new Tuple<int, int>(item.PostedAt.Year, item.PostedAt.Month))
+                    .Distinct()
+                    .AsEnumerable()
+                    .Select(item => new DateTime(item.Item1, item.Item2, 1))
+                    .OrderBy(postedAt => postedAt)
+                    .ToArray();
+            }
+        }
+
         public static IEnumerable<Item> GetAllBy(DateTime from, DateTime to)
         {
             using (var db = new Context())
@@ -28,8 +42,8 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.At >= from)
-                    .Where(item => item.At < to)
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
                     .ToArray();
             }
         }
@@ -41,7 +55,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                     .Reject(item => item.ItemTags.Any())
-                    .OrderBy(item => item.At)
+                    .OrderBy(item => item.PostedAt)
                     .ToArray();
             }
         }
@@ -53,10 +67,9 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.Type == ItemTypes.Credit)
-                    .Where(item => item.At >= from)
-                    .Where(item => item.At < to)
-                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    .Where(item => item.Amount < 0)
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -69,10 +82,10 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.Type == ItemTypes.Debit)
-                    .Where(item => item.At >= from)
-                    .Where(item => item.At < to)
-                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    .Where(item => item.Amount >= 0)
+                    .Reject(item => item.Tags.HasCreditCardPayment())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -97,9 +110,9 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.At >= from)
-                    .Where(item => item.At < to)
-                    // .Reject(item => item.Tags.HasCreditCardPayent())
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    .Reject(item => item.Tags.HasCreditCardPayment())
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -194,9 +207,6 @@ namespace Financier.Common.Expenses.Models
 
         [Required]
         public DateTime PostedAt { get; set; }
-
-        // TODO: maybe change to TransactedAt because that is when the transaction took place???
-        public DateTime At => PostedAt;
 
         public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 

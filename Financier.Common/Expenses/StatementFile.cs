@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +74,7 @@ namespace Financier.Common.Expenses
         public T[] GetRecords()
         {
             using (var reader = new StreamReader(Stream))
-            using (var csv = new CsvReader(reader))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 // Do nothing if record is faulty
                 csv.Configuration.BadDataFound = (context) =>

@@ -57,7 +57,7 @@ namespace Financier.Web.ViewModels
         {
             get
             {
-                return Model.At.ToString("dd MMMM yyyy");
+                return Model.PostedAt.ToString("dd MMMM yyyy");
             }
         }
 

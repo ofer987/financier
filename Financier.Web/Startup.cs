@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GraphQL;
@@ -9,7 +11,6 @@ using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
-using Financier.Web.GraphQL.Expenses;
 using Financier.Web.GraphQL.Liabilities;
 using Financier.Web.GraphQL.Tags;
 using Financier.Web.GraphQL.CashFlows;
@@ -22,7 +23,7 @@ namespace Financier.Web
     {
         public Startup(IConfiguration configuration)
         {
-            Context.Environment = Environments.Dev;
+            Context.Environment = Financier.Common.Environments.Dev;
             Configuration = configuration;
         }
 
@@ -31,6 +32,13 @@ namespace Financier.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                // This needs to be enabled because GraphQL 2.4's
+                // JSON serialiser is synchronous
+                // TODO: set to false after upgrading to GraphQL 3
+                options.AllowSynchronousIO = true;
+            });
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -44,7 +52,6 @@ namespace Financier.Web
             services.AddScoped<TagSchema>();
             services.AddScoped<ItemQuerySchema>();
             services.AddScoped<FixedRateMortgageSchema>();
-            services.AddScoped<BalanceSheetSchema>();
 
             // Add GraphQL
             services
@@ -57,8 +64,12 @@ namespace Financier.Web
                 .AddGraphTypes(ServiceLifetime.Scoped)
                 .AddDataLoader();
 
+            // TODO: use the latest MVC routing
+            // Please see
+            // https://docs.microsoft.com/en-us/aspnet/core/migration/22-to-30
+            // https://docs.microsoft.com/en-us/aspnet/core/migration/30-to-31
             services
-                .AddMvc();
+                .AddMvc(options => options.EnableEndpointRouting = false);
             // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //
             services
@@ -66,7 +77,7 @@ namespace Financier.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -88,13 +99,20 @@ namespace Financier.Web
             app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
             app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
-            app.UseGraphQL<BalanceSheetSchema>("/graphql/balance-sheet");
 
             // app.UseWebSockets();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
+            // Please note that some of these routes are deprecated
+            // TODO: Remove the deprecated routes
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "Home",
+                    template: string.Empty,
+                    defaults: new { controller = "Home", action = "Index" }
+                );
+
                 routes.MapAreaRoute(
                     name: "Expenses/MyHome#GetMonthlyPayments",
                     areaName: "Expenses",
@@ -135,12 +153,6 @@ namespace Financier.Web
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapRoute(
-                    name: "MonthlyStatements.Get",
-                    template: "MonthlyStatements/Get/year/{year}",
-                    defaults: new { controller = "MonthlyStatements", action = "Get" }
-                );
 
                 routes.MapRouteAnalyzer("/routes");
             });

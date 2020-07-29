@@ -27,7 +27,6 @@ namespace Financier.Common.Expenses
                 foreach (var name in names)
                 {
                     var tag = db.Tags
-                        .DefaultIfEmpty(null)
                         .FirstOrDefault(t => t.Name == name);
 
                     if (tag == null)
@@ -155,7 +154,7 @@ namespace Financier.Common.Expenses
                         && items.Id != Item.Id
                         // but same description
                         && items.Description == Item.Description
-                     orderby items.At descending
+                     orderby items.PostedAt descending
                      select items);
 
                 if (!itemsWithSameDescription.Any())

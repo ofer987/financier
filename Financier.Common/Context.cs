@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 using Financier.Common.Expenses.Models;
 
@@ -10,16 +8,10 @@ namespace Financier.Common
 
     public class Context : DbContext
     {
-        public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory(new ILoggerProvider[] { new ConsoleLoggerProvider((_, __) => true, true )});
-
         public DbSet<Card> Cards { get; set; }
-
         public DbSet<Statement> Statements { get; set; }
-
         public DbSet<Item> Items { get; set; }
-
         public DbSet<Tag> Tags { get; set; }
-
         public DbSet<ItemTag> ItemTags { get; set; }
 
         public static Environments Environment = Environments.Dev;
@@ -102,10 +94,6 @@ namespace Financier.Common
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder
-                    .UseLoggerFactory(MyLoggerFactory)
-                    .EnableSensitiveDataLogging();
-
                 switch (Environment)
                 {
                     case Environments.Dev:

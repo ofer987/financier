@@ -75,7 +75,7 @@ namespace Financier.Common.Tests.Expenses
 
                         var julyStatement = ModelFactories.SavingsCard.July.GetStatement();
                         julyStatement.Items.AddRange(new[] {
-                                ModelFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
+                            ModelFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
                             ModelFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
                             ModelFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
                             ModelFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag } ),

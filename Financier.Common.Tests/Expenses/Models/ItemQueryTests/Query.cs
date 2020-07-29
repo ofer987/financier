@@ -69,18 +69,6 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             new[] {
                 ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
                 ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
-                ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
-            },
-            2019,
-            6,
-            2019,
-            7
-        )]
-        [TestCase(
-            new[] { "salary" },
-            new[] {
-                ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
-                ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
                 ModelFactories.SavingsCard.July.Items.DanSalaryItemId,
                 ModelFactories.SavingsCard.July.Items.ChildCareBenefitItemId,
                 ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
@@ -89,6 +77,18 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             6,
             2019,
             8
+        )]
+        [TestCase(
+            new[] { "salary" },
+            new[] {
+                ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
+                ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
+                ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
+            },
+            2019,
+            6,
+            2019,
+            7
         )]
         [TestCase(
             new[] { "internal" },
