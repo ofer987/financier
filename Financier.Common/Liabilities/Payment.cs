@@ -5,8 +5,7 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Liabilities
 {
-    // TODO: Rename to Payment
-    public class MonthlyPayment
+    public class Payment
     {
         public Money Amount => Interest + Principal;
         public Money Interest { get; private set; }
@@ -16,7 +15,7 @@ namespace Financier.Common.Liabilities
 
         private IMortgage Mortgage { get; }
 
-        public MonthlyPayment(IMortgage mortgage, DateTime at, decimal previousBalance, decimal interest, decimal principal)
+        public Payment(IMortgage mortgage, DateTime at, decimal previousBalance, decimal interest, decimal principal)
         {
             Mortgage = mortgage;
             At = at;
@@ -26,15 +25,15 @@ namespace Financier.Common.Liabilities
             Balance = new Money(previousBalance - Principal, At);
         }
 
-        private MonthlyPayment()
+        private Payment()
         {
         }
 
         // TODO: write tests against this
-        public MonthlyPayment GetValueAt(IInflation inflation, DateTime inflatedAt)
+        public Payment GetValueAt(IInflation inflation, DateTime inflatedAt)
         {
             // TODO: how should new MonthlyPayment objects be created?
-            return new MonthlyPayment
+            return new Payment
             {
                 At = At,
                 Principal = Principal.GetValueAt(inflation, inflatedAt),

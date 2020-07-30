@@ -5,9 +5,9 @@ using Financier.Common.Liabilities;
 
 namespace Financier.Web.GraphQL.Liabilities
 {
-    public class MonthlyPaymentType : ObjectGraphType<MonthlyPayment>
+    public class PaymentType : ObjectGraphType<Payment>
     {
-        public MonthlyPaymentType(IDataLoaderContextAccessor _accessor)
+        public PaymentType(IDataLoaderContextAccessor _accessor)
         {
             Field("amount", t => t.Amount.Value, nullable: false, type: typeof(DecimalGraphType));
             Field("interest", t => t.Interest.Value, nullable: false, type: typeof(DecimalGraphType));

@@ -22,8 +22,8 @@ namespace Financier.Common.Liabilities
         double EffectiveAnnualInterestRate { get; }
 
         Money GetBalance(DateTime at);
-        IEnumerable<MonthlyPayment> GetMonthlyPayments();
-        IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt);
+        IEnumerable<Payment> GetMonthlyPayments();
+        IEnumerable<Payment> GetMonthlyPayments(DateTime endAt);
         IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day);
 
         bool IsMonthlyPayment(DateTime at);

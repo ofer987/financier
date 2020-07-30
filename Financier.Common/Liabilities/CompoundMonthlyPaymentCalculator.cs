@@ -6,19 +6,19 @@ namespace Financier.Common.Liabilities
 {
     public class MonthlyPaymentCalculator : IMonthlyPaymentCalculator
     {
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments(IMortgage mortgage)
+        public IEnumerable<Payment> GetMonthlyPayments(IMortgage mortgage)
         {
             return GetMonthlyPayments(mortgage, DateTime.MaxValue);
         }
 
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments(IMortgage mortgage, DateTime endAt)
+        public IEnumerable<Payment> GetMonthlyPayments(IMortgage mortgage, DateTime endAt)
         {
             if (endAt < mortgage.InitiatedAt)
             {
                 throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be at or later than {mortgage.InitiatedAt}");
             }
 
-            yield return new MonthlyPayment(mortgage, mortgage.InitiatedAt, mortgage.InitialValue, 0, 0);
+            yield return new Payment(mortgage, mortgage.InitiatedAt, mortgage.InitialValue, 0, 0);
 
             var monthlyPayment = Convert.ToDecimal(mortgage.MonthlyPayment);
             decimal balance = mortgage.InitialValue;
@@ -36,7 +36,7 @@ namespace Financier.Common.Liabilities
                         ? balance
                         : principalPayment;
 
-                    yield return new MonthlyPayment(mortgage, i, balance, interestPayment, principalPayment);
+                    yield return new Payment(mortgage, i, balance, interestPayment, principalPayment);
                     balance -= principalPayment;
                 }
 
@@ -53,7 +53,7 @@ namespace Financier.Common.Liabilities
                         ? balance
                         : extraPayment;
 
-                    yield return new MonthlyPayment(mortgage, i, balance, 0, extraPayment);
+                    yield return new Payment(mortgage, i, balance, 0, extraPayment);
                     balance -= extraPayment;
                 }
             }
