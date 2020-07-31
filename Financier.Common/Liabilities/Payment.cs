@@ -22,7 +22,7 @@ namespace Financier.Common.Liabilities
             Interest = new Money(interest, At);
             Principal = new Money(principal, At);
 
-            Balance = new Money(previousBalance - Principal, At);
+            Balance = new Money(previousBalance - Principal.Value, At);
         }
 
         private Payment()
