@@ -22,6 +22,7 @@ namespace Financier.Common.Tests.Expenses
         {
             var initiatedAt = new DateTime(2019, 1, 1);
             var downpayment = 82000.00M;
+            var downpaymentMoney = new Money(82000.00M, initiatedAt);
             var mortgageAmount = 328000.00M;
             var mortgageAmountMoney = new Money(mortgageAmount, initiatedAt);
             var preferredInterestRate = 0.0319M;
@@ -43,8 +44,8 @@ namespace Financier.Common.Tests.Expenses
                 FirstHome = new Home(
                     "first home",
                     purchasedAt,
-                    new Money(downpayment + mortgageAmountMoney, purchasedAt),
-                    new Money(downpayment, purchasedAt),
+                    new Money(downpaymentMoney + mortgageAmountMoney, purchasedAt),
+                    new Money(downpaymentMoney, purchasedAt),
                     mortgage
                 );
 
@@ -75,8 +76,8 @@ namespace Financier.Common.Tests.Expenses
                 SecondHome = new Home(
                     "second home",
                     purchasedAt,
-                    new Money(downpayment + mortgageAmountMoney, purchasedAt),
-                    new Money(downpayment, purchasedAt),
+                    new Money(downpaymentMoney + mortgageAmountMoney, purchasedAt),
+                    new Money(downpaymentMoney, purchasedAt),
                     mortgage
                 );
                 Subject.Buy(SecondHome, purchasedAt);

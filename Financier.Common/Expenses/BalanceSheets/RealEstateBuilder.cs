@@ -35,7 +35,16 @@ namespace Financier.Common.Expenses.BalanceSheets
             return AddHomeWithFixedRateMortgage(
                 purchasedAt,
                 purchasePriceAtInitiation,
-                new CompoundYearlyInflation(0.05M)
+                Inflations.CondoPriceIndex
+            );
+        }
+
+        public RealEstateBuilder AddCondoWithFixedRateMortgage(DateTime purchasedAt, Money purchasePrice)
+        {
+            return AddHomeWithFixedRateMortgage(
+                purchasedAt,
+                purchasePrice,
+                Inflations.CondoPriceIndex
             );
         }
 
@@ -44,7 +53,16 @@ namespace Financier.Common.Expenses.BalanceSheets
             return AddHomeWithFixedRateMortgage(
                 purchasedAt,
                 purchasePriceAtInitiation,
-                new CompoundYearlyInflation(0.08M)
+                Inflations.TownHousePriceIndex
+            );
+        }
+
+        public RealEstateBuilder AddCondoTownhouseWithFixedRateMortgage(DateTime purchasedAt, Money purchasePrice)
+        {
+            return AddHomeWithFixedRateMortgage(
+                purchasedAt,
+                purchasePrice,
+                Inflations.TownHousePriceIndex
             );
         }
 
@@ -53,7 +71,16 @@ namespace Financier.Common.Expenses.BalanceSheets
             return AddHomeWithFixedRateMortgage(
                 purchasedAt,
                 purchasePriceAtInitiation,
-                new CompoundYearlyInflation(0.10M)
+                Inflations.FreeHoldPriceIndex
+            );
+        }
+
+        public RealEstateBuilder AddFreeholdWithFixedRateMortgage(DateTime purchasedAt, Money purchasePrice)
+        {
+            return AddHomeWithFixedRateMortgage(
+                purchasedAt,
+                purchasePrice,
+                Inflations.FreeHoldPriceIndex
             );
         }
 

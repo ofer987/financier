@@ -4,6 +4,7 @@ using System.Linq;
 
 using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Liabilities
 {
@@ -20,7 +21,20 @@ namespace Financier.Common.Liabilities
         private Money BaseValue { get; }
         public virtual Money InitialValue => BaseValue;
 
-        public virtual DateTime InitiatedAt { get; }
+        private DateTime initiatedAt;
+        public virtual DateTime InitiatedAt
+        {
+            get
+            {
+                return initiatedAt;
+            }
+
+            set
+            {
+                initiatedAt = value.GetDate();
+            }
+        }
+
         public virtual int AmortisationPeriodInMonths { get; }
         public virtual decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;

@@ -166,13 +166,18 @@ namespace Financier.Common.Expenses.Actions
             }
 
             var result = 0.00M;
-            result += InitialCash.GetValueAt(inflation, at);
-            result -= InitialDebt.GetValueAt(inflation, at);
+            result += InitialCash.GetValueAt(inflation, at).Value;
+            result -= InitialDebt.GetValueAt(inflation, at).Value;
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
             result += GetHistories()
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
-                .SelectMany(action => action.Transactions.Select(transaction => transaction.GetValueAt(inflation, action.At).Value))
+                .SelectMany(action => action.Transactions
+                    // TODO: should we really convert using today's
+                    // inflation when clearly we are not doing the same when
+                    // calculating the DailyProfit one line above
+                    .Select(transaction => transaction.GetValueAt(inflation, action.At).Value
+                    ))
                 .Sum();
 
             return decimal.Round(result, 2);
@@ -191,7 +196,7 @@ namespace Financier.Common.Expenses.Actions
             }
 
             var result = 0.00M;
-            result += InitialCash.GetValueAt(inflation, at);
+            result += InitialCash.GetValueAt(inflation, at).Value;
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
             result += GetHistories()
                 .Where(action => action.At >= InitiatedAt)

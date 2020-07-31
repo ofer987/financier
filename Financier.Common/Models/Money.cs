@@ -1,14 +1,16 @@
 using System;
 
+using Financier.Common.Extensions;
+
 namespace Financier.Common.Models
 {
     public class Money
     {
         public static Money operator +(Money source, Money target)
         {
-            if (source.At != target.At)
+            if (!source.At.EqualsDate(target.At))
             {
-                throw new InvalidOperationException("Cannot decrement two Money amounts of different timestamps");
+                throw new InvalidOperationException($"Cannot decrement two Money amounts of different timestamps ({source.At}) and ({target.At})");
             }
 
             return new Money(source.Value + target.Value, source.At);
@@ -16,9 +18,9 @@ namespace Financier.Common.Models
 
         public static Money operator -(Money source, Money target)
         {
-            if (source.At != target.At)
+            if (!source.At.EqualsDate(target.At))
             {
-                throw new InvalidOperationException("Cannot decrement two Money amounts of different timestamps");
+                throw new InvalidOperationException($"Cannot decrement two Money amounts of different timestamps ({source.At}) and ({target.At})");
             }
 
             return new Money(source.Value - target.Value, source.At);
@@ -28,6 +30,8 @@ namespace Financier.Common.Models
         {
             return money.Value;
         }
+
+        public static implicit operator Money(decimal val) => new Money(val, DateTime.Now);
 
         public static Money Zero = new Money(0.00M, DateTime.MinValue);
 
@@ -51,7 +55,7 @@ namespace Financier.Common.Models
         public Money(decimal val, DateTime at)
         {
             Value = val;
-            At = at;
+            At = at.GetDate();
         }
 
         public Money GetValueAt(IInflation inflation, DateTime targetAt)
@@ -72,7 +76,7 @@ namespace Financier.Common.Models
                 return false;
             }
 
-            if (Value != other.Value || At != other.At)
+            if (Value != other.Value || !At.EqualsDate(other.At))
             {
                 return false;
             }

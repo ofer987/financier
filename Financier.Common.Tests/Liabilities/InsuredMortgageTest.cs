@@ -42,5 +42,24 @@ namespace Financier.Common.Tests.Liabilities
                 Is.EqualTo(expected).Within(15.00M).Percent
             );
         }
+
+        [TestCase(2020, 1, 31, 2020, 1, 28)]
+        [TestCase(2020, 1, 28, 2020, 1, 28)]
+        [TestCase(2020, 2, 28, 2020, 2, 28)]
+        [TestCase(2019, 1, 29, 2019, 1, 28)]
+        [TestCase(2020, 12, 31, 2020, 12, 28)]
+        [TestCase(2010, 12, 31, 2010, 12, 28)]
+        public void Test_Constructor(int year, int month, int day, int expectedYear, int expectedMonth, int expectedDay)
+        {
+            var date = new DateTime(year, month, day);
+            var money = new Money(100.00M, date);
+
+            var baseMortgage = new FixedRateMortgage(money, 0.0314M, 300, date);
+            var mortgage = new InsuredMortgage(baseMortgage, 20.00M);
+
+            Assert.That(mortgage.InitiatedAt.Year, Is.EqualTo(expectedYear));
+            Assert.That(mortgage.InitiatedAt.Month, Is.EqualTo(expectedMonth));
+            Assert.That(mortgage.InitiatedAt.Day, Is.EqualTo(expectedDay));
+        }
     }
 }
