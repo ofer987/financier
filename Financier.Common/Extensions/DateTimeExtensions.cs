@@ -10,7 +10,7 @@ namespace Financier.Common.Extensions
             {
                 // Target is in the future
                 var i = 0;
-                for (; datum.AddMonths(i) < target; i += 1);
+                for (; datum.AddMonths(i) < target; i += 1) ;
 
                 return i;
             }
@@ -19,7 +19,7 @@ namespace Financier.Common.Extensions
                 // Target is in the past
                 // Return 0 if target is the exact same date
                 var i = 0;
-                for (; target.AddMonths(i) < datum; i += 1);
+                for (; target.AddMonths(i) < datum; i += 1) ;
 
                 return 0 - i;
             }
