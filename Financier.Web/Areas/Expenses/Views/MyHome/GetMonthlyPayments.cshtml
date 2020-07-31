@@ -345,7 +345,7 @@
       var request = (name, inflationType, render) => {
         var client = new Apollo.lib.ApolloClient({
           networkInterface: Apollo.lib.createNetworkInterface({
-            uri: '/graphql/home',
+            uri: '/graphql/payments',
             transportBatching: true,
           }),
           connectToDevTools: true,
@@ -355,14 +355,11 @@
           .query({
             query: Apollo.gql`
               query(
-                $initialCash: Decimal!,
-                $initialDebt: Decimal!,
                 $purchasedAt: Date!,
-                $name: String!,
-                $downPayment: Decimal!,
-                $mortgageAmount: Decimal!,
+                $downPayment: Decimal,
+                $price: Decimal!,
                 $interestRate: Decimal!,
-                $amortizationPeriodInMonths: Int!
+                $amortizationPeriodInMonths: Int
               ) {
                 ${name}(
                   initialCash: $initialCash,
