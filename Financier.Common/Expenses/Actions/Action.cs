@@ -9,8 +9,8 @@ namespace Financier.Common.Expenses.Actions
     {
         public Types Type { get; }
         public IProduct Product { get; }
-        public abstract IEnumerable<Money> Transactions { get; }
-        public Money Price { get; } = Money.Zero;
+        public abstract IEnumerable<decimal> Transactions { get; }
+        public decimal Price { get; }
         public virtual DateTime At { get; }
 
         public abstract bool IsSold { get; }
@@ -33,7 +33,7 @@ namespace Financier.Common.Expenses.Actions
             }
         }
 
-        protected Action(Types type, IProduct product, Money price, DateTime at)
+        protected Action(Types type, IProduct product, decimal price, DateTime at)
         {
             Type = type;
             Product = product;

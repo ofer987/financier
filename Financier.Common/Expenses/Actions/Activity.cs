@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Financier.Common.Extensions;
 using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
@@ -10,8 +9,8 @@ namespace Financier.Common.Expenses.Actions
     public class Activity : ICashFlow
     {
         public DateTime InitiatedAt { get; }
-        public Money InitialCash { get; set; } = Money.Zero;
-        public Money InitialDebt { get; set; } = Money.Zero;
+        public decimal InitialCash { get; set; }
+        public decimal InitialDebt { get; set; }
         public ICashFlow CashFlow { get; set; }
 
         decimal? dailyProfit = null;
@@ -45,7 +44,7 @@ namespace Financier.Common.Expenses.Actions
             InitiatedAt = initiatedAt;
         }
 
-        public Activity(Money cash, Money debt, ICashFlow cashFlow, DateTime initiatedAt)
+        public Activity(decimal cash, decimal debt, ICashFlow cashFlow, DateTime initiatedAt)
         {
             InitiatedAt = initiatedAt;
             InitialCash = cash;
@@ -123,7 +122,7 @@ namespace Financier.Common.Expenses.Actions
             lastAction.Next = new Purchase(product, purchasedAt);
         }
 
-        public void Sell(IProduct product, Money salePrice, DateTime soldAt)
+        public void Sell(IProduct product, decimal salePrice, DateTime soldAt)
         {
             if (soldAt < InitiatedAt)
             {
@@ -140,7 +139,7 @@ namespace Financier.Common.Expenses.Actions
         }
 
         // Refactor me
-        public decimal GetCash(IInflation inflation, DateTime startAt, DateTime endAt)
+        public decimal GetCash(DateTime startAt, DateTime endAt)
         {
             if (endAt <= startAt)
             {
@@ -152,7 +151,7 @@ namespace Financier.Common.Expenses.Actions
             result += GetHistories()
                 .Where(action => action.At >= startAt)
                 .Where(action => action.At < endAt)
-                .SelectMany(action => action.Transactions.Select(transaction => transaction.GetValueAt(inflation, action.At).Value))
+                .SelectMany(action => action.Transactions)
                 .Sum();
 
             return decimal.Round(result, 2);
@@ -166,26 +165,16 @@ namespace Financier.Common.Expenses.Actions
             }
 
             var result = 0.00M;
-            result += InitialCash.GetValueAt(inflation, at).Value;
-            result -= InitialDebt.GetValueAt(inflation, at).Value;
+            result += InitialCash;
+            result -= InitialDebt;
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
             result += GetHistories()
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
-                .SelectMany(action => action.Transactions
-                    // TODO: should we really convert using today's
-                    // inflation when clearly we are not doing the same when
-                    // calculating the DailyProfit one line above
-                    .Select(transaction => transaction.GetValueAt(inflation, action.At).Value
-                    ))
+                .SelectMany(action => action.Transactions)
                 .Sum();
 
             return decimal.Round(result, 2);
-        }
-
-        public decimal GetCash(DateTime startAt, DateTime endAt)
-        {
-            return GetCash(Inflations.NoopInflation, startAt, endAt);
         }
 
         public decimal GetAssets(IInflation inflation, DateTime at)
@@ -196,12 +185,12 @@ namespace Financier.Common.Expenses.Actions
             }
 
             var result = 0.00M;
-            result += InitialCash.GetValueAt(inflation, at).Value;
+            result += InitialCash;
             result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
             result += GetHistories()
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
-                .SelectMany(action => action.Transactions.Select(transaction => transaction.GetValueAt(inflation, action.At).Value))
+                .SelectMany(action => action.Transactions)
                 .Sum();
             result += GetValueOfOwnedProducts(inflation, at);
 
@@ -216,7 +205,7 @@ namespace Financier.Common.Expenses.Actions
             }
 
             var result = 0.00M;
-            result += InitialDebt.GetValueAt(inflation, at).Value;
+            result += InitialDebt;
             result += GetCostOfOwnedProducts(inflation, at);
 
             return decimal.Round(result, 2);
@@ -240,14 +229,14 @@ namespace Financier.Common.Expenses.Actions
         {
             return GetOwnedProducts(at)
                 .SelectMany(product => product.GetValueAt(at))
-                .TotalInflatedValue(inflation, at);
+                .Sum();
         }
 
         public decimal GetCostOfOwnedProducts(IInflation inflation, DateTime at)
         {
             return GetOwnedProducts(at)
                 .SelectMany(product => product.GetCostAt(at))
-                .TotalInflatedValue(inflation, at);
+                .Sum();
         }
     }
 }

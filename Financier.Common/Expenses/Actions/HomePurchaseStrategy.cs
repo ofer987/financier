@@ -2,52 +2,50 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Financier.Common.Models;
-
 namespace Financier.Common.Expenses.Actions
 {
     public class HomePurchaseStrategy : IPurchaseStrategy
     {
-        public static DateTime BaseDate = new DateTime(2018, 1, 1);
-        public Money Requested { get; }
-        public DateTime At => Requested.At;
+        public decimal PurchasePrice { get; }
+        public DateTime PurchasedAt { get; }
 
-        public HomePurchaseStrategy(Money requested)
+        public HomePurchaseStrategy(decimal purchasePrice, DateTime purchasedAt)
         {
-            Requested = requested;
+            PurchasePrice = purchasePrice;
+            PurchasedAt = purchasedAt;
         }
 
-        public IEnumerable<Money> GetReturnedPrice()
+        public IEnumerable<decimal> GetReturnedPrice()
         {
-            yield return Requested.Reverse;
+            yield return 0.00M - PurchasePrice;
 
-            foreach (var fee in GetFees().Select(item => item.Reverse))
+            foreach (var fee in GetFees().Select(item => 0.00M - item))
             {
                 yield return fee;
             }
         }
 
-        public IEnumerable<Money> GetFees()
+        public IEnumerable<decimal> GetFees()
         {
-            return Enumerable.Empty<Money>()
+            return Enumerable.Empty<decimal>()
                 .Concat(GetNotaryFees())
                 .Concat(GetMunicipalTaxes())
                 .Concat(GetMovingFees());
         }
 
-        public IEnumerable<Money> GetNotaryFees()
+        public IEnumerable<decimal> GetNotaryFees()
         {
-            yield return new Money(1000.00M, BaseDate);
+            yield return 1000.00M;
         }
 
-        public IEnumerable<Money> GetMunicipalTaxes()
+        public IEnumerable<decimal> GetMunicipalTaxes()
         {
-            yield return new Money(8500.00M, BaseDate);
+            yield return 8500.00M;
         }
 
-        public IEnumerable<Money> GetMovingFees()
+        public IEnumerable<decimal> GetMovingFees()
         {
-            yield return new Money(800.00M, BaseDate);
+            yield return 800.00M;
         }
     }
 }

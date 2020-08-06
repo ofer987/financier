@@ -9,7 +9,7 @@ namespace Financier.Common.Liabilities
     {
         IMonthlyPaymentCalculator Calculator { get; }
 
-        Money InitialValue { get; }
+        decimal InitialValue { get; }
         double MonthlyPayment { get; }
 
         DateTime InitiatedAt { get; }
@@ -21,7 +21,7 @@ namespace Financier.Common.Liabilities
         decimal PeriodicAnnualInterestRate { get; }
         double EffectiveAnnualInterestRate { get; }
 
-        Money GetBalance(DateTime at);
+        decimal GetBalance(DateTime at);
         IEnumerable<Payment> GetMonthlyPayments();
         IEnumerable<Payment> GetMonthlyPayments(DateTime endAt);
         IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day);

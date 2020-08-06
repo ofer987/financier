@@ -19,9 +19,9 @@ namespace Financier.Common.Models
         public Guid Id { get; }
         public string Name { get; }
 
-        public Money Price { get; }
+        public decimal Price { get; }
 
-        protected Product(string name, Money price)
+        protected Product(string name, decimal price)
         {
             Id = Guid.NewGuid();
             Name = name;
@@ -29,15 +29,15 @@ namespace Financier.Common.Models
             Price = price;
         }
 
-        public abstract IEnumerable<Money> GetValueAt(DateTime at);
-        public abstract IEnumerable<Money> GetCostAt(DateTime at);
+        public abstract IEnumerable<decimal> GetValueAt(DateTime at);
+        public abstract IEnumerable<decimal> GetCostAt(DateTime at);
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy(Money price)
+        public virtual IPurchaseStrategy GetPurchaseStrategy(decimal price)
         {
             return new SimplePurchaseStrategy(price);
         }
 
-        public virtual ISaleStrategy GetSaleStrategy(Money price)
+        public virtual ISaleStrategy GetSaleStrategy(decimal price, DateTime _at)
         {
             return new SimpleSaleStrategy(price);
         }

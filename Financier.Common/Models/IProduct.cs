@@ -9,9 +9,12 @@ namespace Financier.Common.Models
         Guid Id { get; }
         string Name { get; }
 
-        Money Price { get; }
+        decimal Price { get; }
 
-        IPurchaseStrategy GetPurchaseStrategy(Money price);
-        ISaleStrategy GetSaleStrategy(Money price);
+        // TODO: replace with return type decimal
+        IPurchaseStrategy GetPurchaseStrategy(decimal price);
+
+        // TODO: replace with return type decimal
+        ISaleStrategy GetSaleStrategy(decimal price, DateTime at);
     }
 }

@@ -76,7 +76,7 @@ namespace Financier.Common.Tests.Liabilities
         public void Test_GetBalance(int year, int month, int day, decimal expected)
         {
             Assert.That(
-                Subject.GetBalance(new DateTime(year, month, day)).Value,
+                Subject.GetBalance(new DateTime(year, month, day)),
                 Is.EqualTo(expected)
             );
         }

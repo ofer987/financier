@@ -23,9 +23,7 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
         {
             var initiatedAt = new DateTime(2019, 1, 1);
             var downpayment = 82000.00M;
-            var downpaymentMoney = new Money(downpayment, initiatedAt);
             var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, initiatedAt);
             var preferredInterestRate = 0.0319M;
 
             var initialCash = new Money(10000.00M, initiatedAt);
@@ -37,7 +35,7 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
             {
                 var purchasedAt = initiatedAt;
                 var mortgage = new FixedRateMortgage(
-                    mortgageAmountMoney,
+                    mortgageAmount,
                     preferredInterestRate,
                     300,
                     purchasedAt
@@ -45,8 +43,8 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
                 FirstHome = new Home(
                     "first home",
                     purchasedAt,
-                    new Money(downpaymentMoney + mortgageAmountMoney, purchasedAt),
-                    new Money(downpaymentMoney, purchasedAt),
+                    downpayment + mortgageAmount,
+                    downpayment,
                     mortgage
                 );
 
@@ -60,7 +58,7 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
                 Subject.Sell(FirstHome, new Money(500000.00M, soldAt), soldAt);
                 Subject.Sell(
                     FirstHome.Financing,
-                    FirstHome.Financing.GetBalance(soldAt).Reverse,
+                    0.00M - FirstHome.Financing.GetBalance(soldAt),
                     soldAt
                 );
             }
@@ -68,7 +66,7 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
             {
                 var purchasedAt = new DateTime(2020, 2, 3);
                 var mortgage = new FixedRateMortgage(
-                    mortgageAmountMoney,
+                    mortgageAmount,
                     preferredInterestRate,
                     300,
                     purchasedAt
@@ -76,8 +74,8 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
                 SecondHome = new Home(
                     "second home",
                     purchasedAt,
-                    new Money(downpaymentMoney + mortgageAmountMoney, purchasedAt),
-                    new Money(downpaymentMoney, purchasedAt),
+                    downpayment + mortgageAmount,
+                    downpayment,
                     mortgage
                 );
                 Subject.Buy(SecondHome, purchasedAt);

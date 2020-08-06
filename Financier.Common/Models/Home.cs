@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 using Financier.Common.Expenses.Actions;
@@ -11,32 +10,32 @@ namespace Financier.Common.Models
     {
         public DateTime PurchasedAt { get; }
         public decimal Valuation { get; }
-        public Money DownPayment { get; }
+        public decimal DownPayment { get; }
         public IMortgage Financing { get; }
 
-        public Home(string name, DateTime purchasedAt, Money purchasePrice, Money downPayment, IMortgage mortgage) : this(name, purchasedAt, purchasePrice, downPayment)
+        public Home(string name, DateTime purchasedAt, decimal purchasePrice, decimal downPayment, IMortgage mortgage) : this(name, purchasedAt, purchasePrice, downPayment)
         {
             Financing = mortgage;
         }
 
-        public Home(string name, DateTime purchasedAt, Money purchasePrice, Money downPayment) : base(name, purchasePrice)
+        public Home(string name, DateTime purchasedAt, decimal purchasePrice, decimal downPayment) : base(name, purchasePrice)
         {
             PurchasedAt = purchasedAt;
             DownPayment = downPayment;
         }
 
-        public override IPurchaseStrategy GetPurchaseStrategy(Money price)
+        public override IPurchaseStrategy GetPurchaseStrategy(decimal price)
         {
-            return new HomePurchaseStrategy(price);
+            return new HomePurchaseStrategy(price, PurchasedAt);
         }
 
-        public override ISaleStrategy GetSaleStrategy(Money price)
+        public override ISaleStrategy GetSaleStrategy(decimal price, DateTime at)
         {
             // TODO: need to pass the sale price. This is the purchase price
-            return new HomeSaleStrategy(price);
+            return new HomeSaleStrategy(price, at);
         }
 
-        public override IEnumerable<Money> GetValueAt(DateTime at)
+        public override IEnumerable<decimal> GetValueAt(DateTime at)
         {
             if (PurchasedAt < at)
             {
@@ -49,9 +48,9 @@ namespace Financier.Common.Models
             }
         }
 
-        public override IEnumerable<Money> GetCostAt(DateTime at)
+        public override IEnumerable<decimal> GetCostAt(DateTime at)
         {
-            return Enumerable.Empty<Money>();
+            yield break;
         }
     }
 }

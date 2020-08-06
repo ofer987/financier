@@ -22,13 +22,11 @@ namespace Financier.Common.Tests.Expenses
         {
             var initiatedAt = new DateTime(2019, 1, 1);
             var downpayment = 82000.00M;
-            var downpaymentMoney = new Money(82000.00M, initiatedAt);
             var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, initiatedAt);
             var preferredInterestRate = 0.0319M;
 
-            var initialCash = new Money(10000.00M, initiatedAt);
-            var initialDebt = new Money(5000.00M, initiatedAt);
+            var initialCash = 10000.00M;
+            var initialDebt = 5000.00M;
 
             CashFlow = new DummyCashFlow(89.86M);
             Subject = new Activity(initialCash, initialDebt, CashFlow, initiatedAt);
@@ -36,7 +34,7 @@ namespace Financier.Common.Tests.Expenses
             {
                 var purchasedAt = initiatedAt;
                 var mortgage = new FixedRateMortgage(
-                    mortgageAmountMoney,
+                    mortgageAmount,
                     preferredInterestRate,
                     300,
                     purchasedAt
@@ -44,8 +42,8 @@ namespace Financier.Common.Tests.Expenses
                 FirstHome = new Home(
                     "first home",
                     purchasedAt,
-                    new Money(downpaymentMoney + mortgageAmountMoney, purchasedAt),
-                    new Money(downpaymentMoney, purchasedAt),
+                    downpayment + mortgageAmount,
+                    downpayment,
                     mortgage
                 );
 
@@ -56,11 +54,11 @@ namespace Financier.Common.Tests.Expenses
             // Sell the first home
             {
                 var soldAt = new DateTime(2020, 1, 3);
-                Subject.Sell(FirstHome, new Money(500000.00M, soldAt), soldAt);
-                var leftOverMortgageBalance = 0 - FirstHome.Financing.GetBalance(soldAt).Value;
+                Subject.Sell(FirstHome, 500000.00M, soldAt);
+                var leftOverMortgageBalance = 0.00M - FirstHome.Financing.GetBalance(soldAt);
                 Subject.Sell(
                     FirstHome.Financing,
-                    new Money(leftOverMortgageBalance, soldAt),
+                    leftOverMortgageBalance,
                     soldAt
                 );
             }
@@ -68,7 +66,7 @@ namespace Financier.Common.Tests.Expenses
             {
                 var purchasedAt = new DateTime(2020, 2, 3);
                 var mortgage = new FixedRateMortgage(
-                    mortgageAmountMoney,
+                    mortgageAmount,
                     preferredInterestRate,
                     300,
                     purchasedAt
@@ -76,8 +74,8 @@ namespace Financier.Common.Tests.Expenses
                 SecondHome = new Home(
                     "second home",
                     purchasedAt,
-                    new Money(downpaymentMoney + mortgageAmountMoney, purchasedAt),
-                    new Money(downpaymentMoney, purchasedAt),
+                    downpayment + mortgageAmount,
+                    downpayment,
                     mortgage
                 );
                 Subject.Buy(SecondHome, purchasedAt);
@@ -102,7 +100,6 @@ namespace Financier.Common.Tests.Expenses
 
             Assert.That(
                 Subject.GetCash(
-                    Inflations.NoopInflation,
                     startAt,
                     endAt
                 ),

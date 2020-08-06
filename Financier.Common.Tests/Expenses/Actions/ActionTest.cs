@@ -11,7 +11,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 {
     public class ActionTest
     {
-        public static Product Television { get; } = new SimpleProduct("house", new Money(40.00M, new DateTime(2020, 1, 1)));
+        public static Product Television { get; } = new SimpleProduct("house", 40.00M);
 
         [SetUp]
         public void Init()
@@ -24,9 +24,9 @@ namespace Financier.Common.Tests.Expenses.ActionTests
                 new List<IAction>
                 {
                     new Purchase(Television, new DateTime(2020, 1, 1)),
-                    new Sale(Television, new Money(2000, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1)),
+                    new Sale(Television, 2000.00M, new DateTime(2020, 6, 1)),
                     new Purchase(Television, new DateTime(2020, 12, 1)),
-                    new Sale(Television, new Money(2000, new DateTime(2020, 1, 1)), new DateTime(2020, 12, 1))
+                    new Sale(Television, 2000.00M, new DateTime(2020, 12, 1))
                 }
             );
         }
@@ -61,8 +61,8 @@ namespace Financier.Common.Tests.Expenses.ActionTests
                 new List<IAction>
                 {
                     new Purchase(Television, new DateTime(2020, 1, 1)),
-                    new Sale(Television, new Money(2000, new DateTime(2020, 1, 1)), new DateTime(2020, 12, 1)),
-                    new Sale(Television, new Money(2000, new DateTime(2020, 1, 1)), new DateTime(2020, 12, 2))
+                    new Sale(Television, 2000.00M, new DateTime(2020, 12, 1)),
+                    new Sale(Television, 2000.00M, new DateTime(2020, 12, 2))
                 }
             );
         }

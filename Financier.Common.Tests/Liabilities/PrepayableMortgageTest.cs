@@ -3,7 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
-using Financier.Common.Models;
 
 namespace Financier.Common.Tests.Liabilities
 {
@@ -18,9 +17,8 @@ namespace Financier.Common.Tests.Liabilities
         {
             var purchasedAt = new DateTime(2019, 1, 1);
             var mortgageAmount = 328000.00M;
-            var mortgageAmountMoney = new Money(mortgageAmount, purchasedAt);
             var preferredInterestRate = 0.0319M;
-            Mortgage = new FixedRateMortgage(mortgageAmountMoney, preferredInterestRate, 300, purchasedAt);
+            Mortgage = new FixedRateMortgage(mortgageAmount, preferredInterestRate, 300, purchasedAt);
             Subject = new Financier.Common.Liabilities.PrepayableMortgage(Mortgage, 0.10M);
             Subject.AddPrepayment(new DateTime(2019, 12, 31), 32800.00M);
             Subject.AddPrepayment(new DateTime(2020, 12, 31), 32800.00M);
@@ -79,7 +77,7 @@ namespace Financier.Common.Tests.Liabilities
             Subject.AddPrepayment(new DateTime(2025, 12, 31), 32800.00M);
             Subject.AddPrepayment(new DateTime(2026, 12, 31), 32800.00M);
             Assert.That(
-                Subject.GetBalance(new DateTime(year, month, day)).Value,
+                Subject.GetBalance(new DateTime(year, month, day)),
                 Is.EqualTo(expected)
             );
         }
@@ -139,7 +137,7 @@ namespace Financier.Common.Tests.Liabilities
         public void Test_Constructor(int year, int month, int day, int expectedYear, int expectedMonth, int expectedDay)
         {
             var date = new DateTime(year, month, day);
-            var money = new Money(100.00M, date);
+            var money = 100.00M;
 
             var baseMortgage = new FixedRateMortgage(money, 0.0314M, 300, date);
             var mortgage = new PrepayableMortgage(baseMortgage);

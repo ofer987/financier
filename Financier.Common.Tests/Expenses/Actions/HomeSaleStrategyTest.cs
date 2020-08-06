@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 using Financier.Common.Models;
@@ -24,11 +23,11 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             );
 
             Assert.That(
-                new HomeSaleStrategy(requested).GetReturnedPrice(),
+                new HomeSaleStrategy(requestedPrice, new DateTime(year, month, day)).GetReturnedPrice(),
                 Is.EquivalentTo(
-                    new List<Money> { 
-                        new Money(expected, new DateTime(year, month, day)),
-                        new Money(-0.05M * expected, new DateTime(year, month, day))
+                    new decimal[] { 
+                        expected,
+                        -0.05M * expected
                     }
                 ));
         }

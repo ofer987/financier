@@ -4,6 +4,6 @@ namespace Financier.Common.Models
 {
     public interface IInflation
     {
-        Money GetValueAt(Money source, DateTime targetAt);
+        decimal GetValueAt(decimal sourceValue, DateTime sourceAt, DateTime targetAt);
     }
 }

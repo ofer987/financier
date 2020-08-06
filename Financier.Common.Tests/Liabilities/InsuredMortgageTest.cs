@@ -24,21 +24,15 @@ namespace Financier.Common.Tests.Liabilities
         {
             var purchasedAt = new DateTime(2019, 1, 1);
             var homePrice = 500000.00M;
-            var downPayment = new Money(
-                downPaymentPercentage * homePrice,
-                purchasedAt
-            );
-            var mortgageAmount = new Money(
-                (1 - downPaymentPercentage) * homePrice,
-                purchasedAt
-            );
+            var downPayment = downPaymentPercentage * homePrice;
+            var mortgageAmount = (1 - downPaymentPercentage) * homePrice;
             var preferredInterestRate = 0.0319M;
 
             var baseMortgage = new FixedRateMortgage(mortgageAmount, preferredInterestRate, 300, purchasedAt);
             var subject = new InsuredMortgage(baseMortgage, downPayment);
 
             Assert.That(
-                subject.Insurance.Value,
+                subject.Insurance,
                 Is.EqualTo(expected).Within(15.00M).Percent
             );
         }
@@ -52,9 +46,9 @@ namespace Financier.Common.Tests.Liabilities
         public void Test_Constructor(int year, int month, int day, int expectedYear, int expectedMonth, int expectedDay)
         {
             var date = new DateTime(year, month, day);
-            var money = new Money(100.00M, date);
+            var downpayment = 100.00M;
 
-            var baseMortgage = new FixedRateMortgage(money, 0.0314M, 300, date);
+            var baseMortgage = new FixedRateMortgage(downpayment, 0.0314M, 300, date);
             var mortgage = new InsuredMortgage(baseMortgage, 20.00M);
 
             Assert.That(mortgage.InitiatedAt.Year, Is.EqualTo(expectedYear));

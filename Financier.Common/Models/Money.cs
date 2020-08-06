@@ -60,7 +60,7 @@ namespace Financier.Common.Models
 
         public Money GetValueAt(IInflation inflation, DateTime targetAt)
         {
-            return inflation.GetValueAt(this, targetAt);
+            return inflation.GetValueAt(Value, At, targetAt);
         }
 
         public override int GetHashCode()

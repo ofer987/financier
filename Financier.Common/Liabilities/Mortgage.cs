@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
 using Financier.Common.Extensions;
 
@@ -16,10 +15,10 @@ namespace Financier.Common.Liabilities
         public virtual Guid Id { get; }
         public virtual string Name => string.Empty;
 
-        public Money Price => InitialValue.Reverse;
+        public decimal Price => 0.00M - InitialValue;
 
-        private Money BaseValue { get; }
-        public virtual Money InitialValue => BaseValue;
+        private decimal BaseValue { get; }
+        public virtual decimal InitialValue => BaseValue;
 
         private DateTime initiatedAt;
         public virtual DateTime InitiatedAt
@@ -45,12 +44,12 @@ namespace Financier.Common.Liabilities
 
         public virtual double MonthlyPayment => (Convert.ToDouble(InitialValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, 0 - AmortisationPeriodInMonths));
 
-        protected Mortgage(IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
+        protected Mortgage(IMonthlyPaymentCalculator calculator, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
         {
             Calculator = calculator;
         }
 
-        protected Mortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this()
+        protected Mortgage(decimal baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this()
         {
             Calculator = new MonthlyPaymentCalculator();
             BaseValue = baseValue;
@@ -64,7 +63,7 @@ namespace Financier.Common.Liabilities
             Id = Guid.NewGuid();
         }
 
-        public Money GetBalance(DateTime at)
+        public decimal GetBalance(DateTime at)
         {
             return GetMonthlyPayments(at)
                 .Select(payment => payment.Balance)
@@ -91,23 +90,25 @@ namespace Financier.Common.Liabilities
             return at.Day == InitiatedAt.Day;
         }
 
-        public IEnumerable<Money> GetValueAt(DateTime at)
+        public IEnumerable<decimal> GetValueAt(DateTime at)
         {
-            return Enumerable.Empty<Money>();
+            // TODO: why is this empty?
+            return Enumerable.Empty<decimal>();
         }
 
-        public IEnumerable<Money> GetCostAt(DateTime at)
+        public IEnumerable<decimal> GetCostAt(DateTime at)
         {
             yield return GetBalance(at);
         }
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy(Money price)
+        public virtual IPurchaseStrategy GetPurchaseStrategy(decimal price)
         {
             return new SimplePurchaseStrategy(price);
         }
 
-        public virtual ISaleStrategy GetSaleStrategy(Money price)
+        public virtual ISaleStrategy GetSaleStrategy(decimal price, DateTime at)
         {
+            // TOOD: use MortgageSaleStrategy instead?
             return new SimpleSaleStrategy(price);
         }
     }

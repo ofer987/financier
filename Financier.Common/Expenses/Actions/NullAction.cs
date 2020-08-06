@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using Financier.Common.Models;
-
 namespace Financier.Common.Expenses.Actions
 {
     public class NullAction : Action
@@ -12,11 +10,11 @@ namespace Financier.Common.Expenses.Actions
         public override bool CanSell => false;
         public override bool IsNull => true;
         public override DateTime At => DateTime.MinValue;
-        public override IEnumerable<Money> Transactions 
+        public override IEnumerable<decimal> Transactions 
         {
             get
             {
-                yield return Money.Zero;
+                yield break;
             }
         }
 

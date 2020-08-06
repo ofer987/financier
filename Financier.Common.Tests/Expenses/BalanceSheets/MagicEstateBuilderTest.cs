@@ -73,7 +73,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             // Sell the condo
             var soldAt = purchasedAt.AddYears(5);
             var homeInflation = new CompoundYearlyInflation(0.05M);
-            var soldPrice = purchasePrice.GetValueAt(homeInflation, soldAt);
+            var soldPrice = purchasePrice.GetValueAt(homeInflation, soldAt).Value;
             Subject.SellHome(condo, soldAt, soldPrice);
 
             Assert.That(Subject.GetHomes(), Is.Empty);
@@ -84,7 +84,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .ToList();
             Assert.That(actualHistories, Has.Exactly(4).Items);
 
-            Assert.That(actualHistories[0].Price, Is.EqualTo(new Money(-1500.00M, InitiatedAt.GetNext())));
+            Assert.That(actualHistories[0].Price, Is.EqualTo(-1500.00M));
             Assert.That(actualHistories[0].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actualHistories[0].At, Is.EqualTo(InitiatedAt.GetNext()));
             Assert.That(actualHistories[0].Product, Is.TypeOf<FixedRateMortgage>());
@@ -94,7 +94,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             Assert.That(actualHistories[1].At, Is.EqualTo(soldAt));
             Assert.That(actualHistories[1].Product, Is.TypeOf<FixedRateMortgage>());
 
-            Assert.That(actualHistories[2].Price, Is.EqualTo(new Money(2000.00M, InitiatedAt.GetNext())));
+            Assert.That(actualHistories[2].Price, Is.EqualTo(2000.00M));
             Assert.That(actualHistories[2].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actualHistories[2].At, Is.EqualTo(InitiatedAt.GetNext()));
             Assert.That(actualHistories[2].Product, Is.TypeOf<Home>());
