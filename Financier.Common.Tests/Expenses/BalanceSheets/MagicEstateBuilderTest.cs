@@ -84,22 +84,22 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .ToList();
             Assert.That(actualHistories, Has.Exactly(4).Items);
 
-            Assert.That(actualHistories[0].Price, Is.EqualTo(-1500.00M));
+            Assert.That(actualHistories[0].TransactionalPrice, Is.EqualTo(-1500.00M));
             Assert.That(actualHistories[0].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actualHistories[0].At, Is.EqualTo(InitiatedAt.GetNext()));
             Assert.That(actualHistories[0].Product, Is.TypeOf<FixedRateMortgage>());
 
-            Assert.That(actualHistories[1].Price, Is.EqualTo(condo.Financing.GetBalance(soldAt)));
+            Assert.That(actualHistories[1].TransactionalPrice, Is.EqualTo(condo.Financing.GetBalance(soldAt)));
             Assert.That(actualHistories[1].Type, Is.EqualTo(Types.Sale));
             Assert.That(actualHistories[1].At, Is.EqualTo(soldAt));
             Assert.That(actualHistories[1].Product, Is.TypeOf<FixedRateMortgage>());
 
-            Assert.That(actualHistories[2].Price, Is.EqualTo(2000.00M));
+            Assert.That(actualHistories[2].TransactionalPrice, Is.EqualTo(2000.00M));
             Assert.That(actualHistories[2].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actualHistories[2].At, Is.EqualTo(InitiatedAt.GetNext()));
             Assert.That(actualHistories[2].Product, Is.TypeOf<Home>());
 
-            Assert.That(actualHistories[3].Price, Is.EqualTo(soldPrice));
+            Assert.That(actualHistories[3].TransactionalPrice, Is.EqualTo(soldPrice));
             Assert.That(actualHistories[3].Type, Is.EqualTo(Types.Sale));
             Assert.That(actualHistories[3].At, Is.EqualTo(soldAt));
             Assert.That(actualHistories[3].Product, Is.TypeOf<Home>());

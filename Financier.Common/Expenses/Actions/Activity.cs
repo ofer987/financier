@@ -151,7 +151,7 @@ namespace Financier.Common.Expenses.Actions
             result += GetHistories()
                 .Where(action => action.At >= startAt)
                 .Where(action => action.At < endAt)
-                .Select(action => action.Transaction)
+                .Select(action => action.TransactionalPrice)
                 .Sum();
 
             return decimal.Round(result, 2);
@@ -171,7 +171,7 @@ namespace Financier.Common.Expenses.Actions
             result += GetHistories()
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
-                .Select(action => action.Transaction)
+                .Select(action => action.TransactionalPrice)
                 .Sum();
 
             return decimal.Round(result, 2);
@@ -190,7 +190,7 @@ namespace Financier.Common.Expenses.Actions
             result += GetHistories()
                 .Where(action => action.At >= InitiatedAt)
                 .Where(action => action.At < at)
-                .Select(action => action.Transaction)
+                .Select(action => action.TransactionalPrice)
                 .Sum();
             result += GetValueOfOwnedProducts(inflation, at);
 

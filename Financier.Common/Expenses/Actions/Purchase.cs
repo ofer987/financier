@@ -9,7 +9,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool IsSold => Next.Type == Types.Sale;
         public override bool CanBuy => false;
         public override bool CanSell => true;
-        public override decimal Transaction => Product.GetPurchaseStrategy(Price).GetReturnedPrice();
+        public override decimal TransactionalPrice => Product.GetPurchaseStrategy(Price).GetReturnedPrice();
 
         public override IAction Next
         {

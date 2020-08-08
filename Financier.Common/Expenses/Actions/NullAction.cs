@@ -9,7 +9,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool CanSell => false;
         public override bool IsNull => true;
         public override DateTime At => DateTime.MinValue;
-        public override decimal Transaction => 0.00M;
+        public override decimal TransactionalPrice => 0.00M;
 
         public static NullAction Instance = new NullAction();
 

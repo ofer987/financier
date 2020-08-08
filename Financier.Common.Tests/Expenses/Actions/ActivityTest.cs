@@ -37,16 +37,16 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var actions = Subject.GetHistory(Television).ToList();
             Assert.That(actions[0].Product, Is.EqualTo(Television));
             Assert.That(actions[0].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[0].Price, Is.EqualTo(40.00M));
+            Assert.That(actions[0].TransactionalPrice, Is.EqualTo(40.00M));
             Assert.That(actions[1].Product, Is.EqualTo(Television));
             Assert.That(actions[1].Type, Is.EqualTo(Types.Sale));
-            Assert.That(actions[1].Price, Is.EqualTo(50.00M));
+            Assert.That(actions[1].TransactionalPrice, Is.EqualTo(50.00M));
             Assert.That(actions[2].Product, Is.EqualTo(Television));
             Assert.That(actions[2].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[2].Price, Is.EqualTo(40.00M));
+            Assert.That(actions[2].TransactionalPrice, Is.EqualTo(40.00M));
             Assert.That(actions[3].Product, Is.EqualTo(Television));
             Assert.That(actions[3].Type, Is.EqualTo(Types.Sale));
-            Assert.That(actions[3].Price, Is.EqualTo(60.00M));
+            Assert.That(actions[3].TransactionalPrice, Is.EqualTo(60.00M));
         }
 
         [Test]
