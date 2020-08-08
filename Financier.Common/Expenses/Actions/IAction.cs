@@ -11,7 +11,6 @@ namespace Financier.Common.Expenses.Actions
         IProduct Product { get; }
         DateTime At { get; }
         decimal TransactionalPrice { get; }
-        decimal Price { get; }
 
         IAction Next { get; set; }
 
