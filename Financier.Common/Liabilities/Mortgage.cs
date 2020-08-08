@@ -106,10 +106,10 @@ namespace Financier.Common.Liabilities
             return new SimplePurchaseStrategy(price);
         }
 
-        public virtual ISaleStrategy GetSaleStrategy(decimal price, DateTime at)
+        public virtual decimal GetSalePrice(decimal price, DateTime at)
         {
             // TOOD: use MortgageSaleStrategy instead?
-            return new SimpleSaleStrategy(price);
+            return new SimpleSaleStrategy(price).GetReturnedPrice();
         }
     }
 }

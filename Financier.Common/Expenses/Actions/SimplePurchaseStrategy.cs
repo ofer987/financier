@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Financier.Common.Expenses.Actions
 {
     public class SimplePurchaseStrategy : IPurchaseStrategy
@@ -11,9 +9,9 @@ namespace Financier.Common.Expenses.Actions
             RequestedPrice = requested;
         }
 
-        public IEnumerable<decimal> GetReturnedPrice()
+        public decimal GetReturnedPrice()
         {
-            yield return 0.00M - RequestedPrice;
+            return 0.00M - RequestedPrice;
         }
     }
 }

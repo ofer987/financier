@@ -29,10 +29,12 @@ namespace Financier.Common.Models
             return new HomePurchaseStrategy(price, PurchasedAt);
         }
 
-        public override ISaleStrategy GetSaleStrategy(decimal price, DateTime at)
+        public override decimal GetSalePrice(decimal price, DateTime at)
         {
-            // TODO: need to pass the sale price. This is the purchase price
-            return new HomeSaleStrategy(price, at);
+            var remainingMortgageBalance = Financing.GetBalance(at);
+
+            // TODO: Announce whether or not we are trading this home for another one
+            return new HomeSaleStrategy(price, remainingMortgageBalance).GetReturnedPrice();
         }
 
         public override IEnumerable<decimal> GetValueAt(DateTime at)

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Financier.Common.Expenses.Actions
 {
@@ -10,13 +9,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool CanSell => false;
         public override bool IsNull => true;
         public override DateTime At => DateTime.MinValue;
-        public override IEnumerable<decimal> Transactions 
-        {
-            get
-            {
-                yield break;
-            }
-        }
+        public override decimal Transaction => 0.00M;
 
         public static NullAction Instance = new NullAction();
 

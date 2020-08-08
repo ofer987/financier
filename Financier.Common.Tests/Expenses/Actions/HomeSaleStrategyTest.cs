@@ -1,7 +1,5 @@
-using System;
 using NUnit.Framework;
 
-using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Tests.Expenses.ActionTests
@@ -13,23 +11,16 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
         }
 
-        [TestCase(2000.00, 2019, 1, 1, 2000.00)]
-        [TestCase(1000.00, 2019, 1, 2, 1000.00)]
-        public void Test_GetReturnedPrice(decimal requestedPrice, int year, int month, int day, decimal expected)
+        [TestCase(2000.00, 500, true, 450)]
+        [TestCase(2000.00, 500, false, 475)]
+        [TestCase(1000.00, 0, true, 500)]
+        [TestCase(1000.00, 0, false, 500)]
+        public void Test_GetReturnedPrice(decimal requestedPrice, decimal remainingMortgageBalance, bool willTheMortgageBeTransferred, decimal expected)
         {
-            var requested = new Money(
-                requestedPrice,
-                new DateTime(year, month, day)
-            );
-
             Assert.That(
-                new HomeSaleStrategy(requestedPrice, new DateTime(year, month, day)).GetReturnedPrice(),
-                Is.EquivalentTo(
-                    new decimal[] { 
-                        expected,
-                        -0.05M * expected
-                    }
-                ));
+                new HomeSaleStrategy(requestedPrice, remainingMortgageBalance, willTheMortgageBeTransferred).GetReturnedPrice(),
+                Is.EqualTo(expected)
+            );
         }
     }
 }

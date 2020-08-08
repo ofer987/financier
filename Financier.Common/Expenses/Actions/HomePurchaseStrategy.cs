@@ -15,14 +15,11 @@ namespace Financier.Common.Expenses.Actions
             PurchasedAt = purchasedAt;
         }
 
-        public IEnumerable<decimal> GetReturnedPrice()
+        public decimal GetReturnedPrice()
         {
-            yield return 0.00M - PurchasePrice;
-
-            foreach (var fee in GetFees().Select(item => 0.00M - item))
-            {
-                yield return fee;
-            }
+            return 0.00M
+                + PurchasePrice
+                - GetFees().Sum();
         }
 
         public IEnumerable<decimal> GetFees()

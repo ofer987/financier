@@ -37,9 +37,9 @@ namespace Financier.Common.Models
             return new SimplePurchaseStrategy(price);
         }
 
-        public virtual ISaleStrategy GetSaleStrategy(decimal price, DateTime _at)
+        public virtual decimal GetSalePrice(decimal price, DateTime _at)
         {
-            return new SimpleSaleStrategy(price);
+            return new SimpleSaleStrategy(price).GetReturnedPrice();
         }
 
         public override string ToString()

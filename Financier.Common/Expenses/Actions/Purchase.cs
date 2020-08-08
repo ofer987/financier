@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Financier.Common.Models;
 
@@ -10,7 +9,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool IsSold => Next.Type == Types.Sale;
         public override bool CanBuy => false;
         public override bool CanSell => true;
-        public override IEnumerable<decimal> Transactions => Product.GetPurchaseStrategy(Price).GetReturnedPrice();
+        public override decimal Transaction => Product.GetPurchaseStrategy(Price).GetReturnedPrice();
 
         public override IAction Next
         {

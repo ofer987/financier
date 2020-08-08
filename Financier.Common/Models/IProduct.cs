@@ -14,7 +14,6 @@ namespace Financier.Common.Models
         // TODO: replace with return type decimal
         IPurchaseStrategy GetPurchaseStrategy(decimal price);
 
-        // TODO: replace with return type decimal
-        ISaleStrategy GetSaleStrategy(decimal price, DateTime at);
+        decimal GetSalePrice(decimal price, DateTime at);
     }
 }

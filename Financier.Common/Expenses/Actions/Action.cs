@@ -9,7 +9,7 @@ namespace Financier.Common.Expenses.Actions
     {
         public Types Type { get; }
         public IProduct Product { get; }
-        public abstract IEnumerable<decimal> Transactions { get; }
+        public abstract decimal Transaction { get; }
         public decimal Price { get; }
         public virtual DateTime At { get; }
 
