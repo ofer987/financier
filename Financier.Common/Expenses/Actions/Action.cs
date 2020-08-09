@@ -10,7 +10,6 @@ namespace Financier.Common.Expenses.Actions
         public Types Type { get; }
         public IProduct Product { get; }
         public abstract decimal TransactionalPrice { get; }
-        protected decimal Price { get; }
         public virtual DateTime At { get; }
 
         public abstract bool IsSold { get; }
@@ -18,6 +17,8 @@ namespace Financier.Common.Expenses.Actions
         public abstract bool CanBuy { get; }
         public abstract bool CanSell { get; }
         public virtual bool IsNull => false;
+
+        protected decimal Price { get; }
 
         protected IAction next = NullAction.Instance;
         public virtual IAction Next
@@ -52,6 +53,16 @@ namespace Financier.Common.Expenses.Actions
             {
                 yield return i;
             }
+        }
+
+        public virtual IEnumerable<decimal> GetValueAt(DateTime at)
+        {
+            yield break;
+        }
+
+        public virtual IEnumerable<decimal> GetCostAt(DateTime at)
+        {
+            yield break;
         }
     }
 }

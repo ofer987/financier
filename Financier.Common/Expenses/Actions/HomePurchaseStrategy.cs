@@ -19,7 +19,7 @@ namespace Financier.Common.Expenses.Actions
         {
             return 0.00M
                 + PurchasePrice
-                - GetFees().Sum();
+                + GetFees().Sum();
         }
 
         public IEnumerable<decimal> GetFees()

@@ -130,7 +130,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var inflation = Inflations.NoopInflation;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Subject.GetCash(inflation, InitiatedAt.AddDays(-1));
+                Subject.GetCashAt(inflation, InitiatedAt.AddDays(-1));
             });
         }
 
@@ -140,7 +140,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var inflation = Inflations.NoopInflation;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Subject.GetCash(inflation, InitiatedAt);
+                Subject.GetCashAt(inflation, InitiatedAt);
             });
         }
 
@@ -150,7 +150,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var inflation = Inflations.NoopInflation;
             Assert.DoesNotThrow(() =>
             {
-                Subject.GetCash(inflation, InitiatedAt.AddDays(1));
+                Subject.GetCashAt(inflation, InitiatedAt.AddDays(1));
             });
         }
 

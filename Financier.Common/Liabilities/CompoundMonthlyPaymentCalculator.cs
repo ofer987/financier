@@ -15,7 +15,7 @@ namespace Financier.Common.Liabilities
         {
             if (endAt < mortgage.InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(endAt), $"Should be at or later than {mortgage.InitiatedAt}");
+                yield break;
             }
 
             yield return new Payment(mortgage, mortgage.InitiatedAt, mortgage.InitialValue, 0, 0);

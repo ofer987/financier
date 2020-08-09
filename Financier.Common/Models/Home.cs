@@ -24,35 +24,27 @@ namespace Financier.Common.Models
             DownPayment = downPayment;
         }
 
-        public override IPurchaseStrategy GetPurchaseStrategy(decimal price)
+        public override decimal GetPurchasePrice(decimal price)
         {
-            return new HomePurchaseStrategy(price, PurchasedAt);
+            return 0.00M
+                + new HomePurchaseStrategy(price, PurchasedAt).GetReturnedPrice() 
+                + Financing.GetPurchasePrice(price);
         }
 
         public override decimal GetSalePrice(decimal price, DateTime at)
         {
-            var remainingMortgageBalance = Financing.GetBalance(at);
-
-            // TODO: Announce whether or not we are trading this home for another one
-            return new HomeSaleStrategy(price, remainingMortgageBalance).GetReturnedPrice();
+            return 0.00M
+                + new HomeSaleStrategy(price).GetReturnedPrice()
+                - Financing.GetSalePrice(price, at);
         }
 
         public override IEnumerable<decimal> GetValueAt(DateTime at)
         {
-            if (PurchasedAt < at)
-            {
-                yield return DownPayment;
-            }
-
-            foreach (var payment in Financing.GetMonthlyPayments(at))
-            {
-                yield return payment.Principal;
-            }
-        }
+            yield break;
 
         public override IEnumerable<decimal> GetCostAt(DateTime at)
         {
-            yield break;
+            return Financing.GetCostAt(at);
         }
     }
 }

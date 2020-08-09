@@ -21,5 +21,7 @@ namespace Financier.Common.Expenses.Actions
         bool IsNull { get; }
 
         IEnumerable<IAction> GetActions();
+        IEnumerable<decimal> GetValueAt(DateTime at);
+        IEnumerable<decimal> GetCostAt(DateTime at);
     }
 }

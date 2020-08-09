@@ -6,15 +6,10 @@ namespace Financier.Common.Expenses.Actions
     public class HomeSaleStrategy : ISaleStrategy
     {
         public decimal RequestedPrice { get; }
-        public decimal RemainingMortgageBalance { get; }
-        public decimal AvailableCash { get; }
-        public bool WillMortgageBeTransferred { get; }
 
-        public HomeSaleStrategy(decimal requestedPrice, decimal remainingMortgageBalance, bool willMortgageBeTransferred = false)
+        public HomeSaleStrategy(decimal requestedPrice)
         {
             RequestedPrice = requestedPrice;
-            RemainingMortgageBalance = remainingMortgageBalance;
-            WillMortgageBeTransferred = willMortgageBeTransferred;
         }
 
         public decimal GetReturnedPrice()
@@ -25,8 +20,7 @@ namespace Financier.Common.Expenses.Actions
         public IEnumerable<decimal> GetFees()
         {
             return Enumerable.Empty<decimal>()
-                .Concat(GetRealtorFees())
-                .Concat(GetBankFees());
+                .Concat(GetRealtorFees());
         }
 
         public IEnumerable<decimal> GetRealtorFees()
@@ -37,14 +31,6 @@ namespace Financier.Common.Expenses.Actions
         public IEnumerable<decimal> GetLegalFees()
         {
             yield return 1000.00M;
-        }
-
-        public IEnumerable<decimal> GetBankFees()
-        {
-            if (!WillMortgageBeTransferred)
-            {
-                yield return 0.05M * RemainingMortgageBalance;
-            }
         }
     }
 }

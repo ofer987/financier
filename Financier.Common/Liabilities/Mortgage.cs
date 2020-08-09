@@ -98,18 +98,20 @@ namespace Financier.Common.Liabilities
 
         public IEnumerable<decimal> GetCostAt(DateTime at)
         {
-            yield return GetBalance(at);
+            return GetMonthlyPayments(at)
+                .Select(payment => payment.Amount)
+                .Select(amount => amount.Value);
         }
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy(decimal price)
+        public virtual decimal GetPurchasePrice(decimal _price)
         {
-            return new SimplePurchaseStrategy(price);
+            return new MortgagePurchaseStrategy().GetReturnedPrice();
         }
 
-        public virtual decimal GetSalePrice(decimal price, DateTime at)
+        public virtual decimal GetSalePrice(decimal _price, DateTime at)
         {
-            // TOOD: use MortgageSaleStrategy instead?
-            return new SimpleSaleStrategy(price).GetReturnedPrice();
+            // TODO: Announce whether or not we are trading this home for another one
+            return new MortgageSaleStrategy(GetBalance(at), true).GetReturnedPrice();
         }
     }
 }

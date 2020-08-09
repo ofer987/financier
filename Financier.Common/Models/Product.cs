@@ -32,9 +32,9 @@ namespace Financier.Common.Models
         public abstract IEnumerable<decimal> GetValueAt(DateTime at);
         public abstract IEnumerable<decimal> GetCostAt(DateTime at);
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy(decimal price)
+        public virtual decimal GetPurchasePrice(decimal price)
         {
-            return new SimplePurchaseStrategy(price);
+            return new SimplePurchaseStrategy(price).GetReturnedPrice();
         }
 
         public virtual decimal GetSalePrice(decimal price, DateTime _at)
