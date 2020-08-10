@@ -11,8 +11,9 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
         }
 
-        [TestCase(2000.00, 450)]
-        [TestCase(1000.00, 0)]
+        [TestCase(2000.00, 900)]
+        [TestCase(1050.00, -2.5)]
+        [TestCase(1000.00, -50)]
         [TestCase(0, -1000.00)]
         public void Test_HomeSaleStrategy_GetReturnedPrice(decimal requestedPrice, decimal expected)
         {

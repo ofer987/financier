@@ -11,10 +11,10 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
         }
 
-        [TestCase(2000.00, false, 100)]
-        [TestCase(2000.00, true, 0)]
-        [TestCase(1000.00, false, 50)]
-        [TestCase(1000.00, true, 0)]
+        [TestCase(2000.00, false, 2100)]
+        [TestCase(2000.00, true, 2000)]
+        [TestCase(1000.00, false, 1050)]
+        [TestCase(1000.00, true, 1000)]
         public void Test_MortgageSaleStrategy_GetReturnedPrice(decimal remainingMortgageBalance, bool willMortgageBeTransferred, decimal expected)
         {
             Assert.That(

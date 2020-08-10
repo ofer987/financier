@@ -1,16 +1,14 @@
 using System;
 using System.Text;
 
-using Financier.Common.Models;
-
 namespace Financier.Common.Liabilities
 {
     public class Payment
     {
-        public Money Amount => Interest + Principal;
-        public Money Interest { get; private set; }
-        public Money Principal { get; private set; }
-        public Money Balance { get; private set; }
+        public decimal Amount => Interest + Principal;
+        public decimal Interest { get; private set; }
+        public decimal Principal { get; private set; }
+        public decimal Balance { get; private set; }
         public DateTime At { get; private set; }
 
         private IMortgage Mortgage { get; }
@@ -19,27 +17,14 @@ namespace Financier.Common.Liabilities
         {
             Mortgage = mortgage;
             At = at;
-            Interest = new Money(interest, At);
-            Principal = new Money(principal, At);
+            Interest = decimal.Round(interest, 2);
+            Principal = decimal.Round(principal, 2);
 
-            Balance = new Money(previousBalance - Principal.Value, At);
+            Balance = decimal.Round(previousBalance - Principal, 2);
         }
 
         private Payment()
         {
-        }
-
-        // TODO: write tests against this
-        public Payment GetValueAt(IInflation inflation, DateTime inflatedAt)
-        {
-            // TODO: how should new MonthlyPayment objects be created?
-            return new Payment
-            {
-                At = At,
-                Principal = Principal.GetValueAt(inflation, inflatedAt),
-                Interest = Interest.GetValueAt(inflation, inflatedAt),
-                Balance = Balance.GetValueAt(inflation, inflatedAt)
-            };
         }
 
         public override string ToString()

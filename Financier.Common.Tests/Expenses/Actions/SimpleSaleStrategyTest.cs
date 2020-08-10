@@ -17,9 +17,8 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
             Assert.That(
                 new SimpleSaleStrategy(requestedPrice).GetReturnedPrice(),
-                Is.EquivalentTo(
-                    new decimal[] { expected }
-                ));
+                Is.EqualTo(expected)
+            );
         }
     }
 }

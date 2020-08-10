@@ -90,7 +90,7 @@ namespace Financier.Common.Tests.Liabilities
         {
             Assert.That(
                 Subject.GetMonthlyPayments()
-                    .Select(payment => payment.Interest.Value)
+                    .Select(payment => payment.Interest)
                     .ToList()[monthCount]
                 , Is.EqualTo(expectedInterestPayment)
             );
@@ -105,7 +105,7 @@ namespace Financier.Common.Tests.Liabilities
         {
             Assert.That(
                 Subject.GetMonthlyPayments()
-                    .Select(payment => payment.Principal.Value)
+                    .Select(payment => payment.Principal)
                     .ToList()[monthCount]
                 , Is.EqualTo(expectedPrincipalPayment)
             );

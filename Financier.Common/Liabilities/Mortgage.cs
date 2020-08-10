@@ -99,8 +99,7 @@ namespace Financier.Common.Liabilities
         public IEnumerable<decimal> GetCostAt(DateTime at)
         {
             return GetMonthlyPayments(at)
-                .Select(payment => payment.Amount)
-                .Select(amount => amount.Value);
+                .Select(payment => payment.Amount);
         }
 
         public virtual decimal GetPurchasePrice(decimal _price)

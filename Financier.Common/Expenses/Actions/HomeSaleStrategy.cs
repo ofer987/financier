@@ -20,7 +20,8 @@ namespace Financier.Common.Expenses.Actions
         public IEnumerable<decimal> GetFees()
         {
             return Enumerable.Empty<decimal>()
-                .Concat(GetRealtorFees());
+                .Concat(GetRealtorFees())
+                .Concat(GetLegalFees());
         }
 
         public IEnumerable<decimal> GetRealtorFees()
