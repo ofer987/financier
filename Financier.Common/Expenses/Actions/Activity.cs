@@ -138,8 +138,8 @@ namespace Financier.Common.Expenses.Actions
             lastAction.Next = new Sale(product, salePrice, soldAt);
         }
 
-        // Refactor me
-        public decimal GetCash(DateTime startAt, DateTime endAt)
+        // TODO: Use inflation in DailyProfit
+        public decimal GetCash(IInflation inflation, DateTime startAt, DateTime endAt)
         {
             if (endAt <= startAt)
             {
@@ -157,61 +157,12 @@ namespace Financier.Common.Expenses.Actions
             return decimal.Round(result, 2);
         }
 
-        public decimal GetCash(IInflation inflation, DateTime at)
-        {
-            if (at <= InitiatedAt)
-            {
-                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
-            }
-
-            var result = 0.00M;
-            result += InitialCash;
-            result -= InitialDebt;
-            result += CashFlow.DailyProfit * at.Subtract(InitiatedAt).Days;
-            result += GetHistories()
-                .Where(action => action.At >= InitiatedAt)
-                .Where(action => action.At < at)
-                .Select(action => action.TransactionalPrice)
-                .Sum();
-
-            return decimal.Round(result, 2);
-        }
-
-        public decimal GetValueAt(DateTime at)
-        {
-            if (at <= InitiatedAt)
-            {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
-            }
-
-            var result = 0.00M;
-            result += GetHistories()
-                .SelectMany(item => item.GetValueAt(at))
-                .Sum();
-
-            return result;
-        }
-
-        public decimal GetCostAt(DateTime at)
-        {
-            if (at <= InitiatedAt)
-            {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
-            }
-
-            var result = 0.00M;
-            result += GetHistories()
-                .SelectMany(item => item.GetCostAt(at))
-                .Sum();
-
-            return result;
-        }
-
+        // TODO: Use inflation in DailyProfit
         public decimal GetCashAt(IInflation inflation, DateTime at)
         {
             if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;
@@ -228,11 +179,41 @@ namespace Financier.Common.Expenses.Actions
             return decimal.Round(result, 2);
         }
 
+        public decimal GetValueAt(DateTime at)
+        {
+            if (at <= InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
+            }
+
+            var result = 0.00M;
+            result += GetHistories()
+                .SelectMany(item => item.GetValueAt(at))
+                .Sum();
+
+            return result;
+        }
+
+        public decimal GetCostAt(DateTime at)
+        {
+            if (at <= InitiatedAt)
+            {
+                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
+            }
+
+            var result = 0.00M;
+            result += GetHistories()
+                .SelectMany(item => item.GetCostAt(at))
+                .Sum();
+
+            return result;
+        }
+
         public decimal GetNetWorthAt(IInflation inflation, DateTime at)
         {
             if (at <= InitiatedAt)
             {
-                throw new ArgumentOutOfRangeException(nameof(at), $"Should be later than {InitiatedAt}");
+                throw new ArgumentOutOfRangeException(nameof(at), at, $"Should be later than {InitiatedAt}");
             }
 
             var result = 0.00M;

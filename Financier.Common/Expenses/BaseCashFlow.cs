@@ -1,5 +1,7 @@
 using System;
 
+using Financier.Common.Models;
+
 namespace Financier.Common.Expenses
 {
     public abstract class BaseCashFlow : ICashFlow
@@ -10,7 +12,7 @@ namespace Financier.Common.Expenses
         {
         }
 
-        public virtual decimal GetCash(DateTime startAt, DateTime endAt)
+        public virtual decimal GetCash(IInflation inflation, DateTime startAt, DateTime endAt)
         {
             if (endAt <= startAt)
             {

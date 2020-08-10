@@ -30,7 +30,7 @@ namespace Financier.Common.Expenses.BalanceSheets
                 }
 
                 at = at.GetNext();
-                available = CashFlow.GetCash(InitiatedAt, at);
+                available = CashFlow.GetCash(expenseInflation, InitiatedAt, at);
                 required = CostAt(expenseAtInitiation, expenseInflation, at);
 
             } while (available < required);
