@@ -104,7 +104,6 @@ namespace Financier.Common.Expenses.BalanceSheets
                 mortgage
             );
 
-            Result.Buy(mortgage, purchasedAt);
             Result.Buy(home, purchasedAt);
 
             At = purchasedAt.GetNext();
@@ -114,9 +113,6 @@ namespace Financier.Common.Expenses.BalanceSheets
 
         public MagicEstateBuilder SellHome(Home home, DateTime soldAt, Money soldPrice)
         {
-            var mortgage = home.Financing;
-            Result.Sell(mortgage, mortgage.GetBalance(soldAt), soldAt);
-
             Result.Sell(home, soldPrice, soldAt);
 
             return this;

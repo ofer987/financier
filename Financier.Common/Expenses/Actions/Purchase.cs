@@ -10,7 +10,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool IsSold => Next.Type == Types.Sale;
         public override bool CanBuy => false;
         public override bool CanSell => true;
-        public override decimal TransactionalPrice => 0.00M - Product.GetPurchasePrice(Price);
+        public override decimal TransactionalPrice => decimal.Round(0.00M - Product.GetPurchasePrice(Price), 2);
 
         public override IAction Next
         {
