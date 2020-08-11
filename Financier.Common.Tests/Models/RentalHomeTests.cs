@@ -11,7 +11,7 @@ namespace Financier.Common.Tests.Models
     {
         public static DateTime PurchasedAt = new DateTime(2016, 2, 29, 13, 0, 0);
 
-        private static IEnumerable CostAtCases()
+        private static IEnumerable GetCostAtCases()
         {
             yield return new TestCaseData(
                 new DateTime(2016, 2, 29, 12, 59, 0),
@@ -72,7 +72,7 @@ namespace Financier.Common.Tests.Models
             Assert.That(Subject.GetValueAt(new DateTime(2018, 1, 1)), Is.Empty);
         }
 
-        [TestCaseSource(nameof(CostAtCases))]
+        [TestCaseSource(nameof(GetCostAtCases))]
         public void Test_RentalHome_GetCostAt(DateTime at, decimal expected)
         {
             Assert.That(Subject.GetCostAt(at).Sum(), Is.EqualTo(expected));
