@@ -15,17 +15,17 @@ namespace Financier.Common.Models
             PurchasedAt = new DateTime(purchasedAt.Year, purchasedAt.Month, purchasedAt.Day);
         }
 
-        public override decimal GetPurchasePrice(decimal price)
+        public override decimal GetPurchasePrice(decimal _price)
         {
             return 0.00M;
         }
 
-        public override decimal GetSalePrice(decimal price, DateTime at)
+        public override decimal GetSalePrice(decimal _price, DateTime _at)
         {
             return 0.00M;
         }
 
-        public override IEnumerable<decimal> GetValueAt(DateTime at)
+        public override IEnumerable<decimal> GetValueAt(DateTime _at)
         {
             yield break;
         }

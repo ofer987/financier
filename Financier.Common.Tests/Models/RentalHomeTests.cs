@@ -57,6 +57,21 @@ namespace Financier.Common.Tests.Models
             Subject = new RentalHome("foobar", PurchasedAt, 300.00M);
         }
 
+        public void Test_RentalHome_GetPurchasePrice()
+        {
+            Assert.That(Subject.GetPurchasePrice(0.00M), Is.EqualTo(0.00M));
+        }
+
+        public void Test_RentalHome_GetSalePrice()
+        {
+            Assert.That(Subject.GetSalePrice(0.00M, new DateTime(2015, 1, 2)), Is.EqualTo(0.00M));
+        }
+
+        public void Test_RentalHome_GetValueAt()
+        {
+            Assert.That(Subject.GetValueAt(new DateTime(2018, 1, 1)), Is.Empty);
+        }
+
         [TestCaseSource(nameof(CostAtCases))]
         public void Test_RentalHome_GetCostAt(DateTime at, decimal expected)
         {
