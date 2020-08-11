@@ -8,7 +8,7 @@ namespace Financier.Common.Tests.Extensions
     public class DateTimeExtensionsTest
     {
         [Test]
-        public void Test_GetNext()
+        public void Test_DateTimeExtensions_GetNext()
         {
             Assert.That(
                 new DateTime(2019, 12, 31).GetNext(),
@@ -22,7 +22,7 @@ namespace Financier.Common.Tests.Extensions
         }
 
         [Test]
-        public void Test_GetPrevious()
+        public void Test_DateTimeExtensions_GetPrevious()
         {
             Assert.That(
                 new DateTime(2020, 2, 29).GetPrevious(),
