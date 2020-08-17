@@ -16,6 +16,7 @@ using Financier.Web.GraphQL.Tags;
 using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.ItemQueries;
 using Financier.Web.GraphQL.Items;
+using Financier.Web.GraphQL.Activities;
 
 namespace Financier.Web
 {
@@ -52,6 +53,7 @@ namespace Financier.Web
             services.AddScoped<TagSchema>();
             services.AddScoped<ItemQuerySchema>();
             services.AddScoped<FixedRateMortgageSchema>();
+            services.AddScoped<OneHomeSchema>();
 
             // Add GraphQL
             services
@@ -98,6 +100,7 @@ namespace Financier.Web
             app.UseGraphQL<ItemSchema>("/graphql/items");
             app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
             app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
+            app.UseGraphQL<OneHomeSchema>("/graphql/one-home");
 
             // Remove!
             app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");

@@ -1,5 +1,4 @@
 using GraphQL.DataLoader;
-using GraphQL.Types;
 
 using Financier.Common.Liabilities;
 
