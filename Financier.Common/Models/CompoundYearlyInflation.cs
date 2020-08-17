@@ -15,22 +15,25 @@ namespace Financier.Common.Models
 
         public decimal GetValueAt(decimal sourceValue, DateTime sourceAt, DateTime targetAt)
         {
-            int totalYears;
-            if (targetAt > sourceAt)
+            var totalYears = 0;
+            if (targetAt == sourceAt)
             {
-                totalYears = Convert.ToInt32(
-                    Math.Floor((targetAt - sourceAt).TotalDays / 365)
-                );
+                totalYears = 0;
+            }
+            else if (targetAt > sourceAt)
+            {
+                for (totalYears = 0; sourceAt.AddYears(totalYears) <= targetAt; totalYears += 1);
+
+                totalYears -= 1;
             }
             else
             {
-                totalYears = Convert.ToInt32(
-                    Math.Floor((sourceAt - targetAt).TotalDays / 365)
-                );
-                totalYears = 0 - totalYears;
-            }
-            var targetValue = Convert.ToDouble(sourceValue) * Math.Pow(Convert.ToDouble(1.00M + Rate), Convert.ToDouble(totalYears));
+                for (totalYears = -1; sourceAt.AddYears(totalYears) >= targetAt; totalYears -= 1);
 
+                totalYears += 1;
+            }
+
+            var targetValue = Convert.ToDouble(sourceValue) * Math.Pow(Convert.ToDouble(1.00M + Rate), Convert.ToDouble(totalYears));
             return new Money(Convert.ToDecimal(targetValue), targetAt);
         }
     }
