@@ -51,7 +51,7 @@ namespace Financier.Common.Models
         {
             at = new DateTime(at.Year, at.Month, at.Day);
 
-            if (at < PurchasedAt)
+            if (at <= PurchasedAt)
             {
                 yield break;
             }

@@ -44,7 +44,8 @@ namespace Financier.Common.Tests.Liabilities
             );
         }
 
-        [TestCase(2019, 1, 1, 328000)]
+        [TestCase(2019, 1, 1, 328000.00)]
+        [TestCase(2019, 1, 2, 327287.54)]
         [TestCase(2019, 1, 15, 327287.54)]
         [TestCase(2019, 1, 31, 327287.54)]
         [TestCase(2019, 2, 1, 327287.54)]
@@ -68,7 +69,7 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2037, 10, 1, 0)]
         [TestCase(2037, 11, 1, 0)]
         [TestCase(2044, 1, 1, 0)]
-        public void Test_GetBalance(int year, int month, int day, decimal expected)
+        public void Test_PrepayableMortgage_GetBalance(int year, int month, int day, decimal expected)
         {
             Subject.AddPrepayment(new DateTime(2021, 12, 31), 32800.00M);
             Subject.AddPrepayment(new DateTime(2022, 12, 31), 32800.00M);

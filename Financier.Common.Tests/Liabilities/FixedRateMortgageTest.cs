@@ -61,7 +61,8 @@ namespace Financier.Common.Tests.Liabilities
             );
         }
 
-        [TestCase(2019, 1, 1, 328000)]
+        [TestCase(2019, 1, 1, 328000.00)]
+        [TestCase(2019, 1, 2, 327287.54)]
         [TestCase(2019, 1, 15, 327287.54)]
         [TestCase(2019, 1, 31, 327287.54)]
         [TestCase(2019, 2, 1, 327287.54)]
@@ -73,10 +74,24 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2044, 2, 1, 79.13)]
         [TestCase(2044, 3, 1, 0)]
         [TestCase(2045, 1, 1, 0)]
-        public void Test_GetBalance(int year, int month, int day, decimal expected)
+        public void Test_FixedRateMortgage_GetBalance(int year, int month, int day, decimal expected)
         {
             Assert.That(
                 Subject.GetBalance(new DateTime(year, month, day)),
+                Is.EqualTo(expected)
+            );
+        }
+
+
+        // The first payment (on 2019/1/1) is a non-payment.
+        // It only shows the initial balance.
+        [TestCase(2019, 1, 1, 1)]
+        [TestCase(2019, 1, 2, 2)]
+        public void Test_FixedRateMortgage_MonthlyPayments(int year, int month, int day, int expected)
+        {
+            var endAt = new DateTime(year, month, day);
+            Assert.That(
+                Subject.GetMonthlyPayments(endAt).Count(),
                 Is.EqualTo(expected)
             );
         }
