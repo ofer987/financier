@@ -56,7 +56,7 @@ namespace Financier.Common.Models
                 yield break;
             }
 
-            for (var i = 0; i < at.SubtractWholeMonths(PurchasedAt) + 1; i += 1)
+            for (var i = 0; i < at.SubtractMonths(PurchasedAt); i += 1)
             {
                 yield return Inflations.ConsumerPriceIndex
                     .GetValueAt(
