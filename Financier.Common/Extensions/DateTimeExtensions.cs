@@ -29,6 +29,40 @@ namespace Financier.Common.Extensions
             }
         }
 
+        public static int SubtractMonths(this DateTime source, DateTime target)
+        {
+            Func<DateTime, DateTime, int> countMonths = (start, end) =>
+            {
+                var months = 0;
+                for (; start.AddMonths(months) < end; months += 1)
+                {
+                }
+
+                if (true
+                    && start.AddMonths(months) < end
+                    && start.AddMonths(months).Day > end.Day)
+                {
+                    return months + 1;
+                }
+                return months;
+            };
+
+            // source is in the future
+            if (source > target)
+            {
+                return countMonths(target, source);
+            }
+            else if (source == target)
+            {
+                return 0;
+            }
+            else
+            {
+                return 0 - countMonths(source, target);
+            }
+        }
+
+
         public static int DaysFromBeginningOfYear(this DateTime target)
         {
             var beginningOfYear = new DateTime(target.Year, 1, 1);
