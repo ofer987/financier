@@ -38,12 +38,6 @@ namespace Financier.Common.Extensions
                 {
                 }
 
-                if (true
-                    && start.AddMonths(months) < end
-                    && start.AddMonths(months).Day > end.Day)
-                {
-                    return months + 1;
-                }
                 return months;
             };
 
