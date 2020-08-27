@@ -83,20 +83,33 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .ToList();
             Assert.That(actualHistories, Has.Exactly(2).Items);
 
+            var inflationAdjustment = Inflations.ConsumerPriceIndex;
             Assert.That(
                 actualHistories[0].TransactionalPrice,
                 Is.EqualTo(new decimal[] {
                     -2000.00M,
-                    -1000.00M,
-                    -8500.00M,
-                    -800.00M
+                    inflationAdjustment.GetValueAt(
+                        -1000.00M,
+                        HomePurchaseStrategy.InflationStartsAt,
+                        purchasedAt
+                    ),
+                    inflationAdjustment.GetValueAt(
+                        -8500.00M,
+                        HomePurchaseStrategy.InflationStartsAt,
+                        purchasedAt
+                    ),
+                    inflationAdjustment.GetValueAt(
+                        -800.00M,
+                        HomePurchaseStrategy.InflationStartsAt,
+                        purchasedAt
+                    )
                 }.Sum())
             );
             Assert.That(actualHistories[0].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actualHistories[0].At, Is.EqualTo(InitiatedAt.GetNext()));
             Assert.That(actualHistories[0].Product, Is.TypeOf<Home>());
 
-            Assert.That(actualHistories[1].TransactionalPrice, Is.EqualTo(136.57M));
+            Assert.That(actualHistories[1].TransactionalPrice, Is.EqualTo(10.41M));
             Assert.That(actualHistories[1].Type, Is.EqualTo(Types.Sale));
             Assert.That(actualHistories[1].At, Is.EqualTo(soldAt));
             Assert.That(actualHistories[1].Product, Is.TypeOf<Home>());

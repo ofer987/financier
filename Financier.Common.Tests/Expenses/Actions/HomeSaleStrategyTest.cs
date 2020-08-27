@@ -18,7 +18,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public void Test_HomeSaleStrategy_GetReturnedPrice(decimal requestedPrice, decimal expected)
         {
             Assert.That(
-                new HomeSaleStrategy(requestedPrice).GetReturnedPrice(),
+                new HomeSaleStrategy(requestedPrice, HomeSaleStrategy.InflationStartsAt).GetReturnedPrice(),
                 Is.EqualTo(expected)
             );
         }

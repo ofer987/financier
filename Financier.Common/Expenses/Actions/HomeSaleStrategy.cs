@@ -1,14 +1,20 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
+
+using Financier.Common.Models;
 
 namespace Financier.Common.Expenses.Actions
 {
     public class HomeSaleStrategy : ISaleStrategy
     {
+        public static DateTime InflationStartsAt = new DateTime(2018, 1, 1);
+        public DateTime RequestedAt { get; }
         public decimal RequestedPrice { get; }
 
-        public HomeSaleStrategy(decimal requestedPrice)
+        public HomeSaleStrategy(decimal requestedPrice, DateTime requestedAt)
         {
+            RequestedAt = requestedAt;
             RequestedPrice = requestedPrice;
         }
 
@@ -31,7 +37,12 @@ namespace Financier.Common.Expenses.Actions
 
         public IEnumerable<decimal> GetLegalFees()
         {
-            yield return 1000.00M;
+            yield return Inflations.ConsumerPriceIndex
+                .GetValueAt(
+                    1000.00M,
+                    InflationStartsAt,
+                    RequestedAt
+                );
         }
     }
 }

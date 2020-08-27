@@ -33,7 +33,7 @@ namespace Financier.Common.Models
         public override decimal GetSalePrice(decimal price, DateTime at)
         {
             return 0.00M
-                + new HomeSaleStrategy(price).GetReturnedPrice()
+                + new HomeSaleStrategy(price, at).GetReturnedPrice()
                 - Financing.GetSalePrice(price, at);
         }
 

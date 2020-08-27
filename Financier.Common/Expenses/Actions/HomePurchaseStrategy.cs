@@ -2,10 +2,14 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using Financier.Common.Models;
+
 namespace Financier.Common.Expenses.Actions
 {
     public class HomePurchaseStrategy : IPurchaseStrategy
     {
+        public static DateTime InflationStartsAt = new DateTime(2018, 1, 1);
+
         public decimal PurchasePrice { get; }
         public DateTime PurchasedAt { get; }
 
@@ -32,17 +36,29 @@ namespace Financier.Common.Expenses.Actions
 
         public IEnumerable<decimal> GetNotaryFees()
         {
-            yield return 1000.00M;
+            yield return Inflations.ConsumerPriceIndex.GetValueAt(
+                1000.00M,
+                InflationStartsAt,
+                PurchasedAt
+            );
         }
 
         public IEnumerable<decimal> GetMunicipalTaxes()
         {
-            yield return 8500.00M;
+            yield return Inflations.ConsumerPriceIndex.GetValueAt(
+                8500.00M,
+                InflationStartsAt,
+                PurchasedAt
+            );
         }
 
         public IEnumerable<decimal> GetMovingFees()
         {
-            yield return 800.00M;
+            yield return Inflations.ConsumerPriceIndex.GetValueAt(
+                800.00M,
+                InflationStartsAt,
+                PurchasedAt
+            );
         }
     }
 }

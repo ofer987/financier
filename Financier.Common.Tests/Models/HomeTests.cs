@@ -22,37 +22,42 @@ namespace Financier.Common.Tests.Models
 
             yield return new TestCaseData(
                 new DateTime(2016, 2, 29, 12, 59, 0),
-                4732.45
+                4732.45M
             );
 
             yield return new TestCaseData(
                 new DateTime(2016, 2, 29, 13, 0, 0),
-                4732.45
+                4732.45M
             );
 
             yield return new TestCaseData(
                 new DateTime(2016, 2, 29, 13, 0, 1),
-                4732.45
+                4732.45M
             );
 
             yield return new TestCaseData(
                 new DateTime(2016, 2, 29),
-                4732.45
+                4732.45M
             );
 
             yield return new TestCaseData(
                 new DateTime(2016, 3, 29),
-                9464.91
+                9464.91M
+            );
+
+            yield return new TestCaseData(
+                new DateTime(2017, 2, 27),
+                56789.44M
             );
 
             yield return new TestCaseData(
                 new DateTime(2017, 2, 28),
-                61521.90
+                56789.44M
             );
 
             yield return new TestCaseData(
                 new DateTime(2017, 3, 1),
-                61521.90
+                61521.90M
             );
         }
 
@@ -138,7 +143,7 @@ namespace Financier.Common.Tests.Models
             Assert.That(Subject.GetMaintenancePayments(at).Sum(), Is.EqualTo(expected));
         }
 
-        [TestCaseSource(nameof(GetMaintenancePaymentsCases))]
+        [TestCaseSource(nameof(GetCostAtCases))]
         public void Test_Home_GetCostAt(DateTime at, decimal expected)
         {
             Assert.That(Subject.GetCostAt(at).Sum(), Is.EqualTo(expected));
