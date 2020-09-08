@@ -10,8 +10,7 @@ namespace Financier.Common.Expenses.Actions
         Types Type { get; }
         IProduct Product { get; }
         DateTime At { get; }
-        IEnumerable<Money> Transactions { get; }
-        Money Price { get; }
+        decimal TransactionalPrice { get; }
 
         IAction Next { get; set; }
 
@@ -22,5 +21,7 @@ namespace Financier.Common.Expenses.Actions
         bool IsNull { get; }
 
         IEnumerable<IAction> GetActions();
+        IEnumerable<decimal> GetValueAt(DateTime at);
+        IEnumerable<decimal> GetCostAt(DateTime at);
     }
 }

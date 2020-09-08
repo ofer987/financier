@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
-using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
 
 namespace Financier.Common.Tests.Expenses.ActionTests
@@ -14,23 +11,16 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
         }
 
-        [TestCase(2000.00, 2019, 1, 1, 2000.00)]
-        [TestCase(1000.00, 2019, 1, 2, 1000.00)]
-        public void Test_GetReturnedPrice(decimal requestedPrice, int year, int month, int day, decimal expected)
+        [TestCase(2000.00, 900)]
+        [TestCase(1050.00, -2.5)]
+        [TestCase(1000.00, -50)]
+        [TestCase(0, -1000.00)]
+        public void Test_HomeSaleStrategy_GetReturnedPrice(decimal requestedPrice, decimal expected)
         {
-            var requested = new Money(
-                requestedPrice,
-                new DateTime(year, month, day)
-            );
-
             Assert.That(
-                new HomeSaleStrategy(requested).GetReturnedPrice(),
-                Is.EquivalentTo(
-                    new List<Money> { 
-                        new Money(expected, new DateTime(year, month, day)),
-                        new Money(-0.05M * expected, new DateTime(year, month, day))
-                    }
-                ));
+                new HomeSaleStrategy(requestedPrice, HomeSaleStrategy.InflationStartsAt).GetReturnedPrice(),
+                Is.EqualTo(expected)
+            );
         }
     }
 }

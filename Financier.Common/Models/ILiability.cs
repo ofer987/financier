@@ -5,6 +5,6 @@ namespace Financier.Common.Models
 {
     public interface ILiability
     {
-        IEnumerable<Money> GetCostAt(DateTime at);
+        IEnumerable<decimal> GetCostAt(DateTime at);
     }
 }

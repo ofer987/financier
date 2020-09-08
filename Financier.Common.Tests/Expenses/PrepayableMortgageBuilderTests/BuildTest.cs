@@ -48,7 +48,7 @@ namespace Financier.Common.Tests.Expenses.PrepayableMortgageBuilderTests
             Assert.That(
                 Result.GetMonthlyPayments(new DateTime(year, month, day))
                     .Select(payment => payment.Amount)
-                    .Select(amount => amount.Value)
+                    .Select(amount => amount)
                     .Last(),
                 Is.EqualTo(expected)
             );

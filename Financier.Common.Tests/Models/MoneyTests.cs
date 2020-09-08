@@ -118,5 +118,20 @@ namespace Financier.Common.Tests.Models
                 var foo = new Money(sourceValue, sourceAt) - new Money(targetValue, targetAt);
             });
         }
+
+        [TestCase(2020, 1, 31, 2020, 1, 28)]
+        [TestCase(2020, 1, 28, 2020, 1, 28)]
+        [TestCase(2020, 2, 28, 2020, 2, 28)]
+        [TestCase(2019, 1, 29, 2019, 1, 28)]
+        [TestCase(2020, 12, 31, 2020, 12, 28)]
+        [TestCase(2010, 12, 31, 2010, 12, 28)]
+        public void Test_Constructor(int year, int month, int day, int expectedYear, int expectedMonth, int expectedDay)
+        {
+            var date = new DateTime(year, month, day);
+            var money = new Money(0.00M, date);
+            Assert.That(money.At.Year, Is.EqualTo(expectedYear));
+            Assert.That(money.At.Month, Is.EqualTo(expectedMonth));
+            Assert.That(money.At.Day, Is.EqualTo(expectedDay));
+        }
     }
 }

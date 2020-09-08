@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Financier.Common.Models;
 
@@ -10,7 +9,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool IsSold => true;
         public override bool CanBuy => true;
         public override bool CanSell => false;
-        public override IEnumerable<Money> Transactions => Product.GetSaleStrategy(Price).GetReturnedPrice();
+        public override decimal TransactionalPrice => decimal.Round(Product.GetSalePrice(Price, At), 2);
 
         public override IAction Next
         {
@@ -35,7 +34,7 @@ namespace Financier.Common.Expenses.Actions
             }
         }
 
-        public Sale(IProduct product, Money price, DateTime at) : base(Types.Sale, product, price, at)
+        public Sale(IProduct product, decimal price, DateTime at) : base(Types.Sale, product, price, at)
         {
         }
     }

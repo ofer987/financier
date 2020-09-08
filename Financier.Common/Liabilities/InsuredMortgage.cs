@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using Financier.Common.Models;
-
 namespace Financier.Common.Liabilities
 {
     public class InsuredMortgage : Mortgage
@@ -15,9 +13,9 @@ namespace Financier.Common.Liabilities
         public decimal InsuranceRate { get; }
         public IMortgage BaseMortgage { get; }
 
-        public Money Insurance { get; }
-        private Money BaseValue => BaseMortgage.InitialValue;
-        public override Money InitialValue => BaseValue + Insurance;
+        public decimal Insurance { get; }
+        private decimal BaseValue => BaseMortgage.InitialValue;
+        public override decimal InitialValue => BaseValue + Insurance;
         public override DateTime InitiatedAt => BaseMortgage.InitiatedAt;
 
         public override int AmortisationPeriodInMonths => BaseMortgage.AmortisationPeriodInMonths;
@@ -47,23 +45,16 @@ namespace Financier.Common.Liabilities
             }
         }
 
-        public InsuredMortgage(IMortgage baseMortgage, Money downPayment) : this(baseMortgage, downPayment.Value)
-        {
-        }
-
         public InsuredMortgage(IMortgage baseMortgage, decimal downPayment)
         {
-            var rate = downPayment / (downPayment + baseMortgage.InitialValue.Value);
+            var rate = downPayment / (downPayment + baseMortgage.InitialValue);
             ValidateInsuranceRate(rate);
 
             BaseMortgage = baseMortgage;
             Calculator = BaseMortgage.Calculator;
-            InsuranceRate = downPayment / (downPayment + baseMortgage.InitialValue.Value);
+            InsuranceRate = downPayment / (downPayment + baseMortgage.InitialValue);
 
-            Insurance = new Money(
-                GetInsurance(baseMortgage.InitialValue, downPayment),
-                InitiatedAt
-            );
+            Insurance = GetInsurance(baseMortgage.InitialValue, downPayment);
         }
 
         public override IEnumerable<decimal> GetPrincipalOnlyPayments(int year, int month, int day)
@@ -77,7 +68,7 @@ namespace Financier.Common.Liabilities
             var rate = downPayment / total;
             if (rate >= MinimumInsuranceRate && rate < 0.10M)
             {
-                return BaseValue.Value * (MaximumInsuranceRate - rate) * 0.30M;
+                return BaseValue * (MaximumInsuranceRate - rate) * 0.30M;
             }
             else if (rate >= 0.10M && rate < 0.15M)
             {

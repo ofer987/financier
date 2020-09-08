@@ -3,7 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
-using Financier.Common.Liabilities;
 using Financier.Common.Extensions;
 using Financier.Common.Expenses.BalanceSheets;
 using Financier.Common.Models;
@@ -53,14 +52,14 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
 
             Assert.That(
                 balanceSheet.GetOwnedProducts(),
-                Has.Exactly(2).Items
+                Has.Exactly(1).Items
             );
         }
 
         [Test]
         public void Test_SellCondo_SellsTheHomeAndTheMortgage()
         {
-            var purchasePrice = new Money(2000.00M, InitiatedAt);
+            var purchasePrice = 2000.00M;
 
             // Buy condo
             var balanceSheet = Subject
@@ -73,7 +72,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             // Sell the condo
             var soldAt = purchasedAt.AddYears(5);
             var homeInflation = new CompoundYearlyInflation(0.05M);
-            var soldPrice = purchasePrice.GetValueAt(homeInflation, soldAt);
+            var soldPrice = homeInflation.GetValueAt(purchasePrice, purchasedAt, soldAt);
             Subject.SellHome(condo, soldAt, soldPrice);
 
             Assert.That(Subject.GetHomes(), Is.Empty);
@@ -82,27 +81,38 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
 
             var actualHistories = activity.GetHistories()
                 .ToList();
-            Assert.That(actualHistories, Has.Exactly(4).Items);
+            Assert.That(actualHistories, Has.Exactly(2).Items);
 
-            Assert.That(actualHistories[0].Price, Is.EqualTo(new Money(-1500.00M, InitiatedAt.GetNext())));
+            var inflationAdjustment = Inflations.ConsumerPriceIndex;
+            Assert.That(
+                actualHistories[0].TransactionalPrice,
+                Is.EqualTo(new decimal[] {
+                    -2000.00M,
+                    inflationAdjustment.GetValueAt(
+                        -1000.00M,
+                        HomePurchaseStrategy.InflationStartsAt,
+                        purchasedAt
+                    ),
+                    inflationAdjustment.GetValueAt(
+                        -8500.00M,
+                        HomePurchaseStrategy.InflationStartsAt,
+                        purchasedAt
+                    ),
+                    inflationAdjustment.GetValueAt(
+                        -800.00M,
+                        HomePurchaseStrategy.InflationStartsAt,
+                        purchasedAt
+                    )
+                }.Sum())
+            );
             Assert.That(actualHistories[0].Type, Is.EqualTo(Types.Purchase));
             Assert.That(actualHistories[0].At, Is.EqualTo(InitiatedAt.GetNext()));
-            Assert.That(actualHistories[0].Product, Is.TypeOf<FixedRateMortgage>());
+            Assert.That(actualHistories[0].Product, Is.TypeOf<Home>());
 
-            Assert.That(actualHistories[1].Price, Is.EqualTo(condo.Financing.GetBalance(soldAt)));
+            Assert.That(actualHistories[1].TransactionalPrice, Is.EqualTo(10.41M));
             Assert.That(actualHistories[1].Type, Is.EqualTo(Types.Sale));
             Assert.That(actualHistories[1].At, Is.EqualTo(soldAt));
-            Assert.That(actualHistories[1].Product, Is.TypeOf<FixedRateMortgage>());
-
-            Assert.That(actualHistories[2].Price, Is.EqualTo(new Money(2000.00M, InitiatedAt.GetNext())));
-            Assert.That(actualHistories[2].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actualHistories[2].At, Is.EqualTo(InitiatedAt.GetNext()));
-            Assert.That(actualHistories[2].Product, Is.TypeOf<Home>());
-
-            Assert.That(actualHistories[3].Price, Is.EqualTo(soldPrice));
-            Assert.That(actualHistories[3].Type, Is.EqualTo(Types.Sale));
-            Assert.That(actualHistories[3].At, Is.EqualTo(soldAt));
-            Assert.That(actualHistories[3].Product, Is.TypeOf<Home>());
+            Assert.That(actualHistories[1].Product, Is.TypeOf<Home>());
         }
 
         [TestCase(5)]
@@ -120,7 +130,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
             var purchasedAt = condo.PurchasedAt;
 
             // Sell the condo
-            var soldAt = purchasedAt.AddYears(0 -yearsBeforeHomeWasPurchased);
+            var soldAt = purchasedAt.AddYears(0 - yearsBeforeHomeWasPurchased);
             var homeInflation = new CompoundYearlyInflation(0.05M);
 
             Assert.Throws<ArgumentException>(() =>

@@ -10,7 +10,7 @@ namespace Financier.Common.Expenses.Actions
         public override bool IsSold => Next.Type == Types.Sale;
         public override bool CanBuy => false;
         public override bool CanSell => true;
-        public override IEnumerable<Money> Transactions => Product.GetPurchaseStrategy(Price).GetReturnedPrice();
+        public override decimal TransactionalPrice => decimal.Round(0.00M - Product.GetPurchasePrice(Price), 2);
 
         public override IAction Next
         {
@@ -37,6 +37,26 @@ namespace Financier.Common.Expenses.Actions
 
         public Purchase(IProduct product, DateTime at) : base(Types.Purchase, product, product.Price, at)
         {
+        }
+
+        public override IEnumerable<decimal> GetValueAt(DateTime at)
+        {
+            if (IsSold && Next.At < at)
+            {
+                return Product.GetValueAt(Next.At);
+            }
+
+            return Product.GetValueAt(at);
+        }
+
+        public override IEnumerable<decimal> GetCostAt(DateTime at)
+        {
+            if (IsSold && Next.At < at)
+            {
+                return Product.GetCostAt(Next.At);
+            }
+
+            return Product.GetCostAt(at);
         }
     }
 }

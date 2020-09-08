@@ -2,7 +2,6 @@ using System;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
-using Financier.Common.Models;
 
 namespace Financier.Common.Tests.Liabilities.MortgagesTests
 {
@@ -10,7 +9,7 @@ namespace Financier.Common.Tests.Liabilities.MortgagesTests
     {
         public DateTime PurchasedAt { get; private set; }
         public decimal InterestRate { get; private set; }
-        public Money MortgageValue { get; private set; }
+        public decimal MortgageValue { get; private set; }
         public int AmortisationPeriodInMonths { get; private set; }
 
         [SetUp]
@@ -18,7 +17,7 @@ namespace Financier.Common.Tests.Liabilities.MortgagesTests
         {
             PurchasedAt = new DateTime(2019, 1, 1);
             InterestRate = 0.0319M;
-            MortgageValue = new Money(328000.00M, PurchasedAt);
+            MortgageValue = 328000.00M;
             AmortisationPeriodInMonths = 300;
         }
 
@@ -33,7 +32,7 @@ namespace Financier.Common.Tests.Liabilities.MortgagesTests
                 InterestRate,
                 AmortisationPeriodInMonths,
                 PurchasedAt,
-                new Money(downPayment, PurchasedAt)
+                downPayment
             );
 
             Assert.That(actual, Is.TypeOf<InsuredMortgage>());
@@ -50,7 +49,7 @@ namespace Financier.Common.Tests.Liabilities.MortgagesTests
                 InterestRate,
                 AmortisationPeriodInMonths,
                 PurchasedAt,
-                new Money(downPayment, PurchasedAt)
+                downPayment
             );
 
             Assert.That(actual, Is.TypeOf<FixedRateMortgage>());

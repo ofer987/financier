@@ -8,46 +8,57 @@ namespace Financier.Common.Expenses.Actions
 {
     public class HomePurchaseStrategy : IPurchaseStrategy
     {
-        public static DateTime BaseDate = new DateTime(2018, 1, 1);
-        public Money Requested { get; }
-        public DateTime At => Requested.At;
+        public static DateTime InflationStartsAt = new DateTime(2018, 1, 1);
 
-        public HomePurchaseStrategy(Money requested)
+        public decimal PurchasePrice { get; }
+        public DateTime PurchasedAt { get; }
+
+        public HomePurchaseStrategy(decimal purchasePrice, DateTime purchasedAt)
         {
-            Requested = requested;
+            PurchasePrice = purchasePrice;
+            PurchasedAt = purchasedAt;
         }
 
-        public IEnumerable<Money> GetReturnedPrice()
+        public decimal GetReturnedPrice()
         {
-            yield return Requested.Reverse;
-
-            foreach (var fee in GetFees().Select(item => item.Reverse))
-            {
-                yield return fee;
-            }
+            return 0.00M
+                + PurchasePrice
+                + GetFees().Sum();
         }
 
-        public IEnumerable<Money> GetFees()
+        public IEnumerable<decimal> GetFees()
         {
-            return Enumerable.Empty<Money>()
+            return Enumerable.Empty<decimal>()
                 .Concat(GetNotaryFees())
                 .Concat(GetMunicipalTaxes())
                 .Concat(GetMovingFees());
         }
 
-        public IEnumerable<Money> GetNotaryFees()
+        public IEnumerable<decimal> GetNotaryFees()
         {
-            yield return new Money(1000.00M, BaseDate);
+            yield return Inflations.ConsumerPriceIndex.GetValueAt(
+                1000.00M,
+                InflationStartsAt,
+                PurchasedAt
+            );
         }
 
-        public IEnumerable<Money> GetMunicipalTaxes()
+        public IEnumerable<decimal> GetMunicipalTaxes()
         {
-            yield return new Money(8500.00M, BaseDate);
+            yield return Inflations.ConsumerPriceIndex.GetValueAt(
+                8500.00M,
+                InflationStartsAt,
+                PurchasedAt
+            );
         }
 
-        public IEnumerable<Money> GetMovingFees()
+        public IEnumerable<decimal> GetMovingFees()
         {
-            yield return new Money(800.00M, BaseDate);
+            yield return Inflations.ConsumerPriceIndex.GetValueAt(
+                800.00M,
+                InflationStartsAt,
+                PurchasedAt
+            );
         }
     }
 }

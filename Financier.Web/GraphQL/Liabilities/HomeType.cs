@@ -11,6 +11,7 @@ namespace Financier.Web.GraphQL.Liabilities
         {
             Field(t => t.PurchasedAt, nullable: false, type: typeof(DateGraphType));
             Field(t => t.DownPayment, nullable: false, type: typeof(DecimalGraphType));
+            Field(t => t.Financing, nullable: false, type: typeof(FixedRateMortgageType));
         }
     }
 }

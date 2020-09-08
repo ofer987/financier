@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
+using Financier.Common.Extensions;
 
 namespace Financier.Common.Liabilities
 {
@@ -15,12 +15,25 @@ namespace Financier.Common.Liabilities
         public virtual Guid Id { get; }
         public virtual string Name => string.Empty;
 
-        public Money Price => InitialValue.Reverse;
+        public decimal Price => 0.00M - InitialValue;
 
-        private Money BaseValue { get; }
-        public virtual Money InitialValue => BaseValue;
+        private decimal BaseValue { get; }
+        public virtual decimal InitialValue => BaseValue;
 
-        public virtual DateTime InitiatedAt { get; }
+        private DateTime initiatedAt;
+        public virtual DateTime InitiatedAt
+        {
+            get
+            {
+                return initiatedAt;
+            }
+
+            set
+            {
+                initiatedAt = value.GetDate();
+            }
+        }
+
         public virtual int AmortisationPeriodInMonths { get; }
         public virtual decimal InterestRate { get; }
         public decimal QuotedInterestRate => InterestRate;
@@ -31,12 +44,12 @@ namespace Financier.Common.Liabilities
 
         public virtual double MonthlyPayment => (Convert.ToDouble(InitialValue) * PeriodicMonthlyInterestRate) / (1 - Math.Pow(1 + PeriodicMonthlyInterestRate, 0 - AmortisationPeriodInMonths));
 
-        protected Mortgage(IMonthlyPaymentCalculator calculator, Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
+        protected Mortgage(IMonthlyPaymentCalculator calculator, decimal baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt)
         {
             Calculator = calculator;
         }
 
-        protected Mortgage(Money baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this()
+        protected Mortgage(decimal baseValue, decimal interestRate, int amortisationPeriodInMonths, DateTime initiatedAt) : this()
         {
             Calculator = new MonthlyPaymentCalculator();
             BaseValue = baseValue;
@@ -50,19 +63,19 @@ namespace Financier.Common.Liabilities
             Id = Guid.NewGuid();
         }
 
-        public Money GetBalance(DateTime at)
+        public decimal GetBalance(DateTime at)
         {
             return GetMonthlyPayments(at)
                 .Select(payment => payment.Balance)
                 .Last();
         }
 
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments()
+        public IEnumerable<Payment> GetMonthlyPayments()
         {
             return Calculator.GetMonthlyPayments(this);
         }
 
-        public IEnumerable<MonthlyPayment> GetMonthlyPayments(DateTime endAt)
+        public IEnumerable<Payment> GetMonthlyPayments(DateTime endAt)
         {
             return Calculator.GetMonthlyPayments(this, endAt);
         }
@@ -77,24 +90,27 @@ namespace Financier.Common.Liabilities
             return at.Day == InitiatedAt.Day;
         }
 
-        public IEnumerable<Money> GetValueAt(DateTime at)
+        public IEnumerable<decimal> GetValueAt(DateTime at)
         {
-            return Enumerable.Empty<Money>();
+            // TODO: why is this empty?
+            return Enumerable.Empty<decimal>();
         }
 
-        public IEnumerable<Money> GetCostAt(DateTime at)
+        public IEnumerable<decimal> GetCostAt(DateTime at)
         {
-            yield return GetBalance(at);
+            return GetMonthlyPayments(at)
+                .Select(payment => payment.Amount);
         }
 
-        public virtual IPurchaseStrategy GetPurchaseStrategy(Money price)
+        public virtual decimal GetPurchasePrice(decimal _price)
         {
-            return new SimplePurchaseStrategy(price);
+            return new MortgagePurchaseStrategy().GetReturnedPrice();
         }
 
-        public virtual ISaleStrategy GetSaleStrategy(Money price)
+        public virtual decimal GetSalePrice(decimal _price, DateTime at)
         {
-            return new SimpleSaleStrategy(price);
+            // TODO: Announce whether or not we are trading this home for another one
+            return new MortgageSaleStrategy(GetBalance(at), true).GetReturnedPrice();
         }
     }
 }

@@ -63,8 +63,7 @@ namespace Financier.Common.Tests.Models
         [TestCaseSource(nameof(GetValueAtTestCases))]
         public decimal TestGetValueAt(decimal sourceValue, DateTime sourceAt, DateTime targetAt)
         {
-            return new Money(sourceValue, sourceAt)
-                .GetValueAt(Subject, targetAt);
+            return Subject.GetValueAt(sourceValue, sourceAt, targetAt);
         }
     }
 }

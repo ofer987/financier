@@ -18,9 +18,9 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         [SetUp]
         public void Init()
         {
-            Television = new SimpleProduct("television", new Money(40.00M, InitiatedAt.AddDays(10)));
-            Stand = new SimpleProduct("stand", new Money(20.00M, InitiatedAt));
-            House = new SimpleProduct("stand", new Money(5000.00M, InitiatedAt));
+            Television = new SimpleProduct("television", 40.00M);
+            Stand = new SimpleProduct("stand", 20.00M);
+            House = new SimpleProduct("stand", 5000.00M);
             InitiatedAt = new DateTime(2019, 1, 1);
 
             Subject = new Activity(InitiatedAt);
@@ -30,23 +30,23 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public void Test_GetHistory()
         {
             Subject.Buy(Television, new DateTime(2020, 1, 1));
-            Subject.Sell(Television, new Money(50.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 2, 1));
+            Subject.Sell(Television, 50.00M, new DateTime(2020, 2, 1));
             Subject.Buy(Television, new DateTime(2020, 3, 1));
-            Subject.Sell(Television, new Money(60.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 4, 1));
+            Subject.Sell(Television, 60.00M, new DateTime(2020, 4, 1));
 
             var actions = Subject.GetHistory(Television).ToList();
             Assert.That(actions[0].Product, Is.EqualTo(Television));
             Assert.That(actions[0].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[0].Price, Is.EqualTo(new Money(40.00M, InitiatedAt.AddDays(10))));
+            Assert.That(actions[0].TransactionalPrice, Is.EqualTo(40.00M));
             Assert.That(actions[1].Product, Is.EqualTo(Television));
             Assert.That(actions[1].Type, Is.EqualTo(Types.Sale));
-            Assert.That(actions[1].Price, Is.EqualTo(new Money(50.00M, new DateTime(2020, 1, 1))));
+            Assert.That(actions[1].TransactionalPrice, Is.EqualTo(50.00M));
             Assert.That(actions[2].Product, Is.EqualTo(Television));
             Assert.That(actions[2].Type, Is.EqualTo(Types.Purchase));
-            Assert.That(actions[2].Price, Is.EqualTo(new Money(40.00M, InitiatedAt.AddDays(10))));
+            Assert.That(actions[2].TransactionalPrice, Is.EqualTo(40.00M));
             Assert.That(actions[3].Product, Is.EqualTo(Television));
             Assert.That(actions[3].Type, Is.EqualTo(Types.Sale));
-            Assert.That(actions[3].Price, Is.EqualTo(new Money(60.00M, new DateTime(2020, 1, 1))));
+            Assert.That(actions[3].TransactionalPrice, Is.EqualTo(60.00M));
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                Subject.Sell(Television, new Money(100.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 5, 1));
+                Subject.Sell(Television, 100.00M, new DateTime(2020, 5, 1));
             });
         }
 
@@ -62,11 +62,11 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public void Test_Sell_CannotSellAProductTwice()
         {
             Subject.Buy(Television, new DateTime(2020, 1, 1));
-            Subject.Sell(Television, new Money(100.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 5, 1));
+            Subject.Sell(Television, 100.00M, new DateTime(2020, 5, 1));
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                Subject.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1));
+                Subject.Sell(Television, 90.00M, new DateTime(2020, 6, 1));
             });
         }
 
@@ -85,7 +85,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public void Test_Purchase_CannotPurchaseAProductBeforeItWasSold()
         {
             Subject.Buy(Television, new DateTime(2020, 1, 1));
-            Subject.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 6, 1));
+            Subject.Sell(Television, 90.00M, new DateTime(2020, 6, 1));
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -100,7 +100,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Subject.Sell(Television, new Money(90.00M, new DateTime(2020, 1, 1)), new DateTime(2019, 12, 1));
+                Subject.Sell(Television, 90.00M, new DateTime(2019, 12, 1));
             });
         }
 
@@ -120,7 +120,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Subject.Sell(Television, new Money(100.00M, InitiatedAt), InitiatedAt.AddDays(-1));
+                Subject.Sell(Television, 100.00M, InitiatedAt.AddDays(-1));
             });
         }
 
@@ -130,7 +130,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var inflation = Inflations.NoopInflation;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Subject.GetCash(inflation, InitiatedAt.AddDays(-1));
+                Subject.GetCashAt(inflation, InitiatedAt.AddDays(-1));
             });
         }
 
@@ -140,7 +140,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var inflation = Inflations.NoopInflation;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Subject.GetCash(inflation, InitiatedAt);
+                Subject.GetCashAt(inflation, InitiatedAt);
             });
         }
 
@@ -150,7 +150,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             var inflation = Inflations.NoopInflation;
             Assert.DoesNotThrow(() =>
             {
-                Subject.GetCash(inflation, InitiatedAt.AddDays(1));
+                Subject.GetCashAt(inflation, InitiatedAt.AddDays(1));
             });
         }
 
@@ -158,13 +158,13 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         public void Test_GetOwnedProducts()
         {
             Subject.Buy(Television, new DateTime(2020, 1, 1));
-            Subject.Sell(Television, new Money(50.00M, new DateTime(2020, 2, 1)), new DateTime(2020, 2, 1));
+            Subject.Sell(Television, 50.00M, new DateTime(2020, 2, 1));
             Subject.Buy(Television, new DateTime(2020, 3, 1));
-            Subject.Sell(Television, new Money(60.00M, new DateTime(2020, 1, 1)), new DateTime(2020, 4, 1));
+            Subject.Sell(Television, 60.00M, new DateTime(2020, 4, 1));
             Subject.Buy(Television, new DateTime(2020, 8, 1));
 
             Subject.Buy(Stand, new DateTime(2020, 3, 20));
-            Subject.Sell(Stand, new Money(100.00M, new DateTime(2022, 2, 1)), new DateTime(2022, 2, 1));
+            Subject.Sell(Stand, 100.00M, new DateTime(2022, 2, 1));
 
             Subject.Buy(House, new DateTime(2022, 1, 1));
 

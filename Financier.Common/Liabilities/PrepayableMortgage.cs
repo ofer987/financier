@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Financier.Common.Models;
-
 namespace Financier.Common.Liabilities
 {
     public class PrepayableMortgage : Mortgage, IPrepayable
@@ -11,8 +9,8 @@ namespace Financier.Common.Liabilities
         public IMortgage BaseMortgage { get; }
         public CappedPayments Prepayments { get; }
 
-        private Money BaseValue => BaseMortgage.InitialValue;
-        public override Money InitialValue => BaseValue;
+        private decimal BaseValue => BaseMortgage.InitialValue;
+        public override decimal InitialValue => BaseValue;
         public override DateTime InitiatedAt => BaseMortgage.InitiatedAt;
         public override Guid Id => BaseMortgage.Id;
         public override string Name => BaseMortgage.Name;

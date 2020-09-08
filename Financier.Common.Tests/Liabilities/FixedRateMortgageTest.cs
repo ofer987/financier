@@ -61,7 +61,8 @@ namespace Financier.Common.Tests.Liabilities
             );
         }
 
-        [TestCase(2019, 1, 1, 328000)]
+        [TestCase(2019, 1, 1, 328000.00)]
+        [TestCase(2019, 1, 2, 327287.54)]
         [TestCase(2019, 1, 15, 327287.54)]
         [TestCase(2019, 1, 31, 327287.54)]
         [TestCase(2019, 2, 1, 327287.54)]
@@ -73,10 +74,24 @@ namespace Financier.Common.Tests.Liabilities
         [TestCase(2044, 2, 1, 79.13)]
         [TestCase(2044, 3, 1, 0)]
         [TestCase(2045, 1, 1, 0)]
-        public void Test_GetBalance(int year, int month, int day, decimal expected)
+        public void Test_FixedRateMortgage_GetBalance(int year, int month, int day, decimal expected)
         {
             Assert.That(
-                Subject.GetBalance(new DateTime(year, month, day)).Value,
+                Subject.GetBalance(new DateTime(year, month, day)),
+                Is.EqualTo(expected)
+            );
+        }
+
+
+        // The first payment (on 2019/1/1) is a non-payment.
+        // It only shows the initial balance.
+        [TestCase(2019, 1, 1, 1)]
+        [TestCase(2019, 1, 2, 2)]
+        public void Test_FixedRateMortgage_MonthlyPayments(int year, int month, int day, int expected)
+        {
+            var endAt = new DateTime(year, month, day);
+            Assert.That(
+                Subject.GetMonthlyPayments(endAt).Count(),
                 Is.EqualTo(expected)
             );
         }
@@ -90,7 +105,7 @@ namespace Financier.Common.Tests.Liabilities
         {
             Assert.That(
                 Subject.GetMonthlyPayments()
-                    .Select(payment => payment.Interest.Value)
+                    .Select(payment => payment.Interest)
                     .ToList()[monthCount]
                 , Is.EqualTo(expectedInterestPayment)
             );
@@ -105,7 +120,7 @@ namespace Financier.Common.Tests.Liabilities
         {
             Assert.That(
                 Subject.GetMonthlyPayments()
-                    .Select(payment => payment.Principal.Value)
+                    .Select(payment => payment.Principal)
                     .ToList()[monthCount]
                 , Is.EqualTo(expectedPrincipalPayment)
             );
@@ -121,6 +136,24 @@ namespace Financier.Common.Tests.Liabilities
                 decimal.Round(Convert.ToDecimal(subject.PeriodicMonthlyInterestRate), 12),
                 Is.EqualTo(expected)
             );
+        }
+
+        [TestCase(2020, 1, 31, 2020, 1, 28)]
+        [TestCase(2020, 1, 28, 2020, 1, 28)]
+        [TestCase(2020, 2, 28, 2020, 2, 28)]
+        [TestCase(2019, 1, 29, 2019, 1, 28)]
+        [TestCase(2020, 12, 31, 2020, 12, 28)]
+        [TestCase(2010, 12, 31, 2010, 12, 28)]
+        public void Test_Constructor(int year, int month, int day, int expectedYear, int expectedMonth, int expectedDay)
+        {
+            var date = new DateTime(year, month, day);
+            var money = new Money(0.00M, date);
+
+            var mortgage = new FixedRateMortgage(money, 0.0314M, 300, date);
+
+            Assert.That(mortgage.InitiatedAt.Year, Is.EqualTo(expectedYear));
+            Assert.That(mortgage.InitiatedAt.Month, Is.EqualTo(expectedMonth));
+            Assert.That(mortgage.InitiatedAt.Day, Is.EqualTo(expectedDay));
         }
     }
 }

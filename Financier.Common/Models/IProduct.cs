@@ -1,7 +1,5 @@
 using System;
 
-using Financier.Common.Expenses.Actions;
-
 namespace Financier.Common.Models
 {
     public interface IProduct : IAsset, ILiability
@@ -9,9 +7,9 @@ namespace Financier.Common.Models
         Guid Id { get; }
         string Name { get; }
 
-        Money Price { get; }
+        decimal Price { get; }
 
-        IPurchaseStrategy GetPurchaseStrategy(Money price);
-        ISaleStrategy GetSaleStrategy(Money price);
+        decimal GetPurchasePrice(decimal price);
+        decimal GetSalePrice(decimal price, DateTime at);
     }
 }

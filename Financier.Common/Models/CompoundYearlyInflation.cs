@@ -13,24 +13,27 @@ namespace Financier.Common.Models
             Rate = rate;
         }
 
-        public Money GetValueAt(Money source, DateTime targetAt)
+        public decimal GetValueAt(decimal sourceValue, DateTime sourceAt, DateTime targetAt)
         {
-            int totalYears;
-            if (targetAt > source.At)
+            var totalYears = 0;
+            if (targetAt == sourceAt)
             {
-                totalYears = Convert.ToInt32(
-                    Math.Floor((targetAt - source.At).TotalDays / 365)
-                );
+                totalYears = 0;
+            }
+            else if (targetAt > sourceAt)
+            {
+                for (totalYears = 0; sourceAt.AddYears(totalYears) <= targetAt; totalYears += 1);
+
+                totalYears -= 1;
             }
             else
             {
-                totalYears = Convert.ToInt32(
-                    Math.Floor((source.At - targetAt).TotalDays / 365)
-                );
-                totalYears = 0 - totalYears;
-            }
-            var targetValue = Convert.ToDouble(source.Value) * Math.Pow(Convert.ToDouble(1.00M + Rate), Convert.ToDouble(totalYears));
+                for (totalYears = -1; sourceAt.AddYears(totalYears) >= targetAt; totalYears -= 1);
 
+                totalYears += 1;
+            }
+
+            var targetValue = Convert.ToDouble(sourceValue) * Math.Pow(Convert.ToDouble(1.00M + Rate), Convert.ToDouble(totalYears));
             return new Money(Convert.ToDecimal(targetValue), targetAt);
         }
     }

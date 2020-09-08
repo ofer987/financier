@@ -1,21 +1,17 @@
-using System.Collections.Generic;
-
-using Financier.Common.Models;
-
 namespace Financier.Common.Expenses.Actions
 {
     public class SimpleSaleStrategy : ISaleStrategy
     {
-        public Money Requested { get; }
+        public decimal RequestedPrice { get; }
 
-        public SimpleSaleStrategy(Money requested)
+        public SimpleSaleStrategy(decimal requestedPrice)
         {
-            Requested = requested;
+            RequestedPrice = requestedPrice;
         }
 
-        public IEnumerable<Money> GetReturnedPrice()
+        public decimal GetReturnedPrice()
         {
-            yield return Requested;
+            return RequestedPrice;
         }
     }
 }

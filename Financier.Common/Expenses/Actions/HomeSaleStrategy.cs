@@ -8,33 +8,41 @@ namespace Financier.Common.Expenses.Actions
 {
     public class HomeSaleStrategy : ISaleStrategy
     {
-        public Money Requested { get; }
-        public DateTime At => Requested.At;
+        public static DateTime InflationStartsAt = new DateTime(2018, 1, 1);
+        public DateTime RequestedAt { get; }
+        public decimal RequestedPrice { get; }
 
-        public HomeSaleStrategy(Money requested)
+        public HomeSaleStrategy(decimal requestedPrice, DateTime requestedAt)
         {
-            Requested = requested;
+            RequestedAt = requestedAt;
+            RequestedPrice = requestedPrice;
         }
 
-        public IEnumerable<Money> GetReturnedPrice()
+        public decimal GetReturnedPrice()
         {
-            yield return Requested;
-
-            foreach (var fee in GetFees().Select(item => item.Reverse))
-            {
-                yield return fee;
-            }
+            return RequestedPrice - GetFees().Sum();
         }
 
-        public IEnumerable<Money> GetFees()
+        public IEnumerable<decimal> GetFees()
         {
-            return Enumerable.Empty<Money>()
-                .Concat(GetRealtorFees());
+            return Enumerable.Empty<decimal>()
+                .Concat(GetRealtorFees())
+                .Concat(GetLegalFees());
         }
 
-        public IEnumerable<Money> GetRealtorFees()
+        public IEnumerable<decimal> GetRealtorFees()
         {
-            yield return new Money(0.05M * Requested.Value, At);
+            yield return 0.05M * RequestedPrice;
+        }
+
+        public IEnumerable<decimal> GetLegalFees()
+        {
+            yield return Inflations.ConsumerPriceIndex
+                .GetValueAt(
+                    1000.00M,
+                    InflationStartsAt,
+                    RequestedAt
+                );
         }
     }
 }

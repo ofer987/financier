@@ -71,7 +71,7 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
                 .Build();
 
             var condo = balanceSheet.GetOwnedProducts(purchasedAt.GetNext()).First();
-            var actualAbsoluteHomePrice = condo.Price.Value;
+            var actualAbsoluteHomePrice = condo.Price;
             Assert.That(actualAbsoluteHomePrice, Is.EqualTo(expected));
         }
 

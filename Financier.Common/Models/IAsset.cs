@@ -5,6 +5,6 @@ namespace Financier.Common.Models
 {
     public interface IAsset
     {
-        IEnumerable<Money> GetValueAt(DateTime at);
+        IEnumerable<decimal> GetValueAt(DateTime at);
     }
 }

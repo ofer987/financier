@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
-using Financier.Common.Models;
 using Financier.Common.Expenses.Actions;
+using Financier.Common.Models;
 
 namespace Financier.Common.Tests.Expenses.ActionTests
 {
@@ -14,24 +14,40 @@ namespace Financier.Common.Tests.Expenses.ActionTests
         {
         }
 
-        [TestCase(2000.00, 2019, 1, 1, -2000.00)]
-        [TestCase(1000.00, 2019, 1, 2, -1000.00)]
-        public void Test_GetReturnedPrice(decimal requestedPrice, int year, int month, int day, decimal expected)
+        [TestCase(2000.00, 2018, 1, 1, 2000.00)]
+        [TestCase(1000.00, 2018, 1, 2, 1000.00)]
+        [TestCase(1000.00, 2018, 12, 31, 1000.00)]
+        [TestCase(1000.00, 2019, 1, 1, 1000.00)]
+        public void Test_HomePurchaseStrategy_GetReturnedPrice(decimal requestedPrice, int year, int month, int day, decimal expected)
         {
-            var requested = new Money(
-                requestedPrice,
-                new DateTime(year, month, day)
-            );
-
+            var requestedAt = new DateTime(year, month, day);
             Assert.That(
-                new HomePurchaseStrategy(requested).GetReturnedPrice(),
-                Is.EquivalentTo(
-                    new List<Money> { 
-                        new Money(expected, new DateTime(year, month, day)),
-                        new Money(-1000.00M, new DateTime(2018, 1, 1)),
-                        new Money(-8500.00M, new DateTime(2018, 1, 1)),
-                        new Money(-800.00M, new DateTime(2018, 1, 1))
-                    }
+                new HomePurchaseStrategy(
+                    requestedPrice,
+                    requestedAt
+                ).GetReturnedPrice(),
+                Is.EqualTo(
+                    new decimal[] {
+                        expected,
+                        Inflations.ConsumerPriceIndex
+                            .GetValueAt(
+                                1000.00M,
+                                HomePurchaseStrategy.InflationStartsAt,
+                                requestedAt
+                            ),
+                        Inflations.ConsumerPriceIndex
+                            .GetValueAt(
+                                8500.00M,
+                                HomePurchaseStrategy.InflationStartsAt,
+                                requestedAt
+                            ),
+                        Inflations.ConsumerPriceIndex
+                            .GetValueAt(
+                                800.00M,
+                                HomePurchaseStrategy.InflationStartsAt,
+                                requestedAt
+                            )
+                    }.Sum()
                 ));
         }
     }

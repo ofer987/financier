@@ -37,7 +37,7 @@ namespace Financier.Cli.BalanceSheets
             var consumerPriceIndex = new CompoundYearlyInflation(0.02M);
 
             // var netWorth = activity.GetNetWorth(consumerPriceIndex, atTwentyYears.AddDays(1));
-            var cash = activity.GetCash(Inflations.NoopInflation, soldAt.AddDays(1));
+            var cash = activity.GetCashAt(Inflations.NoopInflation, soldAt.AddDays(1));
 
             var condoPurchase = activity.GetHistories()
                 .Where(action => action.Type == Types.Purchase)
