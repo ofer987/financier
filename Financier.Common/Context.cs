@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Expenses.Models;
@@ -6,7 +7,7 @@ namespace Financier.Common
 {
     public enum Environments { Dev = 0, Test, Production }
 
-    public class Context : DbContext
+    public class Context : IdentityDbContext
     {
         public DbSet<Card> Cards { get; set; }
         public DbSet<Statement> Statements { get; set; }
