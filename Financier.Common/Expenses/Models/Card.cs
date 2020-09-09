@@ -19,6 +19,11 @@ namespace Financier.Common.Expenses.Models
         // TODO: make unique
         public string Number { get; set; }
 
+        public string AccountName { get; set; }
+
+        [Required]
+        public Account Owner { get; set; }
+
         [Required]
         public CardTypes CardType { get; set; }
 

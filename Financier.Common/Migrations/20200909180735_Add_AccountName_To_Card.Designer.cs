@@ -3,31 +3,23 @@ using System;
 using Financier.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Financier.Common.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200909180735_Add_AccountName_To_Card")]
+    partial class Add_AccountName_To_Card
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 .HasAnnotation("ProductVersion", "3.1.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            modelBuilder.Entity("Financier.Common.Expenses.Models.Account", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Name");
-
-                    b.ToTable("Expenses_Accounts");
-                });
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Card", b =>
                 {
@@ -36,7 +28,6 @@ namespace Financier.Common.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("AccountName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("CardType")
@@ -47,8 +38,6 @@ namespace Financier.Common.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AccountName");
 
                     b.ToTable("Expenses_Cards");
                 });
@@ -138,15 +127,6 @@ namespace Financier.Common.Migrations
                         .IsUnique();
 
                     b.ToTable("Expenses_Tags");
-                });
-
-            modelBuilder.Entity("Financier.Common.Expenses.Models.Card", b =>
-                {
-                    b.HasOne("Financier.Common.Expenses.Models.Account", "Owner")
-                        .WithMany("Cards")
-                        .HasForeignKey("AccountName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Item", b =>
