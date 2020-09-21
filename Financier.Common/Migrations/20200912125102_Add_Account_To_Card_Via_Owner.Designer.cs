@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Financier.Common.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20200909182751_Add_Account_To_Card_Via_Owner")]
+    [Migration("20200912125102_Add_Account_To_Card_Via_Owner")]
     partial class Add_Account_To_Card_Via_Owner
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
