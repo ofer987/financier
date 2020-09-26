@@ -2,23 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
+using Financier.Web.Identity.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-using IdentityServer4;
-using IdentityServer4.Models;
-
-using Financier.Web.Identity.Data;
-using Financier.Web.Identity.Models;
 
 namespace Financier.Web.Identity
 {
@@ -37,35 +30,12 @@ namespace Financier.Web.Identity
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services
-                .AddDefaultIdentity<ApplicationUser>(options =>
-                {
-                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.MaxValue;
-                    options.SignIn.RequireConfirmedAccount = true;
-                })
-                .AddRoles<IdentityRole>() // Maybe remove?
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                ;
-
-            services
-                .AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
-            ;
-
-            services.AddAuthorization();
-
-            services.AddAuthentication()
-                .AddJwtBearer(options => {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                })
-                .AddIdentityServerJwt()
-            ;
-
-            services.Configure<IdentityOptions>(options => {
-            });
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
-            services.AddRazorPages();
+           services.AddRazorPages();
+
+           services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,13 +51,12 @@ namespace Financier.Web.Identity
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-                app.UseHttpsRedirection();
             }
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -95,7 +64,17 @@ namespace Financier.Web.Identity
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "identity/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "app-redirection",
+                    // pattern: "{ssn:regex(^(?!.*identity).*)}/{*route}",
+                    pattern: "{*route}",
+                    defaults: new { 
+                        controller = "App",
+                        action = "Index"
+                    }
+                );
                 endpoints.MapRazorPages();
             });
         }
