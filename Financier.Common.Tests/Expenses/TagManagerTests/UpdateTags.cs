@@ -13,27 +13,21 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
     [TestFixtureSource(typeof(UpdateTags), nameof(TestCaseFixtures))]
     public class UpdateTags
     {
+        public Account OwnerOfMyCard1 { get; set; }
         public Card MyCard1 { get; set; }
-
         public Statement MyStatement1 { get; set; }
-
         public Item MyItem1 { get; set; }
-
         public Tag DanTag1 { get; set; }
-
         public Tag RonTag1 { get; set; }
-
         public Tag KerenTag1 { get; set; }
-
         public List<Tag> ExistingTags { get; set; }
-
         public List<Tag> UpdatedTags { get; set; }
-
         public List<Tag> UnusedTags { get; set; }
 
         public UpdateTags(string[] existingTags, string[] updatedTags, string[] unusedTags)
         {
-            MyCard1 = Factories.SimpleCard;
+            OwnerOfMyCard1 = ModelFactories.Accounts.GetMrBean();
+            MyCard1 = Factories.SimpleCard(OwnerOfMyCard1);
             MyCard1.Number = Guid.NewGuid().ToString();
             MyStatement1 = Factories.GetSimpleStatement(MyCard1);
 
@@ -133,6 +127,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
         {
             using (var db = new Context())
             {
+                db.Accounts.Add(OwnerOfMyCard1);
+                db.SaveChanges();
+
                 db.Tags.Add(DanTag1);
                 db.Tags.Add(RonTag1);
                 db.Tags.Add(KerenTag1);

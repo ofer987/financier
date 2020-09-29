@@ -22,6 +22,12 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         public void Init()
         {
             Context.Clean();
+
+            using (var db = new Context())
+            {
+                db.Accounts.Add(MrBean);
+                db.SaveChanges();
+            }
         }
 
         [OneTimeTearDown]
@@ -29,6 +35,8 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         {
             Context.Clean();
         }
+
+        public static Account MrBean = ModelFactories.Accounts.GetMrBean();
 
         public static IEnumerable TestCases
         {
@@ -148,14 +156,17 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             {
                 using (var db = new Context())
                 {
-                    db.Cards.Add(new Financier.Common.Expenses.Models.Card { Id = Guid.NewGuid(), Number = "1234" });
+                    var mrBean = ModelFactories.Accounts.GetMrBean();
+                    db.Accounts.Add(mrBean);
+
+                    db.Cards.Add(new Financier.Common.Expenses.Models.Card { Id = Guid.NewGuid(), Number = "1234", Owner = mrBean });
                     db.SaveChanges();
                 }
 
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementFile(reader, statementPostedAt).Import();
+                new CreditCardStatementFile(MrBean.Name, reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {
@@ -185,11 +196,17 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     db.Items.RemoveRange(db.Items);
                     db.Statements.RemoveRange(db.Statements);
                     db.Cards.RemoveRange(db.Cards);
+                    db.Accounts.RemoveRange(db.Accounts);
                     db.SaveChanges();
 
                     db.Database.EnsureCreated();
+
+                    var mrBean = ModelFactories.Accounts.GetMrBean();
+                    db.Accounts.Add(mrBean);
+
                     db.Cards.Add(new Financier.Common.Expenses.Models.Card
                     {
+                        Owner = mrBean,
                         Id = Guid.NewGuid(),
                         CardType = CardTypes.Credit,
                         Number = "5191230192755321"
@@ -200,7 +217,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementFile(reader, statementPostedAt).Import();
+                new CreditCardStatementFile(MrBean.Name, reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {
@@ -240,8 +257,13 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
+
+                    var mrBean = ModelFactories.Accounts.GetMrBean();
+                    db.Accounts.Add(mrBean);
+
                     var card = new Financier.Common.Expenses.Models.Card
                     {
+                        Owner = mrBean,
                         Id = Guid.NewGuid(),
                         Number = "1234",
                         Statements = new List<Statement>()
@@ -288,8 +310,14 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
+
+                    var owner = ModelFactories.Accounts.GetMrBean();
+                    db.Accounts.Add(owner);
+                    db.SaveChanges();
+
                     var card = new Financier.Common.Expenses.Models.Card
                     {
+                        Owner = owner,
                         Id = Guid.NewGuid(),
                         Number = "1234",
                         Statements = new List<Statement>()
@@ -337,8 +365,13 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
+
+                    var mrBean = ModelFactories.Accounts.GetMrBean();
+                    db.Accounts.Add(mrBean);
+
                     var card = new Financier.Common.Expenses.Models.Card
                     {
+                        Owner = mrBean,
                         Id = Guid.NewGuid(),
                         Number = "1234",
                         Statements = new List<Statement>()

@@ -11,6 +11,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementFileTests
 {
     public class GetRecords : Fixture
     {
+        public static Account MrBean = ModelFactories.Accounts.GetMrBean();
         public static IEnumerable ValidTestCases
         {
             get
@@ -68,7 +69,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementFileTests
         [TestCaseSource(nameof(ValidTestCases))]
         public BankStatementRecord[] Test_Expenses_BankStatementFile_ParseStatement_ValidRecords(string input)
         {
-            return new BankStatementFile(GetStream(input), new DateTime(2019, 1, 1)).GetRecords();
+            return new BankStatementFile(MrBean.Name, GetStream(input), new DateTime(2019, 1, 1)).GetRecords();
         }
 
         public static IEnumerable InvalidTestCases
@@ -98,7 +99,7 @@ Account,First Bank Card,Transaction Type,Date Posted,Transaction Amount,Descript
         [TestCaseSource(nameof(InvalidTestCases))]
         public void Test_Expenses_BankStatementFile_ParseStatement_InvalidRecords(string input)
         {
-            Assert.Throws<CsvHelper.HeaderValidationException>(() => new BankStatementFile(GetStream(input), new DateTime(2019, 1, 1)).GetRecords());
+            Assert.Throws<CsvHelper.HeaderValidationException>(() => new BankStatementFile(MrBean.Name, GetStream(input), new DateTime(2019, 1, 1)).GetRecords());
         }
 
         private Stream GetStream(string str)

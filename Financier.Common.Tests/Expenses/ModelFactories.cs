@@ -12,8 +12,9 @@ namespace Financier.Common.Tests.Expenses
         {
             public static Guid CardId = Guid.NewGuid();
             public const string CardNumber = "123143287999";
-            public static Func<Card> GetCard = () => new Card
+            public static Func<Account, Card> GetCard = (account) => new Card
             {
+                Owner = account,
                 Id = CardId,
                 Number = CardNumber,
                 CardType = CardTypes.Bank,
@@ -238,8 +239,9 @@ namespace Financier.Common.Tests.Expenses
         {
             public static Guid CardId = Guid.NewGuid();
             public const string CardNumber = "34875487543";
-            public static Func<Card> GetCard = () => new Card
+            public static Func<Account, Card> GetCard = (account) => new Card
             {
+                Owner = account,
                 Id = CardId,
                 Number = CardNumber,
                 CardType = CardTypes.Credit,
@@ -290,8 +292,9 @@ namespace Financier.Common.Tests.Expenses
         {
             public static Guid CardId = Guid.NewGuid();
             public const string CardNumber = "1234567";
-            public static Func<Card> Card = () => new Card
+            public static Func<Account, Card> Card = (account) => new Card
             {
+                Owner = account,
                 Id = CardId,
                 Number = CardNumber,
                 CardType = CardTypes.Credit,
@@ -386,6 +389,14 @@ namespace Financier.Common.Tests.Expenses
                     };
                 }
             }
+        }
+
+        public static class Accounts
+        {
+            public static Func<Account> GetMrBean = () => new Account
+            {
+                Name = "mr.bean@bbc.com"
+            };
         }
 
         public static class Tags

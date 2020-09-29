@@ -63,6 +63,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                 }
             }
 
+            public Account Owner { get; set; }
             public Card Card1 { get; set; }
             public Card Card2 { get; set; }
 
@@ -77,12 +78,14 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
 
             public Base(int cardIdentifier, DateTime postedAt, Guid expectedStatementId)
             {
-                Card1 = Factories.SimpleCard;
+                Owner = ModelFactories.Accounts.GetMrBean();
+
+                Card1 = Factories.SimpleCard(Owner);
                 Card1.Id = Cards.One.Id;
                 Card1.Number = Cards.One.Number;
                 AllCards.Add(Cards.One.Identifier, Card1);
 
-                Card2 = Factories.SimpleCard;
+                Card2 = Factories.SimpleCard(Owner);
                 Card2.Id = Cards.Two.Id;
                 Card2.Number = Cards.Two.Number;
                 AllCards.Add(Cards.Two.Identifier, Card2);
@@ -140,6 +143,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
             {
                 using (var db = new Context())
                 {
+                    db.Accounts.Add(Owner);
+                    db.SaveChanges();
+
                     db.Cards.Add(Card1);
                     db.Cards.Add(Card2);
                     db.SaveChanges();

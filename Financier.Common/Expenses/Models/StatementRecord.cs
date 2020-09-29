@@ -53,9 +53,9 @@ namespace Financier.Common.Expenses.Models
                     statement = new Statement
                     {
                         Id = Guid.NewGuid(),
-                           PostedAt = postedAt,
-                           CardId = cardId,
-                           Items = new List<Item>(),
+                        PostedAt = postedAt,
+                        CardId = cardId,
+                        Items = new List<Item>(),
                     };
                     db.Statements.Add(statement);
                     db.SaveChanges();

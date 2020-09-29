@@ -26,10 +26,14 @@ namespace Financier.Common.Tests.Expenses
                 db.Tags.Add(salaryTag);
                 db.SaveChanges();
 
+                // Accounts
+                var theMasterAccount = ModelFactories.Accounts.GetMrBean();
+                db.Accounts.Add(theMasterAccount);
+
                 // Credit Cards
                 {
-                    var danCard = ModelFactories.DanCard.Card();
-                    var ronCard = ModelFactories.RonCard.GetCard();
+                    var danCard = ModelFactories.DanCard.Card(theMasterAccount);
+                    var ronCard = ModelFactories.RonCard.GetCard(theMasterAccount);
                     db.Cards.Add(danCard);
                     db.Cards.Add(ronCard);
                     db.SaveChanges();
@@ -58,7 +62,7 @@ namespace Financier.Common.Tests.Expenses
 
                 // Bank Cards
                 {
-                    var bankCard = ModelFactories.SavingsCard.GetCard();
+                    var bankCard = ModelFactories.SavingsCard.GetCard(theMasterAccount);
                     db.Cards.Add(bankCard);
                     {
                         var juneStatement = ModelFactories.SavingsCard.June.GetStatement();

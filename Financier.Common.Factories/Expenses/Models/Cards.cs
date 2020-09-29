@@ -7,8 +7,9 @@ namespace Financier.Common
 {
     public partial class Factories
     {
-        public static Card SimpleCard => new Card
+        public static Func<Account, Card> SimpleCard = (account) => new Card
         {
+            Owner = account,
             Id = Guid.NewGuid(),
             Number = "1234",
             Statements = new List<Statement>()

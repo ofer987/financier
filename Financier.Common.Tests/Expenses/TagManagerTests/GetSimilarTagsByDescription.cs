@@ -19,6 +19,8 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             public const string Statement2Item = "statement2_item";
         }
 
+        public Account Owner { get; set; }
+
         public List<Card> Cards { get; set; } = new List<Card>();
         public List<Statement> Statements { get; set; } = new List<Statement>();
         public List<Item> Items { get; set; } = new List<Item>();
@@ -36,7 +38,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            var myCard1 = Factories.SimpleCard;
+            Owner = ModelFactories.Accounts.GetMrBean();
+
+            var myCard1 = Factories.SimpleCard(Owner);
             Cards.Add(myCard1);
 
             var myStatement1 = Factories.GetSimpleStatement(myCard1);
@@ -44,7 +48,6 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             var myStatement2 = Factories.GetSimpleStatement(myCard1);
             myStatement2.PostedAt = new DateTime(2018, 2, 1);
             Statements.AddRange(new[] { myStatement1, myStatement2 });
-
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
@@ -121,6 +124,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
         {
             using (var db = new Context())
             {
+                db.Accounts.Add(Owner);
+                db.SaveChanges();
+
                 db.Tags.Add(DanTag1);
                 db.Tags.Add(RonTag1);
                 db.Tags.Add(KerenTag1);

@@ -8,15 +8,15 @@ namespace Financier.Common.Expenses
 {
     public class BankStatementFile : StatementFile<BankStatementRecord>
     {
-        public BankStatementFile(Stream stream, DateTime postedAt) : base(stream, postedAt)
+        public BankStatementFile(string accountName, Stream stream, DateTime postedAt) : base(accountName, stream, postedAt)
         {
         }
 
-        public BankStatementFile(FileInfo file) : base(file)
+        public BankStatementFile(string accountName, FileInfo file) : base(accountName, file)
         {
         }
 
-        public BankStatementFile(string path) : base(path)
+        public BankStatementFile(string accountName, string path) : base(accountName, path)
         {
         }
 

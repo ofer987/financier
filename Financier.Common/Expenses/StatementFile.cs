@@ -16,25 +16,26 @@ namespace Financier.Common.Expenses
     {
         private static Regex DateRegex = new Regex(@"\d{8}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        public string AccountName { get; private set; }
         public Stream Stream { get; private set; }
-
         public DateTime PostedAt { get; private set; }
-
         public string Path { get; private set; }
 
-        protected StatementFile(FileInfo file)
+        protected StatementFile(string accountName, FileInfo file)
         {
+            AccountName = accountName;
             Stream = file.OpenRead();
             Path = file.FullName;
             PostedAt = DateTime.ParseExact(DateRegex.Match(file.Name).Value, "yyyyMMdd", null);
         }
 
-        protected StatementFile(string path) : this(new FileInfo(path))
+        protected StatementFile(string accountName, string path) : this(accountName, new FileInfo(path))
         {
         }
 
-        protected StatementFile(Stream stream, DateTime postedAt)
+        protected StatementFile(string accountName, Stream stream, DateTime postedAt)
         {
+            AccountName = accountName;
             Stream = stream;
             PostedAt = postedAt;
         }
@@ -47,6 +48,7 @@ namespace Financier.Common.Expenses
                 return;
             }
 
+            EnsureAccountIsCreated(AccountName);
             var card = records[0].GetCard();
             var statement = records[0].GetStatement(PostedAt);
 
@@ -90,6 +92,27 @@ namespace Financier.Common.Expenses
         protected virtual IEnumerable<T> PostProcessedRecords(IEnumerable<T> records)
         {
             return records;
+        }
+
+        protected Account EnsureAccountIsCreated(string accountName)
+        {
+            try
+            {
+                return Account.FindByName(accountName);
+            }
+            catch (InvalidOperationException)
+            {
+                var account = new Account
+                {
+                    Name = accountName
+                };
+                using (var db = new Context())
+                {
+                    db.Accounts.Add(account);
+                }
+
+                return account;
+            }
         }
     }
 }
