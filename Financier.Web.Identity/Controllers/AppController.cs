@@ -4,7 +4,7 @@ using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-// using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Financier.Web.Identity
@@ -59,102 +59,77 @@ namespace Financier.Web.Identity
         public async Task<IActionResult> Index(string route)
         {
             var requestMethod = HttpContext.Request.Method;
-            switch (requestMethod)
+            try
             {
-                case "GET":
-                    return await Get(route);
-                case "POST":
-                    var dataReader = new StreamReader(HttpContext.Request.Body);
-                    var data = await dataReader.ReadToEndAsync();
-                    return await Post(route, data);
-                default:
-                    throw new InvalidOperationException($"Invalid Request Method ({requestMethod})");
+                switch (requestMethod)
+                {
+                    case "GET":
+                        return await Get(route, HttpContext.Request);
+                    case "POST":
+                        var dataReader = new StreamReader(HttpContext.Request.Body);
+                        var data = await dataReader.ReadToEndAsync();
+                        return await Post(route, HttpContext.Request, data);
+                    default:
+                        throw new InvalidOperationException($"Invalid Request Method ({requestMethod})");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                var content = $"oops an error happened!\n{exception}";
+
+                var result = new ContentResult();
+                result.Content = content;
+                result.ContentType = "text/plain";
+                result.StatusCode = 400;
+
+                return result;
+            }
+            catch (Exception exception)
+            {
+                var content = $"this should not have happened!\n{exception}";
+
+                var result = new ContentResult();
+                result.Content = content;
+                result.ContentType = "text/plain";
+                result.StatusCode = 500;
+
+                return result;
             }
         }
 
-        public async Task<IActionResult> Get(string route)
+        public async Task<IActionResult> Get(string targetRoute, HttpRequest sourceRequest)
         {
             var client = GetClientForApp();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5002/{route}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5002/{targetRoute}");
             var response = await client.SendAsync(request);
 
-            try
-            {
-                var message = response.EnsureSuccessStatusCode();
-                var content = await message.Content.ReadAsStringAsync();
+            var message = response.EnsureSuccessStatusCode();
+            var content = await message.Content.ReadAsStringAsync();
 
-                var result = new ContentResult();
-                result.Content = content;
-                result.ContentType = "text/html";
-                result.StatusCode = 200;
+            var result = new ContentResult();
+            result.Content = content;
+            result.ContentType = response.Content.Headers.ContentType.MediaType;
+            result.StatusCode = (int)response.StatusCode;
 
-                return result;
-            }
-            catch (HttpRequestException exception)
-            {
-                var content = $"oops an error happened!\n{exception}";
-
-                var result = new ContentResult();
-                result.Content = content;
-                result.ContentType = "text/plain";
-                result.StatusCode = 400;
-
-                return result;
-            }
-            catch (Exception exception)
-            {
-                var content = $"this should not have happened!\n{exception}";
-
-                var result = new ContentResult();
-                result.Content = content;
-                result.ContentType = "text/plain";
-                result.StatusCode = 500;
-
-                return result;
-            }
+            return result;
         }
 
-        public async Task<IActionResult> Post(string route, string data)
+        public async Task<IActionResult> Post(string targetRoute, HttpRequest sourceRequest, string data)
         {
             var client = GetClientForApp();
-            var transmittedData = new StringContent(data, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"http://localhost:5002/{route}", transmittedData);
+            var transmittedData = new StringContent(data, Encoding.UTF8, sourceRequest.ContentType);
+            var response = await client.PostAsync($"http://localhost:5002/{targetRoute}", transmittedData);
+            var responseContentType = sourceRequest.ContentType;
 
-            try
-            {
-                var message = response.EnsureSuccessStatusCode();
-                var content = await message.Content.ReadAsStringAsync();
+            var message = response.EnsureSuccessStatusCode();
+            var content = await message.Content.ReadAsStringAsync();
 
-                var result = new ContentResult();
-                result.Content = content;
-                // Or set to be the same as the response's Content-Type???
-                result.ContentType = "application/json";
-                result.StatusCode = 200;
+            var result = new ContentResult();
+            result.Content = content;
+            result.ContentType = responseContentType;
+            result.StatusCode = (int)response.StatusCode;
 
-                return result;
-            }
-            catch (HttpRequestException exception)
-            {
-                var content = $"oops an error happened!\n{exception}";
-
-                var result = new ContentResult();
-                result.Content = content;
-                result.ContentType = "text/plain";
-                result.StatusCode = 400;
-
-                return result;
-            }
-            catch (Exception exception)
-            {
-                var content = $"this should not have happened!\n{exception}";
-
-                var result = new ContentResult();
-                result.Content = content;
-                result.ContentType = "text/plain";
-                result.StatusCode = 500;
-
-                return result;
-            }
+            return result;
         }
     }
 }
