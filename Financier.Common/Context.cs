@@ -21,10 +21,10 @@ namespace Financier.Common
         {
             using (var db = new Context())
             {
-                db.Accounts.RemoveRange(db.Accounts);
                 db.Items.RemoveRange(db.Items);
                 db.Statements.RemoveRange(db.Statements);
                 db.Cards.RemoveRange(db.Cards);
+                db.Accounts.RemoveRange(db.Accounts);
                 db.Tags.RemoveRange(db.Tags);
                 db.ItemTags.RemoveRange(db.ItemTags);
 
