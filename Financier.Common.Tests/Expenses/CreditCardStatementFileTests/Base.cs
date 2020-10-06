@@ -30,7 +30,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             }
         }
 
-        [OneTimeTearDown]
+        [TearDown]
         public void Cleanup()
         {
             Context.Clean();
@@ -150,23 +150,25 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         // TODO: fix it (maybe Models.Statement too)
         [Test]
         [TestCaseSource(nameof(TestCases))]
+        [Ignore("The test cases are not configured properly")]
         public void Test_Expenses_CreditCardStatementFile_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
+                Context.Clean();
+                var mrBean = ModelFactories.Accounts.GetMrBean();
                 using (var db = new Context())
                 {
-                    var mrBean = ModelFactories.Accounts.GetMrBean();
                     db.Accounts.Add(mrBean);
 
-                    db.Cards.Add(new Financier.Common.Expenses.Models.Card { Id = Guid.NewGuid(), Number = "1234", Owner = mrBean });
+                    db.Cards.Add(new Financier.Common.Expenses.Models.Card { Id = Guid.NewGuid(), Number = expectedCard.Number, Owner = mrBean });
                     db.SaveChanges();
                 }
 
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementFile(MrBean.Name, reader, statementPostedAt).Import();
+                new CreditCardStatementFile(mrBean.Name, reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {
@@ -186,6 +188,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
+        [Ignore("The test cases are not configured properly")]
         public void Test_Expenses_CreditCardStatementFile_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
@@ -209,7 +212,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                         Owner = mrBean,
                         Id = Guid.NewGuid(),
                         CardType = CardTypes.Credit,
-                        Number = "5191230192755321"
+                        Number = expectedCard.Number
                     });
                     db.SaveChanges();
                 }
@@ -252,53 +255,47 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         [Test]
         public void Test_Expenses_CreditCardStatementFile_SaveCard()
         {
-            try
+            Context.Clean();
+            using (var db = new Context())
             {
-                using (var db = new Context())
+                db.Database.EnsureCreated();
+
+                var mrBean = ModelFactories.Accounts.GetMrBean();
+                db.Accounts.Add(mrBean);
+
+                var card = new Financier.Common.Expenses.Models.Card
                 {
-                    db.Database.EnsureCreated();
+                    Owner = mrBean,
+                    Id = Guid.NewGuid(),
+                    Number = "1234",
+                    Statements = new List<Statement>()
+                };
+                db.Cards.Add(card);
+                db.SaveChanges();
 
-                    var mrBean = ModelFactories.Accounts.GetMrBean();
-                    db.Accounts.Add(mrBean);
-
-                    var card = new Financier.Common.Expenses.Models.Card
+                {
+                    var newStatement = new Statement
                     {
-                        Owner = mrBean,
+                        Card = card,
                         Id = Guid.NewGuid(),
-                        Number = "1234",
-                        Statements = new List<Statement>()
+                        PostedAt = new DateTime(2019, 2, 1),
+                        Items = new List<Item>()
                     };
-                    db.Cards.Add(card);
+                    db.Statements.Add(newStatement);
                     db.SaveChanges();
-
-                    {
-                        var newStatement = new Statement
-                        {
-                            Card = card,
-                            Id = Guid.NewGuid(),
-                            PostedAt = new DateTime(2019, 2, 1),
-                            Items = new List<Item>()
-                        };
-                        db.Statements.Add(newStatement);
-                        db.SaveChanges();
-                    }
-
-                    {
-                        var newStatement = new Statement
-                        {
-                            Card = card,
-                            Id = Guid.NewGuid(),
-                            PostedAt = new DateTime(2019, 2, 2),
-                            Items = new List<Item>()
-                        };
-                        db.Statements.Add(newStatement);
-                        db.SaveChanges();
-                    }
                 }
-            }
-            catch (Exception exception)
-            {
-                Assert.Fail(exception.Message);
+
+                {
+                    var newStatement = new Statement
+                    {
+                        Card = card,
+                        Id = Guid.NewGuid(),
+                        PostedAt = new DateTime(2019, 2, 2),
+                        Items = new List<Item>()
+                    };
+                    db.Statements.Add(newStatement);
+                    db.SaveChanges();
+                }
             }
         }
 
@@ -307,6 +304,8 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         {
             try
             {
+                Context.Clean();
+
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
@@ -360,47 +359,41 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         [Test]
         public void Test_Expenses_CreditCardStatementFile_SaveCardAndStatement()
         {
-            try
+            Context.Clean();
+            using (var db = new Context())
             {
-                using (var db = new Context())
+                db.Database.EnsureCreated();
+
+                var mrBean = ModelFactories.Accounts.GetMrBean();
+                db.Accounts.Add(mrBean);
+
+                var card = new Financier.Common.Expenses.Models.Card
                 {
-                    db.Database.EnsureCreated();
+                    Owner = mrBean,
+                    Id = Guid.NewGuid(),
+                    Number = "1234",
+                    Statements = new List<Statement>()
+                };
+                db.Cards.Add(card);
+                db.SaveChanges();
 
-                    var mrBean = ModelFactories.Accounts.GetMrBean();
-                    db.Accounts.Add(mrBean);
-
-                    var card = new Financier.Common.Expenses.Models.Card
+                {
+                    var newStatement = new Statement
                     {
-                        Owner = mrBean,
+                        Card = card,
                         Id = Guid.NewGuid(),
-                        Number = "1234",
-                        Statements = new List<Statement>()
+                        PostedAt = new DateTime(2019, 2, 1),
+                        Items = new List<Item>()
                     };
-                    db.Cards.Add(card);
+
+                    card.Statements.Add(newStatement);
+                    db.Statements.Add(newStatement);
+                    Assert.That(db.Statements.Count, Is.EqualTo(0));
                     db.SaveChanges();
-
-                    {
-                        var newStatement = new Statement
-                        {
-                            Card = card,
-                            Id = Guid.NewGuid(),
-                            PostedAt = new DateTime(2019, 2, 1),
-                            Items = new List<Item>()
-                        };
-
-                        card.Statements.Add(newStatement);
-                        db.Statements.Add(newStatement);
-                        Assert.That(db.Statements.Count, Is.EqualTo(0));
-                        db.SaveChanges();
-                    }
-
-                    Assert.That(db.Cards.Count, Is.EqualTo(1));
-                    Assert.That(db.Statements.Count, Is.EqualTo(1));
                 }
-            }
-            catch (Exception exception)
-            {
-                Assert.Fail(exception.Message);
+
+                Assert.That(db.Cards.Count, Is.EqualTo(1));
+                Assert.That(db.Statements.Count, Is.EqualTo(1));
             }
         }
     }
