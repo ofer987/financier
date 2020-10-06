@@ -63,12 +63,7 @@ namespace Financier.Web.Identity
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "identity/{controller=Home}/{action=Index}/{id?}");
-
-                endpoints.MapControllerRoute(
                     name: "app-redirection",
-                    // pattern: "{ssn:regex(^(?!.*identity).*)}/{*route}",
                     pattern: "{*route}",
                     defaults: new { 
                         controller = "App",

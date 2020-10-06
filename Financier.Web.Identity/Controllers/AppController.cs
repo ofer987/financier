@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +58,22 @@ namespace Financier.Web.Identity
 
         public async Task<IActionResult> Index(string route)
         {
+            var requestMethod = HttpContext.Request.Method;
+            switch (requestMethod)
+            {
+                case "GET":
+                    return await Get(route);
+                case "POST":
+                    var dataReader = new StreamReader(HttpContext.Request.Body);
+                    var data = await dataReader.ReadToEndAsync();
+                    return await Post(route, data);
+                default:
+                    throw new InvalidOperationException($"Invalid Request Method ({requestMethod})");
+            }
+        }
+
+        public async Task<IActionResult> Get(string route)
+        {
             var client = GetClientForApp();
             var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5002/{route}");
             var response = await client.SendAsync(request);
@@ -68,6 +86,49 @@ namespace Financier.Web.Identity
                 var result = new ContentResult();
                 result.Content = content;
                 result.ContentType = "text/html";
+                result.StatusCode = 200;
+
+                return result;
+            }
+            catch (HttpRequestException exception)
+            {
+                var content = $"oops an error happened!\n{exception}";
+
+                var result = new ContentResult();
+                result.Content = content;
+                result.ContentType = "text/plain";
+                result.StatusCode = 400;
+
+                return result;
+            }
+            catch (Exception exception)
+            {
+                var content = $"this should not have happened!\n{exception}";
+
+                var result = new ContentResult();
+                result.Content = content;
+                result.ContentType = "text/plain";
+                result.StatusCode = 500;
+
+                return result;
+            }
+        }
+
+        public async Task<IActionResult> Post(string route, string data)
+        {
+            var client = GetClientForApp();
+            var transmittedData = new StringContent(data, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"http://localhost:5002/{route}", transmittedData);
+
+            try
+            {
+                var message = response.EnsureSuccessStatusCode();
+                var content = await message.Content.ReadAsStringAsync();
+
+                var result = new ContentResult();
+                result.Content = content;
+                // Or set to be the same as the response's Content-Type???
+                result.ContentType = "application/json";
                 result.StatusCode = 200;
 
                 return result;
