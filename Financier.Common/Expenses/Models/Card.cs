@@ -51,6 +51,11 @@ namespace Financier.Common.Expenses.Models
                 return false;
             }
 
+            if ((AccountName ?? string.Empty) != (other.AccountName ?? string.Empty))
+            {
+                return false;
+            }
+
             if ((Number ?? string.Empty) != (other.Number ?? string.Empty))
             {
                 return false;
