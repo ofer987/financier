@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
 
 using Financier.Common.Expenses.Models;
 
@@ -51,6 +52,7 @@ namespace Financier.Web.GraphQL.ItemQueries
                  var toYear = context.GetArgument<int>(Keys.ToYear);
 
                  return new ItemQuery(
+                     GetAccountName((HttpContext)context.UserContext),
                      tagNames,
                      new DateTime(fromYear, fromMonth, 1),
                      new DateTime(toYear, toMonth, 1),
@@ -58,6 +60,18 @@ namespace Financier.Web.GraphQL.ItemQueries
                  ).GetResultsOrderedByMonth();
              }
             );
+        }
+
+        private string GetAccountName(HttpContext context)
+        {
+            try
+            {
+                return context.Request.Headers.GetCommaSeparatedValues("Account-Name")[0];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw new InvalidOperationException("The Account-Name HTTP Header was not supplied");
+            }
         }
     }
 }
