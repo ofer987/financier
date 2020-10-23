@@ -288,6 +288,22 @@ namespace Financier.Common.Tests.Expenses
             }
         }
 
+        public static class Dan
+        {
+            public static Func<Account> GetAccount = () => new Account
+            {
+                Name = "Dan"
+            };
+        }
+
+        public static class Ron
+        {
+            public static Func<Account> GetAccount = () => new Account
+            {
+                Name = "Ron"
+            };
+        }
+
         public static class DanCard
         {
             public static Guid CardId = Guid.NewGuid();
