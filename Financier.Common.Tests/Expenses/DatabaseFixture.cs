@@ -6,16 +6,16 @@ namespace Financier.Common.Tests.Expenses
         {
             using (var db = new Context())
             {
-                var funTag = ModelFactories.Tags.GetFun();
-                var fastTag = ModelFactories.Tags.GetFast();
-                var dogTag = ModelFactories.Tags.GetDog();
-                var groceriesTag = ModelFactories.Tags.GetGroceries();
-                var coffeeTag = ModelFactories.Tags.GetCoffee();
-                var lunchTag = ModelFactories.Tags.GetLunch();
-                var creditCardPaymentTag = ModelFactories.Tags.GetCreditCardPayment();
-                var salaryTag = ModelFactories.Tags.GetSalary();
-                var savingsTag = ModelFactories.Tags.GetSavings();
-                var internalTag = ModelFactories.Tags.GetInternal();
+                var funTag = Factories.CreateTag(FactoryData.Tags.Fun.Name);
+                var fastTag = Factories.CreateTag(FactoryData.Tags.Fast.Name);
+                var dogTag = Factories.CreateTag(FactoryData.Tags.Dog.Name);
+                var groceriesTag = Factories.CreateTag(FactoryData.Tags.Groceries.Name);
+                var coffeeTag = Factories.CreateTag(FactoryData.Tags.Coffee.Name);
+                var lunchTag = Factories.CreateTag(FactoryData.Tags.Lunch.Name);
+                var creditCardPaymentTag = Factories.CreateTag(FactoryData.Tags.CreditCardPayment.Name);
+                var salaryTag = Factories.CreateTag(FactoryData.Tags.Salary.Name);
+                var savingsTag = Factories.CreateTag(FactoryData.Tags.Savings.Name);
+                var internalTag = Factories.CreateTag(FactoryData.Tags.Internal.Name);
                 db.Tags.Add(funTag);
                 db.Tags.Add(fastTag);
                 db.Tags.Add(dogTag);
@@ -27,35 +27,63 @@ namespace Financier.Common.Tests.Expenses
                 db.SaveChanges();
 
                 // Accounts
-                var dan = ModelFactories.Dan.GetAccount();
+                var dan = Factories.CreateAccount(FactoryData.Accounts.Dan.AccountName);
                 db.Accounts.Add(dan);
 
-                var ron = ModelFactories.Ron.GetAccount();
+                var ron = Factories.CreateAccount(FactoryData.Accounts.Ron.AccountName);
                 db.Accounts.Add(ron);
 
                 // Credit Cards
                 {
-                    var danCard = ModelFactories.DanCard.Card(dan);
-                    var ronCard = ModelFactories.RonCard.GetCard(ron);
+                    var danCard = Factories.CreateCreditCard(dan, FactoryData.Accounts.Dan.Cards.DanCard.CardNumber);
+                    var ronCard = Factories.CreateCreditCard(ron, FactoryData.Accounts.Ron.Cards.RonCard.CardNumber);
                     db.Cards.Add(danCard);
                     db.Cards.Add(ronCard);
                     db.SaveChanges();
 
-                    var juneStatement = ModelFactories.DanCard.June.GetStatement();
-                    var julyStatement = ModelFactories.DanCard.July.GetStatement();
-                    var ronsCrazyStatement = ModelFactories.RonCard.CrazyStatement.GetStatement();
+                    var juneStatement = Factories.CreateSimpleStatement(danCard, FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.PostedAt);
+                    var julyStatement = Factories.CreateSimpleStatement(danCard, FactoryData.Accounts.Dan.Cards.DanCard.Statements.July.PostedAt);
+                    var ronsCrazyStatement = Factories.CreateSimpleStatement(ronCard, FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.PostedAt);
                     juneStatement.Items.AddRange(new[] {
-                        ModelFactories.DanCard.June.Items.GetPorscheItem(new[] { funTag, fastTag }),
-                        ModelFactories.DanCard.June.Items.GetFerrariItem(new[] { funTag }),
-                        ModelFactories.DanCard.June.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag })
+                        Factories.CreateItemWithTags(
+                            juneStatement,
+                            FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId,
+                            new[] { funTag, fastTag }
+                        ),
+                        Factories.CreateItemWithTags(
+                            juneStatement,
+                            FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId,
+                            new[] { funTag }
+                        ),
+                        Factories.CreateItemWithTags(
+                            juneStatement,
+                            FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.CreditCardPayment.ItemId,
+                            new[] { creditCardPaymentTag, internalTag }
+                        )
                     });
                     julyStatement.Items.AddRange(new[] {
-                        ModelFactories.DanCard.July.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
-                        ModelFactories.DanCard.July.Items.GetLunch(new[] { lunchTag })
+                        Factories.CreateItemWithTags(
+                            julyStatement,
+                            FactoryData.Accounts.Dan.Cards.DanCard.Statements.July.Items.CreditCardPayment.ItemId,
+                            new[] { creditCardPaymentTag, internalTag }
+                        ),
+                        Factories.CreateItemWithTags(
+                            julyStatement,
+                            FactoryData.Accounts.Dan.Cards.DanCard.Statements.July.Items.Lunch.ItemId,
+                            new[] { lunchTag }
+                        )
                     });
                     ronsCrazyStatement.Items.AddRange(new[] {
-                        ModelFactories.RonCard.CrazyStatement.Items.GetLamboItem(new[] { fastTag, dogTag }),
-                        ModelFactories.RonCard.CrazyStatement.Items.GetCreditCardPayment(new[] { creditCardPaymentTag, internalTag })
+                        Factories.CreateItemWithTags(
+                            ronsCrazyStatement,
+                            FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.Lambo.ItemId,
+                            new[] { fastTag, dogTag }
+                        ),
+                        Factories.CreateItemWithTags(
+                            ronsCrazyStatement,
+                            FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId,
+                            new[] { creditCardPaymentTag, internalTag }
+                        )
                     });
 
                     db.Statements.Add(juneStatement);
@@ -65,41 +93,97 @@ namespace Financier.Common.Tests.Expenses
 
                 // Bank Cards
                 {
-                    var bankCard = ModelFactories.SavingsCard.GetCard(dan);
-                    db.Cards.Add(bankCard);
+                    var savingsCard = Factories.CreateBankCard(dan, FactoryData.Accounts.Dan.Cards.Savings.CardNumber);
+                    db.Cards.Add(savingsCard);
                     {
-                        var juneStatement = ModelFactories.SavingsCard.June.GetStatement();
+                        var juneStatement = Factories.CreateSimpleStatement(savingsCard, FactoryData.Accounts.Dan.Cards.Savings.Statements.June.PostedAt);
                         juneStatement.Items.AddRange(new[] {
-                            ModelFactories.SavingsCard.June.Items.GetDanSalary(new[] { salaryTag }),
-                            ModelFactories.SavingsCard.June.Items.GetEdithSalary(new[] { salaryTag }),
-                            ModelFactories.SavingsCard.June.Items.GetGroceries(new[] { groceriesTag }),
-                            ModelFactories.SavingsCard.June.Items.GetCoffee(new[] { groceriesTag }),
-                            ModelFactories.SavingsCard.June.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
-                            ModelFactories.SavingsCard.June.Items.GetCrazyCreditCardPayment(new[] { creditCardPaymentTag, internalTag }),
-                            ModelFactories.SavingsCard.June.Items.GetChildCareBenefit(new[] { salaryTag })
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
+                                new[] { salaryTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.EdithSalary.ItemId,
+                                new[] { salaryTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.Groceries.ItemId,
+                                new[] { groceriesTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.Coffee.ItemId,
+                                new[] { groceriesTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanCreditCardPayment.ItemId,
+                                new[] { creditCardPaymentTag, internalTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.CrazyCreditCardPayment.ItemId,
+                                new[] { creditCardPaymentTag, internalTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                juneStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId,
+                                new[] { salaryTag }
+                            ),
                         });
                         db.Statements.Add(juneStatement);
 
-                        var julyStatement = ModelFactories.SavingsCard.July.GetStatement();
+                        var julyStatement = Factories.CreateSimpleStatement(savingsCard, FactoryData.Accounts.Dan.Cards.Savings.Statements.July.PostedAt);
                         julyStatement.Items.AddRange(new[] {
-                            ModelFactories.SavingsCard.July.Items.GetDanSalary(new[] { salaryTag }),
-                            ModelFactories.SavingsCard.July.Items.GetGroceries(new[] { groceriesTag }),
-                            ModelFactories.SavingsCard.July.Items.GetCoffee(new[] { coffeeTag }),
-                            ModelFactories.SavingsCard.July.Items.GetDanCreditCardPayment(new[] { creditCardPaymentTag, internalTag } ),
-                            ModelFactories.SavingsCard.July.Items.GetChildCareBenefit(new[] { salaryTag })
+                            Factories.CreateItemWithTags(
+                                julyStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanSalary.ItemId,
+                                new[] { salaryTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                julyStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.Groceries.ItemId,
+                                new[] { groceriesTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                julyStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.Coffee.ItemId,
+                                new[] { coffeeTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                julyStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanCreditCardPayment.ItemId,
+                                new[] { creditCardPaymentTag, internalTag }
+                            ),
+                            Factories.CreateItemWithTags(
+                                julyStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.ChildCareBenefit.ItemId,
+                                new[] { salaryTag }
+                            )
                         });
                         db.Statements.Add(julyStatement);
 
-                        var augustStatement = ModelFactories.SavingsCard.August.GetStatement();
+                        var augustStatement = Factories.CreateSimpleStatement(savingsCard, FactoryData.Accounts.Dan.Cards.Savings.Statements.August.PostedAt);
 
                         augustStatement.Items.AddRange(new[] {
-                            ModelFactories.SavingsCard.August.Items.GetTransfer(new[] { internalTag, savingsTag })
+                            Factories.CreateItemWithTags(
+                                augustStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.August.Items.Transfer.ItemId,
+                                new[] { internalTag, savingsTag }
+                            )
                         });
                         db.Statements.Add(augustStatement);
 
-                        var septemberStatement = ModelFactories.SavingsCard.September.GetStatement();
+                        var septemberStatement = Factories.CreateSimpleStatement(savingsCard, FactoryData.Accounts.Dan.Cards.Savings.Statements.September.PostedAt);
                         septemberStatement.Items.AddRange(new[] {
-                            ModelFactories.SavingsCard.September.Items.GetDanSalary(new[] { salaryTag } )
+                            Factories.CreateItemWithTags(
+                                septemberStatement,
+                                FactoryData.Accounts.Dan.Cards.Savings.Statements.September.Items.DanSalary.ItemId,
+                                new[] { salaryTag }
+                            )
                         });
                         db.Statements.Add(septemberStatement);
                     }

@@ -11,7 +11,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementFileTests
 {
     public class GetRecords : Fixture
     {
-        public static Account MrBean = ModelFactories.Accounts.GetMrBean();
+        public static Account MrBean = Factories.CreateAccount("mr bean");
         public static IEnumerable ValidTestCases
         {
             get

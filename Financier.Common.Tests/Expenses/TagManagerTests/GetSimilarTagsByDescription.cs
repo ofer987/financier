@@ -20,7 +20,6 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
         }
 
         public Account Owner { get; set; }
-
         public List<Card> Cards { get; set; } = new List<Card>();
         public List<Statement> Statements { get; set; } = new List<Statement>();
         public List<Item> Items { get; set; } = new List<Item>();
@@ -38,52 +37,50 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            Owner = ModelFactories.Accounts.GetMrBean();
+            Owner = Factories.CreateAccount(FactoryData.Accounts.Dan.AccountName);
 
-            var myCard1 = Factories.SimpleCard(Owner);
+            var myCard1 = Factories.CreateCard(Owner, "1234");
             Cards.Add(myCard1);
 
-            var myStatement1 = Factories.GetSimpleStatement(myCard1);
-            myStatement1.PostedAt = new DateTime(2018, 1, 1);
-            var myStatement2 = Factories.GetSimpleStatement(myCard1);
-            myStatement2.PostedAt = new DateTime(2018, 2, 1);
+            var myStatement1 = Factories.CreateSimpleStatement(myCard1, new DateTime(2018, 1, 1));
+            var myStatement2 = Factories.CreateSimpleStatement(myCard1, new DateTime(2018, 2, 1));
             Statements.AddRange(new[] { myStatement1, myStatement2 });
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
             KerenTag1 = Factories.KerenTag();
 
-            NewItem = Factories.ItemWithoutTags(myStatement1);
+            NewItem = Factories.CreateItemWithoutTags(myStatement1, "1234");
             NewItem.Description = description;
 
             {
-                var item = Factories.ItemWithTags(myStatement1, new[] { DanTag1, RonTag1 });
+                var item = Factories.CreateItemWithTags(myStatement1, "5678", new[] { DanTag1, RonTag1 });
                 item.Description = Descriptions.OnlyDesc;
                 Items.Add(item);
             }
             {
-                var item = Factories.ItemWithTags(myStatement1, new[] { DanTag1, RonTag1 });
+                var item = Factories.CreateItemWithTags(myStatement1, "1357", new[] { DanTag1, RonTag1 });
                 item.Description = Descriptions.Twice;
                 item.PostedAt = new DateTime(2018, 1, 1);
                 Items.Add(item);
             }
 
             {
-                var item = Factories.ItemWithTags(myStatement2, new[] { DanTag1, RonTag1, KerenTag1 });
+                var item = Factories.CreateItemWithTags(myStatement2, "4321", new[] { DanTag1, RonTag1, KerenTag1 });
                 item.Description = Descriptions.Twice;
                 item.PostedAt = new DateTime(2018, 2, 1);
                 Items.Add(item);
             }
 
             {
-                var item = Factories.ItemWithTags(myStatement2, new[] { DanTag1 });
+                var item = Factories.CreateItemWithTags(myStatement2, "9876", new[] { DanTag1 });
                 item.Description = Descriptions.Statement2Item;
                 item.PostedAt = new DateTime(2018, 1, 1);
                 Items.Add(item);
             }
 
             {
-                var item = Factories.ItemWithoutTags(myStatement2);
+                var item = Factories.CreateItemWithoutTags(myStatement2, "7531");
                 item.Description = Descriptions.Statement2Item;
                 item.PostedAt = new DateTime(2018, 1, 3);
                 Items.Add(item);

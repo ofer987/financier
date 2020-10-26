@@ -26,10 +26,10 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
 
         public UpdateTags(string[] existingTags, string[] updatedTags, string[] unusedTags)
         {
-            OwnerOfMyCard1 = ModelFactories.Accounts.GetMrBean();
-            MyCard1 = Factories.SimpleCard(OwnerOfMyCard1);
+            OwnerOfMyCard1 = Factories.CreateAccount(FactoryData.Accounts.Dan.AccountName);
+            MyCard1 = Factories.CreateCard(OwnerOfMyCard1, "1234");
             MyCard1.Number = Guid.NewGuid().ToString();
-            MyStatement1 = Factories.GetSimpleStatement(MyCard1);
+            MyStatement1 = Factories.CreateSimpleStatement(MyCard1, new DateTime(2015, 1, 1));
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
@@ -57,7 +57,7 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Factories.ItemWithTags(MyStatement1, ExistingTags);
+            MyItem1 = Factories.CreateItemWithTags(MyStatement1, "1234", ExistingTags);
         }
 
         [OneTimeSetUp]

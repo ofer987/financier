@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,9 +28,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            Owner = ModelFactories.Accounts.GetMrBean();
-            MyCard1 = Factories.SimpleCard(Owner);
-            MyStatement1 = Factories.GetSimpleStatement(MyCard1);
+            Owner = Factories.CreateAccount("mrbean");
+            MyCard1 = Factories.CreateCard(Owner, "1234");
+            MyStatement1 = Factories.CreateSimpleStatement(MyCard1, new DateTime(2015, 1, 1));
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
@@ -57,7 +58,7 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Factories.ItemWithTags(MyStatement1, ExistingTags);
+            MyItem1 = Factories.CreateItemWithTags(MyStatement1, "1234", ExistingTags);
         }
 
         [OneTimeSetUp]

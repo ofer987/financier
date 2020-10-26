@@ -12,8 +12,8 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             "Dan",
             new[] { "fun" },
             new[] {
-                ModelFactories.DanCard.June.Items.PorscheItemId,
-                ModelFactories.DanCard.June.Items.FerrariItemId
+                FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId,
+                FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId
             },
             2019,
             5,
@@ -24,7 +24,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             "Dan",
             new[] { "fast" },
             new[] {
-                ModelFactories.DanCard.June.Items.PorscheItemId
+                FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId
             },
             2019,
             5,
@@ -35,7 +35,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             "Ron",
             new[] { "like-a-dog" },
             new[] {
-                ModelFactories.RonCard.CrazyStatement.Items.LamboItemId
+                FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.Lambo.ItemId
             },
             2019,
             6,
@@ -83,11 +83,11 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             "Dan",
             new[] { "salary" },
             new[] {
-                ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
-                ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
-                ModelFactories.SavingsCard.July.Items.DanSalaryItemId,
-                ModelFactories.SavingsCard.July.Items.ChildCareBenefitItemId,
-                ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanSalary.ItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.ChildCareBenefit.ItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.EdithSalary.ItemId,
             },
             2019,
             6,
@@ -98,9 +98,9 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             "Dan",
             new[] { "salary" },
             new[] {
-                ModelFactories.SavingsCard.June.Items.ChildCareBenefitItemId,
-                ModelFactories.SavingsCard.June.Items.DanSalaryItemId,
-                ModelFactories.SavingsCard.June.Items.EdithSalaryItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
+                FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.EdithSalary.ItemId,
             },
             2019,
             6,

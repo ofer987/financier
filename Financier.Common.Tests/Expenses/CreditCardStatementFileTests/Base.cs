@@ -36,7 +36,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             Context.Clean();
         }
 
-        public static Account MrBean = ModelFactories.Accounts.GetMrBean();
+        public static Account MrBean = Factories.CreateAccount("mr bean");
 
         public static IEnumerable TestCases
         {
@@ -156,7 +156,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             try
             {
                 Context.Clean();
-                var mrBean = ModelFactories.Accounts.GetMrBean();
+                var mrBean = Factories.CreateAccount("mr bean");
                 using (var db = new Context())
                 {
                     db.Accounts.Add(mrBean);
@@ -204,7 +204,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 
                     db.Database.EnsureCreated();
 
-                    var mrBean = ModelFactories.Accounts.GetMrBean();
+                    var mrBean = Factories.CreateAccount("mr bean");
                     db.Accounts.Add(mrBean);
 
                     db.Cards.Add(new Financier.Common.Expenses.Models.Card
@@ -260,7 +260,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             {
                 db.Database.EnsureCreated();
 
-                var mrBean = ModelFactories.Accounts.GetMrBean();
+                var mrBean = Factories.CreateAccount("mrbean");
                 db.Accounts.Add(mrBean);
 
                 var card = new Financier.Common.Expenses.Models.Card
@@ -310,7 +310,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 {
                     db.Database.EnsureCreated();
 
-                    var owner = ModelFactories.Accounts.GetMrBean();
+                    var owner = Factories.CreateAccount("mr bean");
                     db.Accounts.Add(owner);
                     db.SaveChanges();
 
@@ -364,7 +364,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             {
                 db.Database.EnsureCreated();
 
-                var mrBean = ModelFactories.Accounts.GetMrBean();
+                var mrBean = Factories.CreateAccount("mr bean");
                 db.Accounts.Add(mrBean);
 
                 var card = new Financier.Common.Expenses.Models.Card
