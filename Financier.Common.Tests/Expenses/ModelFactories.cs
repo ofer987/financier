@@ -2,7 +2,7 @@ using System;
 
 namespace Financier.Common.Tests.Expenses
 {
-    public class FactoryData : Factories
+    public class FactoryData
     {
         public class Accounts
         {
