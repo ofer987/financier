@@ -58,7 +58,14 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Factories.CreateItemWithTags(MyStatement1, "1234", ExistingTags);
+            MyItem1 = Factories.CreateItemWithTags(
+                MyStatement1,
+                "1234",
+                string.Empty,
+                new DateTime(2019, 1, 1),
+                20.00M,
+                ExistingTags
+            );
         }
 
         [OneTimeSetUp]
@@ -116,34 +123,34 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             get
             {
                 yield return new TestFixtureData(
-                    new string[] {},
-                    new[] {"dan"},
-                    new[] {"dan"}
+                    new string[] { },
+                    new[] { "dan" },
+                    new[] { "dan" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {},
-                    new[] {"dan", "ron"},
-                    new[] {"dan", "ron"}
+                    new string[] { },
+                    new[] { "dan", "ron" },
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"dan"},
-                    new[] {"dan", "ron"}
+                    new string[] { "dan", "ron" },
+                    new[] { "dan" },
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"dan", "ron"},
-                    new[] {"dan", "ron"}
+                    new string[] { "dan", "ron" },
+                    new[] { "dan", "ron" },
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"keren"},
-                    new[] {"dan", "ron", "keren"}
+                    new string[] { "dan", "ron" },
+                    new[] { "keren" },
+                    new[] { "dan", "ron", "keren" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"dan", "ron", "keren"},
-                    new[] {"dan", "ron", "keren"}
+                    new string[] { "dan", "ron" },
+                    new[] { "dan", "ron", "keren" },
+                    new[] { "dan", "ron", "keren" }
                 );
             }
         }

@@ -57,7 +57,14 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Factories.CreateItemWithTags(MyStatement1, "1234", ExistingTags);
+            MyItem1 = Factories.CreateItemWithTags(
+                MyStatement1,
+                "1234",
+                string.Empty,
+                new DateTime(2019, 1, 1),
+                20.00M,
+                ExistingTags
+            );
         }
 
         [OneTimeSetUp]

@@ -15,7 +15,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
              *  Salaries:
              *    2,000
              *    1,000
-             *    8,00
+             *    800
              *  Expenses:
              *    104.5
              *    4.20
