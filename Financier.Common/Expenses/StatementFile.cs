@@ -90,26 +90,5 @@ namespace Financier.Common.Expenses
         {
             return records;
         }
-
-        protected Account EnsureAccountIsCreated(string accountName)
-        {
-            try
-            {
-                return Account.FindByName(accountName);
-            }
-            catch (InvalidOperationException)
-            {
-                var account = new Account
-                {
-                    Name = accountName
-                };
-                using (var db = new Context())
-                {
-                    db.Accounts.Add(account);
-                }
-
-                return account;
-            }
-        }
     }
 }
