@@ -30,18 +30,12 @@ namespace Financier.Cli
 
             foreach (var file in GetCreditCardStatements())
             {
-                // Commented-out for now
-                // TODO: group cards in directories by name of account, for example,
-                // Dan's cards will be nested in the dan@ofer.to
-                // new CreditCardStatementFile(file).Import();
+                new CreditCardStatementFile(file).Import();
             }
 
             foreach (var file in GetBankStatements())
             {
-                // Commented-out for now
-                // TODO: group cards in directories by name of account, for example,
-                // Dan's cards will be nested in the dan@ofer.to
-                // new BankStatementFile(file).Import();
+                new BankStatementFile(file).Import();
             }
 
             Console.WriteLine("Processing Items");
