@@ -168,7 +168,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementFile(mrBean.Name, reader, statementPostedAt).Import();
+                new CreditCardStatementFile(reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {
@@ -220,7 +220,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
                 var reader = new System.IO.MemoryStream(buffer);
 
-                new CreditCardStatementFile(MrBean.Name, reader, statementPostedAt).Import();
+                new CreditCardStatementFile(reader, statementPostedAt).Import();
 
                 using (var db = new Context())
                 {

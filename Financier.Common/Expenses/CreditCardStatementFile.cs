@@ -7,15 +7,15 @@ namespace Financier.Common.Expenses
 {
     public class CreditCardStatementFile : StatementFile<CreditCardStatementRecord>
     {
-        public CreditCardStatementFile(string accountName, Stream stream, DateTime postedAt) : base(accountName, stream, postedAt)
+        public CreditCardStatementFile(Stream stream, DateTime postedAt) : base(stream, postedAt)
         {
         }
 
-        public CreditCardStatementFile(string accountName, FileInfo file) : base(accountName, file)
+        public CreditCardStatementFile(FileInfo file) : base(file)
         {
         }
 
-        public CreditCardStatementFile(string accountName, string path) : base(accountName, path)
+        public CreditCardStatementFile(string path) : base(path)
         {
         }
     }

@@ -21,21 +21,19 @@ namespace Financier.Common.Expenses
         public DateTime PostedAt { get; private set; }
         public string Path { get; private set; }
 
-        protected StatementFile(string accountName, FileInfo file)
+        protected StatementFile(FileInfo file)
         {
-            AccountName = accountName;
             Stream = file.OpenRead();
             Path = file.FullName;
             PostedAt = DateTime.ParseExact(DateRegex.Match(file.Name).Value, "yyyyMMdd", null);
         }
 
-        protected StatementFile(string accountName, string path) : this(accountName, new FileInfo(path))
+        protected StatementFile(string path) : this(new FileInfo(path))
         {
         }
 
-        protected StatementFile(string accountName, Stream stream, DateTime postedAt)
+        protected StatementFile(Stream stream, DateTime postedAt)
         {
-            AccountName = accountName;
             Stream = stream;
             PostedAt = postedAt;
         }
@@ -48,7 +46,6 @@ namespace Financier.Common.Expenses
                 return;
             }
 
-            EnsureAccountIsCreated(AccountName);
             var card = records[0].GetCard();
             var statement = records[0].GetStatement(PostedAt);
 
