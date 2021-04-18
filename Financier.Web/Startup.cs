@@ -64,6 +64,7 @@ namespace Financier.Web
                         options.ExposeExceptions = true;
                     })
                 .AddGraphTypes(ServiceLifetime.Scoped)
+                .AddUserContextBuilder(httpContext => httpContext)
                 .AddDataLoader();
 
             // TODO: use the latest MVC routing

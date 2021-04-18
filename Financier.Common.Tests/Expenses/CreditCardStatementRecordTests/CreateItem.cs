@@ -12,8 +12,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
     {
         public static Guid DanCardId = Guid.NewGuid();
         public const string DanCardNumber = "1234567";
-        public static Func<Card> GetDanCard = () => new Card
+        public static Func<Account, Card> GetDanCard = (owner) => new Card
         {
+            Owner = owner,
             Id = DanCardId,
             Number = DanCardNumber,
             Statements = new List<Statement>()
@@ -58,7 +59,13 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
         {
             using (var db = new Context())
             {
-                var danCard = MyFactories.GetDanCard();
+                // for now
+                // Maybe I should refactor this?
+                var owner = Factories.CreateAccount("mr bean");
+                db.Accounts.Add(owner);
+                db.SaveChanges();
+
+                var danCard = MyFactories.GetDanCard(owner);
                 db.Cards.Add(danCard);
                 db.SaveChanges();
 

@@ -19,6 +19,11 @@ namespace Financier.Common.Expenses.Models
         // TODO: make unique
         public string Number { get; set; }
 
+        public string AccountName { get; set; }
+
+        [Required]
+        public Account Owner { get; set; }
+
         [Required]
         public CardTypes CardType { get; set; }
 
@@ -42,6 +47,11 @@ namespace Financier.Common.Expenses.Models
         {
             var other = obj as Card;
             if (other == null)
+            {
+                return false;
+            }
+
+            if ((AccountName ?? string.Empty) != (other.AccountName ?? string.Empty))
             {
                 return false;
             }

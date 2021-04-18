@@ -6,13 +6,13 @@ namespace Financier.Common
 {
     public partial class Factories
     {
-        public static Statement GetSimpleStatement(Card card)
+        public static Statement CreateSimpleStatement(Card card, DateTime postedAt)
         {
             return new Statement 
             {
                 Id = Guid.NewGuid(),
                 CardId = card.Id,
-                PostedAt = new DateTime(2019, 1, 1),
+                PostedAt = postedAt,
                 Items = new List<Item>()
             };
         }

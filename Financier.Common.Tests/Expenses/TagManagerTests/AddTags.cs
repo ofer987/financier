@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,22 +12,15 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
     [TestFixtureSource(typeof(AddTags), nameof(TestCaseFixtures))]
     public class AddTags
     {
+        public Account Owner { get; set; }
         public Card MyCard1 { get; set; }
-
         public Statement MyStatement1 { get; set; }
-
         public Item MyItem1 { get; set; }
-
         public Tag DanTag1 { get; set; }
-
         public Tag RonTag1 { get; set; }
-
         public Tag KerenTag1 { get; set; }
-
         public List<Tag> ExistingTags { get; set; }
-
         public List<Tag> AddedTags { get; set; }
-
         public List<Tag> ExpectedTags { get; set; }
 
         public AddTags(string[] existingTags, string[] addedTags, string[] expectedTags)
@@ -34,8 +28,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            MyCard1 = Factories.SimpleCard;
-            MyStatement1 = Factories.GetSimpleStatement(MyCard1);
+            Owner = Factories.CreateAccount("mrbean");
+            MyCard1 = Factories.CreateCard(Owner, "1234");
+            MyStatement1 = Factories.CreateSimpleStatement(MyCard1, new DateTime(2015, 1, 1));
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
@@ -63,7 +58,14 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Factories.ItemWithTags(MyStatement1, ExistingTags);
+            MyItem1 = Factories.CreateItemWithTags(
+                MyStatement1,
+                "1234",
+                string.Empty,
+                new DateTime(2019, 1, 1),
+                20.00M,
+                ExistingTags
+            );
         }
 
         [OneTimeSetUp]
@@ -97,6 +99,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
         {
             using (var db = new Context())
             {
+                db.Accounts.Add(Owner);
+                db.SaveChanges();
+
                 db.Tags.Add(DanTag1);
                 db.Tags.Add(RonTag1);
                 db.Tags.Add(KerenTag1);
@@ -118,34 +123,34 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             get
             {
                 yield return new TestFixtureData(
-                    new string[] {},
-                    new[] {"dan"},
-                    new[] {"dan"}
+                    new string[] { },
+                    new[] { "dan" },
+                    new[] { "dan" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {},
-                    new[] {"dan", "ron"},
-                    new[] {"dan", "ron"}
+                    new string[] { },
+                    new[] { "dan", "ron" },
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"dan"},
-                    new[] {"dan", "ron"}
+                    new string[] { "dan", "ron" },
+                    new[] { "dan" },
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"dan", "ron"},
-                    new[] {"dan", "ron"}
+                    new string[] { "dan", "ron" },
+                    new[] { "dan", "ron" },
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"keren"},
-                    new[] {"dan", "ron", "keren"}
+                    new string[] { "dan", "ron" },
+                    new[] { "keren" },
+                    new[] { "dan", "ron", "keren" }
                 );
                 yield return new TestFixtureData(
-                    new string[] {"dan", "ron"},
-                    new[] {"dan", "ron", "keren"},
-                    new[] {"dan", "ron", "keren"}
+                    new string[] { "dan", "ron" },
+                    new[] { "dan", "ron", "keren" },
+                    new[] { "dan", "ron", "keren" }
                 );
             }
         }

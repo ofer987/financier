@@ -15,21 +15,40 @@ namespace Financier.Common.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                .HasAnnotation("ProductVersion", "3.1.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            modelBuilder.Entity("Financier.Common.Expenses.Models.Account", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("Expenses_Accounts");
+                });
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Card", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("CardType");
+                    b.Property<string>("AccountName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CardType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Number")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountName");
 
                     b.ToTable("Expenses_Cards");
                 });
@@ -37,21 +56,28 @@ namespace Financier.Common.Migrations
             modelBuilder.Entity("Financier.Common.Expenses.Models.Item", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<decimal>("Amount");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Description")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ItemId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("PostedAt");
+                    b.Property<DateTime>("PostedAt")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("StatementId");
+                    b.Property<Guid>("StatementId")
+                        .HasColumnType("uuid");
 
-                    b.Property<DateTime>("TransactedAt");
+                    b.Property<DateTime>("TransactedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -63,9 +89,11 @@ namespace Financier.Common.Migrations
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.ItemTag", b =>
                 {
-                    b.Property<Guid>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
 
-                    b.Property<Guid>("TagId");
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("ItemId", "TagId");
 
@@ -77,11 +105,14 @@ namespace Financier.Common.Migrations
             modelBuilder.Entity("Financier.Common.Expenses.Models.Statement", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<Guid>("CardId");
+                    b.Property<Guid>("CardId")
+                        .HasColumnType("uuid");
 
-                    b.Property<DateTime>("PostedAt");
+                    b.Property<DateTime>("PostedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -94,10 +125,12 @@ namespace Financier.Common.Migrations
             modelBuilder.Entity("Financier.Common.Expenses.Models.Tag", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -107,12 +140,22 @@ namespace Financier.Common.Migrations
                     b.ToTable("Expenses_Tags");
                 });
 
+            modelBuilder.Entity("Financier.Common.Expenses.Models.Card", b =>
+                {
+                    b.HasOne("Financier.Common.Expenses.Models.Account", "Owner")
+                        .WithMany("Cards")
+                        .HasForeignKey("AccountName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Financier.Common.Expenses.Models.Item", b =>
                 {
                     b.HasOne("Financier.Common.Expenses.Models.Statement", "Statement")
                         .WithMany("Items")
                         .HasForeignKey("StatementId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.ItemTag", b =>
@@ -120,12 +163,14 @@ namespace Financier.Common.Migrations
                     b.HasOne("Financier.Common.Expenses.Models.Item", "Item")
                         .WithMany("ItemTags")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Financier.Common.Expenses.Models.Tag", "Tag")
                         .WithMany("ItemTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Financier.Common.Expenses.Models.Statement", b =>
@@ -133,7 +178,8 @@ namespace Financier.Common.Migrations
                     b.HasOne("Financier.Common.Expenses.Models.Card", "Card")
                         .WithMany("Statements")
                         .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

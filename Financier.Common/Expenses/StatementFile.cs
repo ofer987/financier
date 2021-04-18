@@ -16,10 +16,9 @@ namespace Financier.Common.Expenses
     {
         private static Regex DateRegex = new Regex(@"\d{8}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        public string AccountName { get; private set; }
         public Stream Stream { get; private set; }
-
         public DateTime PostedAt { get; private set; }
-
         public string Path { get; private set; }
 
         protected StatementFile(FileInfo file)
@@ -79,8 +78,9 @@ namespace Financier.Common.Expenses
                 // Do nothing if record is faulty
                 csv.Configuration.BadDataFound = (context) =>
                 {
+                    var record = context.Record ?? new string[0];
                     // TODO: log this to an error log
-                    Console.WriteLine($"This line is faulty {context.Record.Join()}");
+                    Console.WriteLine($"This line is faulty {record.Join()}");
                 };
 
                 return PostProcessedRecords(csv.GetRecords<T>()).ToArray();

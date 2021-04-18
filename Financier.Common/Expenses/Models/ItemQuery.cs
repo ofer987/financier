@@ -9,13 +9,15 @@ namespace Financier.Common.Expenses.Models
 {
     public class ItemQuery
     {
+        public string AccountName { get; }
         public IEnumerable<string> TagNames { get; }
         public DateTime From { get; }
         public DateTime To { get; }
         public ItemTypes ItemType { get; }
 
-        public ItemQuery(IEnumerable<string> tagNames, DateTime fro, DateTime to, ItemTypes itemType)
+        public ItemQuery(string accountName, IEnumerable<string> tagNames, DateTime fro, DateTime to, ItemTypes itemType)
         {
+            AccountName = accountName;
             From = fro;
             To = to;
             TagNames = tagNames;
@@ -44,9 +46,13 @@ namespace Financier.Common.Expenses.Models
             {
                 items = (
                     from i in db.Items
+                    join s in db.Statements on i.StatementId equals s.Id
+                    join c in db.Cards on s.CardId equals c.Id
+                    join a in db.Accounts on c.AccountName equals a.Name
                     join it in db.ItemTags on i.Id equals it.ItemId
                     join t in db.Tags on it.TagId equals t.Id
                     where true
+                        && a.Name == AccountName
                         && i.PostedAt >= From
                         && i.PostedAt < To
                         && (

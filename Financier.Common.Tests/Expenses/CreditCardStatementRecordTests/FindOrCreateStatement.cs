@@ -63,6 +63,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                 }
             }
 
+            public Account Owner { get; set; }
             public Card Card1 { get; set; }
             public Card Card2 { get; set; }
 
@@ -77,38 +78,34 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
 
             public Base(int cardIdentifier, DateTime postedAt, Guid expectedStatementId)
             {
-                Card1 = Factories.SimpleCard;
+                Owner = Factories.CreateAccount(FactoryData.Accounts.Dan.AccountName);
+
+                Card1 = Factories.CreateCard(Owner, Cards.One.Number);
                 Card1.Id = Cards.One.Id;
-                Card1.Number = Cards.One.Number;
                 AllCards.Add(Cards.One.Identifier, Card1);
 
-                Card2 = Factories.SimpleCard;
+                Card2 = Factories.CreateCard(Owner, Cards.Two.Number);
                 Card2.Id = Cards.Two.Id;
-                Card2.Number = Cards.Two.Number;
                 AllCards.Add(Cards.Two.Identifier, Card2);
 
                 {
-                    var statement = Factories.GetSimpleStatement(Card1);
+                    var statement = Factories.CreateSimpleStatement(Card1, Cards.One.Statements.One.PostedAt);
                     statement.Id = Cards.One.Statements.One.Id;
-                    statement.PostedAt = Cards.One.Statements.One.PostedAt;
                     Card1_Statements.Add(Cards.One.Statements.One.Identifier, statement);
                 }
                 {
-                    var statement = Factories.GetSimpleStatement(Card1);
+                    var statement = Factories.CreateSimpleStatement(Card1, Cards.One.Statements.Two.PostedAt);
                     statement.Id = Cards.One.Statements.Two.Id;
-                    statement.PostedAt = Cards.One.Statements.Two.PostedAt;
                     Card1_Statements.Add(Cards.One.Statements.Two.Identifier, statement);
                 }
                 {
-                    var statement = Factories.GetSimpleStatement(Card2);
+                    var statement = Factories.CreateSimpleStatement(Card2, Cards.Two.Statements.One.PostedAt);
                     statement.Id = Cards.Two.Statements.One.Id;
-                    statement.PostedAt = Cards.Two.Statements.One.PostedAt;
                     Card2_Statements.Add(Cards.Two.Statements.One.Identifier, statement);
                 }
                 {
-                    var statement = Factories.GetSimpleStatement(Card2);
+                    var statement = Factories.CreateSimpleStatement(Card2, Cards.Two.Statements.Two.PostedAt);
                     statement.Id = Cards.Two.Statements.Two.Id;
-                    statement.PostedAt = Cards.Two.Statements.Two.PostedAt;
                     Card2_Statements.Add(Cards.Two.Statements.Two.Identifier, statement);
                 }
 
@@ -140,6 +137,9 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
             {
                 using (var db = new Context())
                 {
+                    db.Accounts.Add(Owner);
+                    db.SaveChanges();
+
                     db.Cards.Add(Card1);
                     db.Cards.Add(Card2);
                     db.SaveChanges();
