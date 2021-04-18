@@ -78,8 +78,9 @@ namespace Financier.Common.Expenses
                 // Do nothing if record is faulty
                 csv.Configuration.BadDataFound = (context) =>
                 {
+                    var record = context.Record ?? new string[0];
                     // TODO: log this to an error log
-                    Console.WriteLine($"This line is faulty {context.Record.Join()}");
+                    Console.WriteLine($"This line is faulty {record.Join()}");
                 };
 
                 return PostProcessedRecords(csv.GetRecords<T>()).ToArray();
