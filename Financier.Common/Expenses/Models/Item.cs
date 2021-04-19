@@ -122,7 +122,10 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                return db.Items.First(item => item.Id == id);
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .First(item => item.Id == id);
             }
         }
 
