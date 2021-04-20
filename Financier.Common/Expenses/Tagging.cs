@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using Financier.Common.Extensions;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Expenses
