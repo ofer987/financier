@@ -202,6 +202,13 @@ namespace Financier.Cli
                         }
                     } while (repeat);
                 }
+                else if (this.IsAutoAssign)
+                {
+                    foreach (var tagging in this.Taggings.Where(t => t.IsMatch(item.Description)))
+                    {
+                        tagging.AddTags(item.Id);
+                    }
+                }
                 else
                 {
                     Console.WriteLine("Input tags:");
