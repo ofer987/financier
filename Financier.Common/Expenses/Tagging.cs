@@ -9,7 +9,7 @@ namespace Financier.Common.Expenses
 {
     public class Tagging
     {
-        public string RegularExpression { get; }
+        public IEnumerable<string> RegularExpressions { get; }
         public string[] TagNames { get; }
 
         private Tag[] tags = new Tag[0];
@@ -45,15 +45,21 @@ namespace Financier.Common.Expenses
 
         public Tagging(string regularExpression, string[] tagNames)
         {
-            this.RegularExpression = regularExpression;
+            this.RegularExpressions = new string[] { regularExpression };
+            this.TagNames = tagNames;
+        }
+
+        public Tagging(IEnumerable<string> regularExpressions, string[] tagNames)
+        {
+            this.RegularExpressions = regularExpressions;
             this.TagNames = tagNames;
         }
 
         public bool IsMatch(string itemDescription)
         {
-            var matcher = new Regex(RegularExpression, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-            return matcher.IsMatch(itemDescription);
+            return this.RegularExpressions
+                .Select(item => new Regex(item, RegexOptions.IgnoreCase | RegexOptions.Compiled))
+                .Any(regex => regex.IsMatch(itemDescription));
         }
 
         public List<Tag> AddTags(Guid itemGuid)
