@@ -150,9 +150,15 @@ namespace Financier.Cli
             new Tagging(@"\[ck\]", new[] { "cheque" }),
             new Tagging(@"\[ds\]", new[] { "service-chargeable" }),
             new Tagging(@"\[dn\]", new[] { "not-service-chargeable" }),
-            new Tagging(@"pay to cra", new[] { "taxes" }),
+            new Tagging(@"\[op\]", new[] { "online-purchase" }),
+            new Tagging(@"pay to  cra", new[] { "taxes" }),
             new Tagging(@"economical ins\.", new[] { "insurance" }),
             new Tagging(@"canada\s*rit\/rif", new[] { "taxes" }),
+            new Tagging(@"don ross", new[] { "painting", "home-improvement" }),
+            new Tagging(@"digitalocean", new[] { "internet", "cloud-computing", "computers" }),
+            new Tagging(@"change\.org", new[] { "charity" }),
+            new Tagging(@"dynacare", new[] { "hospital", "health" }),
+            new Tagging(@"soda-snack", new[] { "food", "snack" }),
         };
 
         [OptionAttribute("-c|--credit-cards", CommandOptionType.SingleOrNoValue)]
