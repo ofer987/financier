@@ -90,6 +90,7 @@ namespace Financier.Common.Expenses.Models
             var sb = new StringBuilder();
 
             sb.AppendLine($"{nameof(Id)}: ({Id})");
+            sb.AppendLine($"{nameof(CardId)}: ({CardId})");
             sb.AppendLine($"{nameof(PostedAt)}: ({PostedAt})");
             sb.AppendLine($"Items:");
             foreach (var item in Items ?? new List<Item>())

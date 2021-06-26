@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Financier.Common.Expenses.Models
 {
@@ -28,6 +29,19 @@ namespace Financier.Common.Expenses.Models
         public CardTypes CardType { get; set; }
 
         public List<Statement> Statements { get; set; } = new List<Statement>();
+
+        public static Card FindByCardNumber(string number)
+        {
+            number = (number ?? string.Empty).Trim();
+
+            using (var db = new Context())
+            {
+                return db.Cards
+                    .Include(card => card.Statements)
+                    .Where(card => card.Number == number)
+                    .First();
+            }
+        }
 
         public void Delete()
         {

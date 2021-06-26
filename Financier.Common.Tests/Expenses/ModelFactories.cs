@@ -194,6 +194,15 @@ namespace Financier.Common.Tests.Expenses
                                         public static DateTime TransactedAt = new DateTime(2019, 6, 5);
                                     }
 
+                                    public class Porsche912
+                                    {
+                                        public const string ItemId = "1235";
+                                        public const decimal Amount = 300912.00M;
+                                        public const string Description = "Welcome to Porsche 912 Thank you!";
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 12);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 12);
+                                    }
+
                                     public class Ferrari
                                     {
                                         public const string ItemId = "458487";
