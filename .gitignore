@@ -1,4 +1,15 @@
+# Ignore dotnet core build
 **/bin/
 **/obj/
 
+# Ignore Visual Studio Code
 .vscode
+
+# Ignore bank/credit card files
+Cards
+cards.yml
+
+# Ignore local SQL files
+queries
+inserts
+data_dumps
