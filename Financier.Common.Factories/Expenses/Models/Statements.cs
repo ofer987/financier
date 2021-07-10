@@ -6,7 +6,7 @@ namespace Financier.Common
 {
     public partial class Factories
     {
-        public static Statement CreateSimpleStatement(Card card, DateTime postedAt)
+        public static Statement NewStatement(Card card, DateTime postedAt)
         {
             return new Statement 
             {
@@ -15,6 +15,19 @@ namespace Financier.Common
                 PostedAt = postedAt,
                 Items = new List<Item>()
             };
+        }
+
+        public static Statement CreateSimpleStatement(Card card, DateTime postedAt)
+        {
+            var statement = NewStatement(card, postedAt);
+
+            using (var db = new Context())
+            {
+                db.Statements.Add(statement);
+                db.SaveChanges();
+            }
+
+            return statement;
         }
     }
 }

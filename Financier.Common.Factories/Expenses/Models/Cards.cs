@@ -7,31 +7,70 @@ namespace Financier.Common
 {
     public partial class Factories
     {
-        public static Func<Account, string, Card> CreateCard = (account, number) => new Card
+        public static Card NewCard(Account account, string number)
         {
-            Owner = account,
-            Id = Guid.NewGuid(),
-            Number = number,
-            Statements = new List<Statement>()
-        };
+            return new Card
+            {
+                AccountName = account.Name,
+                Id = Guid.NewGuid(),
+                Number = number,
+                Statements = new List<Statement>()
+            };
 
-        public static Func<Account, string, Card> CreateBankCard = (account, number) => new Card
-        {
-            Owner = account,
-            Id = Guid.NewGuid(),
-            Number = number,
-            CardType = CardTypes.Bank,
-            Statements = new List<Statement>()
-        };
+        }
 
-        public static Func<Account, string, Card> CreateCreditCard = (account, number) => new Card
+        public static Card CreateCard(Account account, string number)
         {
-            Owner = account,
-            Id = Guid.NewGuid(),
-            Number = number,
-            CardType = CardTypes.Credit,
-            Statements = new List<Statement>()
-        };
+            var card = NewCard(account, number);
+
+            using (var db = new Context())
+            {
+                db.Cards.Add(card);
+                db.SaveChanges();
+            }
+
+            return card;
+        }
+
+        public static Card CreateBankCard(Account account, string number)
+        {
+            var card = new Card
+            {
+                AccountName = account.Name,
+                Id = Guid.NewGuid(),
+                Number = number,
+                CardType = CardTypes.Bank,
+                Statements = new List<Statement>()
+            };
+
+            using (var db = new Context())
+            {
+                db.Cards.Add(card);
+                db.SaveChanges();
+            }
+
+            return card;
+        }
+
+        public static Card CreateCreditCard(Account account, string number)
+        {
+            var card = new Card
+            {
+                AccountName = account.Name,
+                Id = Guid.NewGuid(),
+                Number = number,
+                CardType = CardTypes.Credit,
+                Statements = new List<Statement>()
+            };
+
+            using (var db = new Context())
+            {
+                db.Cards.Add(card);
+                db.SaveChanges();
+            }
+
+            return card;
+        }
     }
 }
 
