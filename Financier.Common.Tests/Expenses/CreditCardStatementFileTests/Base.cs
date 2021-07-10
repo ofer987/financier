@@ -36,7 +36,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             Context.Clean();
         }
 
-        public static Account MrBean = Factories.CreateAccount("mr bean");
+        public static Account MrBean = Factories.NewAccount("mr bean");
 
         public static IEnumerable TestCases
         {
@@ -150,13 +150,13 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         // TODO: fix it (maybe Models.Statement too)
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        [Ignore("The test cases are not configured properly")]
+        [Ignore("This test is broken")]
         public void Test_Expenses_CreditCardStatementFile_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
             {
                 Context.Clean();
-                var mrBean = Factories.CreateAccount("mr bean");
+                var mrBean = Factories.NewAccount("mr bean");
                 using (var db = new Context())
                 {
                     db.Accounts.Add(mrBean);
@@ -188,7 +188,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        [Ignore("The test cases are not configured properly")]
+        [Ignore("Test is broken")]
         public void Test_Expenses_CreditCardStatementFile_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
         {
             try
@@ -204,7 +204,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 
                     db.Database.EnsureCreated();
 
-                    var mrBean = Factories.CreateAccount("mr bean");
+                    var mrBean = Factories.NewAccount("mr bean");
                     db.Accounts.Add(mrBean);
 
                     db.Cards.Add(new Financier.Common.Expenses.Models.Card
@@ -260,7 +260,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             {
                 db.Database.EnsureCreated();
 
-                var mrBean = Factories.CreateAccount("mrbean");
+                var mrBean = Factories.NewAccount("mrbean");
                 db.Accounts.Add(mrBean);
 
                 var card = new Financier.Common.Expenses.Models.Card
@@ -310,7 +310,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                 {
                     db.Database.EnsureCreated();
 
-                    var owner = Factories.CreateAccount("mr bean");
+                    var owner = Factories.NewAccount("mr bean");
                     db.Accounts.Add(owner);
                     db.SaveChanges();
 
@@ -364,7 +364,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             {
                 db.Database.EnsureCreated();
 
-                var mrBean = Factories.CreateAccount("mr bean");
+                var mrBean = Factories.NewAccount("mr bean");
                 db.Accounts.Add(mrBean);
 
                 var card = new Financier.Common.Expenses.Models.Card

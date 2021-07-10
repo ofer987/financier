@@ -89,7 +89,7 @@ namespace Financier.Common.Expenses
                 return (from tags in db.Tags
                         join itemTags in db.ItemTags on tags.Id equals itemTags.TagId
                         where itemTags.ItemId == Item.Id
-                        select tags).ToList();
+                        select tags).AsEnumerable().ToList();
             }
         }
 
@@ -129,7 +129,7 @@ namespace Financier.Common.Expenses
                 var itemTagsToDelete = existingItemTags
                     .Reject(existingItemTag => newTags.Any(newTag => newTag.Name == existingItemTag.Tag.Name));
 
-                foreach (var itemTag in itemTagsToDelete) 
+                foreach (var itemTag in itemTagsToDelete)
                 {
                     db.ItemTags.Remove(itemTag);
                 }

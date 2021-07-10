@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 

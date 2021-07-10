@@ -115,12 +115,12 @@ namespace Financier.Common.Tests.Expenses
             bool expected
         )
         {
-            var tagging = new TaggingModel(regexes, new string[] {});
+            var tagging = new TaggingModel(regexes, new string[] { });
 
             Assert.That(tagging.IsMatch(itemDescription), Is.EqualTo(expected));
         }
 
-        [TestCase("my_house", new [] { FactoryData.Tags.Dog.Name, FactoryData.Tags.Coffee.Name })]
+        [TestCase("my_house", new[] { FactoryData.Tags.Dog.Name, FactoryData.Tags.Coffee.Name })]
         public void Test_Expenses_Models_Tagging_AddTagsMultipleTimesToOneItem(string itemDescription, string[] expectedTagNames)
         {
             var taggings = expectedTagNames
@@ -140,13 +140,14 @@ namespace Financier.Common.Tests.Expenses
                 db.SaveChanges();
             }
 
-            foreach(var tagging in taggings)
+            foreach (var tagging in taggings)
             {
                 tagging.AddTags(newItem.Id);
             }
 
             var reloadedItem = Item.Get(newItemId);
 
+            reloadedItem.Tags.Select(t => t.Name);
             CollectionAssert.AreEquivalent(expectedTagNames.Select(t => t.ToLower()), reloadedItem.Tags.Select(t => t.Name));
         }
     }

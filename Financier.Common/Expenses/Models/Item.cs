@@ -17,7 +17,7 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                return db.Items.ToList();
+                return db.Items.AsEnumerable().ToList();
             }
         }
 
@@ -42,6 +42,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .ToArray();
@@ -54,6 +55,7 @@ namespace Financier.Common.Expenses.Models
             {
                 return db.Items
                     .Include(item => item.ItemTags)
+                    .AsEnumerable()
                     .Reject(item => item.ItemTags.Any())
                     .OrderBy(item => item.PostedAt)
                     .ToArray();
@@ -67,6 +69,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .Where(item => item.Amount < 0)
@@ -82,6 +85,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .Where(item => item.Amount >= 0)
@@ -98,6 +102,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -110,6 +115,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .Reject(item => item.Tags.HasCreditCardPayment())
@@ -137,6 +143,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(itemTag => itemTag.Tag)
+                    .AsEnumerable()
                     .First(item => item.ItemId == itemId);
             }
         }
@@ -152,7 +159,7 @@ namespace Financier.Common.Expenses.Models
                     where tagIds.Contains(tag.Id)
                     select item;
 
-                return query.ToList();
+                return query.AsEnumerable().ToList();
             }
         }
 
@@ -167,7 +174,7 @@ namespace Financier.Common.Expenses.Models
                     where tagNames.Contains(tag.Name)
                     select item;
 
-                return query.ToList();
+                return query.AsEnumerable().ToList();
             }
         }
 
@@ -211,9 +218,9 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public DateTime PostedAt { get; set; }
 
-        public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
+        public List<ItemTag> ItemTags { get; set; }
 
-        public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
+        public List<Tag> Tags { get; set; }
 
         public Item(Guid id, Guid statementId, string itemId, string description, DateTime at, decimal amount)
         {
@@ -247,6 +254,23 @@ namespace Financier.Common.Expenses.Models
 
         public Item()
         {
+        }
+
+        public void AddTags(IEnumerable<Tag> tags)
+        {
+            using (var db = new Context())
+            {
+                foreach (var tag in tags)
+                {
+                    db.ItemTags.Add(new ItemTag
+                    {
+                        ItemId = this.Id,
+                        TagId = tag.Id
+                    });
+                }
+
+                db.SaveChanges();
+            }
         }
 
         public void Delete()

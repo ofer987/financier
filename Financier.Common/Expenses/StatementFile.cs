@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 using CsvHelper;
 using Financier.Common.Expenses.Models;
-using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses
 {
@@ -75,14 +74,6 @@ namespace Financier.Common.Expenses
             using (var reader = new StreamReader(Stream))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                // Do nothing if record is faulty
-                csv.Configuration.BadDataFound = (context) =>
-                {
-                    var record = context.Record ?? new string[0];
-                    // TODO: log this to an error log
-                    Console.WriteLine($"This line is faulty {record.Join()}");
-                };
-
                 return PostProcessedRecords(csv.GetRecords<T>()).ToArray();
             }
         }

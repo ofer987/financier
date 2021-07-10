@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GraphQL;
+using GraphQL.Types;
 using GraphQL.Server;
-using GraphQL.Server.Ui.Playground;
+// using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
@@ -47,7 +47,7 @@ namespace Financier.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+            // services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
             services.AddScoped<CashFlowSchema>();
             services.AddScoped<ItemSchema>();
             services.AddScoped<TagSchema>();
@@ -55,16 +55,18 @@ namespace Financier.Web
             services.AddScoped<FixedRateMortgageSchema>();
             services.AddScoped<OneHomeSchema>();
 
+            services.AddSingleton<ISchema, PaymentSchema>();
+
             // Add GraphQL
             services
                 .AddGraphQL(options =>
                     {
                         options.EnableMetrics = true;
                         // TODO: should depend whether is dev environment
-                        options.ExposeExceptions = true;
+                        // options.ExposeExceptions = true;
                     })
                 .AddGraphTypes(ServiceLifetime.Scoped)
-                .AddUserContextBuilder(httpContext => httpContext)
+                // .AddUserContextBuilder(httpContext => httpContext)
                 .AddDataLoader();
 
             // TODO: use the latest MVC routing
@@ -107,7 +109,7 @@ namespace Financier.Web
             app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
 
             // app.UseWebSockets();
-            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
+            // app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
             // Please note that some of these routes are deprecated
             // TODO: Remove the deprecated routes

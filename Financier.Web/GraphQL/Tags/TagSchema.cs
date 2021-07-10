@@ -1,13 +1,14 @@
-using GraphQL;
+using System;
+using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Tags
 {
     public class TagSchema : Schema
     {
-        public TagSchema(IDependencyResolver resolver) : base(resolver)
+        public TagSchema(IServiceProvider provider) : base(provider)
         {
-            Query = resolver.Resolve<TagQuery>();
+            Query = provider.GetRequiredService<TagQuery>();
         }
     }
 }

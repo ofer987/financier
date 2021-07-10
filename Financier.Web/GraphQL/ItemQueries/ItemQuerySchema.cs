@@ -1,13 +1,14 @@
-using GraphQL;
+using System;
+using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.ItemQueries
 {
     public class ItemQuerySchema : Schema
     {
-        public ItemQuerySchema(IDependencyResolver resolver) : base(resolver)
+        public ItemQuerySchema(IServiceProvider provider) : base(provider)
         {
-            Query = resolver.Resolve<ItemQueryQuery>();
+            Query = provider.GetRequiredService<ItemQueryQuery>();
         }
     }
 }

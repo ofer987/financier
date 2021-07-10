@@ -1,13 +1,14 @@
-using GraphQL;
+using System;
+using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.CashFlows
 {
     public class CashFlowSchema : Schema
     {
-        public CashFlowSchema(IDependencyResolver resolver) : base(resolver)
+        public CashFlowSchema(IServiceProvider provider) : base(provider)
         {
-            Query = resolver.Resolve<CashFlowQuery>();
+            Query = provider.GetRequiredService<CashFlowQuery>();
         }
     }
 }

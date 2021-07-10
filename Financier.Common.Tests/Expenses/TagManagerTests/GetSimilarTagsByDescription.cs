@@ -24,6 +24,11 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
         public List<Statement> Statements { get; set; } = new List<Statement>();
         public List<Item> Items { get; set; } = new List<Item>();
         public Item NewItem { get; set; }
+        public Item Item1 { get; set; }
+        public Item Item2 { get; set; }
+        public Item Item3 { get; set; }
+        public Item Item4 { get; set; }
+        public Item Item5 { get; set; }
 
         public Tag DanTag1 { get; set; }
         public Tag RonTag1 { get; set; }
@@ -37,93 +42,92 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            Owner = Factories.CreateAccount(FactoryData.Accounts.Dan.AccountName);
+            Owner = Factories.NewAccount(FactoryData.Accounts.Dan.AccountName);
 
-            var myCard1 = Factories.CreateCard(Owner, "1234");
+            var myCard1 = Factories.NewCard(Owner, "1234");
             Cards.Add(myCard1);
 
-            var myStatement1 = Factories.CreateSimpleStatement(myCard1, new DateTime(2018, 1, 1));
-            var myStatement2 = Factories.CreateSimpleStatement(myCard1, new DateTime(2018, 2, 1));
+            var myStatement1 = Factories.NewStatement(myCard1, new DateTime(2018, 1, 1));
+            var myStatement2 = Factories.NewStatement(myCard1, new DateTime(2018, 2, 1));
             Statements.AddRange(new[] { myStatement1, myStatement2 });
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
             KerenTag1 = Factories.KerenTag();
 
-            NewItem = Factories.CreateItemWithoutTags(
+            NewItem = Factories.NewItem(
                 myStatement1,
                 "1234",
-                string.Empty,
+                description,
                 new DateTime(2019, 1, 1),
                 20.00M
             );
-            NewItem.Description = description;
 
             {
-                var item = Factories.CreateItemWithTags(
+                Item1 = Factories.NewItem(
                     myStatement1,
                     "5678",
                     string.Empty,
                     new DateTime(2019, 1, 1),
-                    20.00M,
-                    new[] { DanTag1, RonTag1 }
+                    20.00M
+                    // new[] { DanTag1, RonTag1 }
                 );
-                item.Description = Descriptions.OnlyDesc;
-                Items.Add(item);
+                Item1.Description = Descriptions.OnlyDesc;
+                Items.Add(Item1);
             }
             {
-                var item = Factories.CreateItemWithTags(
+                Item2 = Factories.NewItem(
                     myStatement1,
                     "1357",
                     string.Empty,
                     new DateTime(2019, 1, 1),
-                    20.00M,
-                    new[] { DanTag1, RonTag1 }
+                    20.00M
+                    // new[] { DanTag1, RonTag1 }
                 );
-                item.Description = Descriptions.Twice;
-                item.PostedAt = new DateTime(2018, 1, 1);
-                Items.Add(item);
+                Item2.Description = Descriptions.Twice;
+                Item2.PostedAt = new DateTime(2018, 1, 1);
+                Items.Add(Item2);
             }
 
             {
-                var item = Factories.CreateItemWithTags(
+                Item3 = Factories.NewItem(
                     myStatement2,
                     "4321",
                     string.Empty,
                     new DateTime(2019, 1, 1),
-                    20.00M,
-                    new[] { DanTag1, RonTag1, KerenTag1 }
+                    20.00M
+                    // new[] { DanTag1, RonTag1, KerenTag1 }
                 );
-                item.Description = Descriptions.Twice;
-                item.PostedAt = new DateTime(2018, 2, 1);
-                Items.Add(item);
+                Item3.Description = Descriptions.Twice;
+                Item3.PostedAt = new DateTime(2018, 2, 1);
+                Items.Add(Item3);
             }
 
             {
-                var item = Factories.CreateItemWithTags(
+                Item4 = Factories.NewItem(
                     myStatement2,
-                    "9876", 
+                    "9876",
                     string.Empty,
                     new DateTime(2019, 1, 1),
-                    20.00M,
-                    new[] { DanTag1 }
+                    20.00M
+                    // new[] { DanTag1 }
                 );
-                item.Description = Descriptions.Statement2Item;
-                item.PostedAt = new DateTime(2018, 1, 1);
-                Items.Add(item);
+                Item4.Description = Descriptions.Statement2Item;
+                Item4.PostedAt = new DateTime(2018, 1, 1);
+                Items.Add(Item4);
             }
 
             {
-                var item = Factories.CreateItemWithoutTags(
+                Item5 = Factories.NewItem(
                     myStatement2,
                     "7531",
                     string.Empty,
                     new DateTime(2019, 1, 1),
                     20.00M
                 );
-                item.Description = Descriptions.Statement2Item;
-                item.PostedAt = new DateTime(2018, 1, 3);
-                Items.Add(item);
+                Item5.Description = Descriptions.Statement2Item;
+                Item5.PostedAt = new DateTime(2018, 1, 3);
+                Items.Add(Item5);
             }
 
             ExpectedTagNames = expectedTags;
@@ -187,6 +191,17 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                     db.SaveChanges();
                 }
 
+                // Item1 = Item.Get(Item1.Id);
+                // Item2 = Item.Get(Item2.Id);
+                // Item3 = Item.Get(Item3.Id);
+                // Item4 = Item.Get(Item4.Id);
+                // Item5 = Item.Get(Item5.Id);
+
+                Item1.AddTags(new[] { DanTag1, RonTag1 });
+                Item2.AddTags(new[] { DanTag1, RonTag1 });
+                Item3.AddTags(new[] { DanTag1, RonTag1, KerenTag1 });
+                Item4.AddTags(new[] { DanTag1 });
+
                 db.Items.Add(NewItem);
                 db.SaveChanges();
             }
@@ -198,7 +213,7 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             {
                 yield return new TestFixtureData(
                     Descriptions.OnlyDesc,
-                    new[] {"dan", "ron"}
+                    new[] { "dan", "ron" }
                 );
                 yield return new TestFixtureData(
                     "new_description",
@@ -206,11 +221,11 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 );
                 yield return new TestFixtureData(
                     Descriptions.Twice,
-                    new[] {"dan", "ron", "keren"}
+                    new[] { "dan", "ron", "keren" }
                 );
                 yield return new TestFixtureData(
                     Descriptions.Statement2Item,
-                    new[] {"dan"}
+                    new[] { "dan" }
                 );
                 yield return new TestFixtureData(
                     string.Empty,

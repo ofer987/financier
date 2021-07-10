@@ -1,13 +1,14 @@
-using GraphQL;
+using System;
+using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Liabilities
 {
     public class FixedRateMortgageSchema : Schema
     {
-        public FixedRateMortgageSchema(IDependencyResolver resolver) : base(resolver)
+        public FixedRateMortgageSchema(IServiceProvider provider) : base(provider)
         {
-            Query = resolver.Resolve<FixedRateMortgageQuery>();
+            Query = provider.GetRequiredService<FixedRateMortgageQuery>();
         }
     }
 }

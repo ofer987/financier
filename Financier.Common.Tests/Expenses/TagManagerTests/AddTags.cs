@@ -28,9 +28,9 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
             Context.Environment = Environments.Test;
             Context.Clean();
 
-            Owner = Factories.CreateAccount("mrbean");
-            MyCard1 = Factories.CreateCard(Owner, "1234");
-            MyStatement1 = Factories.CreateSimpleStatement(MyCard1, new DateTime(2015, 1, 1));
+            Owner = Factories.NewAccount("mrbean");
+            MyCard1 = Factories.NewCard(Owner, "1234");
+            MyStatement1 = Factories.NewStatement(MyCard1, new DateTime(2015, 1, 1));
 
             DanTag1 = Factories.DanTag();
             RonTag1 = Factories.RonTag();
@@ -58,13 +58,14 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
                 .Select(pair => pair.Value)
                 .ToList();
 
-            MyItem1 = Factories.CreateItemWithTags(
+            MyItem1 = Factories.NewItem(
                 MyStatement1,
                 "1234",
                 string.Empty,
                 new DateTime(2019, 1, 1),
-                20.00M,
-                ExistingTags
+                20.00M
+                // TODO Fix Me!!!!
+                // ExistingTags
             );
         }
 
@@ -115,6 +116,7 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
 
                 db.Items.Add(MyItem1);
                 db.SaveChanges();
+                MyItem1.AddTags(ExistingTags);
             }
         }
 
