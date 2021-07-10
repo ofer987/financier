@@ -21,6 +21,24 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static Tag Get(string name)
+        {
+            if (name.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException("name cannot be null or whitespace");
+            }
+
+            name = name.ToLower().Trim();
+            using (var db = new Context())
+            {
+                return db.Tags
+                    .Where(t => t.Name == name)
+                    .Include(t => t.ItemTags)
+                        .ThenInclude(it => it.Item)
+                    .FirstOrDefault();
+            }
+        }
+
         public static Tag GetOrCreate(string name)
         {
             if (name.IsNullOrWhiteSpace())
@@ -135,6 +153,7 @@ namespace Financier.Common.Expenses.Models
                     });
 
                 db.ItemTags.AddRange(newItemTagsForNewTag);
+                db.SaveChanges();
             }
 
             using (var db = new Context())

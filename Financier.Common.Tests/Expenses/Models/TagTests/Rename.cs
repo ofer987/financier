@@ -24,119 +24,31 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
             {
                 beforeTagCount = db.Tags.Count();
                 beforeItemTagCount = db.ItemTags.Count();
-
-                var tag = db.Tags.First(t => t.Name == existingName);
-                beforeTagId = tag.Id;
-
-                tag.Rename(newName);
             }
+
+            if (Tag.Get(newName) != null)
+            {
+                Assert.Fail($"A tag with the new name {newName} already exists!");
+            }
+
+            var tag = Tag.GetOrCreate(existingName);
+            beforeTagId = tag.Id;
+            tag.Rename(newName);
 
             using (var db = new Context())
             {
                 var afterTagCount = db.Tags.Count();
                 var afterItemTagCount = db.ItemTags.Count();
 
-                // A new tag has been created, but the existing one was deleted
-                Assert.That(afterTagCount, Is.EqualTo(beforeTagCount));
-                Assert.That(afterItemTagCount, Is.LessThanOrEqualTo(beforeItemTagCount));
-                Assert.That(db.Tags.First(t => t.Name == newName).Id, Is.Not.EqualTo(beforeTagId)); // The new tag is a new entity!
-            }
-        }
-
-        [Test]
-        [TestCase(FactoryData.Tags.Dog.Name, FactoryData.Tags.Fun.Name)]
-        public void Test_Expenses_Models_Tag_Rename_RemovesExistingTag(string existingName, string newName)
-        {
-            existingName = existingName.ToLower();
-            newName = newName.ToLower();
-
-            int beforeTagCount;
-            int beforeItemTagCount;
-            Guid existingTagId;
-            Tag existingTag;
-            using (var db = new Context())
-            {
-                beforeTagCount = db.Tags.Count();
-                beforeItemTagCount = db.ItemTags.Count();
-
-                existingTag = db.Tags
-                    .Include(tag => tag.ItemTags)
-                        .ThenInclude(it => it.Item)
-                    .AsEnumerable()
-                    .First(t => t.Name == existingName);
-            }
-
-                // var tag = db.Tags
-                //     .Include(tag => tag.ItemTags)
-                //         .ThenInclude(it => it.Item)
-                //     .First(t => t.Name == existingName);
-                // beforeTagId = tag.Id;
-
-                // foreach (var name in GetItemTagNames())
-                // {
-                //     Console.WriteLine(name);
-                // }
-
-            existingTagId = existingTag.Id;
-            using (var db = new Context())
-            {
-                Console.WriteLine($"Before Rename: {db.Tags.Count()}");
-                var count = db.ItemTags
-                    .Where(it => it.TagId == existingTagId)
-                    .AsEnumerable();
-
-                Console.WriteLine($"There are {count} remaining");
-            }
-            existingTag.Rename(newName);
-            using (var db = new Context())
-            {
-                Console.WriteLine($"After Rename: {db.Tags.Count()}");
-                var count = db.ItemTags
-                    .Where(it => it.TagId == existingTagId)
-                    .AsEnumerable();
-
-                Console.WriteLine($"There are {count} remaining");
-            }
-            // using (var db = new Context())
-            // {
-            //     Console.WriteLine($"Id of existing Tag: {db.Tags.First(tag => tag.Id == existingTag.Id).Id}");
-            //     Console.WriteLine($"After Rename: {db.Tags.Count()}");
-            //
-            //     var existingItemTags = db.ItemTags.Where(it => it.TagId == existingTagId).AsEnumerable();
-            //     if (existingItemTags.Count() > 0)
-            //     {
-            //         Console.WriteLine($"There are still {existingItemTags.Count()}");
-            //     }
-            //     // db.Tags.Remove(existingTag);
-            //     db.SaveChanges();
-            // }
-            // existingTag.Delete();
-            // db.SaveChanges();
-
-            // db.Tags.Remove(tag);
-            // db.SaveChanges();
-            // }
-
-            Console.WriteLine();
-
-            using (var db = new Context())
-            {
-                foreach (var name in GetItemTagNames())
-                {
-                    Console.WriteLine(name);
-                }
-
-                var afterTagCount = db.Tags.Count();
-                var afterItemTagCount = db.ItemTags.Count();
-
-                Assert.That(db.Tags.First(t => t.Name == newName).Id, Is.Not.EqualTo(existingTagId));
-                Assert.That(beforeTagCount - afterTagCount, Is.EqualTo(1));
-                Assert.That(afterItemTagCount, Is.LessThan(beforeItemTagCount));
+                Assert.That(afterTagCount, Is.EqualTo(beforeTagCount), "A new tag has been created, while the old one has been deleted");
+                Assert.That(afterItemTagCount, Is.EqualTo(beforeItemTagCount), "The same amount of relationships between items and tags should exist");
+                Assert.That(db.Tags.First(t => t.Name == newName).Id, Is.Not.EqualTo(beforeTagId), "The tag is a new entity and thus should have a different Id");
             }
         }
 
         [Test]
         [TestCase(FactoryData.Tags.Fun.Name, FactoryData.Tags.Fast.Name)]
+        [TestCase(FactoryData.Tags.Dog.Name, FactoryData.Tags.Fun.Name)]
         public void Test_Expenses_Models_Tag_Rename_RemovesExistingTag_NoDuplicates(string existingName, string newName)
         {
             existingName = existingName.ToLower();
@@ -144,17 +56,11 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
 
             int beforeTagCount;
             int beforeItemTagCount;
-            // Guid existingTagId;
-            // Guid newTagId;
             var existingTag = Tag.GetOrCreate(existingName);
             using (var db = new Context())
             {
                 beforeTagCount = db.Tags.Count();
                 beforeItemTagCount = db.ItemTags.Count();
-
-                // existingTag = db.Tags.First(t => t.Name == existingName);
-                // existingTagId = existingTag.Id;
-                // newTagId = db.Tags.First(t => t.Name == newName).Id;
 
             }
             var newTag = existingTag.Rename(newName);
@@ -165,34 +71,10 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
                 var afterTagCount = db.Tags.Count();
                 var afterItemTagCount = db.ItemTags.Count();
 
-                // A new tag has not been created
-                Assert.That(beforeTagCount - afterTagCount, Is.EqualTo(1));
-
-                // New ItemTags have been created
-                Assert.That(afterItemTagCount, Is.Not.EqualTo(beforeItemTagCount));
-                Console.WriteLine(afterItemTagCount);
-                Assert.That(beforeItemTagCount, Is.GreaterThan(afterItemTagCount));
-
-                // The renamed tag is different
-                Assert.That(db.Tags.First(t => t.Name == newName).Id, Is.Not.EqualTo(existingTag.Id));
-                Assert.That(db.Tags.First(t => t.Name == newName).Id, Is.EqualTo(newTagId));
-            }
-        }
-
-        [Test]
-        public void RenameExistingTag()
-        {
-            using (var db = new Context())
-            {
-                db.Tags
-                    .First(t => t.Name == "fun")
-                    .Name = "super-fun";
-                db.SaveChanges();
-            }
-
-            using (var db = new Context())
-            {
-                Assert.That(db.Tags.FirstOrDefault(t => t.Name == "super-fun"), Is.Not.EqualTo(null));
+                Assert.IsNull(Tag.Get(existingName));
+                Assert.IsNotNull(Tag.Get(newName));
+                Assert.That(beforeTagCount - afterTagCount, Is.EqualTo(1), "A tag should have been removed");
+                Assert.That(afterItemTagCount, Is.LessThanOrEqualTo(beforeItemTagCount), $"New ItemTags should not have been created if the existing item had previously been tagged with {newName}");
             }
         }
 
