@@ -8,7 +8,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.Models.TagTests
 {
-    public class Rename : DatabaseFixture
+    public class Rename : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Tags.Fun.Name, "super-fun")]

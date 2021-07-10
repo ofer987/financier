@@ -5,7 +5,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.Models.ItemTests
 {
-    public class GetAllMonths : DatabaseFixture
+    public class GetAllMonths : InitializedDatabaseTests
     {
         [Test]
         public void Test_Expenses_Models_Item_GetAllMonths()

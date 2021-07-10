@@ -9,7 +9,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
 {
-    public class GetItemListings : DatabaseFixture
+    public class GetItemListings : InitializedDatabaseTests
     {
         public static IEnumerable DebitTestCases
         {

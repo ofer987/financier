@@ -9,7 +9,7 @@ using TaggingModel = Financier.Common.Expenses.Tagging;
 
 namespace Financier.Common.Tests.Expenses.Tagging
 {
-    public class AddTagsToItemsTests : DatabaseFixture
+    public class AddTagsToItemsTests : InitializedDatabaseTests
     {
         public static IEnumerable<TaggingModel> Taggings;
 

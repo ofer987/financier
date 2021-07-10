@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace Financier.Common.Tests
 {
     [TestFixture]
-    public abstract class Fixture
+    public abstract class Tests
     {
         [OneTimeSetUp]
         public void InitAll()
@@ -22,6 +22,7 @@ namespace Financier.Common.Tests
         [OneTimeTearDown]
         public void Cleanup()
         {
+            // System.Console.ReadKey();
             Context.Clean();
         }
 

@@ -9,7 +9,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.BankStatementFileTests
 {
-    public class GetRecords : Fixture
+    public class GetRecords : Tests
     {
         public static IEnumerable ValidTestCases
         {

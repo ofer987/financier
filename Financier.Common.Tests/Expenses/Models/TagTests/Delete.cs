@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Financier.Common.Tests.Expenses.Models.TagTests
 {
-    public class Delete : DatabaseFixture
+    public class Delete : InitializedDatabaseTests
     {
         [Test]
         [TestCase("fun")]

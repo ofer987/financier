@@ -2,7 +2,7 @@ namespace Financier.Common.Tests.Expenses
 {
     // New Style of writing tests
     // You can use the FactoryData.* directly in the TestCase attributes
-    public abstract class DatabaseFixture : Fixture
+    public abstract class InitializedDatabaseTests : Tests
     {
         protected override void InitStorage()
         {

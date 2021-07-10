@@ -6,7 +6,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
 {
-    public class Query : DatabaseFixture
+    public class Query : InitializedDatabaseTests
     {
         [TestCase(
             "Dan",

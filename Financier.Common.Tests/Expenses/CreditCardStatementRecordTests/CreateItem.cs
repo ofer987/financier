@@ -53,7 +53,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
         };
     }
 
-    public class CreateItem : Fixture
+    public class CreateItem : Tests
     {
         protected override void InitStorage()
         {

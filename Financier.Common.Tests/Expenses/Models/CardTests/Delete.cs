@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Financier.Common.Tests.Expenses.Models.CardTests
 {
-    public class Delete : DatabaseFixture
+    public class Delete : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.Savings.CardNumber, 1)]
