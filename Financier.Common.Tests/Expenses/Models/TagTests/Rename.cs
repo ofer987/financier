@@ -78,7 +78,6 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
             }
         }
 
-
         private IEnumerable<string> GetItemTagNames()
         {
             using (var db = new Context())
