@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 
-using TaggingModel = Financier.Common.Expenses.Tagging;
+using TaggingModel = Financier.Common.Expenses.ItemTagging;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses

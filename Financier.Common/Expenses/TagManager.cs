@@ -7,6 +7,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Expenses
 {
+    // TODO: Remove this class and its tests!
     public class TagManager
     {
         public Item Item { get; set; }
