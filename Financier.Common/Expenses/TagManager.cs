@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Extensions;
 using Financier.Common.Expenses.Models;
@@ -58,39 +57,6 @@ namespace Financier.Common.Expenses
         public TagManager(Guid itemId)
         {
             Item = Item.Get(itemId);
-        }
-
-        public List<Tag> AddTags(IEnumerable<Tag> newTags)
-        {
-            using (var db = new Context())
-            {
-                var existingItemTags = db.ItemTags
-                    .Include(it => it.Tag)
-                    .Where(it => it.ItemId == Item.Id);
-                var existingTags = existingItemTags.Select(it => it.Tag);
-
-                foreach (var newTag in newTags)
-                {
-                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
-                    {
-                        var itemTag = new ItemTag
-                        {
-                            ItemId = Item.Id,
-                            TagId = newTag.Id
-                        };
-
-                        db.ItemTags.Add(itemTag);
-                    }
-                }
-
-                db.SaveChanges();
-
-                // Or should represent only the tags that have been added
-                return (from tags in db.Tags
-                        join itemTags in db.ItemTags on tags.Id equals itemTags.TagId
-                        where itemTags.ItemId == Item.Id
-                        select tags).AsEnumerable().ToList();
-            }
         }
 
         public Tag[] GetSimilarTagsByDescription()

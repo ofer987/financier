@@ -256,28 +256,45 @@ namespace Financier.Common.Expenses.Models
         {
         }
 
-        public void AddTags(IEnumerable<Tag> tags)
-        {
-            using (var db = new Context())
-            {
-                foreach (var tag in tags)
-                {
-                    db.ItemTags.Add(new ItemTag
-                    {
-                        ItemId = this.Id,
-                        TagId = tag.Id
-                    });
-                }
-
-                db.SaveChanges();
-            }
-        }
-
         public void Delete()
         {
             using (var db = new Context())
             {
                 db.Items.Remove(this);
+                db.SaveChanges();
+            }
+        }
+
+        public void AddTags(IEnumerable<string> newTagNames)
+        {
+            var tags = newTagNames.Select(Tag.GetOrCreate);
+
+            AddTags(tags);
+        }
+
+        public void AddTags(IEnumerable<Tag> newTags)
+        {
+            using (var db = new Context())
+            {
+                var existingItemTags = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.ItemId == Id);
+                var existingTags = existingItemTags.Select(it => it.Tag);
+
+                foreach (var newTag in newTags)
+                {
+                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
+                    {
+                        var itemTag = new ItemTag
+                        {
+                            ItemId = Id,
+                            TagId = newTag.Id
+                        };
+
+                        db.ItemTags.Add(itemTag);
+                    }
+                }
+
                 db.SaveChanges();
             }
         }

@@ -62,11 +62,11 @@ namespace Financier.Common.Expenses
                 .Any(regex => regex.IsMatch(itemDescription));
         }
 
-        public List<Tag> AddTags(Guid itemGuid)
+        public void AddTags(Guid itemGuid)
         {
             var item = Item.Get(itemGuid);
 
-            return new TagManager(itemGuid).AddTags(this.Tags);
+            item.AddTags(Tags);
         }
     }
 }
