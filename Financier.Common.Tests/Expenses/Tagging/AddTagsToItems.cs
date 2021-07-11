@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using Financier.Common.Expenses.Models;
-using TaggingModel = Financier.Common.Expenses.Tagging;
+using TaggingModel = Financier.Common.Expenses.ItemTagging;
 
 namespace Financier.Common.Tests.Expenses.Tagging
 {

@@ -7,9 +7,9 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Expenses
 {
-    public class Tagging
+    public class ItemTagger
     {
-        public IEnumerable<string> RegularExpressions { get; }
+        public IEnumerable<string> ItemMatchers { get; }
         public string[] TagNames { get; }
 
         private Tag[] tags = new Tag[0];
@@ -28,7 +28,7 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public static void AddTagsToItems(IEnumerable<Tagging> taggings, IEnumerable<Guid> itemIds)
+        public static void AddTagsToItems(IEnumerable<ItemTagger> taggings, IEnumerable<Guid> itemIds)
         {
             var items = itemIds.Select(Item.Get);
             foreach (var tagging in taggings)
@@ -43,21 +43,21 @@ namespace Financier.Common.Expenses
             }
         }
 
-        public Tagging(string regularExpression, string[] tagNames)
+        public ItemTagger(string regularExpression, string[] tagNames)
         {
-            this.RegularExpressions = new string[] { regularExpression };
+            this.ItemMatchers = new string[] { regularExpression };
             this.TagNames = tagNames;
         }
 
-        public Tagging(IEnumerable<string> regularExpressions, string[] tagNames)
+        public ItemTagger(IEnumerable<string> regularExpressions, string[] tagNames)
         {
-            this.RegularExpressions = regularExpressions;
+            this.ItemMatchers = regularExpressions;
             this.TagNames = tagNames;
         }
 
         public bool IsMatch(string itemDescription)
         {
-            return this.RegularExpressions
+            return ItemMatchers
                 .Select(item => new Regex(item, RegexOptions.IgnoreCase | RegexOptions.Compiled))
                 .Any(regex => regex.IsMatch(itemDescription));
         }
