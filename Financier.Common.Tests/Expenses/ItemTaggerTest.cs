@@ -7,7 +7,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses
 {
-    public class TaggingTests : InitializedDatabaseTests
+    public class ItemTaggerTest : InitializedDatabaseTests
     {
         [SetUp]
         public void Setup()
