@@ -305,7 +305,7 @@ namespace Financier.Common.Expenses.Models
                     .Where(it => it.ItemId == Id);
                 var existingTags = existingItemTags.Select(it => it.Tag);
 
-                foreach (var newTag in newTags)
+                foreach (var newTag in newTags.Distinct())
                 {
                     if (!existingTags.Any(tag => tag.Name == newTag.Name))
                     {
@@ -334,15 +334,14 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                // TODO: Replace with AddTags
                 // Get the existing tags
                 var existingItemTags = db.ItemTags
                     .Include(it => it.Tag)
                     .Where(it => it.ItemId == Id);
-                var existingTags = existingItemTags.Select(it => it.Tag).AsEnumerable();
+                var existingTags = existingItemTags.Select(it => it.Tag);
 
                 // Add tags that do not exist
-                foreach (var newTag in newTags)
+                foreach (var newTag in newTags.Distinct())
                 {
                     if (!existingTags.Any(tag => tag.Name == newTag.Name))
                     {
@@ -357,7 +356,6 @@ namespace Financier.Common.Expenses.Models
                 }
 
                 // Delete the existing tags that are not part of newTags
-                // TODO: See if it is possible to apply the same logic to Tag.Rename
                 var itemTagsToDelete = existingItemTags
                     .Reject(existingItemTag => newTags.Any(newTag => newTag.Name == existingItemTag.Tag.Name));
                 db.ItemTags.RemoveRange(itemTagsToDelete);
