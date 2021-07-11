@@ -4,6 +4,7 @@ using GraphQL;
 using GraphQL.Types;
 
 using Financier.Common.Expenses;
+using Financier.Common.Expenses.Models;
 
 namespace Financier.Web.GraphQL.Items
 {
@@ -31,10 +32,12 @@ namespace Financier.Web.GraphQL.Items
                     var itemId = context.GetArgument<Guid>(Arguments.Item.Id);
                     var newTags = context.GetArgument<IEnumerable<string>>(Arguments.NewTags);
 
-                    return context.TryAsyncResolve(async _c =>
-                    {
-                        return new TagManager(itemId).UpdateTags(newTags);
-                    });
+                    var item = Item.Get(itemId);
+                    item.UpdateTags(newTags);
+
+                    // TODO: replace BooleanGraphType with a GraphType that
+                    // returns null
+                    return true;
                 }
             );
         }

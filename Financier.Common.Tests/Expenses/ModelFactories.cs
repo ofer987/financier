@@ -281,7 +281,7 @@ namespace Financier.Common.Tests.Expenses
 
                                     public class CreditCardPayment
                                     {
-                                        public static string ItemId = Guid.NewGuid().ToString();
+                                        public const string ItemId = "3674654849";
                                         public const decimal Amount = -35000.00M;
                                         public const string Description = "Thank you!";
                                         public static DateTime PostedAt = new DateTime(2019, 6, 22);

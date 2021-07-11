@@ -282,6 +282,48 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public void UpdateTags(IEnumerable<string> newTagNames)
+        {
+            var newTags = newTagNames.Select(name => Tag.GetOrCreate(name));
+
+            UpdateTags(newTags);
+        }
+
+        public void UpdateTags(IEnumerable<Tag> newTags)
+        {
+            using (var db = new Context())
+            {
+                // Get the existing tags
+                var existingItemTags = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.ItemId == Id);
+                var existingTags = existingItemTags.Select(it => it.Tag).AsEnumerable();
+
+                // Add tags that do not exist
+                foreach (var newTag in newTags)
+                {
+                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
+                    {
+                        var itemTag = new ItemTag
+                        {
+                            ItemId = Id,
+                            TagId = newTag.Id
+                        };
+
+                        db.ItemTags.Add(itemTag);
+                    }
+                }
+
+                // Delete the existing tags that are not part of newTags
+                // TODO: See if it is possible to apply the same logic to Tag.Rename
+                var itemTagsToDelete = existingItemTags
+                    .Reject(existingItemTag => newTags.Any(newTag => newTag.Name == existingItemTag.Tag.Name));
+                db.ItemTags.RemoveRange(itemTagsToDelete);
+
+                db.SaveChanges();
+            }
+        }
+
         public override int GetHashCode()
         {
             return Id.GetHashCode();
