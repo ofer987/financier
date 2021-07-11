@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -8,6 +7,44 @@ namespace Financier.Common.Tests.Expenses.Models
 {
     public class ItemTest : InitializedDatabaseTests
     {
+        [Test]
+        [TestCase(
+            FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId,
+            FactoryData.Tags.Coffee.Name + ", " + FactoryData.Tags.Fast.Name + "," + FactoryData.Tags.Lunch.Name,
+            new string[] { FactoryData.Tags.Coffee.Name, FactoryData.Tags.Fast.Name, FactoryData.Tags.Lunch.Name }
+        )]
+        [TestCase(
+            FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId,
+            FactoryData.Tags.Coffee.Name + "," + FactoryData.Tags.Fast.Name + " , " + FactoryData.Tags.Lunch.Name,
+            new string[] { FactoryData.Tags.Coffee.Name, FactoryData.Tags.Fast.Name, FactoryData.Tags.Lunch.Name }
+        )]
+        [TestCase(
+            FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId,
+            " , , , ",
+            new string[] { })]
+        public void ItemTest_AddTags_CommaSeparatedValues(string itemId, string commaSeparatedNewTagNames, string[] expectedTagNames)
+        {
+            var item = Item.GetByItemId(itemId);
+            var previousTagNames = (item.Tags ?? Enumerable.Empty<Tag>())
+                .Select(tag => tag.Name)
+                .Select(t => t.ToLower());
+
+            item.AddTags(commaSeparatedNewTagNames);
+
+            using (var db = new Context())
+            {
+                var actualTags = (Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<Tag>())
+                    .Select(t => t.Name);
+
+                CollectionAssert.AreEquivalent(
+                    previousTagNames
+                        .Union(expectedTagNames.Select(t => t.ToLower()))
+                        .Distinct(),
+                    actualTags
+                );
+            }
+        }
+
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId, new string[] { FactoryData.Tags.Coffee.Name, FactoryData.Tags.Fast.Name, FactoryData.Tags.Lunch.Name })]
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId, new string[] { FactoryData.Tags.Coffee.Name, FactoryData.Tags.Fast.Name, FactoryData.Tags.Lunch.Name })]
