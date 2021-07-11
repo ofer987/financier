@@ -62,6 +62,19 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public static Item[] FindByDescription(string description)
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .Where(item => item.Description.Equals(description, StringComparison.InvariantCultureIgnoreCase))
+                    .AsEnumerable()
+                    .ToArray();
+            }
+        }
+
         public static IEnumerable<Item> FindCredits(DateTime from, DateTime to)
         {
             using (var db = new Context())
@@ -265,6 +278,17 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
+        public void AddTags(string commaSeparatedNewTagNames)
+        {
+            var names = commaSeparatedNewTagNames
+                .Split(',')
+                .Select(item => item.Trim().ToLower())
+                .Reject(item => item.IsNullOrEmpty())
+                .Distinct();
+
+            AddTags(names);
+        }
+
         public void AddTags(IEnumerable<string> newTagNames)
         {
             var tags = newTagNames.Select(Tag.GetOrCreate);
@@ -310,6 +334,7 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
+                // TODO: Replace with AddTags
                 // Get the existing tags
                 var existingItemTags = db.ItemTags
                     .Include(it => it.Tag)

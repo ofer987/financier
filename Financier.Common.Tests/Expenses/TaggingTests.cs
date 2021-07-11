@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 
-using TaggingModel = Financier.Common.Expenses.ItemTagging;
+using ItemTagger = Financier.Common.Expenses.ItemTagger;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses
@@ -12,11 +12,11 @@ namespace Financier.Common.Tests.Expenses
         [SetUp]
         public void Setup()
         {
-            var foodTaggings1 = new TaggingModel("freshco", new[] { "food", "groceries" });
-            var foodTaggings2 = new TaggingModel("groceries", new[] { "food", "groceries" });
+            var foodTaggings1 = new ItemTagger("freshco", new[] { "food", "groceries" });
+            var foodTaggings2 = new ItemTagger("groceries", new[] { "food", "groceries" });
 
-            var coffeeTaggings = new TaggingModel("meridian", new[] { "coffee" });
-            var giftTaggings = new TaggingModel("toys", new[] { "gift" });
+            var coffeeTaggings = new ItemTagger("meridian", new[] { "coffee" });
+            var giftTaggings = new ItemTagger("toys", new[] { "gift" });
         }
 
         [Ignore("Test is broken")]
@@ -84,7 +84,7 @@ namespace Financier.Common.Tests.Expenses
             bool expected
         )
         {
-            var tagging = new TaggingModel(regex, new string[] { });
+            var tagging = new ItemTagger(regex, new string[] { });
 
             Assert.That(tagging.IsMatch(itemDescription), Is.EqualTo(expected));
         }
@@ -116,7 +116,7 @@ namespace Financier.Common.Tests.Expenses
             bool expected
         )
         {
-            var tagging = new TaggingModel(regexes, new string[] { });
+            var tagging = new ItemTagger(regexes, new string[] { });
 
             Assert.That(tagging.IsMatch(itemDescription), Is.EqualTo(expected));
         }
@@ -125,7 +125,7 @@ namespace Financier.Common.Tests.Expenses
         public void Test_Expenses_Models_Tagging_AddTagsMultipleTimesToOneItem(string itemDescription, string[] expectedTagNames)
         {
             var taggings = expectedTagNames
-                .Select(t => new TaggingModel(string.Empty, new[] { t }))
+                .Select(t => new ItemTagger(string.Empty, new[] { t }))
                 .ToList();
 
             var danCardNumber = FactoryData.Accounts.Dan.Cards.DanCard.CardNumber;

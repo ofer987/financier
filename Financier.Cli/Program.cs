@@ -196,12 +196,14 @@ namespace Financier.Cli
                 Console.WriteLine($"Processing Item ({i} of {newItems.Length}):");
                 Console.WriteLine(item);
 
-                var tagManager = new TagManager(item);
-                var similarTags = tagManager.GetSimilarTagsByDescription();
+                var itemsWithSameDescription = Item.FindByDescription(item.Description);
+                var similarTags = itemsWithSameDescription
+                    .SelectMany(item => item.Tags ?? Enumerable.Empty<Tag>())
+                    .ToArray();
 
                 if (similarTags.Length > 0 && IsAutoAssign)
                 {
-                    tagManager.AddTags(similarTags);
+                    item.AddTags(similarTags);
                 }
                 else if (similarTags.Length > 0)
                 {
@@ -221,16 +223,15 @@ namespace Financier.Cli
                             case "":
                             case "y":
                             case "yes":
-                                tagManager.AddTags(similarTags);
+                                item.AddTags(similarTags);
                                 break;
                             case "n":
                             case "no":
                                 Console.WriteLine("Input tags:");
-                                var newTagsString = ReadNewTags();
+                                var commaSeparatedTagNames = ReadNewTags();
                                 Console.WriteLine();
 
-                                var newTags = TagManager.FindOrCreateTags(newTagsString);
-                                tagManager.AddTags(newTags);
+                                item.AddTags(commaSeparatedTagNames);
                                 break;
                             default:
                                 repeat = true;
@@ -248,11 +249,10 @@ namespace Financier.Cli
                 else
                 {
                     Console.WriteLine("Input tags:");
-                    var newTagsString = ReadNewTags();
+                    var commaSeparatedTagNames = ReadNewTags();
                     Console.WriteLine();
 
-                    var newTags = TagManager.FindOrCreateTags(newTagsString);
-                    tagManager.AddTags(newTags);
+                    item.AddTags(commaSeparatedTagNames);
                 }
             }
         }
