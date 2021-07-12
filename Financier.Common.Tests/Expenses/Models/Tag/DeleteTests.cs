@@ -1,9 +1,9 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace Financier.Common.Tests.Expenses.Models.TagTests
+namespace Financier.Common.Tests.Expenses.Models.Tag
 {
-    public class Delete : InitializedDatabaseTests
+    public class DeleteTests : InitializedDatabaseTests
     {
         [Test]
         [TestCase("fun")]
@@ -22,7 +22,7 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
 
             using (var db = new Context())
             {
-                var afterCount = db.Tags.Count(); 
+                var afterCount = db.Tags.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(1));
             }
@@ -45,7 +45,7 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
 
             using (var db = new Context())
             {
-                var afterCount = db.ItemTags.Count(); 
+                var afterCount = db.ItemTags.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(expectedRemoved));
             }
@@ -68,7 +68,7 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
 
             using (var db = new Context())
             {
-                var afterCount = db.Items.Count(); 
+                var afterCount = db.Items.Count();
 
                 Assert.That(beforeCount, Is.EqualTo(afterCount));
             }

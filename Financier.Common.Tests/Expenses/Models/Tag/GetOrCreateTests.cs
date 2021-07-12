@@ -7,8 +7,8 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses.TagManagerTests
 {
-    [TestFixtureSource(typeof(GetOrCreate))]
-    public class GetOrCreate
+    [TestFixtureSource(typeof(GetOrCreateTests))]
+    public class GetOrCreateTests
     {
         public Tag DanTag { get; set; }
 

@@ -4,11 +4,11 @@ using System.Linq;
 using NUnit.Framework;
 using Microsoft.EntityFrameworkCore;
 
-using Financier.Common.Expenses.Models;
+using TagModel = Financier.Common.Expenses.Models.Tag;
 
-namespace Financier.Common.Tests.Expenses.Models.TagTests
+namespace Financier.Common.Tests.Expenses.Models.Tag
 {
-    public class Rename : InitializedDatabaseTests
+    public class RenameTests : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Tags.Fun.Name, "super-fun")]
@@ -26,12 +26,12 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
                 beforeItemTagCount = db.ItemTags.Count();
             }
 
-            if (Tag.Get(newName) != null)
+            if (TagModel.Get(newName) != null)
             {
                 Assert.Fail($"A tag with the new name {newName} already exists!");
             }
 
-            var tag = Tag.GetOrCreate(existingName);
+            var tag = TagModel.GetOrCreate(existingName);
             beforeTagId = tag.Id;
             tag.Rename(newName);
 
@@ -56,7 +56,7 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
 
             int beforeTagCount;
             int beforeItemTagCount;
-            var existingTag = Tag.GetOrCreate(existingName);
+            var existingTag = TagModel.GetOrCreate(existingName);
             using (var db = new Context())
             {
                 beforeTagCount = db.Tags.Count();
@@ -71,8 +71,8 @@ namespace Financier.Common.Tests.Expenses.Models.TagTests
                 var afterTagCount = db.Tags.Count();
                 var afterItemTagCount = db.ItemTags.Count();
 
-                Assert.IsNull(Tag.Get(existingName));
-                Assert.IsNotNull(Tag.Get(newName));
+                Assert.IsNull(TagModel.Get(existingName));
+                Assert.IsNotNull(TagModel.Get(newName));
                 Assert.That(beforeTagCount - afterTagCount, Is.EqualTo(1), "A tag should have been removed");
                 Assert.That(afterItemTagCount, Is.LessThanOrEqualTo(beforeItemTagCount), $"New ItemTags should not have been created if the existing item had previously been tagged with {newName}");
             }
