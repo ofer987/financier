@@ -1,11 +1,11 @@
 using System.Linq;
 using NUnit.Framework;
 
-using Financier.Common.Expenses.Models;
+using TagModel = Financier.Common.Expenses.Models.Tag;
 
 namespace Financier.Common.Tests.Expenses.Models
 {
-    public class ItemTest : InitializedDatabaseTests
+    public class ItemTests : InitializedDatabaseTests
     {
         [Test]
         [TestCase(
@@ -24,8 +24,8 @@ namespace Financier.Common.Tests.Expenses.Models
             new string[] { })]
         public void ItemTest_AddTags_CommaSeparatedValues(string itemId, string commaSeparatedNewTagNames, string[] expectedTagNames)
         {
-            var item = Item.GetByItemId(itemId);
-            var previousTagNames = (item.Tags ?? Enumerable.Empty<Tag>())
+            var item = Financier.Common.Expenses.Models.Item.GetByItemId(itemId);
+            var previousTagNames = (item.Tags ?? Enumerable.Empty<TagModel>())
                 .Select(tag => tag.Name)
                 .Select(t => t.ToLower());
 
@@ -33,7 +33,7 @@ namespace Financier.Common.Tests.Expenses.Models
 
             using (var db = new Context())
             {
-                var actualTags = (Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<Tag>())
+                var actualTags = (Financier.Common.Expenses.Models.Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<TagModel>())
                     .Select(t => t.Name);
 
                 CollectionAssert.AreEquivalent(
@@ -49,8 +49,8 @@ namespace Financier.Common.Tests.Expenses.Models
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId, new string[] { FactoryData.Tags.Coffee.Name, FactoryData.Tags.Coffee.Name }, new string[] { FactoryData.Tags.Coffee.Name })]
         public void ItemTest_AddTags_NoDuplicates(string itemId, string[] newTagNames, string[] expectedNewTagNames)
         {
-            var item = Item.GetByItemId(itemId);
-            var previousTagNames = (item.Tags ?? Enumerable.Empty<Tag>())
+            var item = Financier.Common.Expenses.Models.Item.GetByItemId(itemId);
+            var previousTagNames = (item.Tags ?? Enumerable.Empty<TagModel>())
                 .Select(tag => tag.Name)
                 .Select(t => t.ToLower());
 
@@ -58,7 +58,7 @@ namespace Financier.Common.Tests.Expenses.Models
 
             using (var db = new Context())
             {
-                var actualTags = (Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<Tag>())
+                var actualTags = (Financier.Common.Expenses.Models.Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<TagModel>())
                     .Select(t => t.Name);
 
                 CollectionAssert.AreEquivalent(
@@ -75,8 +75,8 @@ namespace Financier.Common.Tests.Expenses.Models
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId, new string[] { })]
         public void ItemTest_AddTags(string itemId, string[] newTagNames)
         {
-            var item = Item.GetByItemId(itemId);
-            var previousTagNames = (item.Tags ?? Enumerable.Empty<Tag>())
+            var item = Financier.Common.Expenses.Models.Item.GetByItemId(itemId);
+            var previousTagNames = (item.Tags ?? Enumerable.Empty<TagModel>())
                 .Select(tag => tag.Name)
                 .Select(t => t.ToLower());
 
@@ -84,7 +84,7 @@ namespace Financier.Common.Tests.Expenses.Models
 
             using (var db = new Context())
             {
-                var actualTags = (Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<Tag>())
+                var actualTags = (Financier.Common.Expenses.Models.Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<TagModel>())
                     .Select(t => t.Name);
 
                 CollectionAssert.AreEquivalent(
@@ -111,13 +111,13 @@ namespace Financier.Common.Tests.Expenses.Models
         )]
         public void ItemTest_UpdateTags_NoDuplicates(string itemId, string[] newTagNames, string[] expectedTagNames)
         {
-            var item = Item.GetByItemId(itemId);
+            var item = Financier.Common.Expenses.Models.Item.GetByItemId(itemId);
 
             item.UpdateTags(newTagNames);
 
             using (var db = new Context())
             {
-                var actualTags = (Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<Tag>())
+                var actualTags = (Financier.Common.Expenses.Models.Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<TagModel>())
                     .Select(t => t.Name);
 
                 CollectionAssert.AreEquivalent(
@@ -133,13 +133,13 @@ namespace Financier.Common.Tests.Expenses.Models
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId, new string[] { })]
         public void ItemTest_UpdateTags(string itemId, string[] expectedTagNames)
         {
-            var item = Item.GetByItemId(itemId);
+            var item = Financier.Common.Expenses.Models.Item.GetByItemId(itemId);
 
             item.UpdateTags(expectedTagNames);
 
             using (var db = new Context())
             {
-                var actualTags = (Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<Tag>())
+                var actualTags = (Financier.Common.Expenses.Models.Item.GetByItemId(itemId).Tags ?? Enumerable.Empty<TagModel>())
                     .Select(t => t.Name);
 
                 CollectionAssert.AreEquivalent(

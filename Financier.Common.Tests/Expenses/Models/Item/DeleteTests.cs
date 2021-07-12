@@ -1,9 +1,9 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace Financier.Common.Tests.Expenses.Models.ItemTests
+namespace Financier.Common.Tests.Expenses.Models.Item
 {
-    public class Delete : InitializedDatabaseTests
+    public class DeleteTests : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId, 1)]
@@ -18,7 +18,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemTests
                     .First(item => item.ItemId == itemId)
                     .Delete();
 
-                var afterCount = db.Items.Count(); 
+                var afterCount = db.Items.Count();
 
                 Assert.That(afterCount, Is.EqualTo(beforeCount - expectedTagsRemoved));
             }
@@ -38,7 +38,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemTests
                     .First(item => item.ItemId == itemId)
                     .Delete();
 
-                var afterCount = db.ItemTags.Count(); 
+                var afterCount = db.ItemTags.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(expectedTagsRemoved));
             }
@@ -57,7 +57,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemTests
                     .First(item => item.ItemId == itemId)
                     .Delete();
 
-                var afterCount = db.Tags.Count(); 
+                var afterCount = db.Tags.Count();
 
                 Assert.That(afterCount, Is.EqualTo(beforeCount));
             }

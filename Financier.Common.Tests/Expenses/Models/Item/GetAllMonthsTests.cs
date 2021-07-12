@@ -1,16 +1,14 @@
 using System;
 using NUnit.Framework;
 
-using Financier.Common.Expenses.Models;
-
-namespace Financier.Common.Tests.Expenses.Models.ItemTests
+namespace Financier.Common.Tests.Expenses.Models.Item
 {
-    public class GetAllMonths : InitializedDatabaseTests
+    public class GetAllMonthsTests : InitializedDatabaseTests
     {
         [Test]
         public void Test_Expenses_Models_Item_GetAllMonths()
         {
-            var actual = Item.GetAllMonths();
+            var actual = Financier.Common.Expenses.Models.Item.GetAllMonths();
 
             var expected = new DateTime[]
             {
