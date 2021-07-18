@@ -3,12 +3,12 @@ using NUnit.Framework;
 
 namespace Financier.Common.Tests.Expenses.Models.CardTests
 {
-    public class Delete : InitializedDatabaseTests
+    public class DeleteTests : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.Savings.CardNumber, 1)]
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.CardNumber, 1)]
-        public void Test_Expenses_Models_Card_Delete_RemovesCard(string cardNumber, int expectedCardsRemoved)
+        public void Test_Expenses_Models_CardTesting_DeleteTests_RemovesCard(string cardNumber, int expectedCardsRemoved)
         {
             using (var db = new Context())
             {
@@ -27,7 +27,7 @@ namespace Financier.Common.Tests.Expenses.Models.CardTests
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.Savings.CardNumber, 2)]
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.CardNumber, 1)]
-        public void Test_Expenses_Models_Card_Delete_RemovesStatements(string cardNumber, int expectedStatementsRemoved)
+        public void Test_Expenses_Models_CardTesting_DeleteTests_RemovesStatements(string cardNumber, int expectedStatementsRemoved)
         {
             using (var db = new Context())
             {
