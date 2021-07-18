@@ -147,7 +147,7 @@ namespace Financier.Common.Tests.Expenses
                                 {
                                     public class Transfer
                                     {
-                                        public const string ItemId = "fdjg65201j";
+                                        public const string ItemId = "fdhgfjkfhgd778g7d8";
                                         public const decimal Amount = -20.00M;
                                         public const string Description = "An internal transfer";
                                         public static DateTime PostedAt = new DateTime(2019, 8, 16);
