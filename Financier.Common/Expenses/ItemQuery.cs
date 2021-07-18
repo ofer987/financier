@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
+using Financier.Common.Expenses.Models;
 using Financier.Common.Extensions;
 
-namespace Financier.Common.Expenses.Models
+namespace Financier.Common.Expenses
 {
     public class ItemQuery
     {

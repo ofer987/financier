@@ -1,4 +1,4 @@
-namespace Financier.Common.Expenses.Models
+namespace Financier.Common.Expenses
 {
     public enum ItemTypes { Debit, Credit }
 }

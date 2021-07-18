@@ -1,14 +1,14 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace Financier.Common.Tests.Expenses.Models.Item
+namespace Financier.Common.Tests.Expenses.Models.ItemTesting
 {
     public class DeleteTests : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId, 1)]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId, 1)]
-        public void Test_Expenses_Models_Item_Delete_RemovesItem(string itemId, int expectedTagsRemoved)
+        public void Test_Expenses_Models_ItemTesting_Delete_RemovesItem(string itemId, int expectedTagsRemoved)
         {
             using (var db = new Context())
             {
@@ -28,7 +28,7 @@ namespace Financier.Common.Tests.Expenses.Models.Item
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId, 2)]
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.Lambo.ItemId, 2)]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId, 1)]
-        public void Test_Expenses_Models_Item_Delete_RemovesItemTags(string itemId, int expectedTagsRemoved)
+        public void Test_Expenses_Models_ItemTesting_Delete_RemovesItemTags(string itemId, int expectedTagsRemoved)
         {
             using (var db = new Context())
             {
@@ -47,7 +47,7 @@ namespace Financier.Common.Tests.Expenses.Models.Item
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId)]
         [TestCase(FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.Lambo.ItemId)]
-        public void Test_Expenses_Models_Item_Delete_DoesNotRemoveTags(string itemId)
+        public void Test_Expenses_Models_ItemTesting_Delete_DoesNotRemoveTags(string itemId)
         {
             using (var db = new Context())
             {

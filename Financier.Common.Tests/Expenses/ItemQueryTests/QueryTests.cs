@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 
+using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
-using ItemModel = Financier.Common.Expenses.Models.Item;
 
-namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
+namespace Financier.Common.Tests.Expenses.ItemQueryTesting
 {
-    public class Query : InitializedDatabaseTests
+    public class QueryTests : InitializedDatabaseTests
     {
         [TestCase(
             "Dan",
@@ -61,7 +61,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             2019,
             7
         )]
-        public void Test_Expenses_Models_ItemQuery_Query_ForDebits(
+        public void Test_Expenses_ItemQueryTesting_QueryTests_ForDebits(
             string accountName,
             string[] tagNames,
             string[] expectedItemIds,
@@ -74,7 +74,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime fro = new DateTime(yearFrom, monthFrom, 1);
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
-            var expectedItems = expectedItemIds.Select(itemId => ItemModel.GetByItemId(itemId));
+            var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
             var result = new ItemQuery(accountName, tagNames, fro, to, ItemTypes.Debit).GetResults();
 
             Assert.That(result.Items, Is.EquivalentTo(expectedItems));
@@ -126,7 +126,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             2019,
             9
         )]
-        public void Test_Expenses_Models_ItemQuery_Query_ForCredits(
+        public void Test_Expenses_ItemQueryTesting_QueryTests_ForCredits(
             string accountName,
             string[] tagNames,
             string[] expectedItemIds,
@@ -139,7 +139,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
             DateTime fro = new DateTime(yearFrom, monthFrom, 1);
             DateTime to = new DateTime(yearTo, monthTo, 1);
 
-            var expectedItems = expectedItemIds.Select(itemId => ItemModel.GetByItemId(itemId));
+            var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
             var result = new ItemQuery(accountName, tagNames, fro, to, ItemTypes.Credit).GetResults();
 
             Assert.That(result.Items, Is.EquivalentTo(expectedItems));

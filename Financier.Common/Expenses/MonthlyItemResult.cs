@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Financier.Common.Expenses.Models
+using Financier.Common.Expenses.Models;
+
+namespace Financier.Common.Expenses
 {
     public class MonthlyItemResult : ItemResult
     {
