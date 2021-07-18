@@ -1,7 +1,7 @@
 using GraphQL.DataLoader;
 using GraphQL.Types;
 
-using Financier.Common.Expenses.Models;
+using Financier.Common.Expenses;
 using Financier.Web.GraphQL.Items;
 
 namespace Financier.Web.GraphQL.ItemQueries
