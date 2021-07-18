@@ -20,6 +20,7 @@ namespace Financier.Common.Expenses.Models
         // TODO: make unique
         public string Number { get; set; }
 
+        // TODO: Write a migration script to rename to OwnerName
         public string AccountName { get; set; }
 
         [Required]

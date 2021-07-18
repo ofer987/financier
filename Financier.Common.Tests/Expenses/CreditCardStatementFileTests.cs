@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
+namespace Financier.Common.Tests.Expenses
 {
-    public class Base
+    public class CreditCardStatementFileTests
     {
         [OneTimeSetUp]
         public void InitAll()
@@ -25,7 +25,6 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
 
             using (var db = new Context())
             {
-                db.Accounts.Add(MrBean);
                 db.SaveChanges();
             }
         }
@@ -35,8 +34,6 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         {
             Context.Clean();
         }
-
-        public static Account MrBean = Factories.NewAccount("mr bean");
 
         public static IEnumerable TestCases
         {
@@ -62,7 +59,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                                   {
                                       new Item
                                       {
-                                          ItemId = Guid.NewGuid().ToString(),
+                                          ItemId = "1",
                                           Amount = 13.37M,
                                           Description = "EMA TEI TORONTO ON",
                                           TransactedAt = new DateTime(2018, 11, 1),
@@ -70,7 +67,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                                       },
                                       new Item
                                       {
-                                          ItemId = Guid.NewGuid().ToString(),
+                                          ItemId = "2",
                                           Amount = 1.46M,
                                           Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
                                           TransactedAt = new DateTime(2018, 11, 3),
@@ -82,43 +79,44 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
                     });
 
                 yield return new TestCaseData(
-                        new DateTime(2019, 1, 1),
-                        @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
-                        1,'6171230192725321',20180601,20180601,13.37,EMA TEI TORONTO ON
-                        2,'6171230192725321',20180602,20180602,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
-                        new Card
-                        {
-                            Id = Guid.NewGuid(),
-                            Number = "6171230192725321",
-                            CardType = CardTypes.Credit,
-                            Statements = new List<Statement>
-                        {
-                        new Statement
-                        {
+                    new DateTime(2018, 6, 1),
+                    @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
+                    1,'6171230192725321',20180601,20180602,13.37,EMA TEI TORONTO ON
+                    2,'6171230192725321',20180602,20180605,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
+                    new Card
+                    {
                         Id = Guid.NewGuid(),
-                        PostedAt = new DateTime(2019, 1, 1),
-                        Items = new List<Item>
+                        Number = "6171230192725321",
+                        CardType = CardTypes.Credit,
+                        Statements = new List<Statement>
                         {
-                        new Item
-                        {
-                        ItemId = Guid.NewGuid().ToString(),
-                        Amount = 13.37M,
-                        Description = "EMA TEI TORONTO ON",
-                        TransactedAt = new DateTime(2018, 6, 1),
-                        PostedAt = new DateTime(2018, 6, 2),
-                        },
-                        new Item
-                        {
-                            ItemId = Guid.NewGuid().ToString(),
-                            Amount = 1.46M,
-                            Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
-                            TransactedAt = new DateTime(2018, 11, 3),
-                            PostedAt = new DateTime(2018, 11, 5),
-                        },
+                            new Statement
+                            {
+                                Id = Guid.NewGuid(),
+                                PostedAt = new DateTime(2018, 6, 1),
+                                Items = new List<Item>
+                                {
+                                    new Item
+                                    {
+                                        ItemId = "1",
+                                        Amount = 13.37M,
+                                        Description = "EMA TEI TORONTO ON",
+                                        TransactedAt = new DateTime(2018, 6, 1),
+                                        PostedAt = new DateTime(2018, 6, 2),
+                                    },
+                                    new Item
+                                    {
+                                        ItemId = "2",
+                                        Amount = 1.46M,
+                                        Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
+                                        TransactedAt = new DateTime(2018, 6, 2),
+                                        PostedAt = new DateTime(2018, 6, 5),
+                                    },
+                                }
+                            }
                         }
-                        }
-                        }
-                        });
+                    }
+                );
             }
         }
 
@@ -146,116 +144,86 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
             }
         }
 
-        // TODO: this test is broken.
-        // TODO: fix it (maybe Models.Statement too)
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        [Ignore("This test is broken")]
-        public void Test_Expenses_CreditCardStatementFile_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_CreditCardStatementFileTests_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
         {
-            try
+            var mrBean = Factories.CreateAccount("mr bean");
+            using (var db = new Context())
             {
-                Context.Clean();
-                var mrBean = Factories.NewAccount("mr bean");
-                using (var db = new Context())
+                db.Cards.Add(new Financier.Common.Expenses.Models.Card
                 {
-                    db.Accounts.Add(mrBean);
+                    Id = Guid.NewGuid(),
+                    Number = expectedCard.Number,
+                    CardType = CardTypes.Credit,
+                    AccountName = mrBean.Name
+                });
 
-                    db.Cards.Add(new Financier.Common.Expenses.Models.Card { Id = Guid.NewGuid(), Number = expectedCard.Number, Owner = mrBean });
-                    db.SaveChanges();
-                }
-
-                var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
-                var reader = new System.IO.MemoryStream(buffer);
-
-                new CreditCardStatementFile(reader, statementPostedAt).Import();
-
-                using (var db = new Context())
-                {
-                    var actual = db.Statements
-                        .Include(stmt => stmt.Card)
-                        .Include(stmt => stmt.Items)
-                        .FirstOrDefault();
-
-                    Assert.That(actual.Card, Is.EqualTo(expectedCard));
-                }
+                db.SaveChanges();
             }
-            catch (Exception)
+
+            var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
+            var reader = new System.IO.MemoryStream(buffer);
+
+            new CreditCardStatementFile(reader, statementPostedAt).Import();
+
+            using (var db = new Context())
             {
-                throw;
+                var actual = db.Statements
+                    .Include(stmt => stmt.Card)
+                    .Include(stmt => stmt.Items)
+                    .FirstOrDefault();
+
+                Assert.That(actual.Card.CardType, Is.EqualTo(expectedCard.CardType));
+                Assert.That(actual.Card.Statements.Count, Is.EqualTo(expectedCard.Statements.Count));
+                foreach (var s in actual.Card.Statements)
+                {
+                    var expectedStatement = expectedCard.Statements
+                        .First(st => st.Month == s.Month && st.Year == s.Year);
+
+                    Assert.That(s.PostedAt, Is.EqualTo(expectedStatement.PostedAt));
+
+                    foreach (var item in s.Items)
+                    {
+                        var expectedItem = expectedStatement.Items
+                            .First(i => i.ItemId == item.ItemId);
+
+                        Assert.That(item.Description, Is.EqualTo(expectedItem.Description));
+                        Assert.That(item.TransactedAt, Is.EqualTo(expectedItem.TransactedAt));
+                        Assert.That(item.PostedAt, Is.EqualTo(expectedItem.PostedAt));
+                        Assert.That(item.Amount, Is.EqualTo(expectedItem.Amount));
+                    }
+                }
             }
         }
 
         [Test]
         [TestCaseSource(nameof(TestCases))]
-        [Ignore("Test is broken")]
-        public void Test_Expenses_CreditCardStatementFile_Import_CardAlreadyExists(DateTime statementPostedAt, string statement, Card expectedCard)
+        public void Test_Expenses_CreditCardStatementFileTests_Import_CardDoesNotAlreadyExist(DateTime statementPostedAt, string statement, Card expectedCard)
         {
-            try
-            {
-                using (var db = new Context())
-                {
-                    db.Database.EnsureCreated();
-                    db.Items.RemoveRange(db.Items);
-                    db.Statements.RemoveRange(db.Statements);
-                    db.Cards.RemoveRange(db.Cards);
-                    db.Accounts.RemoveRange(db.Accounts);
-                    db.SaveChanges();
+            var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
+            var reader = new System.IO.MemoryStream(buffer);
 
-                    db.Database.EnsureCreated();
-
-                    var mrBean = Factories.NewAccount("mr bean");
-                    db.Accounts.Add(mrBean);
-
-                    db.Cards.Add(new Financier.Common.Expenses.Models.Card
-                    {
-                        Owner = mrBean,
-                        Id = Guid.NewGuid(),
-                        CardType = CardTypes.Credit,
-                        Number = expectedCard.Number
-                    });
-                    db.SaveChanges();
-                }
-
-                var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
-                var reader = new System.IO.MemoryStream(buffer);
-
-                new CreditCardStatementFile(reader, statementPostedAt).Import();
-
-                using (var db = new Context())
-                {
-                    var actual = db.Statements
-                        .Include(stmt => stmt.Card)
-                        .Include(stmt => stmt.Items)
-                        .FirstOrDefault();
-
-                    Assert.That(actual.Card, Is.EqualTo(expectedCard));
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Assert.Throws<DbUpdateException>(() => new CreditCardStatementFile(reader, statementPostedAt).Import());
         }
 
         [Test]
         [TestCaseSource(nameof(CardNumbers))]
-        public string Test_Expenses_CreditCardStatementRecord_CleanCardNumber_Success(string unclean)
+        public string Test_Expenses_CreditCardStatementFileTests_CleanCardNumber_Success(string unclean)
         {
             return new CreditCardStatementRecord().CleanNumber(unclean);
         }
 
         [Test]
         [TestCaseSource(nameof(FailureCardNumbers))]
-        public void Test_Expenses_CreditCardStatementRecord_CleanCardNumber_Fail(string unclean)
+        public void Test_Expenses_CreditCardStatementFileTests_CleanCardNumber_Fail(string unclean)
         {
             Assert.Throws<Exception>(() => new CreditCardStatementRecord().CleanNumber(unclean));
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementFile_SaveCard()
+        public void Test_Expenses_CreditCardStatementFileTests_SaveCard()
         {
-            Context.Clean();
             using (var db = new Context())
             {
                 db.Database.EnsureCreated();
@@ -300,12 +268,10 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementFile_CreateItem()
+        public void Test_Expenses_CreditCardStatementFileTests_CreateItem()
         {
             try
             {
-                Context.Clean();
-
                 using (var db = new Context())
                 {
                     db.Database.EnsureCreated();
@@ -357,7 +323,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementFileTests
         }
 
         [Test]
-        public void Test_Expenses_CreditCardStatementFile_SaveCardAndStatement()
+        public void Test_Expenses_CreditCardStatementFileTests_SaveCardAndStatement()
         {
             Context.Clean();
             using (var db = new Context())
