@@ -37,7 +37,7 @@ namespace Financier.Common.Tests.Expenses
         [TestCase("meridian i. i. c place", new[] { "coffee" })]
         [TestCase("toys \"R\" Us", new[] { "gift" })]
         [TestCase("toys and groceries", new[] { "gift", "food", "groceries" })]
-        public void Test_Expenses_Models_Tagging_AddTagsToItems_OneItem(string itemDescription, string[] expectedTagNames)
+        public void Test_Expenses_Models_ItemTaggerTests_AddTagsToItems_OneItem(string itemDescription, string[] expectedTagNames)
         {
             var danCardNumber = FactoryData.Accounts.Dan.Cards.DanCard.CardNumber;
             var danCard = Card.FindByCardNumber(danCardNumber);
@@ -78,7 +78,7 @@ namespace Financier.Common.Tests.Expenses
         }
 
         [TestCaseSource(nameof(MultipleItems))]
-        public void Test_Expenses_Models_Tagging_AddTagsToItems_MultipleItems(List<string> itemDescriptions, List<string[]> expectedTagNamesList)
+        public void Test_Expenses_Models_ItemTaggerTests_AddTagsToItems_MultipleItems(List<string> itemDescriptions, List<string[]> expectedTagNamesList)
         {
             var danCardNumber = FactoryData.Accounts.Dan.Cards.DanCard.CardNumber;
             var danCard = Card.FindByCardNumber(danCardNumber);
@@ -109,7 +109,7 @@ namespace Financier.Common.Tests.Expenses
             foreach (var item in reloadedItems)
             {
                 Assert.That(
-                    item.Tags.Select(tag => tag.Name),
+                    (item.Tags ?? Enumerable.Empty<Tag>()).Select(tag => tag.Name),
                     Is.EquivalentTo(expectedTagNamesList[j])
                 );
 
@@ -132,7 +132,7 @@ namespace Financier.Common.Tests.Expenses
             "^porsche$",
             false
         )]
-        public void Test_Expenses_Models_Single_Regex_Tagging_IsMatch(
+        public void Test_Expenses_Models_ItemTaggerTests_Single_Regex_IsMatch(
             string itemDescription,
             string regex,
             bool expected
@@ -144,9 +144,7 @@ namespace Financier.Common.Tests.Expenses
         }
 
         [TestCase(
-            new string[] {
-                FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche912.Description,
-            },
+            FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche912.Description,
             new string[] {
                 @"^welcome",
                 @"porsche \d{3}",
@@ -155,16 +153,14 @@ namespace Financier.Common.Tests.Expenses
             true
         )]
         [TestCase(
-            new string[] {
-                FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche912.Description,
-            },
+            FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche912.Description,
             new string[] {
                 @"^dollars$",
                 @"ferrari"
             },
             false
         )]
-        public void Test_Expenses_Models_Multiple_Regexes_Tagging_IsMatch(
+        public void Test_Expenses_Models_ItemTaggerTests_Multiple_Regexes_IsMatch(
             string itemDescription,
             string[] regexes,
             bool expected
@@ -176,7 +172,7 @@ namespace Financier.Common.Tests.Expenses
         }
 
         [TestCase("my_house", new[] { FactoryData.Tags.Dog.Name, FactoryData.Tags.Coffee.Name })]
-        public void Test_Expenses_Models_Tagging_AddTagsMultipleTimesToOneItem(string itemDescription, string[] expectedTagNames)
+        public void Test_Expenses_Models_ItemTaggerTests_AddTagsMultipleTimesToOneItem(string itemDescription, string[] expectedTagNames)
         {
             var taggings = expectedTagNames
                 .Select(t => new ItemTagger(string.Empty, new[] { t }))
