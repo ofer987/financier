@@ -1,6 +1,8 @@
 using System.Linq;
 using NUnit.Framework;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Financier.Common.Tests.Expenses.Models.Tag
 {
     public class DeleteTests : InitializedDatabaseTests
@@ -10,10 +12,15 @@ namespace Financier.Common.Tests.Expenses.Models.Tag
         [TestCase("fast")]
         public void Test_Expenses_Models_Tag_Delete_RemovesTag(string tagName)
         {
-            int beforeCount;
+            int beforeTagCount;
+            int beforeItemTagCount;
             using (var db = new Context())
             {
-                beforeCount = db.Tags.Count();
+                beforeTagCount = db.Tags.AsEnumerable().Count();
+                beforeItemTagCount = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.Tag.Name == tagName)
+                    .Count();
 
                 db.Tags
                     .First(tag => tag.Name == tagName)
@@ -23,8 +30,15 @@ namespace Financier.Common.Tests.Expenses.Models.Tag
             using (var db = new Context())
             {
                 var afterCount = db.Tags.Count();
+                var afterItemTagCount = db.ItemTags.Count();
 
-                Assert.That(beforeCount - afterCount, Is.EqualTo(1));
+                afterItemTagCount = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.Tag.Name == tagName)
+                    .Count();
+
+                Assert.That(beforeTagCount - afterCount, Is.EqualTo(1));
+                Assert.That(afterItemTagCount, Is.LessThanOrEqualTo(beforeItemTagCount));
             }
         }
 

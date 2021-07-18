@@ -101,10 +101,8 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                var myTag = db.Tags.First(t => t.Id == Id);
-                Console.WriteLine($"Tag to be deleted is {myTag}");
                 db.Tags.Remove(this);
-                // db.SaveChanges();
+                db.SaveChanges();
             }
         }
 

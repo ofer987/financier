@@ -20,7 +20,7 @@ namespace Financier.Common.Expenses.Models
             AccountName = accountName;
             From = fro;
             To = to;
-            TagNames = tagNames;
+            TagNames = tagNames.Select(name => name.ToLower());
             ItemType = itemType;
 
             Validate();
@@ -64,11 +64,15 @@ namespace Financier.Common.Expenses.Models
                 )
                 .Include(item => item.ItemTags)
                     .ThenInclude(itemTag => itemTag.Tag)
+                .Include(item => item.Statement)
+                    .ThenInclude(s => s.Card)
+                .AsEnumerable()
                 .ToArray();
             }
 
             var externalItems = items
                 .Reject(item => item.Tags.HasInternalTransfer())
+                .Distinct()
                 .ToArray();
 
             return new ItemResult(this, externalItems);

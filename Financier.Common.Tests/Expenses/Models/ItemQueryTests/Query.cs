@@ -11,7 +11,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
     {
         [TestCase(
             "Dan",
-            new[] { "fun" },
+            new[] { FactoryData.Tags.Fun.Name },
             new[] {
                 FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId,
                 FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId
@@ -23,7 +23,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         )]
         [TestCase(
             "Dan",
-            new[] { "fast" },
+            new[] { FactoryData.Tags.Fast.Name },
             new[] {
                 FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId
             },
@@ -34,7 +34,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         )]
         [TestCase(
             "Ron",
-            new[] { "like-a-dog" },
+            new[] { FactoryData.Tags.Dog.Name },
             new[] {
                 FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.Lambo.ItemId
             },
@@ -45,7 +45,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         )]
         [TestCase(
             "Ron",
-            new[] { "fast" },
+            new[] { FactoryData.Tags.Fast.Name },
             new string[] { },
             2019,
             7,
@@ -82,7 +82,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
 
         [TestCase(
             "Dan",
-            new[] { "salary" },
+            new[] { FactoryData.Tags.Salary.Name },
             new[] {
                 FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId,
                 FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
@@ -97,7 +97,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         )]
         [TestCase(
             "Dan",
-            new[] { "salary" },
+            new[] { FactoryData.Tags.Salary.Name },
             new[] {
                 FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId,
                 FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
@@ -110,7 +110,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         )]
         [TestCase(
             "Dan",
-            new[] { "internal" },
+            new[] { FactoryData.Tags.Internal.Name },
             new string[] { },
             2019,
             6,
@@ -119,7 +119,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemQueryTests
         )]
         [TestCase(
             "Dan",
-            new[] { "savings" },
+            new[] { FactoryData.Tags.Savings.Name },
             new string[] { },
             2019,
             6,
