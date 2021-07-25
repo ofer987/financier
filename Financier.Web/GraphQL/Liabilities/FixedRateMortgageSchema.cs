@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Liabilities
@@ -8,7 +7,7 @@ namespace Financier.Web.GraphQL.Liabilities
     {
         public FixedRateMortgageSchema(IServiceProvider provider) : base(provider)
         {
-            Query = provider.GetRequiredService<FixedRateMortgageQuery>();
+            Query = new FixedRateMortgageQuery();
         }
     }
 }

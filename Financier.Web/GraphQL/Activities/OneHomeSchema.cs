@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Activities
@@ -8,7 +7,7 @@ namespace Financier.Web.GraphQL.Activities
     {
         public OneHomeSchema(IServiceProvider provider) : base(provider)
         {
-            Query = provider.GetRequiredService<OneHomeQuery>();
+            Query = new OneHomeQuery();
         }
     }
 }

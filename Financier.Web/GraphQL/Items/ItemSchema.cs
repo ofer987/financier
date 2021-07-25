@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Items
@@ -8,8 +7,8 @@ namespace Financier.Web.GraphQL.Items
     {
         public ItemSchema(IServiceProvider provider) : base(provider)
         {
-            Query = provider.GetRequiredService<ItemQuery>();
-            Mutation = provider.GetRequiredService<ItemMutation>();
+            Query = new ItemQuery();
+            Mutation = new ItemMutation();
         }
     }
 }

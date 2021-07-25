@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.CashFlows
@@ -8,7 +7,7 @@ namespace Financier.Web.GraphQL.CashFlows
     {
         public CashFlowSchema(IServiceProvider provider) : base(provider)
         {
-            Query = provider.GetRequiredService<CashFlowQuery>();
+            Query = new CashFlowQuery();
         }
     }
 }

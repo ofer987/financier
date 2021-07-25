@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Utilities;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Tags
@@ -8,7 +7,7 @@ namespace Financier.Web.GraphQL.Tags
     {
         public TagSchema(IServiceProvider provider) : base(provider)
         {
-            Query = provider.GetRequiredService<TagQuery>();
+            Query = new TagQuery();
         }
     }
 }

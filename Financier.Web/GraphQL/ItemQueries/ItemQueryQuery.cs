@@ -4,6 +4,7 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 
+using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Web.GraphQL.ItemQueries

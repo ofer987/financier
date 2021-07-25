@@ -12,7 +12,8 @@ namespace Financier.Web.Controllers
         public DateTime From { get; private set; }
         public DateTime To { get; private set; }
         public Account RequestedUser { get; private set; }
-        public string RequestedUserName => HttpContext.Request.Headers["Account-Name"].ToString();
+        public string RequestedUserName => "dan@ofer.to";
+        // public string RequestedUserName => HttpContext.Request.Headers["Account-Name"].ToString();
 
         public IActionResult GetYear(int year)
         {
