@@ -69,8 +69,8 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.Description.Equals(description, StringComparison.InvariantCultureIgnoreCase))
                     .AsEnumerable()
+                    .Where(item => item.Description.Equals(description, StringComparison.InvariantCultureIgnoreCase))
                     .ToArray();
             }
         }
