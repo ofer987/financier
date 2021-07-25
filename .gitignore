@@ -1,2 +1,6 @@
+# .NET
 **/bin/
 **/obj/
+
+# Ruby
+.solargraph.yml
