@@ -19,7 +19,7 @@ namespace Financier.Common.Expenses.Models
         private Card _card = null;
         public Card GetCard()
         {
-            if (_card != null)
+            if (_card is not null)
             {
                 return _card;
             }
@@ -30,7 +30,7 @@ namespace Financier.Common.Expenses.Models
         private Statement _statement = null;
         public Statement GetStatement(DateTime postedAt)
         {
-            if (_statement != null)
+            if (_statement is not null)
             {
                 return _statement;
             }
@@ -49,7 +49,7 @@ namespace Financier.Common.Expenses.Models
                     .Where(stmt => stmt.PostedAt == postedAt)
                     .FirstOrDefault();
 
-                if (statement == null)
+                if (statement is null)
                 {
                     statement = new Statement
                     {
@@ -79,7 +79,7 @@ namespace Financier.Common.Expenses.Models
                         .ThenInclude(stmt => stmt.Items)
                     .FirstOrDefault(cd => cd.Number == cardNumber);
 
-                if (card == null)
+                if (card is null)
                 {
                     var newCard = new Card
                     {
