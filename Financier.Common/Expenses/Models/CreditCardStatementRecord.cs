@@ -8,6 +8,9 @@ namespace Financier.Common.Expenses.Models
     {
         public override CardTypes CardType => CardTypes.Credit;
 
+        [Ignore]
+        public override string AccountName { get; init; }
+
         [Name("Item #")]
         public override string ItemId { get; set; }
 

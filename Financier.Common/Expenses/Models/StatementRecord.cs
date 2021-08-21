@@ -10,6 +10,7 @@ namespace Financier.Common.Expenses.Models
 {
     public abstract class StatementRecord
     {
+        public virtual string AccountName { get; init; }
         public virtual string ItemId { get; set; }
         public virtual string Number { get; set; }
 
@@ -75,7 +76,7 @@ namespace Financier.Common.Expenses.Models
             {
                 var card = db.Cards
                     .Include(cd => cd.Statements)
-                    .ThenInclude(stmt => stmt.Items)
+                        .ThenInclude(stmt => stmt.Items)
                     .FirstOrDefault(cd => cd.Number == cardNumber);
 
                 if (card == null)
@@ -85,7 +86,8 @@ namespace Financier.Common.Expenses.Models
                         Id = Guid.NewGuid(),
                         Number = CleanNumber(cardNumber),
                         CardType = CardType,
-                        Statements = new List<Statement>()
+                        Statements = new List<Statement>(),
+                        AccountName = AccountName
                     };
                     db.Cards.Add(newCard);
                     db.SaveChanges();

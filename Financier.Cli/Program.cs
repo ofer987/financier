@@ -183,14 +183,16 @@ namespace Financier.Cli
         {
             Context.Environment = Environments.Dev;
 
-            foreach (var file in GetCreditCardStatements())
+            var creditCardStatements = GetCreditCardStatements();
+            foreach (var file in creditCardStatements.CsvFiles)
             {
-                new CreditCardStatementFile(file).Import();
+                new CreditCardStatementFile(creditCardStatements.AccountName, file).Import();
             }
 
-            foreach (var file in GetBankStatements())
+            var bankStatement = GetBankStatements();
+            foreach (var file in bankStatement.CsvFiles)
             {
-                new BankStatementFile(file).Import();
+                new CreditCardStatementFile(creditCardStatements.AccountName, file).Import();
             }
 
             Console.WriteLine("Processing Items");
@@ -269,26 +271,26 @@ namespace Financier.Cli
             return args[0];
         }
 
-        public FileInfo[] GetBankStatements()
+        public Statements GetBankStatements()
         {
             if (!BankStatementsPath.HasValue)
             {
-                return new FileInfo[0];
+                return new Statements(string.Empty);
             }
 
             Console.WriteLine("Getting Bank Statements");
-            return Statements.GetCsvFiles(BankStatementsPath.Value);
+            return new Statements(BankStatementsPath.Value);
         }
 
-        public FileInfo[] GetCreditCardStatements()
+        public Statements GetCreditCardStatements()
         {
             if (!CreditCardStatementsPath.HasValue)
             {
-                return new FileInfo[0];
+                return new Statements(string.Empty);
             }
 
             Console.WriteLine("Getting Credit Card Statements");
-            return Statements.GetCsvFiles(CreditCardStatementsPath.Value);
+            return new Statements(CreditCardStatementsPath.Value);
         }
 
         public static string ReadNewTags()
