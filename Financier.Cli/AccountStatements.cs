@@ -15,13 +15,14 @@ namespace Financier.Cli
 
         public static IEnumerable<AccountStatements> GetAccountStatementsList(string path)
         {
-            System.Console.WriteLine("1");
             var accounts = new DirectoryInfo(path).GetDirectories();
-            System.Console.WriteLine("2");
 
-            return accounts
+            var results = accounts
                 .Where(account => account.Exists)
-                .Select(account => new AccountStatements(account.Name, account.FullName));
+                .Select(account => new AccountStatements(account.Name, account.FullName))
+                .ToList();
+
+            return results ?? new List<AccountStatements>();
         }
 
         public void InitCsvFiles()

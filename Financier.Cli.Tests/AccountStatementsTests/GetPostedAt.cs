@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Financier.Common.Expenses;
 
 // TODO: move to Financier.Common.Tests
-namespace Financier.Cli.Tests.StatementFileTests
+namespace Financier.Cli.Tests.AccountStatementsTests
 {
     public class GetPostedAt
     {
@@ -21,7 +21,7 @@ namespace Financier.Cli.Tests.StatementFileTests
         [Test]
         [TestCase("123345/20181203.csv", 2018, 12, 3)]
         [TestCase("123345/20181103.csv", 2018, 11, 3)]
-        public void Test_Statements_GetPostedAt_PositiveTest(string relativePath, int year, int month, int day)
+        public void Test_AccountStatements_GetPostedAt_PositiveTest(string relativePath, int year, int month, int day)
         {
             var expectedDate = new DateTime(year, month, day);
             var path = GetCsvPath(relativePath);
@@ -31,7 +31,7 @@ namespace Financier.Cli.Tests.StatementFileTests
 
         [Test]
         [TestCase("123345/file_does_not_exist31432.csv")]
-        public void Test_Statements_SetPostedAt_NegativeTest(string relativePath)
+        public void Test_AccountStatements_SetPostedAt_NegativeTest(string relativePath)
         {
             var path = GetCsvPath(relativePath);
 
@@ -44,7 +44,8 @@ namespace Financier.Cli.Tests.StatementFileTests
             path = Path.Join(path, "..");
             path = Path.Join(path, "..");
             path = Path.Join(path, "..");
-            path = Path.Join(path, "StatementFileTests");
+            path = Path.Join(path, "AccountStatementsTests");
+            path = Path.Join(path, "ron@ofer.to");
 
             return Path.Join(path, relativePath);
         }
