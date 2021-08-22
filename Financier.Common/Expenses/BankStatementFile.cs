@@ -12,7 +12,7 @@ namespace Financier.Common.Expenses
         {
         }
 
-        public BankStatementFile(string accountName, FileInfo file, string ownerName) : base(accountName, file)
+        public BankStatementFile(string accountName, FileInfo file) : base(accountName, file)
         {
         }
 

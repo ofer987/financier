@@ -13,10 +13,11 @@ namespace Financier.Cli.Tests.StatementFileTests
         }
 
         [Test]
-        public void Test_Statements_GetCsvFiles_ValidPath()
+        public void Test_AccountStatements_GetCsvFiles_ValidPath()
         {
             var path = GetCsvPath();
-            var files = Statements.GetCsvFiles(path);
+            var files = AccountStatements.GetAccountStatementsList(path)
+                .SelectMany(statement => statement.CsvFiles);
 
             var expected = new [] 
             { 
@@ -31,23 +32,23 @@ namespace Financier.Cli.Tests.StatementFileTests
 
         [Test]
         [TestCase("/")]
-        public void Test_Statements_GetAll_UnauthorizedAccess(string path)
+        public void Test_AccountStatements_GetAll_UnauthorizedAccess(string path)
         {
-            Assert.Throws<System.UnauthorizedAccessException>(() => Statements.GetCsvFiles(path));
+            Assert.Throws<System.UnauthorizedAccessException>(() => AccountStatements.GetAccountStatementsList(path));
         }
 
         [Test]
         [TestCase("/foobar")]
         [TestCase("   ")]
-        public void Test_Statements_GetAll_DirectoryNotFound(string path)
+        public void Test_AccountStatements_GetAll_DirectoryNotFound(string path)
         {
-            Assert.Throws<System.IO.DirectoryNotFoundException>(() => Statements.GetCsvFiles(path));
+            Assert.Throws<System.IO.DirectoryNotFoundException>(() => AccountStatements.GetAccountStatementsList(path));
         }
 
         [TestCase("")]
-        public void Test_Statements_GetAll_EmptyPath(string path)
+        public void Test_AccountStatements_GetAll_EmptyPath(string path)
         {
-            Assert.Throws<System.ArgumentException>(() => Statements.GetCsvFiles(path));
+            Assert.Throws<System.ArgumentException>(() => AccountStatements.GetAccountStatementsList(path));
         }
 
         private string GetCsvPath()
@@ -57,7 +58,8 @@ namespace Financier.Cli.Tests.StatementFileTests
             path = Path.Join(path, "..");
             path = Path.Join(path, "..");
 
-            return Path.Join(path, "StatementFileTests");
+            path = Path.Join(path, "StatementFileTests");
+            return Path.Join(path, "ron@ofer.to");
         }
     }
 }

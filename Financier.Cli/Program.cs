@@ -183,16 +183,34 @@ namespace Financier.Cli
         {
             Context.Environment = Environments.Dev;
 
-            var creditCardStatements = GetCreditCardStatements();
-            foreach (var file in creditCardStatements.CsvFiles)
+            try
             {
-                new CreditCardStatementFile(creditCardStatements.AccountName, file).Import();
+                var creditCardStatements = GetCreditCardStatements();
+                foreach (var statement in creditCardStatements)
+                {
+                    foreach (var file in statement.CsvFiles)
+                    {
+                        new CreditCardStatementFile(statement.AccountName, file).Import();
+                    }
+                }
+            } catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
             }
 
-            var bankStatement = GetBankStatements();
-            foreach (var file in bankStatement.CsvFiles)
+            try
             {
-                new CreditCardStatementFile(creditCardStatements.AccountName, file).Import();
+                var bankStatements = GetBankStatements();
+                foreach (var statement in bankStatements)
+                {
+                    foreach (var file in statement.CsvFiles)
+                    {
+                        new BankStatementFile(statement.AccountName, file).Import();
+                    }
+                }
+            } catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
             }
 
             Console.WriteLine("Processing Items");
@@ -271,26 +289,28 @@ namespace Financier.Cli
             return args[0];
         }
 
-        public Statements GetBankStatements()
+        public IEnumerable<AccountStatements> GetBankStatements()
         {
+            Console.WriteLine("Getting Bank Statements");
+
             if (!BankStatementsPath.HasValue)
             {
-                return new Statements(string.Empty);
+                throw new Exception("Cannot find credit card statements");
             }
 
-            Console.WriteLine("Getting Bank Statements");
-            return new Statements(BankStatementsPath.Value);
+            return AccountStatements.GetAccountStatementsList(BankStatementsPath.Value);
         }
 
-        public Statements GetCreditCardStatements()
+        public IEnumerable<AccountStatements> GetCreditCardStatements()
         {
+            Console.WriteLine("Getting Credit Card Statements");
+
             if (!CreditCardStatementsPath.HasValue)
             {
-                return new Statements(string.Empty);
+                throw new Exception("Cannot find credit card statements");
             }
 
-            Console.WriteLine("Getting Credit Card Statements");
-            return new Statements(CreditCardStatementsPath.Value);
+            return AccountStatements.GetAccountStatementsList(CreditCardStatementsPath.Value);
         }
 
         public static string ReadNewTags()
