@@ -10,9 +10,12 @@ namespace Financier.Cli.Tests.StatementFileTests
 {
     public class GetPostedAt
     {
+        public string AccountName { get; private set; }
+
         [SetUp]
         public void Setup()
         {
+            AccountName = "Mr Bean";
         }
 
         [Test]
@@ -23,7 +26,7 @@ namespace Financier.Cli.Tests.StatementFileTests
             var expectedDate = new DateTime(year, month, day);
             var path = GetCsvPath(relativePath);
 
-            Assert.That(new CreditCardStatementFile(path).PostedAt, Is.EqualTo(expectedDate));
+            Assert.That(new CreditCardStatementFile(AccountName, path).PostedAt, Is.EqualTo(expectedDate));
         }
 
         [Test]
@@ -32,7 +35,7 @@ namespace Financier.Cli.Tests.StatementFileTests
         {
             var path = GetCsvPath(relativePath);
 
-            Assert.Throws<FileNotFoundException>(() => new CreditCardStatementFile(path));
+            Assert.Throws<FileNotFoundException>(() => new CreditCardStatementFile(AccountName, path));
         }
 
         private string GetCsvPath(string relativePath)

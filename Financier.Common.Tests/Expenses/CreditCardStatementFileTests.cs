@@ -12,10 +12,13 @@ namespace Financier.Common.Tests.Expenses
 {
     public class CreditCardStatementFileTests
     {
+        public string AccountName { get; private set; }
+
         [OneTimeSetUp]
         public void InitAll()
         {
             Context.Environment = Environments.Test;
+            AccountName = "Mr Bean";
         }
 
         [SetUp]
@@ -165,7 +168,7 @@ namespace Financier.Common.Tests.Expenses
             var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
             var reader = new System.IO.MemoryStream(buffer);
 
-            new CreditCardStatementFile(reader, statementPostedAt).Import();
+            new CreditCardStatementFile(AccountName, reader, statementPostedAt).Import();
 
             using (var db = new Context())
             {
@@ -204,7 +207,7 @@ namespace Financier.Common.Tests.Expenses
             var buffer = statement.ToCharArray().Select(ch => Convert.ToByte(ch)).ToArray();
             var reader = new System.IO.MemoryStream(buffer);
 
-            Assert.Throws<DbUpdateException>(() => new CreditCardStatementFile(reader, statementPostedAt).Import());
+            Assert.Throws<DbUpdateException>(() => new CreditCardStatementFile(AccountName, reader, statementPostedAt).Import());
         }
 
         [Test]
