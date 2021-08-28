@@ -6,7 +6,7 @@ using Financier.Web.GraphQL.TagCosts;
 
 namespace Financier.Web.GraphQL.CashFlows
 {
-    public class CashFlowType : ObjectGraphType<CashFlow>
+    public class CashFlowType : ObjectGraphType<DurationCashFlow>
     {
         public CashFlowType(IDataLoaderContextAccessor dataLoaderAccessor)
         {

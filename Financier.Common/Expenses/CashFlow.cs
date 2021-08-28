@@ -8,7 +8,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Expenses
 {
-    public class CashFlow : BaseCashFlow
+    public class DurationCashFlow : CashFlow
     {
         public decimal Threshold { get; protected set; }
         protected const decimal DefaultThreshold = 0.05M;
@@ -28,7 +28,7 @@ namespace Financier.Common.Expenses
 
         public override decimal DailyProfit => decimal.Round(ProfitAmountTotal / EndAt.Subtract(StartAt).Days, 2);
 
-        public CashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold)
+        public DurationCashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold)
         {
             StartAt = startAt;
             EndAt = endAt;
@@ -37,7 +37,7 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        protected CashFlow()
+        protected DurationCashFlow()
         {
         }
 

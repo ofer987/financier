@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Financier.Common.Expenses
 {
-    public class SimpleCashFlow : BaseCashFlow
+    public class SimpleCashFlow : CashFlow
     {
         public DateTime StartAt { get; }
         public DateTime EndAt { get; }

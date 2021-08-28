@@ -2,7 +2,7 @@ using System;
 
 namespace Financier.Common.Expenses
 {
-    public class MonthlyCashFlow : CashFlow
+    public class MonthlyCashFlow : DurationCashFlow
     {
         public MonthlyCashFlow(int year, int month, decimal threshold = DefaultThreshold)
         {

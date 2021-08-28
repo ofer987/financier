@@ -25,13 +25,14 @@ namespace Financier.Common.Expenses
                             false
                             || itemType == ItemTypes.Debit && item.Amount >= 0
                             || itemType == ItemTypes.Credit && item.Amount < 0)
+                    .AsEnumerable()
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
 
             return items
                 .GroupBy(item => item.Tags.Select(tag => tag.Name).Join(", "))
-                .Select(grouped => new ItemListing(grouped.First().Tags, grouped))
+                .Select(items => new ItemListing(items.First().Tags, items))
                 .ToArray();
         }
 

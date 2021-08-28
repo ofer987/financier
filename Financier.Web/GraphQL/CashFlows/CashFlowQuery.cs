@@ -72,7 +72,7 @@ namespace Financier.Web.GraphQL.CashFlows
             );
         }
 
-        private IEnumerable<CashFlow> GetMonthlyAnalysis(int year)
+        private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(int year)
         {
             for (var month = 1; month <= 12; month += 1)
             {

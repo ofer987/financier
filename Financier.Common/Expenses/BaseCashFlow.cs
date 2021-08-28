@@ -4,11 +4,11 @@ using Financier.Common.Models;
 
 namespace Financier.Common.Expenses
 {
-    public abstract class BaseCashFlow : ICashFlow
+    public abstract class CashFlow : ICashFlow
     {
         public virtual decimal DailyProfit => throw new NotImplementedException();
 
-        protected BaseCashFlow()
+        protected CashFlow()
         {
         }
 
