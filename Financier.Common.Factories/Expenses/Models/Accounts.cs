@@ -1,15 +1,28 @@
-using System;
-
 using Financier.Common.Expenses.Models;
 
 namespace Financier.Common
 {
     public partial class Factories
     {
-        public static Func<string, Account> CreateAccount = (name) => new Account
+        public static Account NewAccount(string name)
         {
-            Name = name
-        };
+            return new Account
+            {
+                Name = name
+            };
+        }
+
+        public static Account CreateAccount(string name)
+        {
+            var account = NewAccount(name);
+            using (var db = new Context())
+            {
+                db.Accounts.Add(account);
+                db.SaveChanges();
+            }
+
+            return account;
+        }
     }
 }
 

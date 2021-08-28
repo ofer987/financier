@@ -1,13 +1,13 @@
-using GraphQL;
+using System;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Activities
 {
     public class OneHomeSchema : Schema
     {
-        public OneHomeSchema(IDependencyResolver resolver) : base(resolver)
+        public OneHomeSchema(IServiceProvider provider) : base(provider)
         {
-            Query = resolver.Resolve<OneHomeQuery>();
+            Query = new OneHomeQuery();
         }
     }
 }

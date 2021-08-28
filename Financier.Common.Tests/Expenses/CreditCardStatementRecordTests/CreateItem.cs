@@ -53,7 +53,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
         };
     }
 
-    public class CreateItem : Fixture
+    public class CreateItem : Tests
     {
         protected override void InitStorage()
         {
@@ -61,7 +61,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
             {
                 // for now
                 // Maybe I should refactor this?
-                var owner = Factories.CreateAccount("mr bean");
+                var owner = Factories.NewAccount("mr bean");
                 db.Accounts.Add(owner);
                 db.SaveChanges();
 

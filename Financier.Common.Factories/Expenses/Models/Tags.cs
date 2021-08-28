@@ -5,7 +5,7 @@ namespace Financier.Common
 {
     public partial class Factories
     {
-        public static Tag CreateTag(string name)
+        public static Tag NewTag(string name)
         {
             return new Tag
             {
@@ -14,31 +14,32 @@ namespace Financier.Common
             };
         }
 
+        public static Tag CreateTag(string name)
+        {
+            var tag = NewTag(name);
+
+            using (var db = new Context())
+            {
+                db.Tags.Add(tag);
+                db.SaveChanges();
+            }
+
+            return tag;
+        }
+
         public static Tag DanTag()
         {
-            return new Tag
-            {
-                Id = Guid.NewGuid(),
-                Name = "dan"
-            };
+            return NewTag("dan");
         }
 
         public static Tag RonTag()
         {
-            return new Tag
-            {
-                Id = Guid.NewGuid(),
-                Name = "ron"
-            };
+            return NewTag("ron");
         }
 
         public static Tag KerenTag()
         {
-            return new Tag
-            {
-                Id = Guid.NewGuid(),
-                Name = "keren"
-            };
+            return NewTag("keren");
         }
     }
 }

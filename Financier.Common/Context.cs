@@ -21,12 +21,21 @@ namespace Financier.Common
         {
             using (var db = new Context())
             {
+                db.ItemTags.RemoveRange(db.ItemTags);
+                db.SaveChanges();
+
+                db.Tags.RemoveRange(db.Tags);
+                db.SaveChanges();
+
                 db.Items.RemoveRange(db.Items);
+                db.SaveChanges();
+            }
+
+            using (var db = new Context())
+            {
                 db.Statements.RemoveRange(db.Statements);
                 db.Cards.RemoveRange(db.Cards);
                 db.Accounts.RemoveRange(db.Accounts);
-                db.Tags.RemoveRange(db.Tags);
-                db.ItemTags.RemoveRange(db.ItemTags);
 
                 db.SaveChanges();
             }
@@ -67,7 +76,50 @@ namespace Financier.Common
             builder.Entity<Item>()
                 .HasMany(item => item.ItemTags)
                 .WithOne(it => it.Item)
-                .HasForeignKey(it => it.ItemId);
+                .HasForeignKey(it => it.ItemId)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            builder.Entity<Item>()
+                .HasMany(item => item.Tags)
+                .WithMany(tag => tag.Items)
+                .UsingEntity<ItemTag>(
+                    j => j
+                        .HasOne(it => it.Tag)
+                        .WithMany(tag => tag.ItemTags)
+                        .HasForeignKey(tag => tag.TagId),
+                    j => j
+                        .HasOne(it => it.Item)
+                        .WithMany(item => item.ItemTags)
+                        .HasForeignKey(item => item.ItemId),
+                    j =>
+                    {
+                        j.HasKey(it => new { it.ItemId, it.TagId });
+                    });
+
+            builder.Entity<Tag>()
+                .HasMany(tag => tag.Items)
+                .WithMany(item => item.Tags)
+                .UsingEntity<ItemTag>(
+                    j => j
+                        .HasOne(it => it.Item)
+                        .WithMany(item => item.ItemTags)
+                        .HasForeignKey(item => item.ItemId),
+                    j => j
+                        .HasOne(it => it.Tag)
+                        .WithMany(tag => tag.ItemTags)
+                        .HasForeignKey(tag => tag.TagId),
+                    j =>
+                    {
+                        j.HasKey(it => new { it.ItemId, it.TagId });
+                    });
+
+            builder.Entity<ItemTag>()
+                .HasOne(itemTag => itemTag.Item)
+                .WithMany(itemTag => itemTag.ItemTags);
+
+            builder.Entity<ItemTag>()
+                .HasOne(itemTag => itemTag.Tag)
+                .WithMany(tag => tag.ItemTags);
 
             builder.Entity<Statement>()
                 .HasKey(statement => statement.Id);
@@ -103,14 +155,17 @@ namespace Financier.Common
             builder.Entity<Tag>()
                 .HasMany(tag => tag.ItemTags)
                 .WithOne(it => it.Tag)
-                .HasForeignKey(it => it.TagId);
+                .HasForeignKey(it => it.TagId)
+                .OnDelete(DeleteBehavior.ClientCascade);
 
-            builder.Entity<ItemTag>()
-                .HasKey(it => new { it.ItemId, it.TagId });
+            // builder.Entity<ItemTag>()
+            //     .HasKey(it => new { it.ItemId, it.TagId });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.EnableSensitiveDataLogging(true);
+            // optionsBuilder.LogTo(System.Console.WriteLine);
             if (!optionsBuilder.IsConfigured)
             {
                 switch (Environment)

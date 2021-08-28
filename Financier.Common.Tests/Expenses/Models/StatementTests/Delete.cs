@@ -5,7 +5,7 @@ using Financier.Common.Extensions;
 
 namespace Financier.Common.Tests.Expenses.Models.StatementTests
 {
-    public class Delete : DatabaseFixture
+    public class Delete : InitializedDatabaseTests
     {
         [Test]
         [TestCase(FactoryData.Accounts.Dan.Cards.DanCard.CardNumber, 2)]

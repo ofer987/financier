@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'json'
+require 'rest-client'
+require 'date'
+require 'csv'
+require 'yaml'
+
+class Token
+  attr_reader :value, :access_token, :refresh_token
+
+  def initialize(value)
+    self.value = value.to_s.strip
+    self.refresh_token = nil
+  end
+
+  def authorize!
+    chosen_token = self.refresh_token || self.value
+    response = RestClient::Request.execute(
+      method: :get,
+      url: "https://login.questrade.com/oauth2/token?grant_type=refresh_token&refresh_token=#{chosen_token}"
+    )
+  end
+
+  private
+
+  def api!(response)
+    case response.code
+    when 200
+      message = JSON.parse(response.body)
+
+      self.refresh_token = message[:refresh_token].to_s.strip
+      api_server = message[:api_server].to_s.strip.gsub('/', '')
+    else
+      raise "#{response.code}: Authorization error"
+
+    end
+  end
+
+  attr_writer :value, :access_token, :refresh_token
+end
+
+class Api
+  attr_reader :access_token, :api_server
+
+  def initialize(access_token, api_server)
+    self.access_token = access_token.to_s.strip
+    self.api_server = api_server.to_s.strip
+  end
+
+  def balance(account_id)
+    account_id = account_id.to_s.strip
+    response = RestClient::Request.execute(
+      method: :get,
+      url: "#{self.api_server}/v1/accounts/#{account_id}/balances",
+      headers: {
+        Host: "#{self.api_server}",
+        Authorization: "Bearer #{access_token}"
+      }
+    )
+
+    case response.code
+    when 200
+      json = JSON.parse(response.body)
+      canadian_datum = json['combinedBalances']
+        .first { |datum| datum['currency'] == 'CAD' }
+
+      canadian_datum['total_equity']
+    else
+      raise "#{response.code}: Error using the token (#{self.access_token}) at (#{self.api_server}) for account (#{account_id})"
+    end
+  end
+  
+  private
+
+  attr_writer :access_token, :api_server
+end
+
+accounts_path = ARGV[0].to_s.strip
+token_path = ARGV[1].to_s.strip
+
+accounts = YAML.load(IO.read(accounts_path))
+token = IO.read(token_path)
+
+api = Token
+  .new(token)
+  .authorize!
+
+accounts.each do |account_id|
+  puts api.balance(account_id)
+end

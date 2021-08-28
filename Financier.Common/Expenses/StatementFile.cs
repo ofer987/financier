@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 using CsvHelper;
 using Financier.Common.Expenses.Models;
-using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses
 {
@@ -21,19 +20,20 @@ namespace Financier.Common.Expenses
         public DateTime PostedAt { get; private set; }
         public string Path { get; private set; }
 
-        protected StatementFile(FileInfo file)
+        protected StatementFile(string accountName, FileInfo file)
         {
             Stream = file.OpenRead();
             Path = file.FullName;
             PostedAt = DateTime.ParseExact(DateRegex.Match(file.Name).Value, "yyyyMMdd", null);
         }
 
-        protected StatementFile(string path) : this(new FileInfo(path))
+        protected StatementFile(string accountName, string path) : this(accountName, new FileInfo(path))
         {
         }
 
-        protected StatementFile(Stream stream, DateTime postedAt)
+        protected StatementFile(string accountName, Stream stream, DateTime postedAt)
         {
+            AccountName = accountName;
             Stream = stream;
             PostedAt = postedAt;
         }
@@ -75,19 +75,11 @@ namespace Financier.Common.Expenses
             using (var reader = new StreamReader(Stream))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                // Do nothing if record is faulty
-                csv.Configuration.BadDataFound = (context) =>
-                {
-                    var record = context.Record ?? new string[0];
-                    // TODO: log this to an error log
-                    Console.WriteLine($"This line is faulty {record.Join()}");
-                };
-
-                return PostProcessedRecords(csv.GetRecords<T>()).ToArray();
+                return PostProcessedRecords(AccountName, csv.GetRecords<T>()).ToArray();
             }
         }
 
-        protected virtual IEnumerable<T> PostProcessedRecords(IEnumerable<T> records)
+        protected virtual IEnumerable<T> PostProcessedRecords(string accountName, IEnumerable<T> records)
         {
             return records;
         }

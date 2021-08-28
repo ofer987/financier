@@ -1,14 +1,14 @@
-using GraphQL;
+using System;
 using GraphQL.Types;
 
 namespace Financier.Web.GraphQL.Items
 {
     public class ItemSchema : Schema
     {
-        public ItemSchema(IDependencyResolver resolver) : base(resolver)
+        public ItemSchema(IServiceProvider provider) : base(provider)
         {
-            Query = resolver.Resolve<ItemQuery>();
-            Mutation = resolver.Resolve<ItemMutation>();
+            Query = new ItemQuery();
+            Mutation = new ItemMutation();
         }
     }
 }

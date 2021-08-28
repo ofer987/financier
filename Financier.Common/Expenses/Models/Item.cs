@@ -17,7 +17,7 @@ namespace Financier.Common.Expenses.Models
         {
             using (var db = new Context())
             {
-                return db.Items.ToList();
+                return db.Items.AsEnumerable().ToList();
             }
         }
 
@@ -42,6 +42,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .ToArray();
@@ -54,8 +55,22 @@ namespace Financier.Common.Expenses.Models
             {
                 return db.Items
                     .Include(item => item.ItemTags)
+                    .AsEnumerable()
                     .Reject(item => item.ItemTags.Any())
                     .OrderBy(item => item.PostedAt)
+                    .ToArray();
+            }
+        }
+
+        public static Item[] FindByDescription(string description)
+        {
+            using (var db = new Context())
+            {
+                return db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
+                    .Where(item => item.Description.Equals(description, StringComparison.InvariantCultureIgnoreCase))
                     .ToArray();
             }
         }
@@ -67,6 +82,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .Where(item => item.Amount < 0)
@@ -82,6 +98,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .Where(item => item.Amount >= 0)
@@ -98,6 +115,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }
@@ -110,6 +128,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)
                     .Reject(item => item.Tags.HasCreditCardPayment())
@@ -137,6 +156,7 @@ namespace Financier.Common.Expenses.Models
                 return db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(itemTag => itemTag.Tag)
+                    .AsEnumerable()
                     .First(item => item.ItemId == itemId);
             }
         }
@@ -152,7 +172,7 @@ namespace Financier.Common.Expenses.Models
                     where tagIds.Contains(tag.Id)
                     select item;
 
-                return query.ToList();
+                return query.AsEnumerable().ToList();
             }
         }
 
@@ -167,7 +187,7 @@ namespace Financier.Common.Expenses.Models
                     where tagNames.Contains(tag.Name)
                     select item;
 
-                return query.ToList();
+                return query.AsEnumerable().ToList();
             }
         }
 
@@ -211,9 +231,9 @@ namespace Financier.Common.Expenses.Models
         [Required]
         public DateTime PostedAt { get; set; }
 
-        public List<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
+        public List<ItemTag> ItemTags { get; set; }
 
-        public IEnumerable<Tag> Tags => ItemTags.Select(it => it.Tag);
+        public List<Tag> Tags { get; set; }
 
         public Item(Guid id, Guid statementId, string itemId, string description, DateTime at, decimal amount)
         {
@@ -254,6 +274,92 @@ namespace Financier.Common.Expenses.Models
             using (var db = new Context())
             {
                 db.Items.Remove(this);
+                db.SaveChanges();
+            }
+        }
+
+        public void AddTags(string commaSeparatedNewTagNames)
+        {
+            var names = commaSeparatedNewTagNames
+                .Split(',')
+                .Select(item => item.Trim().ToLower())
+                .Reject(item => item.IsNullOrEmpty())
+                .Distinct();
+
+            AddTags(names);
+        }
+
+        public void AddTags(IEnumerable<string> newTagNames)
+        {
+            var tags = newTagNames.Select(Tag.GetOrCreate);
+
+            AddTags(tags);
+        }
+
+        public void AddTags(IEnumerable<Tag> newTags)
+        {
+            using (var db = new Context())
+            {
+                var existingItemTags = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.ItemId == Id);
+                var existingTags = existingItemTags.Select(it => it.Tag);
+
+                foreach (var newTag in newTags.Distinct())
+                {
+                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
+                    {
+                        var itemTag = new ItemTag
+                        {
+                            ItemId = Id,
+                            TagId = newTag.Id
+                        };
+
+                        db.ItemTags.Add(itemTag);
+                    }
+                }
+
+                db.SaveChanges();
+            }
+        }
+
+        public void UpdateTags(IEnumerable<string> newTagNames)
+        {
+            var newTags = newTagNames.Select(name => Tag.GetOrCreate(name));
+
+            UpdateTags(newTags);
+        }
+
+        public void UpdateTags(IEnumerable<Tag> newTags)
+        {
+            using (var db = new Context())
+            {
+                // Get the existing tags
+                var existingItemTags = db.ItemTags
+                    .Include(it => it.Tag)
+                    .Where(it => it.ItemId == Id);
+                var existingTags = existingItemTags.Select(it => it.Tag);
+
+                // Add tags that do not exist
+                foreach (var newTag in newTags.Distinct())
+                {
+                    if (!existingTags.Any(tag => tag.Name == newTag.Name))
+                    {
+                        var itemTag = new ItemTag
+                        {
+                            ItemId = Id,
+                            TagId = newTag.Id
+                        };
+
+                        db.ItemTags.Add(itemTag);
+                    }
+                }
+
+                // Delete the existing tags that are not part of newTags
+                var itemTagsToDelete = existingItemTags
+                    .Reject(existingItemTag => newTags.Any(newTag => newTag.Name == existingItemTag.Tag.Name));
+                db.ItemTags.RemoveRange(itemTagsToDelete);
+
                 db.SaveChanges();
             }
         }

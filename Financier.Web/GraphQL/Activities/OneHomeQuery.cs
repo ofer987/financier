@@ -1,4 +1,5 @@
 using System;
+using GraphQL;
 using GraphQL.Types;
 
 using Financier.Common.Expenses.Actions;
@@ -117,32 +118,32 @@ namespace Financier.Web.GraphQL.Activities
             );
         }
 
-        private DateTime GetInitiatedAt(ResolveFieldContext<object> context)
+        private DateTime GetInitiatedAt(IResolveFieldContext<object> context)
         {
             return context.GetArgument<DateTime>(Keys.InitiatedAt);
         }
 
-        private decimal GetPurchasePrice(ResolveFieldContext<object> context)
+        private decimal GetPurchasePrice(IResolveFieldContext<object> context)
         {
             return context.GetArgument<decimal>(Keys.PurchasePrice);
         }
 
-        private decimal GetDownPayment(ResolveFieldContext<object> context)
+        private decimal GetDownPayment(IResolveFieldContext<object> context)
         {
             return context.GetArgument<decimal>(Keys.DownPayment);
         }
 
-        private int GetAmortizationPeriodInMonths(ResolveFieldContext<object> context)
+        private int GetAmortizationPeriodInMonths(IResolveFieldContext<object> context)
         {
             return context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
         }
 
-        private decimal GetInterestRate(ResolveFieldContext<object> context)
+        private decimal GetInterestRate(IResolveFieldContext<object> context)
         {
             return context.GetArgument<decimal>(Keys.InterestRate);
         }
 
-        private decimal GetMonthlyRentalRate(ResolveFieldContext<object> context)
+        private decimal GetMonthlyRentalRate(IResolveFieldContext<object> context)
         {
             return context.GetArgument<decimal>(Keys.MonthlyRentalRate);
         }

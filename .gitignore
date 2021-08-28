@@ -1,8 +1,11 @@
-# .NET
+# Ignore dotnet core build
 **/bin/
 **/obj/
 
-# Ruby
-.solargraph.yml
-
+# Ignore Visual Studio Code
 .vscode
+
+# Ignore local SQL files
+queries
+inserts
+data_dumps

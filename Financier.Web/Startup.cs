@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GraphQL;
 using GraphQL.Server;
-using GraphQL.Server.Ui.Playground;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
@@ -38,7 +37,7 @@ namespace Financier.Web
                 // This needs to be enabled because GraphQL 2.4's
                 // JSON serialiser is synchronous
                 // TODO: set to false after upgrading to GraphQL 3
-                options.AllowSynchronousIO = true;
+                options.AllowSynchronousIO = false;
             });
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -47,25 +46,32 @@ namespace Financier.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
-            services.AddScoped<CashFlowSchema>();
-            services.AddScoped<ItemSchema>();
-            services.AddScoped<TagSchema>();
-            services.AddScoped<ItemQuerySchema>();
-            services.AddScoped<FixedRateMortgageSchema>();
-            services.AddScoped<OneHomeSchema>();
+            // services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+            services.AddSingleton<CashFlowSchema>();
+            services.AddSingleton<ItemSchema>();
+            services.AddSingleton<TagSchema>();
+            services.AddSingleton<ItemQuerySchema>();
+            services.AddSingleton<FixedRateMortgageSchema>();
+            services.AddSingleton<OneHomeSchema>();
+            services.AddSingleton<PaymentSchema>();
+
 
             // Add GraphQL
             services
-                .AddGraphQL(options =>
+                .AddGraphQL((options, provider) =>
                     {
                         options.EnableMetrics = true;
+
+                        var logger = provider.GetRequiredService<ILogger<Startup>>();
+                        options.UnhandledExceptionDelegate = (context) => logger.LogError($"Error occurred: {context.OriginalException.Message}");
                         // TODO: should depend whether is dev environment
-                        options.ExposeExceptions = true;
+                        // options.ExposeExceptions = true;
                     })
-                .AddGraphTypes(ServiceLifetime.Scoped)
-                .AddUserContextBuilder(httpContext => httpContext)
+                .AddGraphTypes(typeof(ItemSchema))
+                .AddSystemTextJson()
+                // .AddUserContextBuilder(httpContext => httpContext)
                 .AddDataLoader();
+                ;
 
             // TODO: use the latest MVC routing
             // Please see
@@ -97,17 +103,21 @@ namespace Financier.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseGraphQL<TagSchema>("/graphql/tags");
-            app.UseGraphQL<ItemSchema>("/graphql/items");
-            app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
-            app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
-            app.UseGraphQL<OneHomeSchema>("/graphql/one-home");
 
             // Remove!
-            app.UseGraphQL<FixedRateMortgageSchema>("/graphql/fixed-rate-mortgage");
 
             // app.UseWebSockets();
-            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
+            // app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
+
+            app.UseRouting();
+            app.UseEndpoints(routes =>
+            {
+                routes.MapGraphQL<TagSchema>("/graphql/tags");
+                routes.MapGraphQL<ItemSchema>("/graphql/items");
+                routes.MapGraphQL<CashFlowSchema>("/graphql/cash-flows");
+                routes.MapGraphQL<ItemQuerySchema>("/graphql/item-queries");
+                routes.MapGraphQL<OneHomeSchema>("/graphql/one-home");
+            });
 
             // Please note that some of these routes are deprecated
             // TODO: Remove the deprecated routes
