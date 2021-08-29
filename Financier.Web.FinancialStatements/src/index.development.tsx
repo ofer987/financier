@@ -16,6 +16,4 @@ import * as ReactDOM from 'react-dom';
 
 import { MonthlyCashFlow } from "./MonthlyCashFlow";
 
-(document.getElementById("root") || { textContent: ""}).textContent = "hello";
-
 ReactDOM.render(<MonthlyCashFlow revenues={[]} expenses={[]} />, document.getElementById('root'));
