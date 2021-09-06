@@ -1,25 +1,36 @@
-import * as React from 'react';
+import * as React from "react";
 
 import CashFlowItemModel from "./CashFlowItemModel";
+import CashFlowItem from "./CashFlowItem";
 
-interface CashFlowItemsProps {
-    items: Array<CashFlowItemModel>;
+interface Props {
+  revenues: CashFlowItemModel[];
+  expenses: CashFlowItemModel[];
 }
 
-const CashFlowItems: React.FC<CashFlowItemsProps> = (props) => {
-    var itemElement = (item: CashFlowItemModel) => {
-        (
-            <li className={item.name}>
-                <span>{item.name}</span> | <span>{item.price}</span> | <span>{item.at}</span>
-            </li>
-        )
-    };
+interface State {
+}
 
+class CashFlowItems extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+  }
+
+  render() {
     return (
+      <div className="cash-flow">
+        <div className="size">
+          {this.props.revenues.length}
+        </div>
         <ul className="revenues">
-            {props.items.forEach(itemElement)};
+          {this.props.revenues.map(item => <CashFlowItem name={item.name} price={item.price} at={item.at} key={item.name} />)}
         </ul>
-    );
+
+        <div className="expenses">
+        </div>
+      </div>
+    )
+  }
 };
 
 export default CashFlowItems;
