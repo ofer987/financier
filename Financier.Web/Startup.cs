@@ -21,6 +21,8 @@ namespace Financier.Web
 {
     public class Startup
     {
+        public static string DevelopmentPolicy = "CORS_POLICY_LOCALHOST";
+
         public Startup(IConfiguration configuration)
         {
             Context.Environment = Financier.Common.Environments.Dev;
@@ -83,6 +85,17 @@ namespace Financier.Web
             //
             services
                 .AddRouteAnalyzer();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    DevelopmentPolicy,
+                    builder => builder
+                        .WithOrigins("http://localhost:8001")
+                        .AllowAnyHeader()
+                        .Build()
+                );
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -91,6 +104,7 @@ namespace Financier.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors(DevelopmentPolicy);
             }
             else
             {
