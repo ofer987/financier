@@ -118,14 +118,13 @@ namespace Financier.Web
             app.UseCookiePolicy();
 
 
-            // Remove!
-
-            // app.UseWebSockets();
-            // app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
+            app.UseGraphQLPlayground();
 
             app.UseRouting();
             app.UseEndpoints(routes =>
             {
+                routes.MapGraphQLPlayground();
+
                 routes.MapGraphQL<TagSchema>("/graphql/tags");
                 routes.MapGraphQL<ItemSchema>("/graphql/items");
                 routes.MapGraphQL<CashFlowSchema>("/graphql/cash-flows");
