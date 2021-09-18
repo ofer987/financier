@@ -1,27 +1,26 @@
-import Listing from "./CashFlowModel/Listing";
+import Listing from "./Listing";
 
 class CashTagsModel implements Listing {
   startAt: Date;
   endAt: Date;
-  tags: { name: string }[];
+  tags: string[];
   amount: number;
+
+  get isNull(): boolean {
+    return false;
+  }
 
   constructor(startAt: Date, endAt: Date, tags: { name: string }[], amount: number) {
     this.startAt = startAt;
     this.endAt = endAt;
-    this.tags = tags;
     this.amount = amount;
+
+    this.init(tags);
   }
 
-  // name(): string {
-  //   return this.tags
-  //     .map(tag => tag.name)
-  //     .join(", ");
-  // }
-  //
-  // at(): string {
-  //   return `${this.startAt.getFullYear()}-${this.endAt.getMonth()}`;
-  // }
+  init(values: { name: string }[]): void {
+    this.tags = values.map(values => values.name);
+  }
 }
 
 export default CashTagsModel;

@@ -1,13 +1,9 @@
 import * as React from "react";
 import CashTags from "./CashTags";
 import CashTagsModel from "./CashTagsModel";
+import CashFlowProps from "./CashFlowProps"
 
-interface Props {
-  debits: CashTagsModel[];
-  credits: CashTagsModel[];
-}
-
-class Graph extends React.Component<Props> {
+class Graph extends React.Component<CashFlowProps> {
   render() {
     return (
       <div>

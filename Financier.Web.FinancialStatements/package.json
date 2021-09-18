@@ -83,6 +83,7 @@
     "dependencies": {
         "@apollo/client": "^3.4.11",
         "d3-time-format": "^4.0.0",
-        "graphql": "^15.5.3"
+        "graphql": "^15.5.3",
+        "underscore": "^1.13.1"
     }
 }

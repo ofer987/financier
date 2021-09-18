@@ -1,12 +1,8 @@
 import * as React from "react";
 import Listing from "./Listing";
+import CashFlowModel from "./CashFlowModel";
 
-class Props {
-  debit: Listing;
-  credit: Listing;
-}
-
-class Value extends React.Component<Props> {
+class Value extends React.Component<CashFlowModel> {
   render() {
     return (
       <div id={this.name} key={this.name}>
@@ -30,9 +26,9 @@ class Value extends React.Component<Props> {
     return tags.join("-");
   }
 
-  get profit(): number {
-    return this.props.credit.amount - this.props.debit.amount;
+  get at(): string {
+    return `${this.props.startAt.getFullYear()}-${this.props.endAt.getMonth()}`;
   }
 }
 
-export default Value;
+export default CashTags;

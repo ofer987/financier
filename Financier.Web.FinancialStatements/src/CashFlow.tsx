@@ -82,7 +82,10 @@ class CashFlow extends React.Component<Props, State> {
 
   render() {
     return (
-      <Graph debits={this.state.credits} credits={this.state.debits} />
+      <div className="cash-flow">
+        <Graph debits={this.state.credits} credits={this.state.debits} />
+        <Values debits={this.state.credits} credits={this.state.debits} />
+      </div>
     );
   }
 
