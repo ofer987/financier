@@ -10,7 +10,7 @@ interface Props {
 class Value extends React.Component<Props> {
   render() {
     return (
-      <div id={this.name} key={this.name}>
+      <div className="item" id={this.name} key={this.name}>
         <div className="name">
           {this.name}
         </div>

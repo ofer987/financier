@@ -1,0 +1,97 @@
+.values {
+  .header {
+    div {
+      font-size: 20px;
+      width: 25%;
+    }
+
+    div:first-child {
+      width: 49%;
+
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    div:last-child {
+    }
+
+    display: flex;
+    flex-flow: wrap;
+
+    justify-content: space-between;
+    text-align: left;
+
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+  }
+
+  .items {
+    .item {
+      div {
+        padding: 2px 0px 2px 0px;
+        width: 25%;
+        font-family: monospace;
+      }
+
+      div:first-child {
+        width: 49%;
+
+        border-right-color: black;
+        border-right-style: solid;
+        border-right-width: 1px;
+      }
+
+      div:last-child {
+        padding-right: 0px;
+      }
+
+      display: flex;
+      flex-flow: wrap;
+      flex-direction: row;
+
+      justify-content: space-between;
+      text-align: left;
+
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      border-bottom-color: blue;
+    }
+
+    padding-top: 5px;
+  }
+
+  .total {
+    div {
+      padding: 2px 0px 2px 0px;
+      width: 25%;
+      font-family: monospace;
+    }
+
+    div:first-child {
+      width: 49%;
+
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    div:last-child {
+      padding-right: 0px;
+    }
+
+    display: flex;
+
+    flex-flow: wrap;
+    flex-direction: row;
+
+    padding-top: 5px;
+    font-size: 20px;
+
+    justify-content: space-between;
+    text-align: left;
+
+  }
+
+}
