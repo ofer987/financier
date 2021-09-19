@@ -1,6 +1,6 @@
 import Listing from "./Listing";
 
-class CashTagsModel implements Listing {
+class CashFlowModel implements Listing {
   startAt: Date;
   endAt: Date;
   tags: string[];
@@ -23,4 +23,4 @@ class CashTagsModel implements Listing {
   }
 }
 
-export default CashTagsModel;
+export default CashFlowModel;

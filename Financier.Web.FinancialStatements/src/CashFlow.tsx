@@ -4,8 +4,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from "d3-time-format";
+import Values from "./Values";
 import CashFlowModel from "./CashFlowModel";
-import CashTagsModel from "./CashTagsModel";
+import Listing from "./Listing";
 import { Graph } from "./Graph";
 import {
   ApolloClient,
@@ -25,13 +26,24 @@ interface Props {
   month: number;
 }
 
-interface State {
-  debits: CashTagsModel[];
-  credits: CashTagsModel[];
+class State {
+  debits: Listing[];
+  credits: Listing[];
 }
 
-interface MonthlyCashFlow {
-  getMonthlyCashFlow: CashFlowModel;
+interface CashFlowResponse {
+  getMonthlyCashFlow: {
+    startAt: string;
+    endAt: string;
+    debitListings: {
+      tags: { name: string; }[];
+      amount: number;
+    }[]
+    creditListings: {
+      tags: { name: string; }[];
+      amount: number;
+    }[]
+  }
 }
 
 class CashFlow extends React.Component<Props, State> {
@@ -51,7 +63,8 @@ class CashFlow extends React.Component<Props, State> {
   });
 
   getData(): void {
-    this.client.query<MonthlyCashFlow>({
+    // Convert to async/await
+    this.client.query<CashFlowResponse>({
       query: gql`
         query {
           getMonthlyCashFlow(year: ${this.props.year}, month: ${this.props.month}) {
@@ -74,8 +87,8 @@ class CashFlow extends React.Component<Props, State> {
       `
     }).then(value => {
       this.setState({
-        debits: this.getDebitTags(value.data.getMonthlyCashFlow),
-        credits: this.getCreditTags(value.data.getMonthlyCashFlow)
+        debits: this.toDebitCashFlowModel(value.data),
+        credits: this.toCreditCashFlowModel(value.data)
       });
     });
   }
@@ -83,20 +96,33 @@ class CashFlow extends React.Component<Props, State> {
   render() {
     return (
       <div className="cash-flow">
-        <Graph debits={this.state.credits} credits={this.state.debits} />
-        <Values debits={this.state.credits} credits={this.state.debits} />
+        <Graph debits={this.state.debits} credits={this.state.credits} />
+        {/* <Criteria /> */}
+        <Values debits={this.state.debits} credits={this.state.credits} />
       </div>
     );
   }
 
-  private getDebitTags(data: CashFlowModel): CashTagsModel[] {
-    return data.debitListings
-          .map(listing => new CashTagsModel(this.toDate(data.startAt), this.toDate(data.endAt), listing.tags, listing.amount));
+  private toDebitCashFlowModel(data: CashFlowResponse): CashFlowModel[] {
+    var cashFlow = data.getMonthlyCashFlow;
+
+    return cashFlow.debitListings.map(listing => new CashFlowModel(
+        this.toDate(cashFlow.startAt),
+        this.toDate(cashFlow.endAt),
+        listing.tags,
+        listing.amount)
+      );
   }
 
-  private getCreditTags(data: CashFlowModel): CashTagsModel[] {
-    return data.creditListings
-          .map(listing => new CashTagsModel(this.toDate(data.startAt), this.toDate(data.endAt), listing.tags, listing.amount));
+  private toCreditCashFlowModel(data: CashFlowResponse): CashFlowModel[] {
+    var cashFlow = data.getMonthlyCashFlow;
+
+    return cashFlow.creditListings.map(listing => new CashFlowModel(
+        this.toDate(cashFlow.startAt),
+        this.toDate(cashFlow.endAt),
+        listing.tags,
+        listing.amount)
+      );
   }
 
   private toDate(input: string): Date {

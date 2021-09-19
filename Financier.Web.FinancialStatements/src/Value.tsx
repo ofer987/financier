@@ -1,15 +1,20 @@
 import * as React from "react";
+import _  from "underscore";
 import Listing from "./Listing";
-import CashFlowModel from "./CashFlowModel";
 
-class Value extends React.Component<CashFlowModel> {
+interface Props {
+  debit: Listing;
+  credit: Listing;
+}
+
+class Value extends React.Component<Props> {
   render() {
     return (
       <div id={this.name} key={this.name}>
         <div className="name">
           {this.name}
         </div>
-        <div className="credits">
+        <div className="credit">
           {this.props.credit.amount}
         </div>
         <div className="debit">
@@ -23,12 +28,8 @@ class Value extends React.Component<CashFlowModel> {
     var tags = this.props.credit.tags.concat(
       this.props.debit.tags);
 
-    return tags.join("-");
-  }
-
-  get at(): string {
-    return `${this.props.startAt.getFullYear()}-${this.props.endAt.getMonth()}`;
+    return _.uniq(tags).join("-");
   }
 }
 
-export default CashTags;
+export default Value;

@@ -1,4 +1,4 @@
-import Listing from "./CashFlowModel/Listing";
+import Listing from "./Listing";
 
 class NullListing implements Listing {
   tags: string[];

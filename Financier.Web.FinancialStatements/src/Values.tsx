@@ -1,13 +1,15 @@
 import * as React from "react";
-import _, { uniq } from "underscore";
+import _ from "underscore";
 import Value from "./Value";
 import Listing from "./Listing";
-import CashTagsModel from "./CashTagsModel";
-import ValueProps from "./CashFlowProps"
 import NullListing from "./NullListing";
 
-class Values extends React.Component<ValueProps> {
+interface Props {
+  debits: Listing[];
+  credits: Listing[];
+}
 
+class Values extends React.Component<Props> {
   get allTags(): string[][] {
     var creditTags = this.props.credits.map(item => item.tags);
     var debitTags = this.props.debits.map(item => item.tags);
@@ -30,9 +32,14 @@ class Values extends React.Component<ValueProps> {
   render() {
     return (
       <div className="values">
-        {this.allTags.map(tags => <Value debit={this.findListingByTags(this.props.debits, tags)} credits={this.findListingByTags(this.props.credits, tags)} />
+        <div className="name">Name</div>
+        <div className="credits">Credits</div>
+        <div className="Debits">Debits</div>
+        {this.allTags.map(tags => <Value debit={this.findListingByTags(this.props.debits, tags)} credit={this.findListingByTags(this.props.credits, tags)} />
         )}
       </div>
     );
   }
 }
+
+export default Values;
