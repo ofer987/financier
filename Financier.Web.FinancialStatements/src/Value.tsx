@@ -1,6 +1,6 @@
 import * as React from "react";
 import _  from "underscore";
-import Listing from "./Listing";
+import { Listing } from "./Listing";
 
 interface Props {
   debit: Listing;

@@ -1,16 +1,12 @@
-import Listing from "./Listing";
+import { Listing } from "./Listing";
 
 class NullListing implements Listing {
-  tags: string[];
-  amount: number;
+  public tags = []
+  public amount = 0;
+  public expenseType = undefined;
 
   get isNull(): boolean {
     return true;
-  }
-
-  constructor() {
-    this.tags = [];
-    this.amount = 0;
   }
 }
 

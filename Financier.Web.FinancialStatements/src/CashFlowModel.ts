@@ -1,19 +1,21 @@
-import Listing from "./Listing";
+import { Listing, ExpenseTypes } from "./Listing";
 
 class CashFlowModel implements Listing {
-  startAt: Date;
-  endAt: Date;
-  tags: string[];
-  amount: number;
+  public startAt: Date;
+  public endAt: Date;
+  public tags: string[];
+  public amount: number;
+  public expenseType: ExpenseTypes;
 
   get isNull(): boolean {
     return false;
   }
 
-  constructor(startAt: Date, endAt: Date, tags: { name: string }[], amount: number) {
+  constructor(startAt: Date, endAt: Date, tags: { name: string }[], amount: number, expenseType: ExpenseTypes) {
     this.startAt = startAt;
     this.endAt = endAt;
     this.amount = amount;
+    this.expenseType = expenseType;
 
     this.init(tags);
   }

@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from "d3-time-format";
 import Values from "./Values";
 import CashFlowModel from "./CashFlowModel";
-import Listing from "./Listing";
+import { Listing, ExpenseTypes } from "./Listing";
 import { Graph } from "./Graph";
 import {
   ApolloClient,
@@ -107,22 +107,24 @@ class CashFlow extends React.Component<Props, State> {
     var cashFlow = data.getMonthlyCashFlow;
 
     return cashFlow.debitListings.map(listing => new CashFlowModel(
-        this.toDate(cashFlow.startAt),
-        this.toDate(cashFlow.endAt),
-        listing.tags,
-        listing.amount)
-      );
+      this.toDate(cashFlow.startAt),
+      this.toDate(cashFlow.endAt),
+      listing.tags,
+      listing.amount,
+      ExpenseTypes.Debit
+    ));
   }
 
   private toCreditCashFlowModel(data: CashFlowResponse): CashFlowModel[] {
     var cashFlow = data.getMonthlyCashFlow;
 
     return cashFlow.creditListings.map(listing => new CashFlowModel(
-        this.toDate(cashFlow.startAt),
-        this.toDate(cashFlow.endAt),
-        listing.tags,
-        listing.amount)
-      );
+      this.toDate(cashFlow.startAt),
+      this.toDate(cashFlow.endAt),
+      listing.tags,
+      listing.amount,
+      ExpenseTypes.Credit
+    ));
   }
 
   private toDate(input: string): Date {
