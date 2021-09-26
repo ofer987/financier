@@ -170,6 +170,7 @@ class CashFlow extends React.Component<Props, State> {
   renderCriteria() {
     return (
       <div className="criteria">
+        <h2>Please Select</h2>
         {
           this.tags().map(tag =>
           <div className="checkbox">
@@ -185,8 +186,10 @@ class CashFlow extends React.Component<Props, State> {
   render() {
     return (
       <div className="cash-flow">
-        <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
-        {this.renderCriteria()}
+        <div className="better-together">
+          {this.renderCriteria()}
+          <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+        </div>
         <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
       </div>
     );
