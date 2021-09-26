@@ -23,7 +23,8 @@ class Values extends FilterableController {
           <div className="debits">Debits</div>
         </div>
         <div className="items">
-          {this.enabledTags.map(tags => <Value debit={this.findListingByTags(this.props.debits, tags)} credit={this.findListingByTags(this.props.credits, tags)} />)}
+          {this.enabledCredits.map(listing => <Value debit={new NullListing()} credit={listing} />)}
+          {this.enabledDebits.map(listing => <Value debit={listing} credit={new NullListing()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
