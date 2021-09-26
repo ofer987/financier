@@ -10,7 +10,12 @@ import FilterableController from "./FilterableController";
 
 class Graph extends FilterableController {
   componentDidUpdate() {
-    const data = this.props.credits.concat(this.props.debits);
+    const data = this.enabledCredits.concat(this.enabledDebits);
+
+    // Remove existing chart elements (if exist)
+    document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
+
+    // Recreate chart elements
     this.chart(data);
   }
 
