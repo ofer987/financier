@@ -13,6 +13,18 @@ interface Props {
 }
 
 class Values extends FilterableController {
+  decimalCount = 2;
+
+  get accountingFormattedProfit(): string {
+    const profit = (this.totalCredits - this.totalDebits);
+
+    if (profit >= 0) {
+      return profit.toFixed(this.decimalCount);
+    }
+
+    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+  }
+
   render() {
     return (
       <div className="values">
@@ -21,6 +33,7 @@ class Values extends FilterableController {
           <div className="name">Name</div>
           <div className="credits">Credits</div>
           <div className="debits">Debits</div>
+          <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
           {this.enabledCredits.map(listing => <Value debit={new NullListing()} credit={listing} />)}
@@ -28,8 +41,9 @@ class Values extends FilterableController {
         </div>
         <div className="total">
           <div className="name">Total</div>
-          <div className="credits">{this.totalCredits.toFixed(2)}</div>
-          <div className="debits">{this.totalDebits.toFixed(2)}</div>
+          <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
+          <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
+          <div className="profit">{this.accountingFormattedProfit}</div>
         </div>
       </div>
     );
