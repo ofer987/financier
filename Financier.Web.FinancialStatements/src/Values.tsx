@@ -7,6 +7,7 @@ import NullListing from "./NullListing";
 interface Props {
   debits: Listing[];
   credits: Listing[];
+  enabledTags: string[];
 }
 
 class Values extends React.Component<Props> {
@@ -14,24 +15,46 @@ class Values extends React.Component<Props> {
     super(props);
   }
 
-  get allTags(): string[][] {
-    var creditTags = this.props.credits.map(item => item.tags);
-    var debitTags = this.props.debits.map(item => item.tags);
+  get enabledTags(): string[][] {
+    const creditTags = this.props.credits.map(item => item.tags);
+    const debitTags = this.props.debits.map(item => item.tags);
 
-    var tags = creditTags.concat(debitTags);
+    let tagsList = creditTags.concat(debitTags);
+    tagsList = _.uniq(tagsList);
+    tagsList = tagsList.filter(tags => {
+      return tags.find(tag => typeof (this.enabledTagNames.find(t => t == tag)) != "undefined");
+    });
 
-    return _.uniq(tags);
+    return tagsList;
+  }
+
+  get enabledTagNames(): string[] {
+    return this.props.enabledTags;
   }
 
   get totalCredits(): number {
-    var amounts = this.props.credits.map(item => item.amount);
+    var amounts = this.props.credits
+      .filter(credit => {
+        const searchedTag = credit.tags
+          .find(tag => _.contains(this.props.enabledTags, tag));
+
+        return typeof (searchedTag) != "undefined";
+      })
+      .map(item => item.amount);
     var amount = 0;
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   get totalDebits(): number {
-    var amounts = this.props.debits.map(item => item.amount);
+    var amounts = this.props.debits
+      .filter(debit => {
+        const searchedTag = debit.tags
+          .find(tag => _.contains(this.props.enabledTags, tag));
+
+        return typeof (searchedTag) != "undefined";
+      })
+      .map(item => item.amount);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
@@ -55,7 +78,7 @@ class Values extends React.Component<Props> {
           <div className="debits">Debits</div>
         </div>
         <div className="items">
-          {this.allTags.map(tags => <Value debit={this.findListingByTags(this.props.debits, tags)} credit={this.findListingByTags(this.props.credits, tags)} />)}
+          {this.enabledTags.map(tags => <Value debit={this.findListingByTags(this.props.debits, tags)} credit={this.findListingByTags(this.props.credits, tags)} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>

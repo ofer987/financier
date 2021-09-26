@@ -10,6 +10,7 @@ import CashFlowModel from "./CashFlowModel";
 interface Props {
   debits: Listing[];
   credits: Listing[];
+  enabledTags: string[];
 }
 
 class Graph extends React.Component<Props> {
@@ -29,7 +30,7 @@ class Graph extends React.Component<Props> {
   margin = {
     top: 30,
     right: 0,
-    bottom: 200,
+    bottom: 100,
     left: 40,
   }
 
