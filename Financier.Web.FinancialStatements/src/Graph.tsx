@@ -6,18 +6,9 @@ import * as d3Format from "d3-format";
 
 import { Listing, ExpenseTypes } from "./Listing";
 import CashFlowModel from "./CashFlowModel";
+import FilterableController from "./FilterableController";
 
-interface Props {
-  debits: Listing[];
-  credits: Listing[];
-  enabledTags: string[];
-}
-
-class Graph extends React.Component<Props> {
-  constructor(props) {
-    super(props);
-  }
-
+class Graph extends FilterableController {
   componentDidUpdate() {
     const data = this.props.credits.concat(this.props.debits);
     this.chart(data);
@@ -32,15 +23,6 @@ class Graph extends React.Component<Props> {
     right: 0,
     bottom: 100,
     left: 40,
-  }
-
-  allTags() {
-    var creditTags = this.props.credits.map(item => item.tags);
-    var debitTags = this.props.debits.map(item => item.tags);
-
-    var tags = creditTags.concat(debitTags);
-
-    return _.uniq(tags);
   }
 
   xScale(data: Listing[]) {

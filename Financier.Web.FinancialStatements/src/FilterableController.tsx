@@ -1,7 +1,9 @@
 import * as React from "react";
 import _ from "underscore";
+
 import Value from "./Value";
 import { Listing } from "./Listing";
+import CashFlowModel from "./CashFlowModel";
 import NullListing from "./NullListing";
 
 interface Props {
@@ -13,6 +15,14 @@ interface Props {
 abstract class FilterableController extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
+  }
+
+  get enabledCredits(): Listing[] {
+    return this.getEnabledListings(this.props.credits);
+  }
+
+  get enabledDebits(): Listing[] {
+    return this.getEnabledListings(this.props.debits);
   }
 
   get enabledTags(): string[][] {
@@ -67,6 +77,16 @@ abstract class FilterableController extends React.Component<Props> {
     }
 
     return result;
+  }
+
+  private getEnabledListings(listings: Listing[]): Listing[] {
+    return listings
+      .filter(listing => {
+        const tagNames = this.enabledTagNames
+          .filter(tagName => CashFlowModel.hasTag(tagName, listing));
+
+        return tagNames.length > 0;
+      });
   }
 }
 

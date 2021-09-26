@@ -1,3 +1,4 @@
+import _ from "underscore";
 import { Listing, ExpenseTypes } from "./Listing";
 
 class CashFlowModel implements Listing {
@@ -6,6 +7,14 @@ class CashFlowModel implements Listing {
   public tags: string[];
   public amount: number;
   public expenseType: ExpenseTypes;
+
+  static hasTag(tag: string, listing: Listing): boolean {
+    if (_.contains(listing.tags, tag)) {
+      return true;
+    }
+
+    return false;
+  }
 
   get isNull(): boolean {
     return false;
