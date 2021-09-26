@@ -1,10 +1,24 @@
-.graph {
-  .chart {
-    .tick {
-      font-size: 6px;
+.better-together {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
 
-      text {
-        text-anchor: end;
+  margin-bottom: 50px;
+
+  .criteria {
+    width: 25%;
+  }
+
+  .graph {
+    width: 75%;
+
+    .chart {
+      .tick {
+        font-size: 6px;
+
+        text {
+          text-anchor: end;
+        }
       }
     }
   }
@@ -105,5 +119,4 @@
     text-align: left;
 
   }
-
 }

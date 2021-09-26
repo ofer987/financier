@@ -72,6 +72,7 @@ class Values extends React.Component<Props> {
   render() {
     return (
       <div className="values">
+        <h2>Items</h2>
         <div className="header">
           <div className="name">Name</div>
           <div className="credits">Credits</div>
