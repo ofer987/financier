@@ -4,12 +4,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import _ from "underscore";
+import lodash from "lodash";
 import * as d3 from "d3-time-format";
 import Values from "./Values";
 import CashFlowModel from "./CashFlowModel";
 import { Listing, ExpenseTypes } from "./Listing";
 import { Graph } from "./Graph";
-import { Criteria } from "./Criteria";
 import {
   ApolloClient,
   InMemoryCache,
@@ -31,6 +31,12 @@ interface Props {
 class State {
   debits: Listing[];
   credits: Listing[];
+  tags: CheckedTag[];
+}
+
+interface CheckedTag {
+  name: string;
+  checked: boolean;
 }
 
 interface CashFlowResponse {
@@ -60,17 +66,54 @@ class CashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { debits: [], credits: [] };
+    this.state = { debits: [], credits: [], tags: [] };
     this.getData();
   }
 
-  allTags(credits: Listing[], debits: Listing[]) {
+  getAllTags(credits: Listing[], debits: Listing[]): CheckedTag[] {
+    const tagsList = credits.map(listing => listing.tags).concat(debits.map(listing => listing.tags));
+
+    let names = tagsList.flatMap(names => names);
+    names = _.uniq(names);
+
+    return names.map(name => {
+      return {
+        name,
+        checked: false
+      };
+    });
+  }
+
+  enabledTags(): string[] {
+    if (this.state.tags.filter(tag => tag.checked).length == 0) {
+      // alert(`No tags have been selected`);
+
+      return this.state.tags.map(tag => tag.name);
+    }
+
+    // alert(`one tag has been selected`);
+    return this.state.tags
+      .filter(tag => tag.checked)
+      .map(tag => tag.name);
+  }
+
+  allTags(credits: Listing[], debits: Listing[]): string[][] {
     var creditTags = credits.map(item => item.tags);
     var debitTags = debits.map(item => item.tags);
 
     var tags = creditTags.concat(debitTags);
 
     return _.uniq(tags);
+    return tags;
+  }
+
+  tags(): string[] {
+    let results = this.allTags(this.state.credits, this.state.debits)
+      .flatMap(tag => tag.flatMap(t => t));
+    results = _.uniq(results);
+    results = _.sortBy(results);
+
+    return results;
   }
 
   getData(): void {
@@ -97,19 +140,54 @@ class CashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
+      const credits = this.toCreditCashFlowModel(value.data);
+      const debits = this.toDebitCashFlowModel(value.data);
+
       this.setState({
-        debits: this.toDebitCashFlowModel(value.data),
-        credits: this.toCreditCashFlowModel(value.data)
+        credits,
+        debits,
+        tags: this.getAllTags(credits, debits)
       });
     });
+  }
+
+  toggleTag(tag: string): void {
+    // alert(`Tag has been toggled: ${tag}`);
+
+    const currentTags = this.state.tags;
+    const currentTag = currentTags.find(currentTag => currentTag.name == tag);
+    if (typeof (currentTag) != "undefined") {
+      // alert(`Updating the tag ${tag}`);
+      currentTag.checked = !currentTag.checked;
+      // currentTags[currentTag.name] = !currentTag.checked;
+
+      this.setState({
+        tags: currentTags
+      })
+    }
+  }
+
+  renderCriteria() {
+    return (
+      <div className="criteria">
+        {
+          this.tags().map(tag =>
+          <div className="checkbox">
+            <input id={`${tag}`} type="checkbox" name={tag} onClick={() => this.toggleTag(tag)} />
+            <label htmlFor={`${tag}`}>{lodash.startCase(tag)}</label>
+          </div>
+          )
+        }
+      </div>
+    )
   }
 
   render() {
     return (
       <div className="cash-flow">
-        <Graph debits={this.state.debits} credits={this.state.credits} />
-        <Criteria tags={this.allTags(this.state.credits, this.state.debits)} />
-        <Values debits={this.state.debits} credits={this.state.credits} />
+        <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+        {this.renderCriteria()}
+        <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
       </div>
     );
   }
