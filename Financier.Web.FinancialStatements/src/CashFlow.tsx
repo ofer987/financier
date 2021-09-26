@@ -3,11 +3,13 @@
 // import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import _ from "underscore";
 import * as d3 from "d3-time-format";
 import Values from "./Values";
 import CashFlowModel from "./CashFlowModel";
 import { Listing, ExpenseTypes } from "./Listing";
 import { Graph } from "./Graph";
+import { Criteria } from "./Criteria";
 import {
   ApolloClient,
   InMemoryCache,
@@ -47,6 +49,14 @@ interface CashFlowResponse {
 }
 
 class CashFlow extends React.Component<Props, State> {
+  private client = new ApolloClient({
+    uri: "https://localhost:5003/graphql/cash-flows",
+    cache: new InMemoryCache(),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
   constructor(props: Props) {
     super(props);
 
@@ -54,13 +64,14 @@ class CashFlow extends React.Component<Props, State> {
     this.getData();
   }
 
-  client = new ApolloClient({
-    uri: "https://localhost:5003/graphql/cash-flows",
-    cache: new InMemoryCache(),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
+  allTags(credits: Listing[], debits: Listing[]) {
+    var creditTags = credits.map(item => item.tags);
+    var debitTags = debits.map(item => item.tags);
+
+    var tags = creditTags.concat(debitTags);
+
+    return _.uniq(tags);
+  }
 
   getData(): void {
     // Convert to async/await
@@ -97,7 +108,7 @@ class CashFlow extends React.Component<Props, State> {
     return (
       <div className="cash-flow">
         <Graph debits={this.state.debits} credits={this.state.credits} />
-        {/* <Criteria /> */}
+        <Criteria tags={this.allTags(this.state.credits, this.state.debits)} />
         <Values debits={this.state.debits} credits={this.state.credits} />
       </div>
     );
