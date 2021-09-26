@@ -86,12 +86,9 @@ class CashFlow extends React.Component<Props, State> {
 
   enabledTags(): string[] {
     if (this.state.tags.filter(tag => tag.checked).length == 0) {
-      // alert(`No tags have been selected`);
-
       return this.state.tags.map(tag => tag.name);
     }
 
-    // alert(`one tag has been selected`);
     return this.state.tags
       .filter(tag => tag.checked)
       .map(tag => tag.name);
@@ -152,14 +149,10 @@ class CashFlow extends React.Component<Props, State> {
   }
 
   toggleTag(tag: string): void {
-    // alert(`Tag has been toggled: ${tag}`);
-
     const currentTags = this.state.tags;
     const currentTag = currentTags.find(currentTag => currentTag.name == tag);
     if (typeof (currentTag) != "undefined") {
-      // alert(`Updating the tag ${tag}`);
       currentTag.checked = !currentTag.checked;
-      // currentTags[currentTag.name] = !currentTag.checked;
 
       this.setState({
         tags: currentTags
