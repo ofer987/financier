@@ -75,7 +75,7 @@ class Graph extends FilterableController {
       .call(d3.axisBottom(this.xScale(data)).tickFormat(i => i).tickSizeOuter(0))
       .selectAll("text")
       .attr("x", "0")
-      .attr("y", "0")
+      .attr("y", "2")
       .attr("dx", "-10px")
       .attr("dy", "0")
       .attr("transform", "rotate(-90, 0, 0)");
