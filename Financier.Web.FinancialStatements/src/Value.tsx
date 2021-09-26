@@ -21,6 +21,9 @@ class Value extends React.Component<Props> {
         <div className="debit">
           {this.debitAmount}
         </div>
+        <div className="profit">
+          {/* Left empty on purpose */}
+        </div>
       </div>
     )
   }
