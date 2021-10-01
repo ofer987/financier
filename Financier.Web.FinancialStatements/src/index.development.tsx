@@ -3,10 +3,10 @@
 // import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import CashFlow from "./CashFlow";
+import MonthlyCashFlow from "./MonthlyCashFlow";
 
 // CSS
 import "./index.scss";
 
 var root = document.querySelector(".root");
-ReactDOM.render(<CashFlow year={2019} month={1} />, root);
+ReactDOM.render(<MonthlyCashFlow year={2019} />, root);
