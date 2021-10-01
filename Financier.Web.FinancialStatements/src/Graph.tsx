@@ -1,5 +1,6 @@
 import * as React from "react";
 import _ from "underscore";
+import lodash from "lodash";
 import * as d3 from "d3";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
@@ -9,17 +10,6 @@ import CashFlowModel from "./CashFlowModel";
 import FilterableController from "./FilterableController";
 
 class Graph extends FilterableController {
-  componentDidUpdate() {
-    const data = this.enabledCredits.concat(this.enabledDebits);
-
-    // Remove existing chart elements (if exist)
-    document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
-
-    // Recreate chart elements
-    this.chart(data);
-  }
-
-  debits: Listing[];
   width = 400;
   height = 400;
 
@@ -30,21 +20,39 @@ class Graph extends FilterableController {
     left: 40,
   }
 
-  xScale(data: Listing[]) {
+  componentDidUpdate() {
+    const data = this.enabledCredits.concat(this.enabledDebits);
+
+    // Remove existing chart elements (if exist)
+    document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
+
+    // Recreate chart elements
+    this.chart(data);
+  }
+
+  render() {
+    return (
+      <div className="graph">
+        <svg className="chart" />
+      </div>
+    );
+  }
+
+  private xScale(data: Listing[]) {
     return d3.scaleBand()
-      .domain(data.map(item => item.tags.join(", ")))
+      .domain(data.map(item => this.convertToStartCaseNames(item.tags)))
       .range([this.margin.left, this.width - this.margin.right])
       .padding(0.1);
   }
 
-  yScale(data: Listing[]) {
+  private yScale(data: Listing[]) {
     return d3.scaleLinear()
       .domain([0, d3.max(data, d =>  d.amount)])
       .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
-  chart(values: Listing[]) {
+  private chart(values: Listing[]) {
     const data = values;
 
     if (data.length == 0) {
@@ -59,7 +67,7 @@ class Graph extends FilterableController {
       .data(data)
       .join("rect")
       .attr("fill", (d) => this.colour(d.expenseType))
-      .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
+      .attr("x", (d, i) => this.xScale(data)(this.convertToStartCaseNames(d.tags)))
       .attr("y", d => this.yScale(data)(d.amount))
       .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
       .attr("width", this.xScale(data).bandwidth());
@@ -81,7 +89,7 @@ class Graph extends FilterableController {
       .attr("transform", "rotate(-90, 0, 0)");
   }
 
-  colour(expenseType: ExpenseTypes) {
+  private colour(expenseType: ExpenseTypes) {
     switch (expenseType) {
       case ExpenseTypes.Credit:
       return "black";
@@ -90,16 +98,14 @@ class Graph extends FilterableController {
     }
   }
 
-  render() {
-    return (
-      <div className="graph">
-        <svg className="chart" />
-      </div>
-    );
-  }
-
   private createUniqueKey(item: CashFlowModel): string {
     return item.tags.join("-");
+  }
+
+  private convertToStartCaseNames(names: string[]): string {
+    return names
+      .map(name => lodash.startCase(name))
+      .join(", ");
   }
 };
 
