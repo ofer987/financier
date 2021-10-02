@@ -40,7 +40,7 @@ class Graph extends FilterableController {
 
   private xScale(data: Listing[]) {
     return d3.scaleBand()
-      .domain(data.map(item => this.convertToStartCaseNames(item.tags)))
+      .domain(data.map(item => item.tags.join(", ")))
       .range([this.margin.left, this.width - this.margin.right])
       .padding(0.1);
   }
@@ -67,7 +67,7 @@ class Graph extends FilterableController {
       .data(data)
       .join("rect")
       .attr("fill", (d) => this.colour(d.expenseType))
-      .attr("x", (d, i) => this.xScale(data)(this.convertToStartCaseNames(d.tags)))
+      .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
       .attr("y", d => this.yScale(data)(d.amount))
       .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
       .attr("width", this.xScale(data).bandwidth());
@@ -100,12 +100,6 @@ class Graph extends FilterableController {
 
   private createUniqueKey(item: CashFlowModel): string {
     return item.tags.join("-");
-  }
-
-  private convertToStartCaseNames(names: string[]): string {
-    return names
-      .map(name => lodash.startCase(name))
-      .join(", ");
   }
 };
 

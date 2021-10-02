@@ -1,4 +1,6 @@
 import _ from "underscore";
+import lodash from "lodash";
+
 import { Listing, ExpenseTypes } from "./Listing";
 
 class CashFlowModel implements Listing {
@@ -30,7 +32,9 @@ class CashFlowModel implements Listing {
   }
 
   init(values: { name: string }[]): void {
-    this.tags = values.map(values => values.name);
+    this.tags = values
+      .map(values => values.name)
+      .map(name => lodash.startCase(name));
   }
 }
 
