@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
-import Values from "./Values";
+import MonthlyValues from "./MonthlyValues";
 import MonthlyCashFlowModel from "./MonthlyCashFlowModel";
 import { Listing, ExpenseTypes } from "./Listing";
 import { MonthlyGraph } from "./MonthlyGraph";
@@ -117,7 +117,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
-          getMonthlyCashFlows(year: ${this.props.year}}) {
+          getMonthlyCashFlows(year: ${this.props.year}) {
             startAt
             endAt
             debitListings {
@@ -130,13 +130,14 @@ class MonthlyCashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
+      console.log(value.data.getMonthlyCashFlows.length);
       const credits = this.toCreditCashFlowModel(value.data);
       const debits = this.toDebitCashFlowModel(value.data);
+      console.log(`1: ${credits.length}, ${debits.length}`);
 
       this.setState({
         credits,
-        debits,
-        tags: this.getAllTags(credits, debits)
+        debits
       });
     });
   }
@@ -173,9 +174,9 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     return (
       <div className="cash-flow">
         <div className="better-together">
-          <MontlyGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+          <MonthlyGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
         </div>
-        <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+        <MonthlyValues debits={this.state.debits} credits={this.state.credits} enabledTags={[]} />
       </div>
     );
   }
@@ -187,10 +188,10 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       const date = this.toDate(cashFlow.startAt)
       const year = date.getFullYear();
       const month = date.getMonth();
-      const creditAmounts = cashFlow.debitListings.map(listing => listing.amount);
+      const amounts = cashFlow.debitListings.map(listing => listing.amount);
 
       let total = 0;
-      total = _.reduce(creditAmounts, (t, amount) => t + amount);
+      total = _.reduce(amounts, (t, amount) => t + amount);
 
       return new MonthlyCashFlowModel(year, month, total, ExpenseTypes.Debit);
     });
@@ -203,10 +204,10 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       const date = this.toDate(cashFlow.startAt)
       const year = date.getFullYear();
       const month = date.getMonth();
-      const creditAmounts = cashFlow.creditListings.map(listing => listing.amount);
+      const amounts = cashFlow.creditListings.map(listing => listing.amount);
 
       let total = 0;
-      total = _.reduce(creditAmounts, (t, amount) => t + amount);
+      total = _.reduce(amounts, (t, amount) => t + amount);
 
       return new MonthlyCashFlowModel(year, month, total, ExpenseTypes.Credit);
     });

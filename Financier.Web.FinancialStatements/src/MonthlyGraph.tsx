@@ -21,7 +21,7 @@ class MonthlyGraph extends FilterableController {
   }
 
   componentDidUpdate() {
-    const data = this.enabledCredits.concat(this.enabledDebits);
+    const data = this.props.credits.concat(this.props.debits);
 
     // Remove existing chart elements (if exist)
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
@@ -40,7 +40,7 @@ class MonthlyGraph extends FilterableController {
 
   private xScale(data: Listing[]) {
     return d3.scaleBand()
-      .domain(data.map(item => this.convertToStartCaseNames(item.tags)))
+      .domain(data.map(item => this.getName(item)))
       .range([this.margin.left, this.width - this.margin.right])
       .padding(0.1);
   }
@@ -67,7 +67,7 @@ class MonthlyGraph extends FilterableController {
       .data(data)
       .join("rect")
       .attr("fill", (d) => this.colour(d.expenseType))
-      .attr("x", (d, i) => this.xScale(data)(this.convertToStartCaseNames(d.tags)))
+      .attr("x", (d, i) => this.xScale(data)(this.getName(d)))
       .attr("y", d => this.yScale(data)(d.amount))
       .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
       .attr("width", this.xScale(data).bandwidth());
@@ -89,6 +89,10 @@ class MonthlyGraph extends FilterableController {
       .attr("transform", "rotate(-90, 0, 0)");
   }
 
+  private getName(item: Listing): string {
+    return `${item.startAt.getFullYear()} - ${item.startAt.getMonth() + 1}`;
+  }
+
   private colour(expenseType: ExpenseTypes) {
     switch (expenseType) {
       case ExpenseTypes.Credit:
@@ -99,11 +103,7 @@ class MonthlyGraph extends FilterableController {
   }
 
   private createUniqueKey(at: Date): string {
-    return `${at.getFullYear()}-${at.getMonth()}`;
-  }
-
-  private convertToStartCaseNames(at: Date): number {
-    return at.getMonth();
+    return `${at.getFullYear()}-${at.getMonth() + 1}`;
   }
 };
 
