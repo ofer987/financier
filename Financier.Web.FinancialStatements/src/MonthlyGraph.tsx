@@ -4,6 +4,7 @@ import lodash from "lodash";
 import * as d3 from "d3";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
+import * as d3TimeFormat from "d3-time-format";
 
 import { Listing, ExpenseTypes } from "./Listing";
 import CashFlowModel from "./CashFlowModel";
@@ -90,7 +91,10 @@ class MonthlyGraph extends FilterableController {
   }
 
   private getName(item: Listing): string {
-    return `${item.startAt.getFullYear()} - ${item.startAt.getMonth() + 1}`;
+    const year = item.startAt.getFullYear();
+    const month = d3TimeFormat.timeFormat("%B")(item.startAt);
+
+    return `${year} - ${month}`;
   }
 
   private colour(expenseType: ExpenseTypes) {
