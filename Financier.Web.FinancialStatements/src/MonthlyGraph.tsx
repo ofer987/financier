@@ -10,7 +10,17 @@ import { Listing, ExpenseTypes } from "./Listing";
 import CashFlowModel from "./CashFlowModel";
 import FilterableController from "./FilterableController";
 
-class MonthlyGraph extends FilterableController {
+interface Props {
+  dates: Prop[];
+}
+
+interface Prop {
+  at: Date;
+  credit: Listing;
+  debit: Listing;
+}
+
+class MonthlyGraph extends React.Component<Props> {
   width = 400;
   height = 400;
 
@@ -22,13 +32,13 @@ class MonthlyGraph extends FilterableController {
   }
 
   componentDidUpdate() {
-    const data = this.props.credits.concat(this.props.debits);
+    const data = this.props;
 
     // Remove existing chart elements (if exist)
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    this.chart(data);
+    this.chart(data.dates);
   }
 
   render() {
@@ -39,21 +49,25 @@ class MonthlyGraph extends FilterableController {
     );
   }
 
-  private xScale(data: Listing[]) {
-    return d3.scaleBand()
-      .domain(data.map(item => this.getName(item)))
-      .range([this.margin.left, this.width - this.margin.right])
-      .padding(0.1);
+  private xScale(data: Prop[]) {
+    return d3.scaleUtc()
+      .domain(d3.extent(data, d => d.at))
+      .range([this.margin.left, this.width - this.margin.right]);
+      // .padding(0.1);
   }
 
-  private yScale(data: Listing[]) {
+  private yScale(data: Prop[]) {
     return d3.scaleLinear()
-      .domain([0, d3.max(data, d =>  d.amount)])
+      .domain([0, d3.max(data.map(d => d.credit.amount), d => d)])
       .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
-  private chart(values: Listing[]) {
+  private line(data: Prop[]) {
+    return d3.line((d, index, ds) => index, (d, index, ds) => index);
+  }
+
+  private chart(values: Prop[]) {
     const data = values;
 
     if (data.length == 0) {
@@ -63,36 +77,48 @@ class MonthlyGraph extends FilterableController {
     const svg = d3.select("svg.chart");
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    svg.append("g")
-      .selectAll("rect")
-      .data(data)
-      .join("rect")
-      .attr("fill", (d) => this.colour(d.expenseType))
-      .attr("x", (d, i) => this.xScale(data)(this.getName(d)))
-      .attr("y", d => this.yScale(data)(d.amount))
-      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
-      .attr("width", this.xScale(data).bandwidth());
+    // TODO: Convert to a Line Chart
+    // https://observablehq.com/@d3/line-chart
+    svg.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("d", (d) => this.line(d[0]));
+      // .attr("x", (d, i) => this.xScale(data)(this.getName(d)))
+      // .attr("y", d => this.yScale(data)(d.amount))
+      // .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
+      // .attr("width", this.xScale(data).bandwidth());
 
     svg.append("g")
       .attr("class", "y-axis")
       .attr("transform", `translate(${this.margin.left},0)`)
-      .call(d3.axisLeft(this.yScale(data)).tickFormat(d3Format.format("5")))
+      .call(d3.axisLeft(this.yScale(data)))
+      .call(g => g.select(".domain").remove())
+      .call(g => g.select(".tick:last-of-type text").clone()
+        .attr("x", 3)
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .text((_element, d) => d)
+      );
 
     svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-      .call(d3.axisBottom(this.xScale(data)).tickFormat(i => i).tickSizeOuter(0))
-      .selectAll("text")
-      .attr("x", "0")
-      .attr("y", "2")
-      .attr("dx", "-10px")
-      .attr("dy", "0")
-      .attr("transform", "rotate(-90, 0, 0)");
+      .call(d3.axisBottom(this.xScale(data)).ticks(this.width / 80).tickSizeOuter(0));
+      // .selectAll("text")
+      // .attr("x", "0")
+      // .attr("y", "2")
+      // .attr("dx", "-10px")
+      // .attr("dy", "0")
+      // .attr("transform", "rotate(-90, 0, 0)");
   }
 
-  private getName(item: Listing): string {
-    const year = item.startAt.getFullYear();
-    const month = d3TimeFormat.timeFormat("%B")(item.startAt);
+  private getName(at: Date): string {
+    const year = at.getFullYear();
+    const month = d3TimeFormat.timeFormat("%B")(at);
 
     return `${year} - ${month}`;
   }

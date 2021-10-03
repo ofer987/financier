@@ -36,6 +36,7 @@ class MonthlyValues extends FilterableController {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
+          { /* TODO: Display credits and debits should be children of dates (ats) */ }
           {this.props.credits.map(listing => <MonthlyValue debit={new NullListing()} credit={listing} at={listing.startAt} />)}
           {this.props.debits.map(listing => <MonthlyValue debit={listing} credit={new NullListing()} at={listing.startAt} />)}
         </div>

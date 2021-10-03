@@ -21,8 +21,6 @@ import {
 // CSS
 import "./index.scss";
 
-// 1. Use a service to retrieve CashFLowItems using GraphQL
-
 interface Props {
   year: number;
 }
