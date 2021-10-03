@@ -6,10 +6,10 @@ import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 
 import { Listing, ExpenseTypes } from "./Listing";
-import CashFlowModel from "./CashFlowModel";
+import DetailedListing from "./DetailedListing";
 import FilterableController from "./FilterableController";
 
-class Graph extends FilterableController {
+class DetailedGraph extends FilterableController {
   width = 400;
   height = 400;
 
@@ -98,9 +98,9 @@ class Graph extends FilterableController {
     }
   }
 
-  private createUniqueKey(item: CashFlowModel): string {
+  private createUniqueKey(item: DetailedListing): string {
     return item.tags.join("-");
   }
 };
 
-export { Graph };
+export { DetailedGraph };

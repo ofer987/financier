@@ -3,7 +3,7 @@ import lodash from "lodash";
 
 import { Listing, ExpenseTypes } from "./Listing";
 
-class CashFlowModel implements Listing {
+class DetailedListing implements Listing {
   public startAt: Date;
   public endAt: Date;
   public tags: string[];
@@ -36,6 +36,10 @@ class CashFlowModel implements Listing {
       .map(values => values.name)
       .map(name => lodash.startCase(name));
   }
+
+  toString(): string {
+    return this.tags.join("-");
+  }
 }
 
-export default CashFlowModel;
+export default DetailedListing;

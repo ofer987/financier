@@ -7,9 +7,9 @@ import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
 import MonthlyValues from "./MonthlyValues";
-import MonthlyCashFlowModel from "./MonthlyCashFlowModel";
+import MonthlyListing from "./MonthlyListing";
 import { Listing, ExpenseTypes } from "./Listing";
-import { MonthlyGraph } from "./MonthlyGraph";
+import { MonthlyGraph, MonthlyProp } from "./MonthlyGraph";
 import {
   ApolloClient,
   InMemoryCache,
@@ -21,16 +21,8 @@ import {
 // CSS
 import "./index.scss";
 
-// 1. Use a service to retrieve CashFLowItems using GraphQL
-
 interface Props {
   year: number;
-}
-
-class State {
-  debits: Listing[];
-  credits: Listing[];
-  tags: CheckedTag[];
 }
 
 interface CheckedTag {
@@ -53,7 +45,11 @@ interface CashFlowResponse {
   ]
 }
 
-class MonthlyCashFlow extends React.Component<Props, State> {
+class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
+  get year(): number {
+    return this.props.year;
+  }
+
   private client = new ApolloClient({
     uri: "https://localhost:5003/graphql/cash-flows",
     cache: new InMemoryCache(),
@@ -65,59 +61,27 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { debits: [], credits: [], tags: [] };
-    this.getData();
+    // this.state = { 
+    //   getMonthlyCashFlows: [{
+    //     startAt: "",
+    //     endAt: "",
+    //     debitListings: {
+    //       amount: 0
+    //     }[],
+    //     creditListings: {
+    //       amount: 0
+    //     }
+    //   }]
+    // };
+    this.fetchData();
   }
 
-  getAllTags(credits: Listing[], debits: Listing[]): CheckedTag[] {
-    const tagsList = credits.map(listing => listing.tags).concat(debits.map(listing => listing.tags));
-
-    let names = tagsList.flatMap(names => names);
-    names = _.uniq(names);
-
-    return names.map(name => {
-      return {
-        name,
-        checked: false
-      };
-    });
-  }
-
-  enabledTags(): string[] {
-    if (this.state.tags.filter(tag => tag.checked).length == 0) {
-      return this.state.tags.map(tag => tag.name);
-    }
-
-    return this.state.tags
-      .filter(tag => tag.checked)
-      .map(tag => tag.name);
-  }
-
-  allTags(credits: Listing[], debits: Listing[]): string[][] {
-    var creditTags = credits.map(item => item.tags);
-    var debitTags = debits.map(item => item.tags);
-
-    var tags = creditTags.concat(debitTags);
-
-    return _.uniq(tags);
-    return tags;
-  }
-
-  tags(): string[] {
-    let results = this.allTags(this.state.credits, this.state.debits)
-      .flatMap(tag => tag.flatMap(t => t));
-    results = _.uniq(results);
-    results = _.sortBy(results);
-
-    return results;
-  }
-
-  getData(): void {
+  fetchData(): void {
     // Convert to async/await
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
-          getMonthlyCashFlows(year: ${this.props.year}) {
+          getMonthlyCashFlows(year: ${this.year}) {
             startAt
             endAt
             debitListings {
@@ -135,48 +99,33 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       const debits = this.toDebitCashFlowModel(value.data);
       console.log(`1: ${credits.length}, ${debits.length}`);
 
-      this.setState({
-        credits,
-        debits
-      });
+      this.setState(value.data);
     });
   }
 
-  toggleTag(tag: string): void {
-    const currentTags = this.state.tags;
-    const currentTag = currentTags.find(currentTag => currentTag.name == tag);
-    if (typeof (currentTag) != "undefined") {
-      currentTag.checked = !currentTag.checked;
-
-      this.setState({
-        tags: currentTags
-      })
-    }
-  }
-
-  renderCriteria() {
-    return (
-      <div className="criteria">
-        <h2>Please Select</h2>
-        {
-          this.tags().map(tag =>
-          <div className="checkbox">
-            <input id={`${tag}`} type="checkbox" name={tag} onClick={() => this.toggleTag(tag)} />
-            <label htmlFor={`${tag}`}>{lodash.startCase(tag)}</label>
-          </div>
-          )
-        }
-      </div>
-    )
-  }
+  // renderCriteria() {
+  //   return (
+  //     <div className="criteria">
+  //       <h2>Please Select</h2>
+  //       {
+  //         this.tags().map(tag =>
+  //         <div className="checkbox">
+  //           <input id={`${tag}`} type="checkbox" name={tag} onClick={() => this.toggleTag(tag)} />
+  //           <label htmlFor={`${tag}`}>{lodash.startCase(tag)}</label>
+  //         </div>
+  //         )
+  //       }
+  //     </div>
+  //   )
+  // }
 
   render() {
     return (
       <div className="cash-flow">
         <div className="better-together">
-          <MonthlyGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+          <MonthlyGraph dates={this.toDates(this.state)} />
         </div>
-        <MonthlyValues debits={this.state.debits} credits={this.state.credits} enabledTags={[]} />
+        <MonthlyValues dates={this.toDates(this.state)} />
       </div>
     );
   }
@@ -193,7 +142,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       let total = 0;
       total = _.reduce(amounts, (t, amount) => t + amount);
 
-      return new MonthlyCashFlowModel(year, month, total, ExpenseTypes.Debit);
+      return new MonthlyListing(year, month, total, ExpenseTypes.Debit);
     });
   }
 
@@ -209,7 +158,32 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       let total = 0;
       total = _.reduce(amounts, (t, amount) => t + amount);
 
-      return new MonthlyCashFlowModel(year, month, total, ExpenseTypes.Credit);
+      return new MonthlyListing(year, month, total, ExpenseTypes.Credit);
+    });
+  }
+
+  private toDates(data: CashFlowResponse): MonthlyProp[] {
+    if (!data) {
+      return [];
+    }
+
+    const monthlyCashFlows = data.getMonthlyCashFlows;
+
+    return monthlyCashFlows.map(item => {
+      const date = this.toDate(item.startAt)
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const creditAmounts = item.creditListings.map(listing => listing.amount);
+      const debitAmounts = item.debitListings.map(listing => listing.amount);
+
+      const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount);
+      const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount);
+
+      return {
+        at: date,
+        credit: new MonthlyListing(year, month, creditTotal, ExpenseTypes.Credit),
+        debit: new MonthlyListing(year, month, debitTotal, ExpenseTypes.Debit)
+      }
     });
   }
 

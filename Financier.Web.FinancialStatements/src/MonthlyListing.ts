@@ -1,7 +1,7 @@
 import _ from "underscore";
 import { Listing, ExpenseTypes } from "./Listing";
 
-class MonthlyCashFlowModel implements Listing {
+class DetailedListing implements Listing {
   public startAt: Date;
   public endAt: Date;
   public tags: string[];
@@ -19,6 +19,10 @@ class MonthlyCashFlowModel implements Listing {
     this.expenseType = expenseType;
     this.tags = [];
   }
+
+  toString(): string {
+    return this.startAt.toString();
+  }
 }
 
-export default MonthlyCashFlowModel;
+export default DetailedListing;
