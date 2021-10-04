@@ -5,15 +5,22 @@ import MonthlyValue from "./MonthlyValue";
 import { Listing } from "./Listing";
 import NullListing from "./NullListing";
 import FilterableController from "./FilterableController";
+import { MonthlyProps, MonthlyProp } from "./MonthlyGraph";
 
-interface Props {
-  debits: Listing[];
-  credits: Listing[];
-  enabledTags: string[];
-}
-
-class MonthlyValues extends FilterableController {
+class MonthlyValues extends React.Component<MonthlyProps> {
   decimalCount = 2;
+
+  get totalCredits(): number {
+    var amounts = this.props.dates.map(item => item.credit.amount);
+
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  get totalDebits(): number {
+    var amounts = this.props.dates.map(item => item.debit.amount);
+
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
 
   get accountingFormattedProfit(): string {
     const profit = (this.totalCredits - this.totalDebits);
@@ -37,8 +44,7 @@ class MonthlyValues extends FilterableController {
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
-          {this.props.credits.map(listing => <MonthlyValue debit={new NullListing()} credit={listing} at={listing.startAt} />)}
-          {this.props.debits.map(listing => <MonthlyValue debit={listing} credit={new NullListing()} at={listing.startAt} />)}
+          {this.props.dates.map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>

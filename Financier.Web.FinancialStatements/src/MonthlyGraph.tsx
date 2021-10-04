@@ -10,17 +10,17 @@ import { Listing, ExpenseTypes } from "./Listing";
 import CashFlowModel from "./CashFlowModel";
 import FilterableController from "./FilterableController";
 
-interface Props {
-  dates: Prop[];
+interface MonthlyProps {
+  dates: MonthlyProp[];
 }
 
-interface Prop {
+interface MonthlyProp {
   at: Date;
   credit: Listing;
   debit: Listing;
 }
 
-class MonthlyGraph extends React.Component<Props> {
+class MonthlyGraph extends React.Component<MonthlyProps> {
   width = 400;
   height = 400;
 
@@ -38,7 +38,7 @@ class MonthlyGraph extends React.Component<Props> {
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    this.chart(data.dates);
+    // this.chart(data.dates);
   }
 
   render() {
@@ -49,25 +49,25 @@ class MonthlyGraph extends React.Component<Props> {
     );
   }
 
-  private xScale(data: Prop[]) {
-    return d3.scaleUtc()
+  private xScale(data: MonthlyProp[]) {
+    return d3.scaleTime()
       .domain(d3.extent(data, d => d.at))
       .range([this.margin.left, this.width - this.margin.right]);
       // .padding(0.1);
   }
 
-  private yScale(data: Prop[]) {
+  private yScale(data: MonthlyProp[]) {
     return d3.scaleLinear()
       .domain([0, d3.max(data.map(d => d.credit.amount), d => d)])
       .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
-  private line(data: Prop[]) {
+  private line(data: MonthlyProp[]) {
     return d3.line((d, index, ds) => index, (d, index, ds) => index);
   }
 
-  private chart(values: Prop[]) {
+  private chart(values: MonthlyProp[]) {
     const data = values;
 
     if (data.length == 0) {
@@ -86,7 +86,7 @@ class MonthlyGraph extends React.Component<Props> {
       .attr("stroke-width", 1.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("d", (d) => this.line(d[0]));
+      // .attr("d", (d) => this.line(d[0]));
       // .attr("x", (d, i) => this.xScale(data)(this.getName(d)))
       // .attr("y", d => this.yScale(data)(d.amount))
       // .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
@@ -137,4 +137,4 @@ class MonthlyGraph extends React.Component<Props> {
   }
 };
 
-export { MonthlyGraph };
+export { MonthlyGraph, MonthlyProps, MonthlyProp };
