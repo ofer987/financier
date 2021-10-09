@@ -46,14 +46,30 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     });
   }
 
+  private get debits(): Value[] {
+    return this.props.dates.map(item => {
+      return {
+        date: item.at,
+        value: item.debit.amount
+      };
+    });
+  }
+
   componentDidUpdate() {
     const data = this.props;
 
     // Remove existing chart elements (if exist)
-    // document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
+    document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    this.chart();
+    if (this.props.dates.length == 0) {
+      return;
+    }
+
+    this.drawXAxis();
+    this.drawYAxis();
+    this.drawChart(this.credits, "black");
+    this.drawChart(this.debits, "red");
   }
 
   render() {
@@ -65,22 +81,22 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     );
   }
 
+  private get highestValue(): number {
+    return d3.max(this.credits.concat(this.debits).map(d => d.value), d => d);
+  }
+
   private xScale() {
     return d3.scaleTime()
-      .domain(d3.extent(this.credits, d => d.date))
+      .domain(d3.extent(this.props.dates, d => d.at))
       .range([this.margin.left, this.width - this.margin.right]);
   }
 
   private yScale() {
     return d3.scaleLinear()
-      .domain([0, d3.max(this.credits.map(d => d.value), d => d)])
+      .domain([0, this.highestValue])
       .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
-
-  // private line(data: MonthlyProp[]) {
-  //   return d3.line((d, index, ds) => index, (d, index, ds) => index);
-  // }
 
   private myLine() {
     return d3Shape.line()
@@ -88,29 +104,17 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
       .y(d => this.yScale()(d["value"]));
   }
 
-  private chart() {
-    const data = this.credits;
-
-    if (data.length == 0) {
-      return;
-    }
-
+  private drawXAxis() {
     const svg = d3.select("svg.chart");
-    svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    const gaga = d3Shape.line()
-      .x(d => this.xScale()(d["date"]))
-      .y(d => this.yScale()(d["value"]));
+    svg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
+      .call(d3.axisBottom(this.xScale()).ticks(this.width / 80).tickSizeOuter(0));
+  }
 
-    svg.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      // @ts-ignore
-      .attr("d", gaga)
+  private drawYAxis() {
+    const svg = d3.select("svg.chart");
 
     svg.append("g")
       .attr("class", "y-axis")
@@ -118,16 +122,26 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
       .call(d3.axisLeft(this.yScale()))
       .call(g => g.select(".domain").remove())
       .call(g => g.select(".tick:last-of-type text").clone()
-        .attr("x", 3)
+        .attr("y", "-2em")
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
         .text("Amount ($)")
       );
+  }
 
-    svg.append("g")
-      .attr("class", "x-axis")
-      .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-      .call(d3.axisBottom(this.xScale()).ticks(this.width / 80).tickSizeOuter(0));
+  private drawChart(values: Value[], colour: string) {
+    const svg = d3.select("svg.chart");
+    svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
+
+    svg.append("path")
+      .datum(values)
+      .attr("fill", "none")
+      .attr("stroke", colour)
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      // @ts-ignore
+      .attr("d", this.myLine())
   }
 
   private getName(at: Date): string {
