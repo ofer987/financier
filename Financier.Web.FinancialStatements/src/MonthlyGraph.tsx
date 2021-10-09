@@ -2,6 +2,7 @@ import * as React from "react";
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3";
+import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 import * as d3TimeFormat from "d3-time-format";
@@ -20,6 +21,11 @@ interface MonthlyProp {
   debit: Listing;
 }
 
+interface Value {
+  date: Date;
+  value: number;
+}
+
 class MonthlyGraph extends React.Component<MonthlyProps> {
   width = 400;
   height = 400;
@@ -31,44 +37,59 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     left: 40,
   }
 
+  private get credits(): Value[] {
+    return this.props.dates.map(item => {
+      return {
+        date: item.at,
+        value: item.credit.amount
+      };
+    });
+  }
+
   componentDidUpdate() {
     const data = this.props;
 
     // Remove existing chart elements (if exist)
-    document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
+    // document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    // this.chart(data.dates);
+    this.chart();
   }
 
   render() {
     return (
       <div className="graph">
+        <h2>Graph</h2>
         <svg className="chart" />
       </div>
     );
   }
 
-  private xScale(data: MonthlyProp[]) {
+  private xScale() {
     return d3.scaleTime()
-      .domain(d3.extent(data, d => d.at))
+      .domain(d3.extent(this.credits, d => d.date))
       .range([this.margin.left, this.width - this.margin.right]);
-      // .padding(0.1);
   }
 
-  private yScale(data: MonthlyProp[]) {
+  private yScale() {
     return d3.scaleLinear()
-      .domain([0, d3.max(data.map(d => d.credit.amount), d => d)])
+      .domain([0, d3.max(this.credits.map(d => d.value), d => d)])
       .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
-  private line(data: MonthlyProp[]) {
-    return d3.line((d, index, ds) => index, (d, index, ds) => index);
+  // private line(data: MonthlyProp[]) {
+  //   return d3.line((d, index, ds) => index, (d, index, ds) => index);
+  // }
+
+  private myLine() {
+    return d3Shape.line()
+      .x(d => this.xScale()(d["date"]))
+      .y(d => this.yScale()(d["value"]));
   }
 
-  private chart(values: MonthlyProp[]) {
-    const data = values;
+  private chart() {
+    const data = this.credits;
 
     if (data.length == 0) {
       return;
@@ -77,8 +98,10 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     const svg = d3.select("svg.chart");
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    // TODO: Convert to a Line Chart
-    // https://observablehq.com/@d3/line-chart
+    const gaga = d3Shape.line()
+      .x(d => this.xScale()(d["date"]))
+      .y(d => this.yScale()(d["value"]));
+
     svg.append("path")
       .datum(data)
       .attr("fill", "none")
@@ -86,34 +109,25 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
       .attr("stroke-width", 1.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      // .attr("d", (d) => this.line(d[0]));
-      // .attr("x", (d, i) => this.xScale(data)(this.getName(d)))
-      // .attr("y", d => this.yScale(data)(d.amount))
-      // .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
-      // .attr("width", this.xScale(data).bandwidth());
+      // @ts-ignore
+      .attr("d", gaga)
 
     svg.append("g")
       .attr("class", "y-axis")
       .attr("transform", `translate(${this.margin.left},0)`)
-      .call(d3.axisLeft(this.yScale(data)))
+      .call(d3.axisLeft(this.yScale()))
       .call(g => g.select(".domain").remove())
       .call(g => g.select(".tick:last-of-type text").clone()
         .attr("x", 3)
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
-        .text((_element, d) => d)
+        .text("Amount ($)")
       );
 
     svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-      .call(d3.axisBottom(this.xScale(data)).ticks(this.width / 80).tickSizeOuter(0));
-      // .selectAll("text")
-      // .attr("x", "0")
-      // .attr("y", "2")
-      // .attr("dx", "-10px")
-      // .attr("dy", "0")
-      // .attr("transform", "rotate(-90, 0, 0)");
+      .call(d3.axisBottom(this.xScale()).ticks(this.width / 80).tickSizeOuter(0));
   }
 
   private getName(at: Date): string {
