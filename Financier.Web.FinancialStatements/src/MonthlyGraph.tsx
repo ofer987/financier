@@ -110,7 +110,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-      .call(d3.axisBottom(this.xScale()).ticks(this.width / 80).tickSizeOuter(0));
+      .call(d3.axisBottom(this.xScale()).ticks(this.width / 40).tickSizeOuter(0));
   }
 
   private drawYAxis() {
@@ -120,7 +120,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
       .attr("class", "y-axis")
       .attr("transform", `translate(${this.margin.left},0)`)
       .call(d3.axisLeft(this.yScale()))
-      .call(g => g.select(".domain").remove())
+      .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
         .attr("y", "-2em")
         .attr("text-anchor", "start")
