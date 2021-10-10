@@ -10,8 +10,6 @@ import "./index.scss";
 
 var root = document.querySelector(".root");
 ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
+  <App />,
   root
 );

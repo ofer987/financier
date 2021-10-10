@@ -22,7 +22,11 @@ import {
 import "./index.scss";
 
 interface Props {
-  year: number;
+  match: {
+    params: {
+      year: number;
+    }
+  }
 }
 
 interface CheckedTag {
@@ -46,6 +50,10 @@ interface CashFlowResponse {
 }
 
 class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
+  get year(): number {
+    return this.props.match.params.year;
+  }
+
   private client = new ApolloClient({
     uri: "https://localhost:5003/graphql/cash-flows",
     cache: new InMemoryCache(),
@@ -69,15 +77,15 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
     //     }
     //   }]
     // };
-    this.getData();
+    this.fetchData();
   }
 
-  getData(): void {
+  fetchData(): void {
     // Convert to async/await
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
-          getMonthlyCashFlows(year: ${this.props.year}) {
+          getMonthlyCashFlows(year: ${this.year}) {
             startAt
             endAt
             debitListings {

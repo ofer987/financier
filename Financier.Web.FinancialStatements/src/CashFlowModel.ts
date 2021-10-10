@@ -36,6 +36,10 @@ class CashFlowModel implements Listing {
       .map(values => values.name)
       .map(name => lodash.startCase(name));
   }
+
+  toString(): string {
+    return this.tags.join("-");
+  }
 }
 
 export default CashFlowModel;

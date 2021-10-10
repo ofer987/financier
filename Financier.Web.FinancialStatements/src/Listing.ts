@@ -8,6 +8,8 @@ interface Listing extends Nullable  {
   tags: string[];
   amount: number;
   expenseType: ExpenseTypes
+
+  toString(): string;
 }
 
 export { Listing, ExpenseTypes };

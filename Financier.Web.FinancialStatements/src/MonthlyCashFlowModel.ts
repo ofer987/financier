@@ -19,6 +19,10 @@ class MonthlyCashFlowModel implements Listing {
     this.expenseType = expenseType;
     this.tags = [];
   }
+
+  toString(): string {
+    return this.startAt.toString();
+  }
 }
 
 export default MonthlyCashFlowModel;

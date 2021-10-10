@@ -23,14 +23,14 @@ class MonthlyValue extends React.Component<Props> {
             {this.name}
             <ul>
               <li>
-                <Link to="/detailed-view?year=2020&month=4">
+                <Link to="/detailed-view/year/2020/month/4">
                   {this.name}
                 </Link>
               </li>
             </ul>
           </div>
           <div className="credit">
-            <Link to={`/detailed-view?year=${this.year}&month=${this.month}`}>
+            <Link to={`/detailed-view/year/${this.year}/month/${this.month}`}>
               {this.creditAmount.toFixed(this.decimalCount)}
             </Link>
           </div>

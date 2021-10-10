@@ -44,7 +44,7 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
-          {this.props.dates.map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} />)}
+          {this.props.dates.map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>

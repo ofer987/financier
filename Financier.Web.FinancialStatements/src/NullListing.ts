@@ -10,6 +10,10 @@ class NullListing implements Listing {
   get isNull(): boolean {
     return true;
   }
+
+  toString(): string {
+    return Math.random().toString(16).substr(2, 13);
+  }
 }
 
 export default NullListing;

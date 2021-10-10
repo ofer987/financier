@@ -3,6 +3,7 @@
 // import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Link } from "react-router-dom";
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
@@ -24,8 +25,12 @@ import "./index.scss";
 // 1. Use a service to retrieve CashFlowItems using GraphQL
 
 interface Props {
-  year: number;
-  month: number;
+  match: {
+    params: {
+      year: number;
+      month: number;
+    }
+  }
 }
 
 class State {
@@ -55,6 +60,14 @@ interface CashFlowResponse {
 }
 
 class CashFlow extends React.Component<Props, State> {
+  public get year() {
+    return this.props.match.params.year;
+  }
+
+  public get month() {
+    return this.props.match.params.month;
+  }
+
   private client = new ApolloClient({
     uri: "https://localhost:5003/graphql/cash-flows",
     cache: new InMemoryCache(),
@@ -66,6 +79,7 @@ class CashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    console.log(props);
     this.state = { debits: [], credits: [], tags: [] };
     this.getData();
   }
@@ -118,7 +132,7 @@ class CashFlow extends React.Component<Props, State> {
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
-          getMonthlyCashFlow(year: ${this.props.year}, month: ${this.props.month}) {
+          getMonthlyCashFlow(year: ${this.year}, month: ${this.month}) {
             startAt
             endAt
             debitListings {
@@ -163,14 +177,18 @@ class CashFlow extends React.Component<Props, State> {
   renderCriteria() {
     return (
       <div className="criteria">
+        <Router>
+          <Link to="/">Go Back</Link>
+          <Link to={`/monthly-view?year=${this.year}`}>Go Back to the Future</Link>
+        </Router>
         <h2>Please Select</h2>
         {
           this.tags().map(tag =>
-          <div className="checkbox">
-            <input id={`${tag}`} type="checkbox" name={tag} onClick={() => this.toggleTag(tag)} />
-            <label htmlFor={`${tag}`}>{lodash.startCase(tag)}</label>
+          <div className="checkbox" key={`checkbox-${tag}`}>
+            <input id={`${tag}`} type="checkbox" name={tag} onClick={() => this.toggleTag(tag)} key={`checkbox-value-${tag}`} />
+            <label htmlFor={`${tag}`} key={`checkbox-label-${tag}`}>{lodash.startCase(tag)}</label>
           </div>
-          )
+        )
         }
       </div>
     )
@@ -178,13 +196,15 @@ class CashFlow extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="cash-flow">
-        <div className="better-together">
-          {this.renderCriteria()}
-          <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+      <Router>
+        <div className="cash-flow">
+          <div className="better-together">
+            {this.renderCriteria()}
+            <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+          </div>
+          <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
         </div>
-        <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
-      </div>
+      </Router>
     );
   }
 

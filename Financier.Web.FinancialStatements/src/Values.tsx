@@ -36,8 +36,8 @@ class Values extends FilterableController {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.enabledCredits.map(listing => <Value debit={new NullListing()} credit={listing} />)}
-          {this.enabledDebits.map(listing => <Value debit={listing} credit={new NullListing()} />)}
+          {this.enabledCredits.map(listing => <Value debit={new NullListing()} credit={listing} key={listing.toString()} />)}
+          {this.enabledDebits.map(listing => <Value debit={listing} credit={new NullListing()} key={listing.toString()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
