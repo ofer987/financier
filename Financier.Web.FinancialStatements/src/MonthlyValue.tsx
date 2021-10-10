@@ -1,5 +1,4 @@
 import * as React from "react";
-import { BrowserRouter as Router, Link } from "react-router-dom";
 import _  from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
@@ -17,31 +16,22 @@ class MonthlyValue extends React.Component<Props> {
 
   render() {
     return (
-      <Router>
-        <div className="item" id={this.name} key={this.name}>
-          <div className="name">
+      <div className="item" id={this.name} key={this.name}>
+        <div className="name">
+          <a href={`/detailed-view/year/${this.year}/month/${this.month}`}>
             {this.name}
-            <ul>
-              <li>
-                <Link to="/detailed-view/year/2020/month/4">
-                  {this.name}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="credit">
-            <Link to={`/detailed-view/year/${this.year}/month/${this.month}`}>
-              {this.creditAmount.toFixed(this.decimalCount)}
-            </Link>
-          </div>
-          <div className="debit">
-            {this.debitAmount.toFixed(this.decimalCount)}
-          </div>
-          <div className="profit">
-            {this.accountingFormattedProfit}
-          </div>
+          </a>
         </div>
-      </Router>
+        <div className="credit">
+          {this.creditAmount.toFixed(this.decimalCount)}
+        </div>
+        <div className="debit">
+          {this.debitAmount.toFixed(this.decimalCount)}
+        </div>
+        <div className="profit">
+          {this.accountingFormattedProfit}
+        </div>
+      </div>
     )
   }
 

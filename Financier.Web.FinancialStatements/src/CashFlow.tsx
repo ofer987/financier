@@ -3,7 +3,6 @@
 // import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Link } from "react-router-dom";
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
@@ -177,10 +176,6 @@ class CashFlow extends React.Component<Props, State> {
   renderCriteria() {
     return (
       <div className="criteria">
-        <Router>
-          <Link to="/">Go Back</Link>
-          <Link to={`/monthly-view?year=${this.year}`}>Go Back to the Future</Link>
-        </Router>
         <h2>Please Select</h2>
         {
           this.tags().map(tag =>
@@ -196,15 +191,13 @@ class CashFlow extends React.Component<Props, State> {
 
   render() {
     return (
-      <Router>
-        <div className="cash-flow">
-          <div className="better-together">
-            {this.renderCriteria()}
-            <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
-          </div>
-          <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+      <div className="cash-flow">
+        <div className="better-together">
+          {this.renderCriteria()}
+          <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
         </div>
-      </Router>
+        <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+      </div>
     );
   }
 
