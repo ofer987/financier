@@ -122,6 +122,8 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   render() {
     return (
       <div className="cash-flow">
+        <h3>{this.year}</h3>
+        <a href="/">Select Different Time Range</a>
         <div className="better-together">
           <MonthlyGraph dates={this.toDates(this.state)} />
         </div>

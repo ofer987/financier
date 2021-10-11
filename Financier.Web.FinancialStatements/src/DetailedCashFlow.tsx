@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
-import * as d3 from "d3-time-format";
+import * as d3TimeFormat from "d3-time-format";
 import DetailedValues from "./DetailedValues";
 import DetailedListing from "./DetailedListing";
 import { Listing, ExpenseTypes } from "./Listing";
@@ -186,8 +186,15 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 
   render() {
+    const year = this.year;
+    const month = d3TimeFormat.timeFormat("%B")(new Date(2020, this.props.month));
+
     return (
       <div className="cash-flow">
+        <h3>
+          <a href={`/monthly-view/year/${year}`}>{month} - {year}</a>
+        </h3>
+        <a href="/">Select Different Time Range</a>
         <div className="better-together">
           {this.renderCriteria()}
           <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
@@ -222,7 +229,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 
   private toDate(input: string): Date {
-    const parser = d3.timeParse("%Y-%m-%dT%H:%M:%S");
+    const parser = d3TimeFormat.timeParse("%Y-%m-%dT%H:%M:%S");
 
     return parser(input);
   }
