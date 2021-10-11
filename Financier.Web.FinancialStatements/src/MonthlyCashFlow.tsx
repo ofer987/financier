@@ -22,11 +22,7 @@ import {
 import "./index.scss";
 
 interface Props {
-  match: {
-    params: {
-      year: number;
-    }
-  }
+  year: number;
 }
 
 interface CheckedTag {
@@ -51,7 +47,7 @@ interface CashFlowResponse {
 
 class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   get year(): number {
-    return this.props.match.params.year;
+    return this.props.year;
   }
 
   private client = new ApolloClient({
