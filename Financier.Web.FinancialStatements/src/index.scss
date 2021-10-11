@@ -5,6 +5,21 @@
   font-style: normal;
 }
 
+.header {
+  padding: 100px 100px;
+  font-family: "Roboto";
+}
+
+.date-range {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+
+  .date-picker {
+    width: 50%;
+  }
+}
+
 .better-together {
   display: flex;
   flex-flow: wrap;
