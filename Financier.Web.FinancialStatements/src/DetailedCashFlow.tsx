@@ -6,10 +6,10 @@ import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
-import Values from "./Values";
-import CashFlowModel from "./CashFlowModel";
+import DetailedValues from "./DetailedValues";
+import DetailedListing from "./DetailedListing";
 import { Listing, ExpenseTypes } from "./Listing";
-import { Graph } from "./Graph";
+import { DetailedGraph } from "./DetailedGraph";
 import {
   ApolloClient,
   InMemoryCache,
@@ -24,12 +24,8 @@ import "./index.scss";
 // 1. Use a service to retrieve CashFlowItems using GraphQL
 
 interface Props {
-  match: {
-    params: {
-      year: number;
-      month: number;
-    }
-  }
+  year: number;
+  month: number;
 }
 
 class State {
@@ -58,13 +54,13 @@ interface CashFlowResponse {
   }
 }
 
-class CashFlow extends React.Component<Props, State> {
+class DetailedCashFlow extends React.Component<Props, State> {
   public get year() {
-    return this.props.match.params.year;
+    return this.props.year;
   }
 
   public get month() {
-    return this.props.match.params.month;
+    return this.props.month;
   }
 
   private client = new ApolloClient({
@@ -194,17 +190,17 @@ class CashFlow extends React.Component<Props, State> {
       <div className="cash-flow">
         <div className="better-together">
           {this.renderCriteria()}
-          <Graph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+          <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
         </div>
-        <Values debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+        <DetailedValues debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
       </div>
     );
   }
 
-  private toDebitCashFlowModel(data: CashFlowResponse): CashFlowModel[] {
+  private toDebitCashFlowModel(data: CashFlowResponse): DetailedListing[] {
     var cashFlow = data.getMonthlyCashFlow;
 
-    return cashFlow.debitListings.map(listing => new CashFlowModel(
+    return cashFlow.debitListings.map(listing => new DetailedListing(
       this.toDate(cashFlow.startAt),
       this.toDate(cashFlow.endAt),
       listing.tags,
@@ -213,10 +209,10 @@ class CashFlow extends React.Component<Props, State> {
     ));
   }
 
-  private toCreditCashFlowModel(data: CashFlowResponse): CashFlowModel[] {
+  private toCreditCashFlowModel(data: CashFlowResponse): DetailedListing[] {
     var cashFlow = data.getMonthlyCashFlow;
 
-    return cashFlow.creditListings.map(listing => new CashFlowModel(
+    return cashFlow.creditListings.map(listing => new DetailedListing(
       this.toDate(cashFlow.startAt),
       this.toDate(cashFlow.endAt),
       listing.tags,
@@ -232,4 +228,4 @@ class CashFlow extends React.Component<Props, State> {
   }
 }
 
-export default CashFlow;
+export default DetailedCashFlow;

@@ -1,9 +1,9 @@
 import * as React from "react";
 import _ from "underscore";
 
-import Value from "./Value";
+import DetailedValue from "./DetailedValue";
 import { Listing } from "./Listing";
-import CashFlowModel from "./CashFlowModel";
+import DetailedListing from "./DetailedListing";
 import NullListing from "./NullListing";
 
 interface Props {
@@ -83,7 +83,7 @@ abstract class FilterableController extends React.Component<Props> {
     return listings
       .filter(listing => {
         const tagNames = this.enabledTagNames
-          .filter(tagName => CashFlowModel.hasTag(tagName, listing));
+          .filter(tagName => DetailedListing.hasTag(tagName, listing));
 
         return tagNames.length > 0;
       });

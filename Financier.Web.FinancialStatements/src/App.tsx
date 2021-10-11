@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Switch, Route, useParams, useLocation, useRouteMatch, Link, NavLink } from "react-router-dom";
 
-import CashFlow from "./CashFlow";
 import MonthlyRoute from "./MonthlyRoute";
+import DetailedRoute from "./DetailedRoute";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
       <a href="/detailed-view/year/2020/month/4">2020-4&nbsp;</a>
 
       <Switch>
-        <Route path="/detailed-view/year/:year/month/:month" component={CashFlow}>
+        <Route path="/detailed-view/year/:year/month/:month" component={DetailedRoute}>
         </Route>
         <Route path="/monthly-view/year/:year" component={MonthlyRoute} />
         <Route path="/">

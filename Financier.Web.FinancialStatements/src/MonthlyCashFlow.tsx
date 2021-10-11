@@ -7,7 +7,7 @@ import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
 import MonthlyValues from "./MonthlyValues";
-import MonthlyCashFlowModel from "./MonthlyCashFlowModel";
+import MonthlyListing from "./MonthlyListing";
 import { Listing, ExpenseTypes } from "./Listing";
 import { MonthlyGraph, MonthlyProp } from "./MonthlyGraph";
 import {
@@ -142,7 +142,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
       let total = 0;
       total = _.reduce(amounts, (t, amount) => t + amount);
 
-      return new MonthlyCashFlowModel(year, month, total, ExpenseTypes.Debit);
+      return new MonthlyListing(year, month, total, ExpenseTypes.Debit);
     });
   }
 
@@ -158,7 +158,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
       let total = 0;
       total = _.reduce(amounts, (t, amount) => t + amount);
 
-      return new MonthlyCashFlowModel(year, month, total, ExpenseTypes.Credit);
+      return new MonthlyListing(year, month, total, ExpenseTypes.Credit);
     });
   }
 
@@ -181,8 +181,8 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
 
       return {
         at: date,
-        credit: new MonthlyCashFlowModel(year, month, creditTotal, ExpenseTypes.Credit),
-        debit: new MonthlyCashFlowModel(year, month, debitTotal, ExpenseTypes.Debit)
+        credit: new MonthlyListing(year, month, creditTotal, ExpenseTypes.Credit),
+        debit: new MonthlyListing(year, month, debitTotal, ExpenseTypes.Debit)
       }
     });
   }

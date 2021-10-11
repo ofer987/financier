@@ -1,7 +1,7 @@
 import * as React from "react";
 import _ from "underscore";
 
-import Value from "./Value";
+import DetailedValue from "./DetailedValue";
 import { Listing } from "./Listing";
 import NullListing from "./NullListing";
 import FilterableController from "./FilterableController";
@@ -12,7 +12,7 @@ interface Props {
   enabledTags: string[];
 }
 
-class Values extends FilterableController {
+class DetailedValues extends FilterableController {
   decimalCount = 2;
 
   get accountingFormattedProfit(): string {
@@ -36,8 +36,8 @@ class Values extends FilterableController {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.enabledCredits.map(listing => <Value debit={new NullListing()} credit={listing} key={listing.toString()} />)}
-          {this.enabledDebits.map(listing => <Value debit={listing} credit={new NullListing()} key={listing.toString()} />)}
+          {this.enabledCredits.map(listing => <DetailedValue debit={new NullListing()} credit={listing} key={listing.toString()} />)}
+          {this.enabledDebits.map(listing => <DetailedValue debit={listing} credit={new NullListing()} key={listing.toString()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
@@ -50,4 +50,4 @@ class Values extends FilterableController {
   }
 }
 
-export default Values;
+export default DetailedValues;

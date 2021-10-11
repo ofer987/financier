@@ -8,8 +8,6 @@ import * as d3Format from "d3-format";
 import * as d3TimeFormat from "d3-time-format";
 
 import { Listing, ExpenseTypes } from "./Listing";
-import CashFlowModel from "./CashFlowModel";
-import FilterableController from "./FilterableController";
 
 interface MonthlyProps {
   dates: MonthlyProp[];

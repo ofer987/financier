@@ -8,7 +8,7 @@ interface Props {
   credit: Listing;
 }
 
-class Value extends React.Component<Props> {
+class DetailedValue extends React.Component<Props> {
   render() {
     return (
       <div className="item" id={this.name} key={this.name}>
@@ -46,4 +46,4 @@ class Value extends React.Component<Props> {
   }
 }
 
-export default Value;
+export default DetailedValue;

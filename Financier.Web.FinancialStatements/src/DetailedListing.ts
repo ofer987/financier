@@ -3,7 +3,7 @@ import lodash from "lodash";
 
 import { Listing, ExpenseTypes } from "./Listing";
 
-class CashFlowModel implements Listing {
+class DetailedListing implements Listing {
   public startAt: Date;
   public endAt: Date;
   public tags: string[];
@@ -42,4 +42,4 @@ class CashFlowModel implements Listing {
   }
 }
 
-export default CashFlowModel;
+export default DetailedListing;
