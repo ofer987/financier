@@ -10,6 +10,11 @@ import { MonthlyProps, MonthlyProp } from "./MonthlyGraph";
 class MonthlyValues extends React.Component<MonthlyProps> {
   decimalCount = 2;
 
+  get validMonths(): MonthlyProp[] {
+    return this.props.dates
+      .filter(date => this.isMonthValid(date.at));
+  }
+
   get totalCredits(): number {
     var amounts = this.props.dates.map(item => item.credit.amount);
 
@@ -44,8 +49,7 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
-          {this.props.dates
-            .filter(date => this.isMonthValid(date.at))
+          {this.validMonths
             .map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} />)}
         </div>
         <div className="total">
