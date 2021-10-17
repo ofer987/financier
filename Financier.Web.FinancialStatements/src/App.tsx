@@ -17,7 +17,7 @@ function App() {
             <Route path="/detailed-view/year/:year/month/:month" component={DetailedRoute}>
             </Route>
             <Route path="/monthly-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth" component={MonthlyRoute} />
-            <Route path="/">
+            <Route exact path="/">
               <Welcome />
             </Route>
           </WelcomeError>
