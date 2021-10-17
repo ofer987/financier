@@ -14,34 +14,12 @@ interface Props {
 class MonthlyValue extends React.Component<Props> {
   private decimalCount = 2;
 
-  render() {
-    return (
-      <div className="item" id={this.name} key={this.name}>
-        <div className="name">
-          <a href={`/detailed-view/year/${this.year}/month/${this.month}`}>
-            {this.name}
-          </a>
-        </div>
-        <div className="credit">
-          {this.creditAmount.toFixed(this.decimalCount)}
-        </div>
-        <div className="debit">
-          {this.debitAmount.toFixed(this.decimalCount)}
-        </div>
-        <div className="profit">
-          {this.accountingFormattedProfit}
-        </div>
-      </div>
-    )
-  }
-
   get name(): string {
     const year = this.year;
     const month = d3TimeFormat.timeFormat("%B")(this.props.at);
 
     return `${year} - ${month}`;
   }
-
 
   get year(): number {
     return this.props.at.getFullYear();
@@ -67,6 +45,29 @@ class MonthlyValue extends React.Component<Props> {
     }
 
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
+  }
+
+  render() {
+    return (
+      <div className="item" id={this.name} key={this.name} onClick={() => this.toDetailedView(this.year, this.month)}>
+        <div className="name">
+          {this.name}
+        </div>
+        <div className="credit">
+          {this.creditAmount.toFixed(this.decimalCount)}
+        </div>
+        <div className="debit">
+          {this.debitAmount.toFixed(this.decimalCount)}
+        </div>
+        <div className="profit">
+          {this.accountingFormattedProfit}
+        </div>
+      </div>
+    )
+  }
+
+  private toDetailedView(year: number, month: number) {
+    window.location.pathname = `/detailed-view/year/${this.year}/month/${this.month}`;
   }
 }
 

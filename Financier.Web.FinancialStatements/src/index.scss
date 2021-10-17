@@ -124,6 +124,15 @@ body {
   }
 
   .items {
+    .item {
+      text-color: black;
+      color: black;
+    }
+
+    .item:hover {
+      background-color: darkgrey;
+    }
+
     .item:first-child {
       div {
         padding: 7px 0px 2px 0px;
@@ -168,6 +177,10 @@ body {
   }
 
   .total {
+    &:hover {
+      background-color: darkgrey;
+    }
+
     div {
       padding: 7px 0px 2px 0px;
       width: 20%;
