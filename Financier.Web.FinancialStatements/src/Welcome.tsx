@@ -82,7 +82,7 @@ class Welcome extends React.Component<Props, State> {
     if (this.isValid) {
       console.log("is valid");
       return (
-        <a href={`/monthly-view/year/${this.startYear}`}>View</a>
+        <a href={`/monthly-view/from-year/${this.startYear}/from-month/${this.startMonth}/to-year/${this.endYear}/to-month/${this.endMonth}`}>View</a>
       );
     }
 

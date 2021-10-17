@@ -13,14 +13,14 @@ function App() {
       <h1 className="main-header">Financier</h1>
       <Router>
         <Switch>
-          <Route path="/detailed-view/year/:year/month/:month" component={DetailedRoute}>
-          </Route>
-          <Route path="/monthly-view/year/:year" component={MonthlyRoute} />
-          <Route path="/">
-            <WelcomeError>
+          <WelcomeError>
+            <Route path="/detailed-view/year/:year/month/:month" component={DetailedRoute}>
+            </Route>
+            <Route path="/monthly-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth" component={MonthlyRoute} />
+            <Route path="/">
               <Welcome />
-            </WelcomeError>
-          </Route>
+            </Route>
+          </WelcomeError>
         </Switch>
       </Router>
     </div>
