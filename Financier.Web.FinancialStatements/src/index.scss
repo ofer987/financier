@@ -5,18 +5,48 @@
   font-style: normal;
 }
 
-.header {
-  padding: 100px 100px;
+body {
   font-family: "Roboto";
 }
 
-.date-range {
-  display: flex;
-  flex-flow: wrap;
-  flex-direction: row;
+.main-header {
+  padding: 50px 50px;
+  font-family: "Roboto";
+  font-size: 70px;
+  text-align: center;
+}
 
-  .date-picker {
-    width: 50%;
+.errors {
+  background-color: red;
+  color: white;
+  font-size: 16px;
+  height: 19px;
+  width: 500px;
+}
+
+.welcome {
+  .date-range {
+    display: flex;
+    flex-flow: wrap;
+    flex-direction: row;
+
+    .date-picker {
+      display: flex;
+      width: 50%;
+
+      .container {
+        flex-direction: row;
+        padding: 0 30% 0 30%;
+      }
+    }
+  }
+
+  .submission {
+    a {
+      font-size: 16px;
+      width: 200px;
+      height: 19px;
+    }
   }
 }
 
