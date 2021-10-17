@@ -1,7 +1,7 @@
 import _ from "underscore";
 import { Listing, ExpenseTypes } from "./Listing";
 
-class DetailedListing implements Listing {
+class MonthlyListing implements Listing {
   public startAt: Date;
   public endAt: Date;
   public tags: string[];
@@ -25,4 +25,4 @@ class DetailedListing implements Listing {
   }
 }
 
-export default DetailedListing;
+export default MonthlyListing;

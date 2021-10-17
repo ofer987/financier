@@ -44,7 +44,9 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
-          {this.props.dates.map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} />)}
+          {this.props.dates
+            .filter(date => this.isMonthValid(date.at))
+            .map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
@@ -54,6 +56,26 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         </div>
       </div>
     );
+  }
+
+  private isMonthValid(at: Date): boolean {
+    const foundProp = this.props.dates
+      .find(date => {
+        return true
+          && date.at.getFullYear() == at.getFullYear()
+          && date.at.getMonth() == at.getMonth()
+          && date.at.getDate() == at.getDate();
+      });
+
+    if (typeof (foundProp) == "undefined") {
+      return false;
+    }
+
+    if (foundProp.credit.isNull && foundProp.debit.isNull) {
+      return false;
+    }
+
+    return true;
   }
 }
 

@@ -22,7 +22,10 @@ import {
 import "./index.scss";
 
 interface Props {
-  year: number;
+  fromYear: number;
+  fromMonth: number;
+  toYear: number;
+  toMonth: number;
 }
 
 interface CheckedTag {
@@ -46,8 +49,20 @@ interface CashFlowResponse {
 }
 
 class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
-  get year(): number {
-    return this.props.year;
+  get fromYear(): number {
+    return this.props.fromYear;
+  }
+
+  get fromMonth(): number {
+    return this.props.fromMonth;
+  }
+
+  get toYear(): number {
+    return this.props.toYear;
+  }
+
+  get toMonth(): number {
+    return this.props.toMonth;
   }
 
   private client = new ApolloClient({
@@ -61,27 +76,15 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   constructor(props: Props) {
     super(props);
 
-    // this.state = { 
-    //   getMonthlyCashFlows: [{
-    //     startAt: "",
-    //     endAt: "",
-    //     debitListings: {
-    //       amount: 0
-    //     }[],
-    //     creditListings: {
-    //       amount: 0
-    //     }
-    //   }]
-    // };
-    this.fetchData();
+    this.setData();
   }
 
-  fetchData(): void {
+  setData(): void {
     // Convert to async/await
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
-          getMonthlyCashFlows(year: ${this.year}) {
+          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
             startAt
             endAt
             debitListings {
@@ -122,7 +125,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   render() {
     return (
       <div className="cash-flow">
-        <h3>{this.year}</h3>
+        <h3>{this.fromYear}</h3>
         <a href="/">Select Different Time Range</a>
         <div className="better-together">
           <MonthlyGraph dates={this.toDates(this.state)} />
@@ -196,4 +199,4 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   }
 }
 
-export default MonthlyCashFlow;
+export { MonthlyCashFlow, Props };
