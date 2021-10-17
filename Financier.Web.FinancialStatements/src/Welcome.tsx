@@ -20,8 +20,8 @@ class Welcome extends React.Component<Props, State> {
     return d3TimeFormat.timeFormat("%Y")(this.startDate);
   }
 
-  get startMonth(): string {
-    return d3TimeFormat.timeFormat("%m")(this.startDate);
+  get startMonth(): number {
+    return this.startDate.getMonth() + 1;
   }
 
   get startDate(): Date {
@@ -32,8 +32,8 @@ class Welcome extends React.Component<Props, State> {
     return d3TimeFormat.timeFormat("%Y")(this.endDate);
   }
 
-  get endMonth(): string {
-    return d3TimeFormat.timeFormat("%m")(this.endDate);
+  get endMonth(): number {
+    return this.endDate.getMonth() + 1;
   }
 
   get endDate(): Date {

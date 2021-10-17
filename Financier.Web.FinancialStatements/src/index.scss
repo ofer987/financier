@@ -50,12 +50,30 @@ body {
   }
 }
 
-.better-together {
+.monthly-cashflow {
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
 
-  margin-bottom: 50px;
+  .graph {
+    width: 75%;
+
+    .chart {
+      .tick {
+        font-size: 6px;
+
+        text {
+          text-anchor: end;
+        }
+      }
+    }
+  }
+}
+
+.detailed-cashflow {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
 
   .criteria {
     width: 25%;
@@ -106,6 +124,16 @@ body {
   }
 
   .items {
+    .item:first-child {
+      div {
+        padding: 7px 0px 2px 0px;
+      }
+
+      div:first-child {
+        padding: 7px 0px 2px 0px;
+      }
+    }
+
     .item {
       div {
         padding: 2px 0px 2px 0px;
@@ -116,6 +144,7 @@ body {
       div:first-child {
         width: 39%;
 
+        padding: 2px 0px 2px 0px;
         border-right-color: black;
         border-right-style: solid;
         border-right-width: 1px;
@@ -136,13 +165,11 @@ body {
       border-bottom-style: solid;
       border-bottom-color: blue;
     }
-
-    padding-top: 5px;
   }
 
   .total {
     div {
-      padding: 2px 0px 2px 0px;
+      padding: 7px 0px 2px 0px;
       width: 20%;
       font-family: monospace;
     }
@@ -150,6 +177,7 @@ body {
     div:first-child {
       width: 39%;
 
+      padding: 7px 0px 2px 0px;
       border-right-color: black;
       border-right-style: solid;
       border-right-width: 1px;
@@ -164,7 +192,6 @@ body {
     flex-flow: wrap;
     flex-direction: row;
 
-    padding-top: 5px;
     font-size: 20px;
 
     justify-content: space-between;

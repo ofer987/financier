@@ -186,16 +186,15 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 
   render() {
-    const year = this.year;
-    const month = d3TimeFormat.timeFormat("%B")(new Date(2020, this.props.month));
+    const monthName = d3TimeFormat.timeFormat("%B")(new Date(2020, this.props.month));
 
     return (
       <div className="cash-flow">
         <h3>
-          <a href={`/monthly-view/year/${year}`}>{month} - {year}</a>
+          <a href={`/monthly-view/year/${this.year}/month/${this.month}`}>{monthName} - {this.year}</a>
         </h3>
         <a href="/">Select Different Time Range</a>
-        <div className="better-together">
+        <div className="detailed-cashflow">
           {this.renderCriteria()}
           <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
         </div>
