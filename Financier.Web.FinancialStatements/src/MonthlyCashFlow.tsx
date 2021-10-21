@@ -6,10 +6,6 @@ import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
-import MonthlyValues from "./MonthlyValues";
-import MonthlyListing from "./MonthlyListing";
-import { Listing, ExpenseTypes } from "./Listing";
-import { MonthlyGraph, MonthlyProp } from "./MonthlyGraph";
 import {
   ApolloClient,
   InMemoryCache,
@@ -17,6 +13,12 @@ import {
   useQuery,
   gql
 } from "@apollo/client";
+
+import MonthlyValues from "./MonthlyValues";
+import MonthlyListing from "./MonthlyListing";
+import NullListing from './NullListing';
+import { Listing, ExpenseTypes } from "./Listing";
+import { MonthlyGraph, MonthlyProp } from "./MonthlyGraph";
 
 // CSS
 import "./index.scss";
@@ -189,6 +191,14 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
 
       const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount) || 0;
       const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount) || 0;
+
+      if (creditTotal == 0 && debitTotal == 0) {
+        return {
+          at: date,
+          credit: new NullListing(),
+          debit: new NullListing()
+        };
+      }
 
       return {
         at: date,
