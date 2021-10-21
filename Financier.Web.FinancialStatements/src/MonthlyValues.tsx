@@ -7,7 +7,11 @@ import NullListing from "./NullListing";
 import FilterableController from "./FilterableController";
 import { MonthlyProps, MonthlyProp } from "./MonthlyGraph";
 
-class MonthlyValues extends React.Component<MonthlyProps> {
+interface Prop extends MonthlyProps {
+  dateRange?: [Date, Date];
+}
+
+class MonthlyValues extends React.Component<Prop> {
   decimalCount = 2;
 
   get validMonths(): MonthlyProp[] {
@@ -16,7 +20,7 @@ class MonthlyValues extends React.Component<MonthlyProps> {
   }
 
   get totalCredits(): number {
-    var amounts = this.props.dates.map(item => item.credit.amount);
+    var amounts = this.validMonths.map(item => item.credit.amount);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
@@ -50,7 +54,7 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
           {this.validMonths
-            .map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} />)}
+            .map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} dateRange={this.props.dateRange} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
