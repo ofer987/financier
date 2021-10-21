@@ -33,22 +33,34 @@ interface CheckedTag {
   checked: boolean;
 }
 
+interface CashFlow {
+  startAt: string;
+  endAt: string;
+  debitListings: {
+    amount: number;
+  }[];
+  creditListings: {
+    amount: number;
+  }[];
+}
+
 interface CashFlowResponse {
-  getMonthlyCashFlows: [
-    {
-      startAt: string;
-      endAt: string;
-      debitListings: {
-        amount: number;
-      }[]
-      creditListings: {
-        amount: number;
-      }[]
-    }
-  ]
+  getMonthlyCashFlows: CashFlow[];
 }
 
 class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
+  get cashFlows(): CashFlow[] {
+    if (!this.state) {
+      return [];
+    }
+
+    if (!this.state.getMonthlyCashFlows) {
+      return [];
+    }
+
+    return this.state.getMonthlyCashFlows;
+  }
+
   get fromYear(): number {
     return this.props.fromYear;
   }
@@ -128,9 +140,9 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
         <h3>{this.fromYear}</h3>
         <a href="/">Select Different Time Range</a>
         <div className="monthly-cashflow">
-          <MonthlyGraph dates={this.toDates(this.state)} />
+          <MonthlyGraph dates={this.cashFlowsByDate()} />
         </div>
-        <MonthlyValues dates={this.toDates(this.state)} />
+        <MonthlyValues dates={this.cashFlowsByDate()} dateRange={this.dateRange()} />
       </div>
     );
   }
@@ -167,22 +179,16 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
     });
   }
 
-  private toDates(data: CashFlowResponse): MonthlyProp[] {
-    if (!data) {
-      return [];
-    }
-
-    const monthlyCashFlows = data.getMonthlyCashFlows;
-
-    return monthlyCashFlows.map(item => {
+  private cashFlowsByDate(): MonthlyProp[] {
+    return this.cashFlows.map(item => {
       const date = this.toDate(item.startAt)
       const year = date.getFullYear();
       const month = date.getMonth();
       const creditAmounts = item.creditListings.map(listing => listing.amount);
       const debitAmounts = item.debitListings.map(listing => listing.amount);
 
-      const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount);
-      const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount);
+      const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount) || 0;
+      const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount) || 0;
 
       return {
         at: date,
@@ -190,6 +196,18 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
         debit: new MonthlyListing(year, month, debitTotal, ExpenseTypes.Debit)
       }
     });
+  }
+
+  private dateRange(): [Date, Date] | undefined {
+    const values = this.cashFlows;
+    if (values.length == 0) {
+      return undefined;
+    }
+
+    return [
+      this.toDate(values[0].startAt),
+      this.toDate(values[values.length - 1].startAt),
+    ];
   }
 
   private toDate(input: string): Date {

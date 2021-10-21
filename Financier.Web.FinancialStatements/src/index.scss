@@ -17,11 +17,13 @@ body {
 }
 
 .errors {
-  background-color: red;
-  color: white;
-  font-size: 16px;
-  height: 19px;
-  width: 500px;
+  .error {
+    background-color: red;
+    color: white;
+    font-size: 16px;
+    height: 19px;
+    width: 500px;
+  }
 }
 
 .welcome {

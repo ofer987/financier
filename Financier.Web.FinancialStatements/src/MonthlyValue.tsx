@@ -2,13 +2,12 @@ import * as React from "react";
 import _  from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
+import { MonthlyProp } from "./MonthlyGraph";
 
 import { Listing } from "./Listing";
 
-interface Props {
-  at: Date;
-  debit: Listing;
-  credit: Listing;
+interface Props extends MonthlyProp {
+  dateRange?: [Date, Date];
 }
 
 class MonthlyValue extends React.Component<Props> {
@@ -67,6 +66,16 @@ class MonthlyValue extends React.Component<Props> {
   }
 
   private toDetailedView(year: number, month: number) {
+    if (typeof (this.props.dateRange) != "undefined") {
+      const fromYear = this.props.dateRange[0].getFullYear();
+      const fromMonth = this.props.dateRange[0].getMonth() + 1;
+
+      const toYear = this.props.dateRange[1].getFullYear();
+      const toMonth = this.props.dateRange[1].getMonth() + 1;
+
+      window.location.search = `from-year=${fromYear}&from-month=${fromMonth}&to-year=${toYear}&to-month=${toMonth}`;
+    }
+
     window.location.pathname = `/detailed-view/year/${this.year}/month/${this.month}`;
   }
 }

@@ -66,13 +66,11 @@ class Welcome extends React.Component<Props, State> {
 
   private renderErrors() {
     if (this.isValid) {
-      return (
-        <div></div> 
-      );
+      return;
     }
 
     return (
-      <div>
+      <div className="error">
         To Date should be after From Date
       </div>
     );
