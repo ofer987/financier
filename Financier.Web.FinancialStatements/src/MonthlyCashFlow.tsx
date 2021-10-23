@@ -165,8 +165,8 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
     return (
       <div className="cash-flow">
         <h2>Monthly Chart</h2>
+        <h3>Navigation</h3>
         <div className="navigation">
-          <h3>Navigation</h3>
           <div className="welcome">
             <a href="/">Select a Different Time Range</a>
           </div>

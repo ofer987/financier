@@ -191,8 +191,8 @@ class DetailedCashFlow extends React.Component<Props, State> {
     return (
       <div className="cash-flow">
         <h2>Detailed Chart</h2>
+        <h3>Navigation</h3>
         <div className="navigation">
-          <h3>Navigation</h3>
           <div className="yearly-cashflow">
             <a href={`/monthly-view/from-year/${this.year}/from-month/1/to-year/${this.year}/to-month/12`}>{this.year}</a>
           </div>
