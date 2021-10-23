@@ -172,7 +172,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   renderCriteria() {
     return (
       <div className="criteria">
-        <h2>Please Select</h2>
+        <h3>Please Select</h3>
         {
           this.tags().map(tag =>
           <div className="checkbox" key={`checkbox-${tag}`}>

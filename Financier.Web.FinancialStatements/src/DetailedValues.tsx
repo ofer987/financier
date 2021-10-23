@@ -28,7 +28,7 @@ class DetailedValues extends FilterableController {
   render() {
     return (
       <div className="values">
-        <h2>Items</h2>
+        <h3>Items</h3>
         <div className="header">
           <div className="name">Name</div>
           <div className="credits">Credits</div>
