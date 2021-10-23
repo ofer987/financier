@@ -164,7 +164,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   render() {
     return (
       <div className="cash-flow">
-        <h3>{this.fromYear}</h3>
+        <h2>Monthly Chart</h2>
         <div className="navigation">
           <h3>Navigation</h3>
           <div className="welcome">
