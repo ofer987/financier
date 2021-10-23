@@ -27,13 +27,23 @@ body {
 }
 
 .navigation {
+  width: 60%;
   display: flex;
   flex-flow: wrap;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
 
-  a {
-    color: blue;
-    text-decoration-line: initial;
+  div {
+    padding: 12px 6px;
+    border: solid;
+    border-width: 1.5px;
+    border-color: black;
+    justify-content: space-between;
+
+    a {
+      color: blue;
+      text-decoration-line: initial;
+    }
   }
 }
 
