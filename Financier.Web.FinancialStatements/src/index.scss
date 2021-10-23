@@ -26,6 +26,17 @@ body {
   }
 }
 
+.navigation {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: column;
+
+  a {
+    color: blue;
+    text-decoration-line: initial;
+  }
+}
+
 .welcome {
   .date-range {
     display: flex;
@@ -48,6 +59,9 @@ body {
       font-size: 16px;
       width: 200px;
       height: 19px;
+
+      color: blue;
+      text-decoration-line: initial;
     }
   }
 }
