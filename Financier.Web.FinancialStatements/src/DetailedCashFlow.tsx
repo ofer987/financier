@@ -185,18 +185,30 @@ class DetailedCashFlow extends React.Component<Props, State> {
     )
   }
 
-  render() {
-    const monthName = d3TimeFormat.timeFormat("%B")(new Date(2020, this.props.month));
+  private renderMonthlyNavigation(year: number) {
+    return (
+      <div className="yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
+        event.preventDefault();
+        window.location.pathname = `/monthly-view/from-year/${year}/from-month/1/to-year/${year}/to-month/12`;
+      }}>
+        View the {year} Monthly Charts
+      </div>
+    );
+  }
 
+  render() {
     return (
       <div className="cash-flow">
         <h2>Detailed Chart</h2>
         <h3>Navigation</h3>
         <div className="navigation">
-          <div className="yearly-cashflow">
-            <a href={`/monthly-view/from-year/${this.year}/from-month/1/to-year/${this.year}/to-month/12`}>{this.year}</a>
+          <div className="welcome" onClick={(event) => {
+            event.preventDefault();
+            window.location.pathname = "/";
+          }}>
+            Select a Different Time Range
           </div>
-          <a href="/">Select Different Time Range</a>
+          {this.renderMonthlyNavigation(this.year)}
         </div>
         <div className="detailed-cashflow">
           {this.renderCriteria()}
