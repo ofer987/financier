@@ -51,14 +51,12 @@ class Welcome extends React.Component<Props, State> {
   }
 
   setStartDate(newDate: Date): void {
-    console.log(`changing date: ${newDate}`);
     this.setState({
       startDate: newDate
     });
   }
 
   setEndDate(newDate: Date): void {
-    console.log(`changing date: ${newDate}`);
     this.setState({
       endDate: newDate
     });
