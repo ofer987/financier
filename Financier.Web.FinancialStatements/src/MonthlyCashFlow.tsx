@@ -139,7 +139,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   private renderFromYearNavigation() {
     return (
       <div className="yearly-cashflow">
-        <a href={`/monthly-view/from-year/${this.fromYear}/from-month/1/to-year/${this.fromYear}/to-month/12`}>{this.fromYear}</a>
+        <a href={`/monthly-view/from-year/${this.fromYear}/from-month/1/to-year/${this.fromYear}/to-month/12`}>View the {this.fromYear} Monthly Charts</a>
       </div>
     );
   }
@@ -156,7 +156,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
 
     return (
       <div className="yearly-cashflow">
-        <a href={`/monthly-view/from-year/${this.toYear}/from-month/1/to-year/${this.toYear}/to-month/12`}>{this.toYear}</a>
+        <a href={`/monthly-view/from-year/${this.toYear}/from-month/1/to-year/${this.toYear}/to-month/12`}>View the {this.toYear} Monthly Charts</a>
       </div>
     );
   }
@@ -166,8 +166,9 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
       <div className="cash-flow">
         <h3>{this.fromYear}</h3>
         <div className="navigation">
+          <h3>Navigation</h3>
           <div className="welcome">
-            <a href="/">Select Different Time Range</a>
+            <a href="/">Select a Different Time Range</a>
           </div>
           {this.renderFromYearNavigation()}
           {this.renderToYearNavigation()}

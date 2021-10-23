@@ -190,15 +190,14 @@ class DetailedCashFlow extends React.Component<Props, State> {
 
     return (
       <div className="cash-flow">
-        <h3>
-          <a href={`/monthly-view/year/${this.year}/month/${this.month}`}>{monthName} - {this.year}</a>
-        </h3>
+        <h2>Detailed Chart</h2>
         <div className="navigation">
+          <h3>Navigation</h3>
           <div className="yearly-cashflow">
             <a href={`/monthly-view/from-year/${this.year}/from-month/1/to-year/${this.year}/to-month/12`}>{this.year}</a>
           </div>
+          <a href="/">Select Different Time Range</a>
         </div>
-        <a href="/">Select Different Time Range</a>
         <div className="detailed-cashflow">
           {this.renderCriteria()}
           <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
