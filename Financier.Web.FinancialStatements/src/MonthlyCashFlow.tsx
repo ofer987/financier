@@ -136,11 +136,42 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   //   )
   // }
 
+  private renderFromYearNavigation() {
+    return (
+      <div className="yearly-cashflow">
+        <a href={`/monthly-view/from-year/${this.fromYear}/from-month/1/to-year/${this.fromYear}/to-month/12`}>{this.fromYear}</a>
+      </div>
+    );
+  }
+
+  private renderToYearNavigation() {
+    console.log(this.fromYear);
+    console.log(this.toYear);
+    if (this.fromYear == this.toYear) {
+      return (
+        <div className="yearly-cashflow">
+        </div>
+      );
+    }
+
+    return (
+      <div className="yearly-cashflow">
+        <a href={`/monthly-view/from-year/${this.toYear}/from-month/1/to-year/${this.toYear}/to-month/12`}>{this.toYear}</a>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="cash-flow">
         <h3>{this.fromYear}</h3>
-        <a href="/">Select Different Time Range</a>
+        <div className="navigation">
+          <div className="welcome">
+            <a href="/">Select Different Time Range</a>
+          </div>
+          {this.renderFromYearNavigation()}
+          {this.renderToYearNavigation()}
+        </div>
         <div className="monthly-cashflow">
           <MonthlyGraph dates={this.cashFlowsByDate()} />
         </div>

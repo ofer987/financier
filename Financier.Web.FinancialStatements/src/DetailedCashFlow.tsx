@@ -194,7 +194,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
           <a href={`/monthly-view/year/${this.year}/month/${this.month}`}>{monthName} - {this.year}</a>
         </h3>
         <div className="navigation">
-          <div className="year-range">
+          <div className="yearly-cashflow">
             <a href={`/monthly-view/from-year/${this.year}/from-month/1/to-year/${this.year}/to-month/12`}>{this.year}</a>
           </div>
         </div>
