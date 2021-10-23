@@ -74,7 +74,6 @@ class DetailedCashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    console.log(props);
     this.state = { debits: [], credits: [], tags: [] };
     this.getData();
   }

@@ -111,10 +111,8 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
         }
       `
     }).then(value => {
-      console.log(value.data.getMonthlyCashFlows.length);
       const credits = this.toCreditCashFlowModel(value.data);
       const debits = this.toDebitCashFlowModel(value.data);
-      console.log(`1: ${credits.length}, ${debits.length}`);
 
       this.setState(value.data);
     });
@@ -152,23 +150,6 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
       </div>
     );
   }
-
-  // private renderToYearNavigation() {
-  //   console.log(this.fromYear);
-  //   console.log(this.toYear);
-  //   if (this.fromYear == this.toYear) {
-  //     return (
-  //       <div className="yearly-cashflow">
-  //       </div>
-  //     );
-  //   }
-  //
-  //   return (
-  //     <div className="yearly-cashflow">
-  //       <a href={`/monthly-view/from-year/${this.toYear}/from-month/1/to-year/${this.toYear}/to-month/12`}>View the {this.toYear} Monthly Charts</a>
-  //     </div>
-  //   );
-  // }
 
   render() {
     return (

@@ -67,6 +67,7 @@ class MonthlyValue extends React.Component<Props> {
 
   private toDetailedView(year: number, month: number) {
     if (typeof (this.props.dateRange) != "undefined") {
+      console.log("has date range");
       const fromYear = this.props.dateRange[0].getFullYear();
       const fromMonth = this.props.dateRange[0].getMonth() + 1;
 
