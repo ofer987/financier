@@ -16,6 +16,20 @@ class Welcome extends React.Component<Props, State> {
     return (parseInt(`${this.endYear}${this.endMonth}`) >= parseInt(`${this.startYear}${this.startMonth}`));
   }
 
+  get isMonthlyChartButtonEnabled() {
+    return this.isValid && !this.sameSelectedDates;
+  }
+
+  get isDetailedChartButtonEnabled() {
+    return this.isValid && this.sameSelectedDates;
+  }
+
+  get sameSelectedDates() {
+    return true
+      && this.startYear == this.endYear
+      && this.startMonth == this.endMonth;
+  }
+
   get startYear(): string {
     return d3TimeFormat.timeFormat("%Y")(this.startDate);
   }
@@ -74,28 +88,39 @@ class Welcome extends React.Component<Props, State> {
     );
   }
 
-  private sameSelectedDates() {
-    return true
-      && this.startYear == this.endYear
-      && this.startMonth == this.endMonth;
-  }
-
   private renderSubmission() {
-    if (this.isValid) {
-      console.log("is valid");
-      if (this.sameSelectedDates()) {
-        return (
-          <a href={`/detailed-view/year/${this.startYear}/month/${this.startMonth}`}>View Detailed Chart</a>
-        );
-      } else {
-        return (
-          <a href={`/monthly-view/from-year/${this.startYear}/from-month/${this.startMonth}/to-year/${this.endYear}/to-month/${this.endMonth}`}>View Monthly Chart</a>
-        );
-      }
-    }
+    const monthlyButtonClassName = this.isMonthlyChartButtonEnabled
+      ? "enabled"
+      : "disabled";
+    const detailedButtonClassName = this.isDetailedChartButtonEnabled
+      ? "enabled"
+      : "disabled";
 
     return (
-      <div></div>
+      <div className="navigation">
+        <div className={`monthly-chart ${monthlyButtonClassName}`} onClick={(event) => {
+          if (!this.isMonthlyChartButtonEnabled) {
+            return;
+          }
+
+          event.preventDefault();
+
+          window.location.pathname = `/monthly-view/from-year/${this.startYear}/from-month/${this.startMonth}/to-year/${this.endYear}/to-month/${this.endMonth}`;
+        }}>
+          View Monthly Chart
+        </div>
+        <div className={`detailed-chart ${detailedButtonClassName}`} onClick={(event) => {
+          if (!this.isDetailedChartButtonEnabled) {
+            return;
+          }
+
+          event.preventDefault();
+
+          window.location.pathname = `/detailed-view/year/${this.startYear}/month/${this.startMonth}`;
+        }}>
+          View Detailed Chart
+        </div>
+      </div>
     );
   }
 

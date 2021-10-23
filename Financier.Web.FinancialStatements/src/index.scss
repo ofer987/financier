@@ -62,6 +62,35 @@ body {
   }
 
   .submission {
+    padding-top: 100px;
+
+    .navigation {
+      display: flex;
+      flex-flow: wrap;
+      flex-direction: row;
+      column-gap: 30px;
+
+      div.enabled {
+        padding: 12px 6px;
+        border: solid;
+        border-width: 1.5px;
+
+        border-color: blue;
+        color: blue;
+        cursor: pointer;
+      }
+
+      div.disabled {
+        padding: 12px 6px;
+        border: solid;
+        border-width: 1.5px;
+
+        border-color: grey;
+        color: grey;
+        cursor: initial;
+      }
+    }
+
     a {
       font-size: 16px;
       width: 200px;
