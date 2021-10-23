@@ -76,12 +76,24 @@ class Welcome extends React.Component<Props, State> {
     );
   }
 
+  private sameSelectedDates() {
+    return true
+      && this.startYear == this.endYear
+      && this.startMonth == this.endMonth;
+  }
+
   private renderSubmission() {
     if (this.isValid) {
       console.log("is valid");
-      return (
-        <a href={`/monthly-view/from-year/${this.startYear}/from-month/${this.startMonth}/to-year/${this.endYear}/to-month/${this.endMonth}`}>View</a>
-      );
+      if (this.sameSelectedDates()) {
+        return (
+          <a href={`/detailed-view/year/${this.startYear}/month/${this.startMonth}`}>View Detailed Chart</a>
+        );
+      } else {
+        return (
+          <a href={`/monthly-view/from-year/${this.startYear}/from-month/${this.startMonth}/to-year/${this.endYear}/to-month/${this.endMonth}`}>View Monthly Chart</a>
+        );
+      }
     }
 
     return (
