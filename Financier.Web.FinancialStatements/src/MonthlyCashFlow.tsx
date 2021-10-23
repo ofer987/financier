@@ -136,30 +136,39 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   //   )
   // }
 
-  private renderFromYearNavigation() {
+  public navigatetoDifferentRange(event: Event) {
+    event.preventDefault();
+
+    window.location.pathname = "/";
+  }
+
+  private renderMonthlyNavigation(year: number) {
     return (
-      <div className="yearly-cashflow">
-        <a href={`/monthly-view/from-year/${this.fromYear}/from-month/1/to-year/${this.fromYear}/to-month/12`}>View the {this.fromYear} Monthly Charts</a>
+      <div className="yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
+        event.preventDefault();
+        window.location.pathname = `/monthly-view/from-year/${year}/from-month/1/to-year/${year}/to-month/12`;
+      }}>
+        View the {year} Monthly Charts
       </div>
     );
   }
 
-  private renderToYearNavigation() {
-    console.log(this.fromYear);
-    console.log(this.toYear);
-    if (this.fromYear == this.toYear) {
-      return (
-        <div className="yearly-cashflow">
-        </div>
-      );
-    }
-
-    return (
-      <div className="yearly-cashflow">
-        <a href={`/monthly-view/from-year/${this.toYear}/from-month/1/to-year/${this.toYear}/to-month/12`}>View the {this.toYear} Monthly Charts</a>
-      </div>
-    );
-  }
+  // private renderToYearNavigation() {
+  //   console.log(this.fromYear);
+  //   console.log(this.toYear);
+  //   if (this.fromYear == this.toYear) {
+  //     return (
+  //       <div className="yearly-cashflow">
+  //       </div>
+  //     );
+  //   }
+  //
+  //   return (
+  //     <div className="yearly-cashflow">
+  //       <a href={`/monthly-view/from-year/${this.toYear}/from-month/1/to-year/${this.toYear}/to-month/12`}>View the {this.toYear} Monthly Charts</a>
+  //     </div>
+  //   );
+  // }
 
   render() {
     return (
@@ -167,11 +176,15 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
         <h2>Monthly Chart</h2>
         <h3>Navigation</h3>
         <div className="navigation">
-          <div className="welcome">
-            <a href="/">Select a Different Time Range</a>
+          <div className="welcome" onClick={(event) => {
+            event.preventDefault();
+            window.location.pathname = "/";
+          }}>
+            Select a Different Time Range
           </div>
-          {this.renderFromYearNavigation()}
-          {this.renderToYearNavigation()}
+          {lodash.sortedUniq([this.fromYear, this.toYear]).map((year: number) => {
+            return this.renderMonthlyNavigation(year);
+          })}
         </div>
         <div className="monthly-cashflow">
           <MonthlyGraph dates={this.cashFlowsByDate()} />
