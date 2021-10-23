@@ -31,19 +31,16 @@ body {
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
-  justify-content: space-between;
+  column-gap: 30px;
 
   div {
     padding: 12px 6px;
     border: solid;
     border-width: 1.5px;
-    border-color: black;
-    justify-content: space-between;
 
-    a {
-      color: blue;
-      text-decoration-line: initial;
-    }
+    border-color: blue;
+    color: blue;
+    cursor: pointer;
   }
 }
 
