@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
-import * as d3 from "d3-time-format";
+import * as d3TimeFormat from "d3-time-format";
 import DetailedValues from "./DetailedValues";
 import DetailedListing from "./DetailedListing";
 import { Listing, ExpenseTypes } from "./Listing";
@@ -74,7 +74,6 @@ class DetailedCashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    console.log(props);
     this.state = { debits: [], credits: [], tags: [] };
     this.getData();
   }
@@ -172,7 +171,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   renderCriteria() {
     return (
       <div className="criteria">
-        <h2>Please Select</h2>
+        <h3>Please Select</h3>
         {
           this.tags().map(tag =>
           <div className="checkbox" key={`checkbox-${tag}`}>
@@ -185,10 +184,32 @@ class DetailedCashFlow extends React.Component<Props, State> {
     )
   }
 
+  private renderMonthlyNavigation(year: number) {
+    return (
+      <div className="yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
+        event.preventDefault();
+        window.location.pathname = `/monthly-view/from-year/${year}/from-month/1/to-year/${year}/to-month/12`;
+      }}>
+        View the {year} Monthly Charts
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="cash-flow">
-        <div className="better-together">
+        <h2>Detailed Chart</h2>
+        <h3>Navigation</h3>
+        <div className="navigation">
+          <div className="welcome" onClick={(event) => {
+            event.preventDefault();
+            window.location.pathname = "/";
+          }}>
+            Select a Different Time Range
+          </div>
+          {this.renderMonthlyNavigation(this.year)}
+        </div>
+        <div className="detailed-cashflow">
           {this.renderCriteria()}
           <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
         </div>
@@ -222,7 +243,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 
   private toDate(input: string): Date {
-    const parser = d3.timeParse("%Y-%m-%dT%H:%M:%S");
+    const parser = d3TimeFormat.timeParse("%Y-%m-%dT%H:%M:%S");
 
     return parser(input);
   }

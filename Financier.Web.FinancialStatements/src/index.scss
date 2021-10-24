@@ -1,9 +1,131 @@
-.better-together {
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto-Regular.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+body {
+  font-family: "Roboto";
+}
+
+.main-header {
+  padding: 50px 50px;
+  font-family: "Roboto";
+  font-size: 70px;
+  text-align: center;
+}
+
+.errors {
+  .error {
+    background-color: red;
+    color: white;
+    font-size: 16px;
+    height: 19px;
+    width: 500px;
+  }
+}
+
+.navigation {
+  width: 60%;
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+  column-gap: 30px;
+
+  div {
+    padding: 12px 6px;
+    border: solid;
+    border-width: 1.5px;
+
+    border-color: blue;
+    color: blue;
+    cursor: pointer;
+  }
+}
+
+.welcome {
+  .date-range {
+    display: flex;
+    flex-flow: wrap;
+    flex-direction: row;
+
+    .date-picker {
+      display: flex;
+      width: 50%;
+
+      .container {
+        flex-direction: row;
+        padding: 0 30% 0 30%;
+      }
+    }
+  }
+
+  .submission {
+    padding-top: 100px;
+
+    .navigation {
+      display: flex;
+      flex-flow: wrap;
+      flex-direction: row;
+      column-gap: 30px;
+
+      div.enabled {
+        padding: 12px 6px;
+        border: solid;
+        border-width: 1.5px;
+
+        border-color: blue;
+        color: blue;
+        cursor: pointer;
+      }
+
+      div.disabled {
+        padding: 12px 6px;
+        border: solid;
+        border-width: 1.5px;
+
+        border-color: grey;
+        color: grey;
+        cursor: initial;
+      }
+    }
+
+    a {
+      font-size: 16px;
+      width: 200px;
+      height: 19px;
+
+      color: blue;
+      text-decoration-line: initial;
+    }
+  }
+}
+
+.monthly-cashflow {
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
 
-  margin-bottom: 50px;
+  .graph {
+    width: 75%;
+
+    .chart {
+      .tick {
+        font-size: 6px;
+
+        text {
+          text-anchor: end;
+        }
+      }
+    }
+  }
+}
+
+.detailed-cashflow {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
 
   .criteria {
     width: 25%;
@@ -55,6 +177,26 @@
 
   .items {
     .item {
+      text-color: black;
+      color: black;
+    }
+
+    .item:hover {
+      color: white;
+      background-color: darkgrey;
+    }
+
+    .item:first-child {
+      div {
+        padding: 7px 0px 2px 0px;
+      }
+
+      div:first-child {
+        padding: 7px 0px 2px 0px;
+      }
+    }
+
+    .item {
       div {
         padding: 2px 0px 2px 0px;
         width: 20%;
@@ -64,6 +206,7 @@
       div:first-child {
         width: 39%;
 
+        padding: 2px 0px 2px 0px;
         border-right-color: black;
         border-right-style: solid;
         border-right-width: 1px;
@@ -84,13 +227,16 @@
       border-bottom-style: solid;
       border-bottom-color: blue;
     }
-
-    padding-top: 5px;
   }
 
   .total {
+    &:hover {
+      color: white;
+      background-color: darkgrey;
+    }
+
     div {
-      padding: 2px 0px 2px 0px;
+      padding: 7px 0px 2px 0px;
       width: 20%;
       font-family: monospace;
     }
@@ -98,6 +244,7 @@
     div:first-child {
       width: 39%;
 
+      padding: 7px 0px 2px 0px;
       border-right-color: black;
       border-right-style: solid;
       border-right-width: 1px;
@@ -112,7 +259,6 @@
     flex-flow: wrap;
     flex-direction: row;
 
-    padding-top: 5px;
     font-size: 20px;
 
     justify-content: space-between;

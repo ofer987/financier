@@ -31,6 +31,10 @@ module.exports = (env) => {
           test: [ /\.ts$/i, /\.tsx$/i ],
           use: ["ts-loader"],
         },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource',
+        },
       ],
     },
   };

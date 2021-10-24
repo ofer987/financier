@@ -7,11 +7,20 @@ import NullListing from "./NullListing";
 import FilterableController from "./FilterableController";
 import { MonthlyProps, MonthlyProp } from "./MonthlyGraph";
 
-class MonthlyValues extends React.Component<MonthlyProps> {
+interface Prop extends MonthlyProps {
+  dateRange?: [Date, Date];
+}
+
+class MonthlyValues extends React.Component<Prop> {
   decimalCount = 2;
 
+  get validMonths(): MonthlyProp[] {
+    return this.props.dates
+      .filter(date => this.isMonthValid(date.at));
+  }
+
   get totalCredits(): number {
-    var amounts = this.props.dates.map(item => item.credit.amount);
+    var amounts = this.validMonths.map(item => item.credit.amount);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
@@ -35,7 +44,7 @@ class MonthlyValues extends React.Component<MonthlyProps> {
   render() {
     return (
       <div className="values">
-        <h2>Items</h2>
+        <h3>Items</h3>
         <div className="header">
           <div className="name">When</div>
           <div className="credits">Credits</div>
@@ -44,7 +53,8 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
-          {this.props.dates.map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} />)}
+          {this.validMonths
+            .map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} dateRange={this.props.dateRange} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
@@ -54,6 +64,26 @@ class MonthlyValues extends React.Component<MonthlyProps> {
         </div>
       </div>
     );
+  }
+
+  private isMonthValid(at: Date): boolean {
+    const foundProp = this.props.dates
+      .find(date => {
+        return true
+          && date.at.getFullYear() == at.getFullYear()
+          && date.at.getMonth() == at.getMonth()
+          && date.at.getDate() == at.getDate();
+      });
+
+    if (typeof (foundProp) == "undefined") {
+      return false;
+    }
+
+    if (foundProp.credit.isNull && foundProp.debit.isNull) {
+      return false;
+    }
+
+    return true;
   }
 }
 

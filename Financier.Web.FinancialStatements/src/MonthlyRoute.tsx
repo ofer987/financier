@@ -1,20 +1,16 @@
 import * as React from "react";
 
-import MonthlyCashFlow from "./MonthlyCashFlow";
+import { MonthlyCashFlow, Props as MonthlyProps } from "./MonthlyCashFlow";
 
 interface Props {
   match: {
-    params: {
-      year: number;
-    }
+    params: MonthlyProps
   }
 }
 
 const MonthlyRoute = ( props: Props ) => {
-  console.log(`Monthly Route: ${props.match.params.year}`);
-
   return (
-    <MonthlyCashFlow year={props.match.params.year} />
+    <MonthlyCashFlow {...props.match.params} />
   );
 }
 
