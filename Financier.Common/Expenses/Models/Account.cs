@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Financier.Common.Expenses.Models
 {
     [Table("Expenses_Accounts")]
-    public class Account
+    public class Account : IAccount
     {
         [Key]
         [Required]
