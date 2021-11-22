@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
@@ -14,7 +15,11 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
     public class MagicEstateBuilderTest
     {
         public DateTime InitiatedAt { get; private set; }
+
+        [AllowNull]
         public ICashFlow CashFlow { get; private set; }
+
+        [AllowNull]
         public MagicEstateBuilder Subject { get; private set; }
 
         [SetUp]

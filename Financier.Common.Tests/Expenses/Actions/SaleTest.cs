@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Models;
@@ -8,9 +9,15 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 {
     public class SaleTest
     {
+        [AllowNull]
         public Product Television { get; private set; }
+
+        [AllowNull]
         public Product Stand { get; private set; }
+
+        [AllowNull]
         public Product House { get; private set; }
+
         public static DateTime InitiatedAt = new DateTime(2020, 1, 1);
 
         [SetUp]

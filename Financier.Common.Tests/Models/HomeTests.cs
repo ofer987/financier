@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Models;
@@ -124,6 +125,7 @@ namespace Financier.Common.Tests.Models
             );
         }
 
+        [AllowNull]
         public Home Subject { get; private set; }
 
         [SetUp]

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ namespace Financier.Common.Tests.Expenses
 {
     public class CreditCardStatementFileTests
     {
+        [AllowNull]
         public string AccountName { get; private set; }
 
         [OneTimeSetUp]
@@ -175,7 +177,7 @@ namespace Financier.Common.Tests.Expenses
                 var actual = db.Statements
                     .Include(stmt => stmt.Card)
                     .Include(stmt => stmt.Items)
-                    .FirstOrDefault();
+                    .First();
 
                 Assert.That(actual.Card.CardType, Is.EqualTo(expectedCard.CardType));
                 Assert.That(actual.Card.Statements.Count, Is.EqualTo(expectedCard.Statements.Count));
@@ -314,7 +316,7 @@ namespace Financier.Common.Tests.Expenses
                     };
                     record.CreateItem(newStatement.Id);
 
-                    var dbItem = db.Items.FirstOrDefault(i => i.Amount == 10.00M);
+                    var dbItem = db.Items.First(i => i.Amount == 10.00M);
                     Assert.That(dbItem.Statement, Is.EqualTo(newStatement));
                 }
             }

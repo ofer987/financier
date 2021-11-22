@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
@@ -9,7 +10,11 @@ namespace Financier.Common.Tests.Liabilities
     public class PrepayableMortgageTest
     {
         public DateTime PurchasedAt => Subject.InitiatedAt;
+
+        [AllowNull]
         public Financier.Common.Liabilities.FixedRateMortgage Mortgage { get; private set; }
+
+        [AllowNull]
         public Financier.Common.Liabilities.PrepayableMortgage Subject { get; private set; }
 
         [SetUp]

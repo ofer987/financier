@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using ItemTagger = Financier.Common.Expenses.ItemTagger;
@@ -11,6 +12,7 @@ namespace Financier.Common.Tests.Expenses
 {
     public class ItemTaggerTests : InitializedDatabaseTests
     {
+        [AllowNull]
         public static IEnumerable<ItemTagger> Rules;
 
         [SetUp]

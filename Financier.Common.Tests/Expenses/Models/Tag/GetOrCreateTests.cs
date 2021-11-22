@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Expenses.Models;
@@ -10,14 +11,19 @@ namespace Financier.Common.Tests.Expenses.TagManagerTests
     [TestFixtureSource(typeof(GetOrCreateTests))]
     public class GetOrCreateTests
     {
+        [AllowNull]
         public Tag DanTag { get; set; }
 
+        [AllowNull]
         public Tag RonTag { get; set; }
 
+        [AllowNull]
         public Tag KerenTag { get; set; }
 
+        [AllowNull]
         public List<Tag> ExistingTags { get; set; }
 
+        [AllowNull]
         public Tag NewTag { get; set; }
 
         [OneTimeSetUp]
