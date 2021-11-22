@@ -13,6 +13,18 @@ namespace Financier.Cli
 
         private static Regex DateRegex = new Regex(@"\d{8}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        protected AccountStatements(string accountName, string path)
+        {
+            AccountName = accountName;
+            FullPath = path;
+
+            CsvFiles = new DirectoryInfo(FullPath)
+                .GetFiles("*.csv", SearchOption.AllDirectories)
+                .Where(IsStatement)
+                .OrderBy(file => file.Name)
+                .ToArray();
+        }
+
         public static IEnumerable<AccountStatements> GetAccountStatementsList(string path)
         {
             var accounts = new DirectoryInfo(path).GetDirectories();
@@ -25,26 +37,9 @@ namespace Financier.Cli
             return results ?? new List<AccountStatements>();
         }
 
-        public void InitCsvFiles()
-        {
-            CsvFiles = new DirectoryInfo(FullPath)
-                .GetFiles("*.csv", SearchOption.AllDirectories)
-                .Where(IsStatement)
-                .OrderBy(file => file.Name)
-                .ToArray();
-        }
-
         public bool IsStatement(FileInfo file)
         {
             return DateRegex.Match(file.Name).Success;
-        }
-
-        protected AccountStatements(string accountName, string path)
-        {
-            AccountName = accountName;
-            FullPath = path;
-
-            InitCsvFiles();
         }
     }
 }

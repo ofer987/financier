@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 
 using Financier.Common;
@@ -242,7 +241,7 @@ namespace Financier.Cli
                         Console.WriteLine(similarTags.Join("\n"));
                         Console.WriteLine();
                         Console.WriteLine("Use them? (Y[es]/n[o])");
-                        var response = Console.ReadLine();
+                        var response = Console.ReadLine() ?? string.Empty;
 
                         repeat = false;
                         switch (response.ToLower().Trim())
@@ -315,7 +314,7 @@ namespace Financier.Cli
 
         public static string ReadNewTags()
         {
-            return Console.ReadLine();
+            return Console.ReadLine() ?? string.Empty;
         }
     }
 }
