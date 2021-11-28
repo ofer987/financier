@@ -98,7 +98,7 @@ class Welcome extends React.Component<Props, State> {
 
     return (
       <div className="navigation">
-        <div className={`monthly-chart ${monthlyButtonClassName}`} onClick={(event) => {
+        <div className={`button monthly-chart ${monthlyButtonClassName}`} onClick={(event) => {
           if (!this.isMonthlyChartButtonEnabled) {
             return;
           }
@@ -109,7 +109,7 @@ class Welcome extends React.Component<Props, State> {
         }}>
           View Monthly Chart
         </div>
-        <div className={`detailed-chart ${detailedButtonClassName}`} onClick={(event) => {
+        <div className={`button detailed-chart ${detailedButtonClassName}`} onClick={(event) => {
           if (!this.isDetailedChartButtonEnabled) {
             return;
           }

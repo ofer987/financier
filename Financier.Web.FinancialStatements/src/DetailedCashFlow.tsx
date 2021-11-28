@@ -186,7 +186,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
 
   private renderMonthlyNavigation(year: number) {
     return (
-      <div className="yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
+      <div className="button yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
         event.preventDefault();
         window.location.pathname = `/monthly-view/from-year/${year}/from-month/1/to-year/${year}/to-month/12`;
       }}>
@@ -201,7 +201,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
         <h2>Detailed Chart</h2>
         <h3>Navigation</h3>
         <div className="navigation">
-          <div className="welcome" onClick={(event) => {
+          <div className="button welcome" onClick={(event) => {
             event.preventDefault();
             window.location.pathname = "/";
           }}>

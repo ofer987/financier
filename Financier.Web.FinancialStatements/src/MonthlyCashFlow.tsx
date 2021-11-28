@@ -64,19 +64,19 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   }
 
   get fromYear(): number {
-    return this.props.fromYear;
+    return lodash.toNumber(this.props.fromYear);
   }
 
   get fromMonth(): number {
-    return this.props.fromMonth;
+    return lodash.toNumber(this.props.fromMonth);
   }
 
   get toYear(): number {
-    return this.props.toYear;
+    return lodash.toNumber(this.props.toYear);
   }
 
   get toMonth(): number {
-    return this.props.toMonth;
+    return lodash.toNumber(this.props.toMonth);
   }
 
   private client = new ApolloClient({
@@ -142,7 +142,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
 
   private renderMonthlyNavigation(year: number) {
     return (
-      <div className="yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
+      <div className="button yearly-cashflow" key={`monthly-view-${year}`} onClick={(event) => {
         event.preventDefault();
         window.location.pathname = `/monthly-view/from-year/${year}/from-month/1/to-year/${year}/to-month/12`;
       }}>
@@ -156,16 +156,18 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
       <div className="cash-flow">
         <h2>Monthly Chart</h2>
         <h3>Navigation</h3>
-        <div className="navigation">
-          <div className="welcome" onClick={(event) => {
+        <div className="time-navigation">
+          <div className="button welcome" onClick={(event) => {
             event.preventDefault();
             window.location.pathname = "/";
           }}>
             Select a Different Time Range
           </div>
-          {lodash.sortedUniq([this.fromYear, this.toYear]).map((year: number) => {
-            return this.renderMonthlyNavigation(year);
-          })}
+          <div className="yearly-navigation">
+            {lodash.range(this.fromYear, this.toYear + 1, 1).map((year: number) => {
+              return this.renderMonthlyNavigation(year);
+            })}
+          </div>
         </div>
         <div className="monthly-cashflow">
           <MonthlyGraph dates={this.cashFlowsByDate()} />
