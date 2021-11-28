@@ -35,6 +35,28 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     left: 40,
   }
 
+  get cumulativeProfits(): Value[] {
+    let accumulator = 0;
+
+    return this.profits.map(profit => {
+      accumulator += profit.value;
+
+      return {
+        date: profit.date,
+        value: accumulator
+      };
+    });
+  }
+
+  get profits(): Value[] {
+    return this.props.dates.map(item => {
+      return {
+        date: item.at,
+        value: item.credit.amount - item.debit.amount
+      };
+    });
+  }
+
   get credits(): Value[] {
     return this.props.dates.map(item => {
       return {
@@ -68,6 +90,8 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     this.drawYAxis();
     this.drawChart(this.credits, "black");
     this.drawChart(this.debits, "red");
+    this.drawChart(this.profits, "blue");
+    this.drawChart(this.cumulativeProfits, "darkblue");
   }
 
   render() {
@@ -80,7 +104,16 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
   }
 
   private get highestValue(): number {
-    return d3.max(this.credits.concat(this.debits).map(d => d.value), d => d);
+    let values = this.credits
+      .concat(this.debits)
+      .concat(this.profits)
+      .concat(this.cumulativeProfits)
+
+    return d3.max(values.map(d => d.value), d => d);
+  }
+
+  private get lowestValue(): number {
+    return d3.min(this.profits.map(d => d.value), d => d);
   }
 
   private xScale() {
@@ -91,7 +124,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
 
   private yScale() {
     return d3.scaleLinear()
-      .domain([0, this.highestValue])
+      .domain([this.lowestValue, this.highestValue])
       .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
