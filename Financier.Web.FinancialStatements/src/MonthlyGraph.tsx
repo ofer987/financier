@@ -148,15 +148,6 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
 
     return `${year} - ${month}`;
   }
-
-  private colour(expenseType: ExpenseTypes) {
-    switch (expenseType) {
-      case ExpenseTypes.Credit:
-      return "black";
-      case ExpenseTypes.Debit:
-      return "red";
-    }
-  }
 };
 
 export { MonthlyGraph, MonthlyProps, MonthlyProp };
