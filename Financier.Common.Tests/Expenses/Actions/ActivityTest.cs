@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Models;
@@ -9,10 +10,18 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 {
     public class ActivityTest
     {
+        [AllowNull]
         public Product Television { get; private set; }
+
+        [AllowNull]
         public Product Stand { get; private set; }
+
+        [AllowNull]
         public Product House { get; private set; }
+
+        [AllowNull]
         public Activity Subject { get; private set; }
+
         public DateTime InitiatedAt { get; private set; }
 
         [SetUp]

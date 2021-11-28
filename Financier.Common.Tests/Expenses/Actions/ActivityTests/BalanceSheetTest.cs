@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
@@ -13,9 +14,17 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
     public class BalanceSheetTest
     {
         public DateTime InitiatedAt => Subject.InitiatedAt;
+
+        [AllowNull]
         public ICashFlow CashFlow { get; private set; }
+
+        [AllowNull]
         public Activity Subject { get; private set; }
+
+        [AllowNull]
         public Home FirstHome { get; private set; }
+
+        [AllowNull]
         public Home SecondHome { get; private set; }
 
         [SetUp]

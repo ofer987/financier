@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Financier.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public  IEnumerable<DateTime> Model { get; private set; }
+        public IEnumerable<DateTime> Model { get; private set; } = Enumerable.Empty<DateTime>();
 
         public IActionResult Index()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Liabilities;
@@ -9,6 +10,7 @@ namespace Financier.Common.Tests.Liabilities
 {
     public class PaymentsTest
     {
+        [AllowNull]
         public Payments Subject { get; private set; }
 
         public static IEnumerable GetRangePositiveTestCases

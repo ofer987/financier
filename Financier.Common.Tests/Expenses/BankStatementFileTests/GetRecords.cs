@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
@@ -60,6 +61,7 @@ namespace Financier.Common.Tests.Expenses.BankStatementFileTests
             }
         }
 
+        [AllowNull]
         public string AccountName { get; private set; }
 
         protected override void InitStorage()
