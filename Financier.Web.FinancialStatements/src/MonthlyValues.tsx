@@ -44,7 +44,7 @@ class MonthlyValues extends React.Component<Prop> {
   render() {
     return (
       <div className="values">
-        <h3>Items</h3>
+        <h2>Items</h2>
         <div className="header">
           <div className="name">When</div>
           <div className="credits">Credits</div>

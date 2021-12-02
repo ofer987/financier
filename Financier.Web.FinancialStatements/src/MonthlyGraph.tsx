@@ -1,6 +1,7 @@
 import * as React from "react";
 import _ from "underscore";
 import lodash from "lodash";
+import startCase from "lodash.startcase";
 import * as d3 from "d3";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
@@ -25,13 +26,13 @@ interface Value {
 }
 
 class MonthlyGraph extends React.Component<MonthlyProps> {
-  width = 400;
-  height = 400;
+  width = 500;
+  height = 300;
 
   margin = {
-    top: 30,
-    right: 0,
-    bottom: 100,
+    top: 0,
+    right: 100,
+    bottom: 20,
     left: 40,
   }
 
@@ -86,12 +87,15 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
       return;
     }
 
+    this.drawViewBox();
     this.drawXAxis();
     this.drawYAxis();
-    this.drawChart(this.credits, "black");
-    this.drawChart(this.debits, "red");
-    this.drawChart(this.profits, "blue");
-    this.drawChart(this.cumulativeProfits, "darkblue");
+    this.drawChart(this.credits, "credits", "black");
+    this.drawChart(this.debits, "debits", "red");
+    this.drawChart(this.profits, "profits", "blue");
+    this.drawChart(this.cumulativeProfits, "cumulativeProfits", "darkblue");
+
+    this.drawLegend(["credits", "debits"]);
   }
 
   render() {
@@ -126,7 +130,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     return d3.scaleLinear()
       .domain([this.lowestValue, this.highestValue])
       .nice(5)
-      .range([this.height - this.margin.bottom, this.margin.top]);
+      .range([this.height - this.margin.bottom, 0 - this.margin.top]);
   }
 
   private myLine() {
@@ -149,22 +153,43 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
 
     svg.append("g")
       .attr("class", "y-axis")
-      .attr("transform", `translate(${this.margin.left},0)`)
+      .attr("transform", `translate(${this.margin.left}, 0)`)
       .call(d3.axisLeft(this.yScale()))
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
         .attr("y", "-2em")
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
+        .attr("class", "label")
         .text("Amount ($)")
       );
   }
 
-  private drawChart(values: Value[], colour: string) {
+  private drawLegend(names: string[]) {
     const svg = d3.select("svg.chart");
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    svg.append("path")
+    let box = svg.append("rect")
+      .attr("y", 0)
+      .attr("x", 0)
+      .attr("rx", 0)
+      .attr("ry", 0)
+      .selectAll("g")
+      .data(names)
+      .append("title")
+        .text(text => names[0]);
+  }
+
+  private drawViewBox() {
+    const svg = d3.select("svg.chart");
+
+    svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
+  }
+
+  private drawChart(values: Value[], name: string, colour: string) {
+    const svg = d3.select("svg.chart");
+
+    let path = svg.append("path")
       .datum(values)
       .attr("fill", "none")
       .attr("stroke", colour)
@@ -172,7 +197,32 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       // @ts-ignore
-      .attr("d", this.myLine())
+      .attr("d", this.myLine());
+      // .attr("text", name)
+      // .call(text => text.append("tspan")
+      //   .attr("x", -6)
+      //   .attr("y", "1.15em"));
+
+    let y = this.yScale()(values[values.length - 1].value)
+    svg.append("text")
+      .datum(values)
+      .text(startCase(name))
+      .attr("class", "label")
+      // .attr("font-size", "0.375em")
+      .attr("x", this.width - this.margin.right)
+      .attr("dx", "0.25em")
+      .attr("y", y)
+      .attr("dy", "0.25em");
+
+    // svg.append("g")
+    //   .append("text")
+    //   .append(name);
+
+    // @ts-ignore
+    // alert(_.startCase(name));
+    // svg.append("text")
+    //   // @ts-ignore
+    //   .attr("text", _.startCase(name));
   }
 
   private getName(at: Date): string {

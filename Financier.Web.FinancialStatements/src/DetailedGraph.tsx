@@ -10,11 +10,11 @@ import DetailedListing from "./DetailedListing";
 import FilterableController from "./FilterableController";
 
 class DetailedGraph extends FilterableController {
-  width = 400;
-  height = 400;
+  width = 500;
+  height = 500;
 
   margin = {
-    top: 30,
+    top: 10,
     right: 0,
     bottom: 100,
     left: 40,
@@ -48,7 +48,7 @@ class DetailedGraph extends FilterableController {
   private yScale(data: Listing[]) {
     return d3.scaleLinear()
       .domain([0, d3.max(data, d =>  d.amount)])
-      .nice(5)
+      // .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
@@ -74,8 +74,25 @@ class DetailedGraph extends FilterableController {
 
     svg.append("g")
       .attr("class", "y-axis")
-      .attr("transform", `translate(${this.margin.left},0)`)
-      .call(d3.axisLeft(this.yScale(data)).tickFormat(d3Format.format("5")))
+      .attr("transform", `translate(${this.margin.left}, 0)`)
+      // .call(d3.axisLeft(this.yScale(data)).tickFormat(d3Format.format("5")))
+      .call(d3.axisLeft(this.yScale(data)))
+      .call(g => g.select(".domain"))
+      .call(g => g.select(".tick:last-of-type text").clone()
+        .attr("y", "-2em")
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .attr("class", "label")
+        .text("Amount ($)")
+      );
+      // .call(g => g.select(".tick:last-of-type text").clone());
+      // .call(g => g.select(".tick:last-of-type text").clone()
+      //   .attr("y", "-2em")
+      //   .attr("text-anchor", "start")
+      //   .attr("font-weight", "bold")
+      //   .attr("class", "label")
+      //   .text("Amount ($)")
+      // );
 
     svg.append("g")
       .attr("class", "x-axis")

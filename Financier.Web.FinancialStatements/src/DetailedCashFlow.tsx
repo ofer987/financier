@@ -200,7 +200,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
       <div className="cash-flow">
         <h2>Detailed Chart</h2>
         <h3>Navigation</h3>
-        <div className="navigation">
+        <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
             event.preventDefault();
             window.location.pathname = "/";
