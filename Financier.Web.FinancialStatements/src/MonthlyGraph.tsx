@@ -30,7 +30,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
   height = 300;
 
   margin = {
-    top: 0,
+    top: 10,
     right: 100,
     bottom: 20,
     left: 40,
@@ -130,7 +130,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     return d3.scaleLinear()
       .domain([this.lowestValue, this.highestValue])
       .nice(5)
-      .range([this.height - this.margin.bottom, 0 - this.margin.top]);
+      .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
   private myLine() {

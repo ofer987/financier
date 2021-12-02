@@ -81,6 +81,7 @@ class DetailedGraph extends FilterableController {
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
         .attr("y", "-2em")
+        .attr("dy", "-0.25em")
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
         .attr("class", "label")

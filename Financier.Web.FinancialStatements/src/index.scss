@@ -151,6 +151,10 @@ body {
 
   .criteria {
     width: 20%;
+
+    .checkbox:first-of-type {
+      padding-top: 10px;
+    }
   }
 
   .graph {
