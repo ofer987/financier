@@ -7,8 +7,7 @@ import DetailedListing from "./DetailedListing";
 import NullListing from "./NullListing";
 
 interface Props {
-  debits: Listing[];
-  credits: Listing[];
+  listings: Listing[];
   enabledTags: string[];
 }
 
@@ -17,19 +16,24 @@ abstract class FilterableController extends React.Component<Props> {
     super(props);
   }
 
-  get enabledCredits(): Listing[] {
-    return this.getEnabledListings(this.props.credits);
+  get enabledListings(): Listing[] {
+    return this.getEnabledListings(this.props.listings);
   }
 
-  get enabledDebits(): Listing[] {
-    return this.getEnabledListings(this.props.debits);
-  }
+  // get enabledCredits(): Listing[] {
+  //   return this.getEnabledListings(this.props.credits);
+  // }
+  //
+  // get enabledDebits(): Listing[] {
+  //   return this.getEnabledListings(this.props.debits);
+  // }
 
   get enabledTags(): string[][] {
-    const creditTags = this.props.credits.map(item => item.tags);
-    const debitTags = this.props.debits.map(item => item.tags);
+    let tagsList = this.props.listings.map(item => item.tags);
+    // const creditTags = this.props.credits.map(item => item.tags);
+    // const debitTags = this.props.debits.map(item => item.tags);
 
-    let tagsList = creditTags.concat(debitTags);
+    // let tagsList = creditTags.concat(debitTags);
     tagsList = _.uniq(tagsList);
     tagsList = tagsList.filter(tags => {
       return tags.find(tag => typeof (this.enabledTagNames.find(t => t == tag)) != "undefined");
@@ -43,28 +47,28 @@ abstract class FilterableController extends React.Component<Props> {
   }
 
   get totalCredits(): number {
-    var amounts = this.props.credits
-      .filter(credit => {
-        const searchedTag = credit.tags
+    var amounts = this.props.listings
+      .filter(item => {
+        const searchedTag = item.tags
           .find(tag => _.contains(this.props.enabledTags, tag));
 
         return typeof (searchedTag) != "undefined";
       })
-      .map(item => item.amount);
+      .map(item => item.creditAmount);
     var amount = 0;
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   get totalDebits(): number {
-    var amounts = this.props.debits
+    var amounts = this.props.listings
       .filter(debit => {
         const searchedTag = debit.tags
           .find(tag => _.contains(this.props.enabledTags, tag));
 
         return typeof (searchedTag) != "undefined";
       })
-      .map(item => item.amount);
+      .map(item => item.debitAmount);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }

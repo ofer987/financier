@@ -18,7 +18,7 @@ class DetailedGraph extends FilterableController {
     right: 0,
     bottom: 100,
     left: 40,
-  }
+  };
 
   componentDidUpdate() {
     const data = this.enabledCredits.concat(this.enabledDebits);
@@ -63,15 +63,24 @@ class DetailedGraph extends FilterableController {
     const svg = d3.select("svg.chart");
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    svg.append("g")
+    let bar = svg.append("g")
       .selectAll("rect")
       .data(data)
-      .join("rect")
+
+    bar.join("rect")
       .attr("fill", (d) => this.colour(d.expenseType))
       .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
       .attr("y", d => this.yScale(data)(d.amount))
       .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
       .attr("width", this.xScale(data).bandwidth());
+
+    bar.join("text")
+      .text(d => d.amount)
+      .attr("x", d => this.xScale(data)(d.tags.join(", ")) + this.xScale(data).bandwidth() / 2)
+      .attr("y", d => this.yScale(data)(d.amount) - 2)
+      .attr("font-size", "6px")
+      .attr("text-anchor", "middle")
+      .attr("dx", )
 
     svg.append("g")
       .attr("class", "y-axis")

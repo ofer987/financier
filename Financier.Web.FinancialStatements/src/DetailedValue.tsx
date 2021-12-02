@@ -4,8 +4,7 @@ import lodash from "lodash";
 import { Listing } from "./Listing";
 
 interface Props {
-  debit: Listing;
-  credit: Listing;
+  listing: Listing;
 }
 
 class DetailedValue extends React.Component<Props> {
@@ -29,20 +28,20 @@ class DetailedValue extends React.Component<Props> {
   }
 
   get name(): string {
-    var tags = this.props.credit.tags.concat(
-      this.props.debit.tags);
+    // var tags = this.props.listing.tags.concat(
+    //   this.props.debit.tags);
 
-    return _.uniq(tags)
+    return _.uniq(this.props.listing.tags)
       .map(tag => lodash.startCase(tag))
       .join(", ");
   }
 
   get creditAmount(): string {
-    return this.props.credit.amount.toFixed(2);
+    return this.props.listing.creditAmount.toFixed(2);
   }
 
   get debitAmount(): string {
-    return this.props.debit.amount.toFixed(2);
+    return this.props.listing.debitAmount.toFixed(2);
   }
 }
 

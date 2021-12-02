@@ -1,27 +1,27 @@
 import _ from "underscore";
-import { Listing, ExpenseTypes } from "./Listing";
+import { Listing } from "./Listing";
 
 class MonthlyListing implements Listing {
-  public startAt: Date;
-  public endAt: Date;
+  public year: number;
+  public month: number;
   public tags: string[];
-  public amount: number;
-  public expenseType: ExpenseTypes;
+  public creditAmount: number;
+  public debitAmount: number;
 
   get isNull(): boolean {
     return false;
   }
 
-  constructor(year: number, month: number, amount: number, expenseType: ExpenseTypes) {
-    this.startAt = new Date(year, month);
-    this.endAt = new Date(year, month);
-    this.amount = amount;
-    this.expenseType = expenseType;
+  constructor(year: number, month: number, creditAmount: number, debitAmount: number) {
+    this.year = year;
+    this.month = month;
+    this.creditAmount = creditAmount;
+    this.debitAmount = debitAmount;
     this.tags = [];
   }
 
   toString(): string {
-    return this.startAt.toString();
+    return `${this.year.toString()} + ${this.month.toString()}`;
   }
 }
 
