@@ -154,8 +154,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   render() {
     return (
       <div className="cash-flow">
-        <h2>Monthly Chart</h2>
-        <h3>Navigation</h3>
+        <h2>Navigation</h2>
         <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
             event.preventDefault();

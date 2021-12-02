@@ -171,7 +171,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   renderCriteria() {
     return (
       <div className="criteria">
-        <h3>Please Select</h3>
+        <h2>Criteria</h2>
         {
           this.tags().map(tag =>
           <div className="checkbox" key={`checkbox-${tag}`}>
@@ -198,8 +198,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   render() {
     return (
       <div className="cash-flow">
-        <h2>Detailed Chart</h2>
-        <h3>Navigation</h3>
+        <h2>Navigation</h2>
         <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
             event.preventDefault();

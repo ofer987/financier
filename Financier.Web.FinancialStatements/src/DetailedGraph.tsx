@@ -33,6 +33,7 @@ class DetailedGraph extends FilterableController {
   render() {
     return (
       <div className="graph">
+        <h2>Graph</h2>
         <svg className="chart" />
       </div>
     );
