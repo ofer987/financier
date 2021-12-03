@@ -1,14 +1,12 @@
 import _ from "underscore";
 import lodash from "lodash";
 
-import { Listing, ExpenseTypes } from "./Listing";
+import { Listing } from "./Listing";
 
 class DetailedListing implements Listing {
-  public startAt: Date;
-  public endAt: Date;
   public tags: string[];
-  public amount: number;
-  public expenseType: ExpenseTypes;
+  public creditAmount: number;
+  public debitAmount: number;
 
   static hasTag(tag: string, listing: Listing): boolean {
     if (_.contains(listing.tags, tag)) {
@@ -22,11 +20,9 @@ class DetailedListing implements Listing {
     return false;
   }
 
-  constructor(startAt: Date, endAt: Date, tags: { name: string }[], amount: number, expenseType: ExpenseTypes) {
-    this.startAt = startAt;
-    this.endAt = endAt;
-    this.amount = amount;
-    this.expenseType = expenseType;
+  constructor(tags: { name: string }[], creditAmount: number, debitAmount) {
+    this.creditAmount = creditAmount;
+    this.debitAmount = debitAmount;
 
     this.init(tags);
   }
