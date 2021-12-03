@@ -29,8 +29,7 @@ interface Props {
 }
 
 class State {
-  debits: Listing[];
-  credits: Listing[];
+  listings: Listing[];
   tags: CheckedTag[];
 }
 
@@ -78,11 +77,9 @@ class DetailedCashFlow extends React.Component<Props, State> {
     this.getData();
   }
 
-  getAllTags(credits: Listing[], debits: Listing[]): CheckedTag[] {
-    const tagsList = credits.map(listing => listing.tags).concat(debits.map(listing => listing.tags));
-
-    let names = tagsList.flatMap(names => names);
-    names = _.uniq(names);
+  getAllTags(listings: Listing[]): CheckedTag[] {
+    const tags = listings.flatMap(listing => listing.tags);
+    const names = _.uniq(tags);
 
     return names.map(name => {
       return {
@@ -145,13 +142,13 @@ class DetailedCashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
-      const credits = this.toCreditCashFlowModel(value.data);
-      const debits = this.toDebitCashFlowModel(value.data);
+      const listings = this.toListings(value.data);
+      // const credits = this.toCreditCashFlowModel(value.data);
+      // const debits = this.toDebitCashFlowModel(value.data);
 
       this.setState({
-        credits,
-        debits,
-        tags: this.getAllTags(credits, debits)
+        listings,
+        tags: this.getAllTags(listings)
       });
     });
   }
@@ -210,36 +207,70 @@ class DetailedCashFlow extends React.Component<Props, State> {
         </div>
         <div className="detailed-cashflow">
           {this.renderCriteria()}
-          <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+          <DetailedGraph listings={this.state.listings} enabledTags={this.enabledTags()} />
         </div>
-        <DetailedValues debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+        <DetailedValues listings={this.state.listings}  enabledTags={this.enabledTags()} />
       </div>
     );
   }
 
-  private toDebitCashFlowModel(data: CashFlowResponse): DetailedListing[] {
+  private toListings(data: CashFlowResponse): DetailedListing[] {
     var cashFlow = data.getMonthlyCashFlow;
 
-    return cashFlow.debitListings.map(listing => new DetailedListing(
-      this.toDate(cashFlow.startAt),
-      this.toDate(cashFlow.endAt),
-      listing.tags,
-      listing.amount,
-      ExpenseTypes.Debit
+    let results = cashFlow.debitListings.map(item => new DetailedListing(
+      item.tags,
+      0,
+      item.amount,
     ));
+
+    cashFlow.creditListings.forEach(item => {
+      let creditListing = new DetailedListing(
+        item.tags,
+        item.amount,
+        0
+      );
+
+      let doesListingExist = false;
+      for (let listing of results) {
+        if (listing.toString() == creditListing.toString()) {
+          doesListingExist = true;
+
+          listing.creditAmount = creditListing.creditAmount;
+          break;
+        }
+      }
+
+      if (!doesListingExist) {
+        results.push(creditListing);
+      }
+    });
+
+    return results;
   }
 
-  private toCreditCashFlowModel(data: CashFlowResponse): DetailedListing[] {
-    var cashFlow = data.getMonthlyCashFlow;
-
-    return cashFlow.creditListings.map(listing => new DetailedListing(
-      this.toDate(cashFlow.startAt),
-      this.toDate(cashFlow.endAt),
-      listing.tags,
-      listing.amount,
-      ExpenseTypes.Credit
-    ));
-  }
+  // private toDebitCashFlowModel(data: CashFlowResponse): DetailedListing[] {
+  //   var cashFlow = data.getMonthlyCashFlow;
+  //
+  //   return cashFlow.debitListings.map(listing => new DetailedListing(
+  //     this.toDate(cashFlow.startAt),
+  //     this.toDate(cashFlow.endAt),
+  //     listing.tags,
+  //     listing.amount,
+  //     ExpenseTypes.Debit
+  //   ));
+  // }
+  //
+  // private toCreditCashFlowModel(data: CashFlowResponse): DetailedListing[] {
+  //   var cashFlow = data.getMonthlyCashFlow;
+  //
+  //   return cashFlow.creditListings.map(listing => new DetailedListing(
+  //     this.toDate(cashFlow.startAt),
+  //     this.toDate(cashFlow.endAt),
+  //     listing.tags,
+  //     listing.amount,
+  //     ExpenseTypes.Credit
+  //   ));
+  // }
 
   private toDate(input: string): Date {
     const parser = d3TimeFormat.timeParse("%Y-%m-%dT%H:%M:%S");

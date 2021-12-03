@@ -27,14 +27,14 @@ class DetailedListing implements Listing {
     this.init(tags);
   }
 
-  init(values: { name: string }[]): void {
+  public toString(): string {
+    return this.tags.join("-");
+  }
+
+  private init(values: { name: string }[]): void {
     this.tags = values
       .map(values => values.name)
       .map(name => lodash.startCase(name));
-  }
-
-  toString(): string {
-    return this.tags.join("-");
   }
 }
 
