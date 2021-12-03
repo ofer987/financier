@@ -1,6 +1,6 @@
 import Nullable from "./Nullable";
 
-enum ExpenseTypes { Credit,  Debit };
+enum ExpenseTypes { Credit, Debit };
 
 interface Listing extends Nullable  {
   startAt: Date;

@@ -18,7 +18,7 @@ class DetailedGraph extends FilterableController {
     right: 0,
     bottom: 100,
     left: 40,
-  }
+  };
 
   componentDidUpdate() {
     const data = this.enabledCredits.concat(this.enabledDebits);
