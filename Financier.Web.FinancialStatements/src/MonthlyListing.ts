@@ -8,7 +8,11 @@ class MonthlyListing implements Listing {
   public creditAmount: number;
   public debitAmount: number;
 
-  get isNull(): boolean {
+  public get profitAmount(): number {
+    return this.creditAmount - this.debitAmount;
+  }
+
+  public get isNull(): boolean {
     return false;
   }
 
@@ -20,7 +24,7 @@ class MonthlyListing implements Listing {
     this.tags = [];
   }
 
-  toString(): string {
+  public toString(): string {
     return `${this.year.toString()} + ${this.month.toString()}`;
   }
 }

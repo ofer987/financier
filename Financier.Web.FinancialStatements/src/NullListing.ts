@@ -5,11 +5,15 @@ class NullListing implements Listing {
   public creditAmount = 0;
   public debitAmount = 0;
 
-  get isNull(): boolean {
+  public get profitAmount(): number {
+    return this.creditAmount - this.debitAmount;
+  }
+
+  public get isNull(): boolean {
     return true;
   }
 
-  toString(): string {
+  public toString(): string {
     return Math.random().toString(16).substr(2, 13);
   }
 }

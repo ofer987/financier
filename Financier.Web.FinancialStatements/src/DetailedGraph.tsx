@@ -5,11 +5,10 @@ import * as d3 from "d3";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 
-import { Listing, ExpenseTypes } from "./Listing";
-import DetailedListing from "./DetailedListing";
-import FilterableController from "./FilterableController";
+import { Listing } from "./Listing";
+import { DetailedListing } from "./DetailedCashFlow";
 
-class DetailedGraph extends FilterableController {
+class DetailedGraph extends React.Component<DetailedListing[]> {
   width = 500;
   height = 500;
 
@@ -21,13 +20,11 @@ class DetailedGraph extends FilterableController {
   };
 
   componentDidUpdate() {
-    const data = this.enabledCredits.concat(this.enabledDebits);
-
     // Remove existing chart elements (if exist)
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    this.chart(data);
+    this.chart(this.props.map(d => d));
   }
 
   render() {
@@ -39,21 +36,21 @@ class DetailedGraph extends FilterableController {
     );
   }
 
-  private xScale(data: Listing[]) {
+  private xScale(data: DetailedListing[]) {
     return d3.scaleBand()
       .domain(data.map(item => item.tags.join(", ")))
       .range([this.margin.left, this.width - this.margin.right])
       .padding(0.1);
   }
 
-  private yScale(data: Listing[]) {
+  private yScale(data: DetailedListing[]) {
     return d3.scaleLinear()
-      .domain([0, d3.max(data, d =>  d.amount)])
+      .domain([0, d3.max(data, d =>  d.listing.profitAmount)])
       // .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
-  private chart(values: Listing[]) {
+  private chart(values: DetailedListing[]) {
     const data = values;
 
     if (data.length == 0) {
@@ -68,16 +65,16 @@ class DetailedGraph extends FilterableController {
       .data(data)
 
     bar.join("rect")
-      .attr("fill", (d) => this.colour(d.expenseType))
+      .attr("fill", (d) => this.colour(d.listing.profitAmount))
       .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
-      .attr("y", d => this.yScale(data)(d.amount))
-      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount))
+      .attr("y", d => this.yScale(data)(d.listing.profitAmount))
+      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.listing.profitAmount))
       .attr("width", this.xScale(data).bandwidth());
 
     bar.join("text")
-      .text(d => d.amount)
+      .text(d => d.listing.profitAmount)
       .attr("x", d => this.xScale(data)(d.tags.join(", ")) + this.xScale(data).bandwidth() / 2)
-      .attr("y", d => this.yScale(data)(d.amount) - 2)
+      .attr("y", d => this.yScale(data)(d.listing.profitAmount) - 2)
       .attr("font-size", "6px")
       .attr("text-anchor", "middle")
       .attr("dx", )
@@ -85,7 +82,6 @@ class DetailedGraph extends FilterableController {
     svg.append("g")
       .attr("class", "y-axis")
       .attr("transform", `translate(${this.margin.left}, 0)`)
-      // .call(d3.axisLeft(this.yScale(data)).tickFormat(d3Format.format("5")))
       .call(d3.axisLeft(this.yScale(data)))
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
@@ -117,13 +113,12 @@ class DetailedGraph extends FilterableController {
       .attr("transform", "rotate(-90, 0, 0)");
   }
 
-  private colour(expenseType: ExpenseTypes) {
-    switch (expenseType) {
-      case ExpenseTypes.Credit:
+  private colour(profit: number) {
+    if (profit >=0) {
       return "black";
-      case ExpenseTypes.Debit:
-      return "red";
     }
+
+    return "red";
   }
 
   private createUniqueKey(item: DetailedListing): string {

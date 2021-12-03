@@ -2,41 +2,42 @@ import * as React from "react";
 import _  from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
-import { MonthlyProp } from "./MonthlyGraph";
+import { MonthlyListing } from "./MonthlyCashFlow";
 
 import { Listing } from "./Listing";
 
-interface Props extends MonthlyProp {
-  dateRange?: [Date, Date];
-}
+// interface Props extends MonthlyProp {
+//   dateRange?: [Date, Date];
+// }
 
-class MonthlyValue extends React.Component<Props> {
+class MonthlyValue extends React.Component<MonthlyListing> {
   private decimalCount = 2;
 
-  get name(): string {
+  public get name(): string {
+    const at = new Date(this.year, this.month);
     const year = this.year;
-    const month = d3TimeFormat.timeFormat("%B")(this.props.at);
+    const monthName = d3TimeFormat.timeFormat("%B")(at);
 
-    return `${year} - ${month}`;
+    return `${year} - ${monthName}`;
   }
 
-  get year(): number {
-    return this.props.at.getFullYear();
+  public get year(): number {
+    return this.props.year;
   }
 
-  get month(): number {
-    return this.props.at.getMonth() + 1;
+  public get month(): number {
+    return this.props.month + 1;
   }
 
-  get creditAmount(): number {
-    return this.props.credit.amount;
+  public get creditAmount(): number {
+    return this.props.listing.creditAmount;
   }
 
-  get debitAmount(): number {
-    return this.props.debit.amount;
+  public get debitAmount(): number {
+    return this.props.listing.debitAmount;
   }
 
-  get accountingFormattedProfit(): string {
+  public get accountingFormattedProfit(): string {
     const profit = (this.creditAmount - this.debitAmount);
 
     if (profit >= 0) {
@@ -46,9 +47,9 @@ class MonthlyValue extends React.Component<Props> {
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
 
-  render() {
+  public render() {
     return (
-      <div className="item" id={this.name} key={this.name} onClick={() => this.toDetailedView(this.year, this.month)}>
+      <div className="item" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, this.month)}>
         <div className="name">
           {this.name}
         </div>
@@ -65,18 +66,7 @@ class MonthlyValue extends React.Component<Props> {
     )
   }
 
-  private toDetailedView(year: number, month: number) {
-    if (typeof (this.props.dateRange) != "undefined") {
-      console.log("has date range");
-      const fromYear = this.props.dateRange[0].getFullYear();
-      const fromMonth = this.props.dateRange[0].getMonth() + 1;
-
-      const toYear = this.props.dateRange[1].getFullYear();
-      const toMonth = this.props.dateRange[1].getMonth() + 1;
-
-      window.location.search = `from-year=${fromYear}&from-month=${fromMonth}&to-year=${toYear}&to-month=${toMonth}`;
-    }
-
+  private navigateToDetailedView(year: number, month: number) {
     window.location.pathname = `/detailed-view/year/${this.year}/month/${this.month}`;
   }
 }

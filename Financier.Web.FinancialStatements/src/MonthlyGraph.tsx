@@ -1,23 +1,25 @@
 import * as React from "react";
 import _ from "underscore";
 import lodash from "lodash";
-import startCase from "lodash.startcase";
 import * as d3 from "d3";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 import * as d3TimeFormat from "d3-time-format";
 
-import { Listing, ExpenseTypes } from "./Listing";
+import { Listing } from "./Listing";
+import { MonthlyListing } from "./MonthlyCashFlow";
 
 interface MonthlyProps {
-  dates: MonthlyProp[];
+  dates: MonthlyListing[];
 }
 
 interface MonthlyProp {
-  at: Date;
-  credit: Listing;
-  debit: Listing;
+  year: number;
+  month: number;
+  listing: Listing;
+  // credit: Listing;
+  // debit: Listing;
 }
 
 interface Value {
@@ -25,7 +27,7 @@ interface Value {
   value: number;
 }
 
-class MonthlyGraph extends React.Component<MonthlyProps> {
+class MonthlyGraph extends React.Component<MonthlyListing[]> {
   width = 500;
   height = 300;
 
@@ -50,28 +52,28 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
   }
 
   get profits(): Value[] {
-    return this.props.dates.map(item => {
+    return this.props.map(item => {
       return {
-        date: item.at,
-        value: item.credit.amount - item.debit.amount
+        date: new Date(item.year, item.month, 1),
+        value: item.listing.profitAmount
       };
     });
   }
 
   get credits(): Value[] {
-    return this.props.dates.map(item => {
+    return this.props.map(item => {
       return {
-        date: item.at,
-        value: item.credit.amount
+        date: new Date(item.year, item.month, 1),
+        value: item.listing.creditAmount
       };
     });
   }
 
   get debits(): Value[] {
-    return this.props.dates.map(item => {
+    return this.props.map(item => {
       return {
-        date: item.at,
-        value: item.debit.amount
+        date: new Date(item.year, item.month, 1),
+        value: item.listing.debitAmount
       };
     });
   }
@@ -83,7 +85,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    if (this.props.dates.length == 0) {
+    if (this.props.length == 0) {
       return;
     }
 
@@ -121,8 +123,14 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
   }
 
   private xScale() {
+    const dates = this.props.map(item => {
+      return {
+        value: 0, // Only the date is important
+        date: new Date(item.year, item.month, 1)
+      }
+    });
     return d3.scaleTime()
-      .domain(d3.extent(this.props.dates, d => d.at))
+      .domain(d3.extent(dates, d => d.date))
       .range([this.margin.left, this.width - this.margin.right]);
   }
 
@@ -206,7 +214,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     let y = this.yScale()(values[values.length - 1].value)
     svg.append("text")
       .datum(values)
-      .text(startCase(name))
+      .text(lodash.startCase(name))
       .attr("class", "label")
       // .attr("font-size", "0.375em")
       .attr("x", this.width - this.margin.right)

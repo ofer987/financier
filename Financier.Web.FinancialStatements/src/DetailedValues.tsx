@@ -4,20 +4,37 @@ import _ from "underscore";
 import DetailedValue from "./DetailedValue";
 import { Listing } from "./Listing";
 import NullListing from "./NullListing";
-import FilterableController from "./FilterableController";
+import { DetailedListing } from "./DetailedCashFlow";
 
-interface Props {
-  debits: Listing[];
-  credits: Listing[];
-  enabledTags: string[];
-}
-
-class DetailedValues extends FilterableController {
+class DetailedValues extends React.Component<DetailedListing[]> {
   decimalCount = 2;
 
-  get accountingFormattedProfit(): string {
-    const profit = (this.totalCredits - this.totalDebits);
+  public get totalCredits(): number {
+    var amounts = this.props
+      .map(item => item.listing)
+      .map(item => item.creditAmount);
 
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  public get totalDebits(): number {
+    var amounts = this.props
+      .map(item => item.listing)
+      .map(item => item.debitAmount);
+
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  public get totalProfit(): number {
+    var amounts = this.props
+      .map(item => item.listing)
+      .map(item => item.profitAmount);
+
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  public get accountingFormattedProfit(): string {
+    const profit = this.totalProfit;
     if (profit >= 0) {
       return profit.toFixed(this.decimalCount);
     }
@@ -36,8 +53,7 @@ class DetailedValues extends FilterableController {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.enabledCredits.map(listing => <DetailedValue debit={new NullListing()} credit={listing} key={listing.toString()} />)}
-          {this.enabledDebits.map(listing => <DetailedValue debit={listing} credit={new NullListing()} key={listing.toString()} />)}
+          {this.props.map(item => <DetailedValue {...item} key={item.toString()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
