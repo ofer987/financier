@@ -1,7 +1,6 @@
 import * as React from "react";
 import _ from "underscore";
 import lodash from "lodash";
-import startCase from "lodash.startcase";
 import * as d3 from "d3";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
@@ -206,7 +205,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     let y = this.yScale()(values[values.length - 1].value)
     svg.append("text")
       .datum(values)
-      .text(startCase(name))
+      .text(lodash.startCase(name))
       .attr("class", "label")
       // .attr("font-size", "0.375em")
       .attr("x", this.width - this.margin.right)
