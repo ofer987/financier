@@ -14,9 +14,11 @@ interface MonthlyProps {
 }
 
 interface MonthlyProp {
-  at: Date;
-  credit: Listing;
-  debit: Listing;
+  year: number;
+  month: number;
+  listing: Listing;
+  // credit: Listing;
+  // debit: Listing;
 }
 
 interface Value {
@@ -52,7 +54,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     return this.props.dates.map(item => {
       return {
         date: item.at,
-        value: item.credit.amount - item.debit.amount
+        value: item.listing.profitAmount
       };
     });
   }
@@ -61,7 +63,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     return this.props.dates.map(item => {
       return {
         date: item.at,
-        value: item.credit.amount
+        value: item.listing.creditAmount
       };
     });
   }
@@ -70,7 +72,7 @@ class MonthlyGraph extends React.Component<MonthlyProps> {
     return this.props.dates.map(item => {
       return {
         date: item.at,
-        value: item.debit.amount
+        value: item.listing.debitAmount
       };
     });
   }

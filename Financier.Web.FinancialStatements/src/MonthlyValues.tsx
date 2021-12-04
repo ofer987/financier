@@ -8,7 +8,7 @@ import FilterableController from "./FilterableController";
 import { MonthlyProps, MonthlyProp } from "./MonthlyGraph";
 
 interface Prop extends MonthlyProps {
-  dateRange?: [Date, Date];
+  dateRange: [Date, Date];
 }
 
 class MonthlyValues extends React.Component<Prop> {
@@ -41,7 +41,7 @@ class MonthlyValues extends React.Component<Prop> {
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
 
-  render() {
+  public render() {
     return (
       <div className="values">
         <h2>Items</h2>
@@ -53,6 +53,7 @@ class MonthlyValues extends React.Component<Prop> {
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
+          {this.dates}
           {this.validMonths
             .map(item => <MonthlyValue at={item.at} credit={item.credit} debit={item.debit} key={item.at.toString()} dateRange={this.props.dateRange} />)}
         </div>
@@ -66,20 +67,34 @@ class MonthlyValues extends React.Component<Prop> {
     );
   }
 
+  private dates(): { year: number, month: number }[] {
+    const startAt = this.props.dateRange[0];
+    const endAt = this.props.dateRange[1];
+
+    let results: { year: number, month: number }[] = [];
+    for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
+      results.push({
+        year: at.getFullYear(),
+        month: at.getMonth() + 1
+      });
+    }
+
+    return results;
+  }
+
   private isMonthValid(at: Date): boolean {
     const foundProp = this.props.dates
       .find(date => {
         return true
-          && date.at.getFullYear() == at.getFullYear()
-          && date.at.getMonth() == at.getMonth()
-          && date.at.getDate() == at.getDate();
+          && date.year == at.getFullYear()
+          && date.month == at.getMonth()
       });
 
     if (typeof (foundProp) == "undefined") {
       return false;
     }
 
-    if (foundProp.credit.isNull && foundProp.debit.isNull) {
+    if (foundProp.listing.isNull) {
       return false;
     }
 

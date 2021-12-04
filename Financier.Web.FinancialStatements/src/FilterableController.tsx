@@ -54,21 +54,21 @@ abstract class FilterableController extends React.Component<Props> {
 
         return typeof (searchedTag) != "undefined";
       })
-      .map(item => item.creditAmount);
+      .map(item => item.amount);
     var amount = 0;
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   get totalDebits(): number {
-    var amounts = this.props.listings
+    var amounts = this.props.debits
       .filter(debit => {
         const searchedTag = debit.tags
           .find(tag => _.contains(this.props.enabledTags, tag));
 
         return typeof (searchedTag) != "undefined";
       })
-      .map(item => item.debitAmount);
+      .map(item => item.amount);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }

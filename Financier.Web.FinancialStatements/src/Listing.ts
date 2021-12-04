@@ -1,14 +1,18 @@
-import Nullable from "./Nullable";
-
 // TODO: Remove?
-enum ExpenseTypes { Credit, Debit };
+// enum ExpenseTypes { Credit, Debit };
 
-interface Listing extends Nullable  {
-  tags: string[];
-  creditAmount: number;
-  debitAmount: number;
+class Listing {
+  public creditAmount: number;
+  public debitAmount: number;
 
-  toString(): string;
+  public get profitAmount(): number {
+    return this.creditAmount - this.debitAmount;
+  }
+
+  public constructor(creditAmount: number, debitAmount: number) {
+    this.creditAmount = creditAmount;
+    this.debitAmount = debitAmount;
+  }
 }
 
-export { Listing, ExpenseTypes };
+export { Listing };
