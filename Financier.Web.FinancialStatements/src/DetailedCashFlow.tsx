@@ -179,6 +179,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   private toggleTag(name: string): void {
     const currentTags = this.state.checkedTags;
     const selectedTag = currentTags.find(currentTag => currentTag.name == name);
+
     if (typeof (selectedTag) == "undefined") {
       return;
     }

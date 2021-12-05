@@ -2,12 +2,13 @@ import * as React from "react";
 import _  from "underscore";
 import lodash from "lodash";
 import { Listing } from "./Listing";
+import { DetailedListing } from "./DetailedCashFlow";
 
-interface Props {
-  listing: Listing;
-}
+// interface Props {
+//   listing: Listing;
+// }
 
-class DetailedValue extends React.Component<Props> {
+class DetailedValue extends React.Component<DetailedListing> {
   render() {
     return (
       <div className="item" id={this.name} key={this.name}>
@@ -31,7 +32,7 @@ class DetailedValue extends React.Component<Props> {
     // var tags = this.props.listing.tags.concat(
     //   this.props.debit.tags);
 
-    return _.uniq(this.props.listing.tags)
+    return _.uniq(this.props.tags)
       .map(tag => lodash.startCase(tag))
       .join(", ");
   }
