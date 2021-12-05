@@ -82,7 +82,6 @@ class DetailedGraph extends React.Component<DetailedListing[]> {
     svg.append("g")
       .attr("class", "y-axis")
       .attr("transform", `translate(${this.margin.left}, 0)`)
-      // .call(d3.axisLeft(this.yScale(data)).tickFormat(d3Format.format("5")))
       .call(d3.axisLeft(this.yScale(data)))
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()

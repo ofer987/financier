@@ -299,4 +299,4 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
   }
 }
 
-export { CashFlow, MonthlyListing, Props };
+export { MonthlyCashFlow, MonthlyListing, Props };
