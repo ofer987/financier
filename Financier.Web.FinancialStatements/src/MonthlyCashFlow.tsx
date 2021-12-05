@@ -29,10 +29,10 @@ interface Props {
   toMonth: number;
 }
 
-interface CheckedTag {
-  name: string;
-  checked: boolean;
-}
+// interface CheckedTag {
+//   name: string;
+//   checked: boolean;
+// }
 
 interface CashFlow {
   startAt: string;
@@ -56,9 +56,9 @@ interface MonthlyListing {
 }
 
 class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
-  // get listings(): readonly Listing[] {
-  //   return this.state;
-  // }
+  get listings(): MonthlyListing[] {
+    return this.state.map(v => v);
+  }
 
   get fromYear(): number {
     return lodash.toNumber(this.props.fromYear);
@@ -109,7 +109,7 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
         }
       `
     }).then(value => {
-      const listings = this.toListings(value);
+      const listings = this.toListings(value.data);
 
       // const credits = this.toCreditCashFlowModel(value.data);
       // const debits = this.toDebitCashFlowModel(value.data);
@@ -169,9 +169,9 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
           </div>
         </div>
         <div className="monthly-cashflow">
-          <MonthlyGraph dates={this.toListings(this.cashFlows)} />
+          <MonthlyGraph {...this.listings} />
         </div>
-        <MonthlyValues dates={this.toListings(this.cashFlows)} dateRange={this.dateRange()} />
+        <MonthlyValues {...this.listings} />
       </div>
     );
   }
@@ -280,17 +280,17 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
   //   });
   // }
 
-  private dateRange(): [Date, Date] | undefined {
-    const values = this.cashFlows;
-    if (values.length == 0) {
-      return undefined;
-    }
-
-    return [
-      this.toDate(values[0].startAt),
-      this.toDate(values[values.length - 1].startAt),
-    ];
-  }
+  // private dateRange(): [Date, Date] | undefined {
+  //   const values = this.cashFlows;
+  //   if (values.length == 0) {
+  //     return undefined;
+  //   }
+  //
+  //   return [
+  //     this.toDate(values[0].startAt),
+  //     this.toDate(values[values.length - 1].startAt),
+  //   ];
+  // }
 
   private toDate(input: string): Date {
     const parser = d3.timeParse("%Y-%m-%dT%H:%M:%S");
@@ -299,4 +299,4 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
   }
 }
 
-export { CashFlow, Props };
+export { CashFlow, MonthlyListing, Props };

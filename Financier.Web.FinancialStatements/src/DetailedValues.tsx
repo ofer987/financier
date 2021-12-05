@@ -4,7 +4,7 @@ import _ from "underscore";
 import DetailedValue from "./DetailedValue";
 import { Listing } from "./Listing";
 import NullListing from "./NullListing";
-import FilterableController from "./FilterableController";
+import { DetailedListing } from "./DetailedCashFlow";
 
 interface Props {
   debits: Listing[];
@@ -12,7 +12,7 @@ interface Props {
   enabledTags: string[];
 }
 
-class DetailedValues extends FilterableController {
+class DetailedValues extends React.Component<DetailedListing[]> {
   decimalCount = 2;
 
   get accountingFormattedProfit(): string {

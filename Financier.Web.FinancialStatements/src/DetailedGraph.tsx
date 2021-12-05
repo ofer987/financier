@@ -5,11 +5,10 @@ import * as d3 from "d3";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 
-import { Listing, ExpenseTypes } from "./Listing";
-import DetailedListing from "./DetailedListing";
-import FilterableController from "./FilterableController";
+import { Listing } from "./Listing";
+import { DetailedListing } from "./DetailedCashFlow";
 
-class DetailedGraph extends FilterableController {
+class DetailedGraph extends React.Component<DetailedListing[]> {
   width = 500;
   height = 500;
 

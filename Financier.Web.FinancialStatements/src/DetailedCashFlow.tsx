@@ -7,8 +7,7 @@ import _ from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
 import DetailedValues from "./DetailedValues";
-import DetailedListing from "./DetailedListing";
-import { Listing, ExpenseTypes } from "./Listing";
+import { Listing } from "./Listing";
 import { DetailedGraph } from "./DetailedGraph";
 import {
   ApolloClient,
@@ -29,13 +28,18 @@ interface Props {
 }
 
 class State {
-  listings: Listing[];
-  tags: CheckedTag[];
+  listings: DetailedListing[];
+  checkedTags: CheckedTag[];
 }
 
 interface CheckedTag {
   name: string;
   checked: boolean;
+}
+
+interface DetailedListing {
+  tags: string[];
+  listing: Listing;
 }
 
 interface CashFlowResponse {
@@ -73,11 +77,11 @@ class DetailedCashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { debits: [], credits: [], tags: [] };
+    this.state = { listings: [], checkedTags: [] };
     this.getData();
   }
 
-  getAllTags(listings: Listing[]): CheckedTag[] {
+  public getUncheckedTags(listings: DetailedListing[]): CheckedTag[] {
     const tags = listings.flatMap(listing => listing.tags);
     const names = _.uniq(tags);
 
@@ -89,36 +93,55 @@ class DetailedCashFlow extends React.Component<Props, State> {
     });
   }
 
-  enabledTags(): string[] {
-    if (this.state.tags.filter(tag => tag.checked).length == 0) {
-      return this.state.tags.map(tag => tag.name);
+  public enabledTags(): string[] {
+    // Return all tags
+    if (this.state.checkedTags.filter(tag => tag.checked).length == 0) {
+      return this.state.checkedTags.map(tag => tag.name);
     }
 
-    return this.state.tags
+    return this.state.checkedTags
       .filter(tag => tag.checked)
       .map(tag => tag.name);
   }
 
-  allTags(credits: Listing[], debits: Listing[]): string[][] {
-    var creditTags = credits.map(item => item.tags);
-    var debitTags = debits.map(item => item.tags);
+  public enabledListings(): DetailedListing[] {
+    const enabledTags = this.enabledTags();
 
-    var tags = creditTags.concat(debitTags);
+    return this.state.listings.filter(item => {
+      item.tags.forEach(item1 => {
+        enabledTags.forEach(item2 => {
+          if (item1 == item2) {
+            return true;
+          }
+        });
 
-    return _.uniq(tags);
-    return tags;
+        return false;
+      })
+    });
+    //   enabledTags (tag => item.tags.filter(t => t == tag))
+    // });
+    //   lodash.has.contains(item.tags, )
+    //   item.tags
+    // });
+    // this.enabledTags().
   }
 
-  tags(): string[] {
-    let results = this.allTags(this.state.credits, this.state.debits)
-      .flatMap(tag => tag.flatMap(t => t));
+  // public allTags(listings: DetailedListing[]): string[] {
+  //   const tags = listings.flatMap(listing => listing.tags);
+  //   const names = _.uniq(tags);
+  //
+  //   return names;
+  // }
+
+  public tags(): string[] {
+    let results = this.state.checkedTags.map(tag => tag.name);
     results = _.uniq(results);
     results = _.sortBy(results);
 
     return results;
   }
 
-  getData(): void {
+  private getData(): void {
     // Convert to async/await
     this.client.query<CashFlowResponse>({
       query: gql`
@@ -148,24 +171,26 @@ class DetailedCashFlow extends React.Component<Props, State> {
 
       this.setState({
         listings,
-        tags: this.getAllTags(listings)
+        checkedTags: this.getUncheckedTags(listings)
       });
     });
   }
 
-  toggleTag(tag: string): void {
-    const currentTags = this.state.tags;
-    const currentTag = currentTags.find(currentTag => currentTag.name == tag);
-    if (typeof (currentTag) != "undefined") {
-      currentTag.checked = !currentTag.checked;
-
-      this.setState({
-        tags: currentTags
-      })
+  private toggleTag(name: string): void {
+    const currentTags = this.state.checkedTags;
+    const selectedTag = currentTags.find(currentTag => currentTag.name == name);
+    if (typeof (selectedTag) == "undefined") {
+      return;
     }
+
+    selectedTag.checked = !selectedTag.checked;
+
+    this.setState({
+      checkedTags: currentTags
+    });
   }
 
-  renderCriteria() {
+  private renderCriteria() {
     return (
       <div className="criteria">
         <h2>Criteria</h2>
@@ -192,7 +217,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
     );
   }
 
-  render() {
+  public render() {
     return (
       <div className="cash-flow">
         <h2>Navigation</h2>
@@ -207,9 +232,9 @@ class DetailedCashFlow extends React.Component<Props, State> {
         </div>
         <div className="detailed-cashflow">
           {this.renderCriteria()}
-          <DetailedGraph listings={this.state.listings} enabledTags={this.enabledTags()} />
+          <DetailedGraph {...this.enabledListings()} />
         </div>
-        <DetailedValues listings={this.state.listings}  enabledTags={this.enabledTags()} />
+        <DetailedValues {...this.enabledListings()}  />
       </div>
     );
   }
@@ -217,31 +242,38 @@ class DetailedCashFlow extends React.Component<Props, State> {
   private toListings(data: CashFlowResponse): DetailedListing[] {
     var cashFlow = data.getMonthlyCashFlow;
 
-    let results = cashFlow.debitListings.map(item => new DetailedListing(
-      item.tags,
-      0,
-      item.amount,
-    ));
+    let results = cashFlow.debitListings.map(item => {
+      return {
+        // Should the tags be unique and sorted?
+        tags: item.tags.map(item => item.name),
+        listing: new Listing(0, item.amount)
+      };
+    });
 
     cashFlow.creditListings.forEach(item => {
-      let creditListing = new DetailedListing(
-        item.tags,
+      const creditListing = new Listing(
         item.amount,
         0
       );
+      const creditTags = item.tags.map(item => item.name);;
+      const creditTagsString = creditTags.join(", ");
 
       let doesListingExist = false;
-      for (let listing of results) {
-        if (listing.toString() == creditListing.toString()) {
+      for (let debitListing of results) {
+        const debitTagsString = debitListing.tags.join(", ");
+        if (debitTagsString == creditTagsString) {
           doesListingExist = true;
 
-          listing.creditAmount = creditListing.creditAmount;
+          debitListing.listing.creditAmount = creditListing.creditAmount;
           break;
         }
       }
 
       if (!doesListingExist) {
-        results.push(creditListing);
+        results.push({
+          tags: creditTags,
+          listing: creditListing
+        });
       }
     });
 
@@ -279,4 +311,4 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 }
 
-export default DetailedCashFlow;
+export { DetailedCashFlow, DetailedListing };
