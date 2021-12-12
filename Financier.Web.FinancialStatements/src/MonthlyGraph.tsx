@@ -7,19 +7,11 @@ import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 import * as d3TimeFormat from "d3-time-format";
 
-import { Listing } from "./Listing";
-import { MonthlyListing } from "./MonthlyCashFlow";
+import { Amount } from "./Amount";
+import { MonthlyRecord } from "./MonthlyRecord";
 
-interface MonthlyProps {
-  dates: MonthlyListing[];
-}
-
-interface MonthlyProp {
-  year: number;
-  month: number;
-  listing: Listing;
-  // credit: Listing;
-  // debit: Listing;
+interface Props {
+  records: MonthlyRecord[];
 }
 
 interface Value {
@@ -27,7 +19,7 @@ interface Value {
   value: number;
 }
 
-class MonthlyGraph extends React.Component<MonthlyListing[]> {
+class MonthlyGraph extends React.Component<Props> {
   width = 500;
   height = 300;
 
@@ -52,28 +44,28 @@ class MonthlyGraph extends React.Component<MonthlyListing[]> {
   }
 
   get profits(): Value[] {
-    return this.props.map(item => {
+    return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.listing.profitAmount
+        value: item.amount.profit
       };
     });
   }
 
   get credits(): Value[] {
-    return this.props.map(item => {
+    return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.listing.creditAmount
+        value: item.amount.credit
       };
     });
   }
 
   get debits(): Value[] {
-    return this.props.map(item => {
+    return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.listing.debitAmount
+        value: item.amount.debit
       };
     });
   }
@@ -85,7 +77,7 @@ class MonthlyGraph extends React.Component<MonthlyListing[]> {
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    if (this.props.length == 0) {
+    if (this.props.records.length == 0) {
       return;
     }
 
@@ -123,7 +115,7 @@ class MonthlyGraph extends React.Component<MonthlyListing[]> {
   }
 
   private xScale() {
-    const dates = this.props.map(item => {
+    const dates = this.props.records.map(item => {
       return {
         value: 0, // Only the date is important
         date: new Date(item.year, item.month, 1)
@@ -241,4 +233,4 @@ class MonthlyGraph extends React.Component<MonthlyListing[]> {
   }
 };
 
-export { MonthlyGraph, MonthlyProps, MonthlyProp };
+export { MonthlyGraph };

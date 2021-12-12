@@ -2,15 +2,18 @@ import * as React from "react";
 import _  from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
-import { MonthlyListing } from "./MonthlyCashFlow";
 
-import { Listing } from "./Listing";
+import { MonthlyRecord } from "./MonthlyRecord";
 
 // interface Props extends MonthlyProp {
 //   dateRange?: [Date, Date];
 // }
 
-class MonthlyValue extends React.Component<MonthlyListing> {
+interface Props {
+  record: MonthlyRecord;
+}
+
+class MonthlyValue extends React.Component<Props> {
   private decimalCount = 2;
 
   public get name(): string {
@@ -22,23 +25,23 @@ class MonthlyValue extends React.Component<MonthlyListing> {
   }
 
   public get year(): number {
-    return this.props.year;
+    return this.props.record.year;
   }
 
   public get month(): number {
-    return this.props.month + 1;
+    return this.props.record.month + 1;
   }
 
-  public get creditAmount(): number {
-    return this.props.listing.creditAmount;
+  public get credit(): number {
+    return this.props.record.amount.credit;
   }
 
-  public get debitAmount(): number {
-    return this.props.listing.debitAmount;
+  public get debit(): number {
+    return this.props.record.amount.debit;
   }
 
   public get accountingFormattedProfit(): string {
-    const profit = (this.creditAmount - this.debitAmount);
+    const profit = (this.credit - this.debit);
 
     if (profit >= 0) {
       return profit.toFixed(this.decimalCount);
@@ -54,10 +57,10 @@ class MonthlyValue extends React.Component<MonthlyListing> {
           {this.name}
         </div>
         <div className="credit">
-          {this.creditAmount.toFixed(this.decimalCount)}
+          {this.credit.toFixed(this.decimalCount)}
         </div>
         <div className="debit">
-          {this.debitAmount.toFixed(this.decimalCount)}
+          {this.debit.toFixed(this.decimalCount)}
         </div>
         <div className="profit">
           {this.accountingFormattedProfit}
