@@ -15,9 +15,9 @@ import {
 } from "@apollo/client";
 
 import MonthlyValues from "./MonthlyValues";
-import NullListing from './NullListing';
-import { Listing } from "./Listing";
-import { MonthlyGraph, MonthlyProp } from "./MonthlyGraph";
+import { Amount } from "./Amount";
+import { MonthlyRecord } from "./MonthlyRecord";
+import { MonthlyGraph } from "./MonthlyGraph";
 
 // CSS
 import "./index.scss";
@@ -49,15 +49,13 @@ interface CashFlows {
   getMonthlyCashFlows: CashFlow[];
 }
 
-interface MonthlyListing {
-  year: number;
-  month: number;
-  listing: Listing;
+interface State {
+  records: MonthlyRecord[];
 }
 
-class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
-  get listings(): MonthlyListing[] {
-    return this.state.map(v => v);
+class MonthlyCashFlow extends React.Component<Props, State> {
+  get listings(): MonthlyRecord[] {
+    return this.state.records || [];
   }
 
   get fromYear(): number {
@@ -87,7 +85,7 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
   constructor(props: Props) {
     super(props);
 
-    this.state = [];
+    // this.state = new Array<MonthlyListing>();
     this.setData();
   }
 
@@ -109,12 +107,14 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
         }
       `
     }).then(value => {
-      const listings = this.toListings(value.data);
+      const listings = this.toRecords(value.data);
 
       // const credits = this.toCreditCashFlowModel(value.data);
       // const debits = this.toDebitCashFlowModel(value.data);
 
-      this.setState(listings);
+      this.setState({
+        records: listings
+      });
     });
   }
 
@@ -169,55 +169,52 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
           </div>
         </div>
         <div className="monthly-cashflow">
-          <MonthlyGraph {...this.listings} />
+          <MonthlyGraph records={this.listings} />
         </div>
-        <MonthlyValues {...this.listings} />
+        <MonthlyValues records={this.listings} />
       </div>
     );
   }
 
-  private toListings(values: CashFlows): MonthlyListing[] {
+  private toRecords(values: CashFlows): Array<MonthlyRecord> {
     const data = values.getMonthlyCashFlows.map(item => { 
       const at = this.toDate(item.startAt);
       const creditAmounts = item.creditListings.map(listing => listing.amount);
       const debitAmounts = item.debitListings.map(listing => listing.amount);
 
-      let creditAmount = 0;
-      creditAmount = _.reduce(creditAmounts, (t, amount) => t + amount);
+      let credit = 0;
+      credit = _.reduce(creditAmounts, (t, amount) => t + amount);
 
-      let debitAmount = 0;
-      debitAmount = _.reduce(creditAmounts, (t, amount) => t + amount);
+      let debit = 0;
+      debit = _.reduce(creditAmounts, (t, amount) => t + amount);
 
       return {
         year: at.getFullYear(),
         month: at.getMonth(),
-        listing: new Listing(
-          creditAmount,
-          debitAmount
-        )
+        amount: new Amount(credit, debit)
       };
     });
 
     // create the results
-    const results: MonthlyListing[] = [];
+    const results: MonthlyRecord[] = [];
     const startAt = new Date(this.fromYear, this.fromMonth);
     const endAt = new Date(this.toYear, this.toMonth);
     for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
-      const listing = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
-      if (typeof (listing) == "undefined") {
+      const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
+      if (typeof (record) == "undefined") {
         results.push({
           year: at.getFullYear(),
           month: at.getMonth(),
-          listing: new Listing(0, 0)
+          amount: new Amount(0, 0)
         });
       } else {
-        results.push(listing);
+        results.push(record);
       }
     }
 
-    // Trim the results from the start
-    const firstIndex = results.findIndex(item => item.listing.creditAmount != 0 && item.listing.debitAmount != 0);
-    const lastIndex = _.findLastIndex(results, (item => item.listing.creditAmount != 0 && item.listing.debitAmount != 0));
+    // Trim the results from the start to the end
+    const firstIndex = results.findIndex(item => item.amount.credit != 0 && item.amount.debit != 0);
+    const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0));
 
     return results.slice(firstIndex, lastIndex);
   }
@@ -299,4 +296,4 @@ class MonthlyCashFlow extends React.Component<Props, MonthlyListing[]> {
   }
 }
 
-export { MonthlyCashFlow, MonthlyListing, Props };
+export { MonthlyCashFlow };

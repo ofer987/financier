@@ -2,26 +2,31 @@ import * as React from "react";
 import _ from "underscore";
 
 import MonthlyValue from "./MonthlyValue";
-import FilterableController from "./FilterableController";
+import { MonthlyRecord } from "./MonthlyRecord";
 
-import { Listing } from "./Listing";
-import { MonthlyListing } from "./MonthlyCashFlow";
+interface Props {
+  records: MonthlyRecord[];
+}
 
-class MonthlyValues extends React.Component<MonthlyListing[]> {
+class MonthlyValues extends React.Component<Props> {
   private decimalCount = 2;
 
+  public get records(): MonthlyRecord[] {
+    return this.props.records;
+  }
+
   public get totalCredits(): number {
-    var amounts = this.props
-      .map(item => item.listing)
-      .map(item => item.creditAmount);
+    var amounts = this.records
+      .map(item => item.amount)
+      .map(item => item.credit);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   public get totalDebits(): number {
-    var amounts = this.props
-      .map(item => item.listing)
-      .map(item => item.debitAmount);
+    var amounts = this.records
+      .map(item => item.amount)
+      .map(item => item.debit);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
@@ -49,8 +54,8 @@ class MonthlyValues extends React.Component<MonthlyListing[]> {
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
           { /*this.dates */ }
-          {this.props
-            .map(item => <MonthlyValue {...item} />)}
+          {this.records
+            .map(item => <MonthlyValue record={item} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
