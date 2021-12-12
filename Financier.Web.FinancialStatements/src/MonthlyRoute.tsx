@@ -8,7 +8,8 @@ interface Props {
   }
 }
 
-const MonthlyRoute = ( props: Props ) => {
+const MonthlyRoute = (props: Props) => {
+  alert(`${props.match.params.fromMonth}: `);
   return (
     <MonthlyCashFlow {...props.match.params} />
   );

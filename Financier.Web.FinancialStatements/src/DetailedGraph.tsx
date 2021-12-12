@@ -22,12 +22,18 @@ class DetailedGraph extends React.Component<Props> {
     left: 40,
   };
 
+  public get records(): DetailedRecord[] {
+    return this.props.records
+      // .sort(record => record.amount.profit)
+      // .reverse();
+  }
+
   componentDidUpdate() {
     // Remove existing chart elements (if exist)
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    this.chart(this.props.records);
+    this.chart(this.records);
   }
 
   render() {
@@ -48,9 +54,17 @@ class DetailedGraph extends React.Component<Props> {
 
   private yScale(data: DetailedRecord[]) {
     return d3.scaleLinear()
-      .domain([0, d3.max(data, d =>  d.amount.profit)])
+      .domain([0, d3.max(data, d => this.absoluteProfit(d.amount.profit))])
       // .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
+  }
+
+  private absoluteProfit(value: number) {
+    if (value < 0) {
+      return 0 - value;
+    }
+
+    return value;
   }
 
   private chart(values: DetailedRecord[]) {
@@ -70,14 +84,14 @@ class DetailedGraph extends React.Component<Props> {
     bar.join("rect")
       .attr("fill", (d) => this.colour(d.amount.profit))
       .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
-      .attr("y", d => this.yScale(data)(d.amount.profit))
-      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount.profit))
+      .attr("y", d => this.yScale(data)(this.absoluteProfit(d.amount.profit)))
+      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(this.absoluteProfit(d.amount.profit)))
       .attr("width", this.xScale(data).bandwidth());
 
     bar.join("text")
-      .text(d => d.amount.profit)
+      .text(d => this.absoluteProfit(d.amount.profit))
       .attr("x", d => this.xScale(data)(d.tags.join(", ")) + this.xScale(data).bandwidth() / 2)
-      .attr("y", d => this.yScale(data)(d.amount.profit) - 2)
+      .attr("y", d => this.yScale(data)(this.absoluteProfit(d.amount.profit)) - 2)
       .attr("font-size", "6px")
       .attr("text-anchor", "middle")
       .attr("dx", )

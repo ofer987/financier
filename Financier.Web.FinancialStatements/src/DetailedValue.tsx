@@ -8,6 +8,8 @@ interface Props {
 }
 
 class DetailedValue extends React.Component<Props> {
+  decimalCount = 2;
+
   render() {
     return (
       <div className="item" id={this.name} key={this.name}>
@@ -15,33 +17,39 @@ class DetailedValue extends React.Component<Props> {
           {this.name}
         </div>
         <div className="credit">
-          {this.creditAmount}
+          {this.credit}
         </div>
         <div className="debit">
-          {this.debitAmount}
+          {this.debit}
         </div>
         <div className="profit">
-          {/* Left empty on purpose */}
+          {this.accountingFormattedProfit}
         </div>
       </div>
     )
   }
 
   get name(): string {
-    // var tags = this.props.listing.tags.concat(
-    //   this.props.debit.tags);
-
     return _.uniq(this.props.record.tags)
       .map(tag => lodash.startCase(tag))
       .join(", ");
   }
 
-  get creditAmount(): string {
+  get credit(): string {
     return this.props.record.amount.credit.toFixed(2);
   }
 
-  get debitAmount(): string {
+  get debit(): string {
     return this.props.record.amount.debit.toFixed(2);
+  }
+
+  get accountingFormattedProfit(): string {
+    const profit = this.props.record.amount.profit;
+    if (profit >= 0) {
+      return profit.toFixed(this.decimalCount);
+    }
+
+    return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
 }
 

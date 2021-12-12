@@ -44,6 +44,10 @@ class DetailedValues extends React.Component<Props> {
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
 
+  public toKey(value: DetailedRecord): string {
+    return value.tags.join("-");
+  }
+
   render() {
     return (
       <div className="values">
@@ -55,7 +59,7 @@ class DetailedValues extends React.Component<Props> {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.props.records.map(item => <DetailedValue record={item} key={item.toString()} />)}
+          {this.props.records.map(item => <DetailedValue record={item} key={this.toKey(item)} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
