@@ -22,8 +22,6 @@ import { DetailedGraph } from "./DetailedGraph";
 // CSS
 import "./index.scss";
 
-// 1. Use a service to retrieve CashFlowItems using GraphQL
-
 interface Props {
   year: number;
   month: number;
@@ -93,7 +91,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   public enabledTags(): string[] {
     // Return all tags
     if (this.state.checkedTags.filter(tag => tag.checked).length == 0) {
-      return this.state.checkedTags.map(tag => tag.name);
+      return [];
     }
 
     return this.state.checkedTags
@@ -101,34 +99,25 @@ class DetailedCashFlow extends React.Component<Props, State> {
       .map(tag => tag.name);
   }
 
-  public enabledRecords(): DetailedRecord[] {
-    const enabledTags = this.enabledTags();
-
-    return this.state.records.filter(item => {
-      item.tags.forEach(item1 => {
-        enabledTags.forEach(item2 => {
-          if (item1 == item2) {
-            return true;
-          }
-        });
-
-        return false;
-      })
-    });
-    //   enabledTags (tag => item.tags.filter(t => t == tag))
-    // });
-    //   lodash.has.contains(item.tags, )
-    //   item.tags
-    // });
-    // this.enabledTags().
+  public sortedRecords(): DetailedRecord[] {
+    return lodash
+      .sortBy(this.state.records, record => record.amount.profit)
+      .reverse();
   }
 
-  // public allTags(listings: DetailedListing[]): string[] {
-  //   const tags = listings.flatMap(listing => listing.tags);
-  //   const names = _.uniq(tags);
-  //
-  //   return names;
-  // }
+  public enabledRecords(): DetailedRecord[] {
+    // Return all the records
+    if (this.enabledTags().length == 0) {
+      return this.sortedRecords();
+    }
+
+    // Return only the records that have the checked tag
+    return this.sortedRecords().filter(record => {
+      return record.tags
+        .filter(recordTag => _.contains(this.enabledTags(), recordTag))
+        .length > 0;
+    });
+  }
 
   public tags(): string[] {
     let results = this.state.checkedTags.map(tag => tag.name);
@@ -139,7 +128,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 
   private getData(): void {
-    // Convert to async/await
+    // TODO Convert to async/await
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
@@ -163,8 +152,6 @@ class DetailedCashFlow extends React.Component<Props, State> {
       `
     }).then(value => {
       const records = this.toRecords(value.data);
-      // const credits = this.toCreditCashFlowModel(value.data);
-      // const debits = this.toDebitCashFlowModel(value.data);
 
       this.setState({
         records,
@@ -242,7 +229,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
 
     let results: DetailedRecord[] = cashFlow.debitListings.map(item => {
       return {
-        // Should the tags be unique and sorted?
+        // TODO: Should the tags be unique and sorted?
         tags: item.tags.map(item => item.name),
         amount: new Amount(0, item.amount)
       };
@@ -277,30 +264,6 @@ class DetailedCashFlow extends React.Component<Props, State> {
 
     return results;
   }
-
-  // private toDebitCashFlowModel(data: CashFlowResponse): DetailedListing[] {
-  //   var cashFlow = data.getMonthlyCashFlow;
-  //
-  //   return cashFlow.debitListings.map(listing => new DetailedListing(
-  //     this.toDate(cashFlow.startAt),
-  //     this.toDate(cashFlow.endAt),
-  //     listing.tags,
-  //     listing.amount,
-  //     ExpenseTypes.Debit
-  //   ));
-  // }
-  //
-  // private toCreditCashFlowModel(data: CashFlowResponse): DetailedListing[] {
-  //   var cashFlow = data.getMonthlyCashFlow;
-  //
-  //   return cashFlow.creditListings.map(listing => new DetailedListing(
-  //     this.toDate(cashFlow.startAt),
-  //     this.toDate(cashFlow.endAt),
-  //     listing.tags,
-  //     listing.amount,
-  //     ExpenseTypes.Credit
-  //   ));
-  // }
 
   private toDate(input: string): Date {
     const parser = d3TimeFormat.timeParse("%Y-%m-%dT%H:%M:%S");
