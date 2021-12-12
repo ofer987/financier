@@ -5,10 +5,13 @@ import * as d3 from "d3";
 import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 
-import { Listing } from "./Listing";
-import { DetailedListing } from "./DetailedCashFlow";
+import { DetailedRecord } from "./DetailedRecord";
 
-class DetailedGraph extends React.Component<DetailedListing[]> {
+interface Props {
+  records: DetailedRecord[];
+}
+
+class DetailedGraph extends React.Component<Props> {
   width = 500;
   height = 500;
 
@@ -24,7 +27,7 @@ class DetailedGraph extends React.Component<DetailedListing[]> {
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
     // Recreate chart elements
-    this.chart(this.props.map(d => d));
+    this.chart(this.props.records);
   }
 
   render() {
@@ -36,21 +39,21 @@ class DetailedGraph extends React.Component<DetailedListing[]> {
     );
   }
 
-  private xScale(data: DetailedListing[]) {
+  private xScale(data: DetailedRecord[]) {
     return d3.scaleBand()
       .domain(data.map(item => item.tags.join(", ")))
       .range([this.margin.left, this.width - this.margin.right])
       .padding(0.1);
   }
 
-  private yScale(data: DetailedListing[]) {
+  private yScale(data: DetailedRecord[]) {
     return d3.scaleLinear()
-      .domain([0, d3.max(data, d =>  d.listing.profitAmount)])
+      .domain([0, d3.max(data, d =>  d.amount.profit)])
       // .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
-  private chart(values: DetailedListing[]) {
+  private chart(values: DetailedRecord[]) {
     const data = values;
 
     if (data.length == 0) {
@@ -65,16 +68,16 @@ class DetailedGraph extends React.Component<DetailedListing[]> {
       .data(data)
 
     bar.join("rect")
-      .attr("fill", (d) => this.colour(d.listing.profitAmount))
+      .attr("fill", (d) => this.colour(d.amount.profit))
       .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
-      .attr("y", d => this.yScale(data)(d.listing.profitAmount))
-      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.listing.profitAmount))
+      .attr("y", d => this.yScale(data)(d.amount.profit))
+      .attr("height", d => this.yScale(data)(0) - this.yScale(data)(d.amount.profit))
       .attr("width", this.xScale(data).bandwidth());
 
     bar.join("text")
-      .text(d => d.listing.profitAmount)
+      .text(d => d.amount.profit)
       .attr("x", d => this.xScale(data)(d.tags.join(", ")) + this.xScale(data).bandwidth() / 2)
-      .attr("y", d => this.yScale(data)(d.listing.profitAmount) - 2)
+      .attr("y", d => this.yScale(data)(d.amount.profit) - 2)
       .attr("font-size", "6px")
       .attr("text-anchor", "middle")
       .attr("dx", )
@@ -121,7 +124,7 @@ class DetailedGraph extends React.Component<DetailedListing[]> {
     return "red";
   }
 
-  private createUniqueKey(item: DetailedListing): string {
+  private createUniqueKey(item: DetailedRecord): string {
     return item.tags.join("-");
   }
 };

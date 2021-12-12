@@ -2,33 +2,35 @@ import * as React from "react";
 import _ from "underscore";
 
 import DetailedValue from "./DetailedValue";
-import { Listing } from "./Listing";
-import NullListing from "./NullListing";
-import { DetailedListing } from "./DetailedCashFlow";
+import { DetailedRecord } from "./DetailedRecord";
 
-class DetailedValues extends React.Component<DetailedListing[]> {
+interface Props {
+  records: DetailedRecord[];
+}
+
+class DetailedValues extends React.Component<Props> {
   decimalCount = 2;
 
   public get totalCredits(): number {
-    var amounts = this.props
-      .map(item => item.listing)
-      .map(item => item.creditAmount);
+    var amounts = this.props.records
+      .map(item => item.amount)
+      .map(item => item.credit);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   public get totalDebits(): number {
-    var amounts = this.props
-      .map(item => item.listing)
-      .map(item => item.debitAmount);
+    var amounts = this.props.records
+      .map(item => item.amount)
+      .map(item => item.debit);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   public get totalProfit(): number {
-    var amounts = this.props
-      .map(item => item.listing)
-      .map(item => item.profitAmount);
+    var amounts = this.props.records
+      .map(item => item.amount)
+      .map(item => item.profit);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
@@ -53,7 +55,7 @@ class DetailedValues extends React.Component<DetailedListing[]> {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.props.map(item => <DetailedValue {...item} key={item.toString()} />)}
+          {this.props.records.map(item => <DetailedValue record={item} key={item.toString()} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
