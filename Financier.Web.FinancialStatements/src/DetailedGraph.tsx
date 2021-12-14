@@ -23,9 +23,11 @@ class DetailedGraph extends React.Component<Props> {
   };
 
   public get records(): DetailedRecord[] {
-    return this.props.records
-      // .sort(record => record.amount.profit)
-      // .reverse();
+    return this.props.records;
+  }
+
+  constructor(props: Props) {
+    super(props);
   }
 
   componentDidUpdate() {
@@ -34,6 +36,8 @@ class DetailedGraph extends React.Component<Props> {
 
     // Recreate chart elements
     this.chart(this.records);
+
+    this.configureChart();
   }
 
   render() {
@@ -43,6 +47,30 @@ class DetailedGraph extends React.Component<Props> {
         <svg className="chart" />
       </div>
     );
+  }
+
+  private configureChart() {
+    document.querySelectorAll(".chart rect").forEach(element => {
+      const id = element.id;
+
+      element.addEventListener("mouseover", () => {
+        document.querySelector(`.chart text#${id}`).classList.remove("hidden");
+      });
+
+      element.addEventListener("mouseout", () => {
+        document.querySelector(`.chart text#${id}`).classList.add("hidden");
+      });
+    });
+
+    document.querySelectorAll(".chart text").forEach((element: HTMLElement) => {
+      element.addEventListener("mouseover", () => {
+        element.classList.remove("hidden");
+      });
+
+      element.addEventListener("mouseout", () => {
+        element.classList.add("hidden");
+      });
+    });
   }
 
   private xScale(data: DetailedRecord[]) {
@@ -61,7 +89,7 @@ class DetailedGraph extends React.Component<Props> {
 
   private absoluteProfit(value: number) {
     if (value < 0) {
-      return 0 - value;
+      return (0 - value);
     }
 
     return value;
@@ -82,6 +110,15 @@ class DetailedGraph extends React.Component<Props> {
       .data(data)
 
     bar.join("rect")
+      .attr("id", d => d.tags.join("-"))
+      .attr("fill", "rgba(0, 0, 0, 0)")
+      .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
+      .attr("y", d => 0)
+      .attr("height", d => this.yScale(data)(this.absoluteProfit(d.amount.profit)))
+      .attr("width", this.xScale(data).bandwidth());
+
+    bar.join("rect")
+      .attr("id", d => d.tags.join("-"))
       .attr("fill", (d) => this.colour(d.amount.profit))
       .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
       .attr("y", d => this.yScale(data)(this.absoluteProfit(d.amount.profit)))
@@ -89,12 +126,13 @@ class DetailedGraph extends React.Component<Props> {
       .attr("width", this.xScale(data).bandwidth());
 
     bar.join("text")
-      .text(d => this.absoluteProfit(d.amount.profit))
+      .text(d => this.absoluteProfit(d.amount.profit).toFixed(2))
+      .attr("id", d => d.tags.join("-"))
+      .attr("class", "amount hidden")
       .attr("x", d => this.xScale(data)(d.tags.join(", ")) + this.xScale(data).bandwidth() / 2)
       .attr("y", d => this.yScale(data)(this.absoluteProfit(d.amount.profit)) - 2)
       .attr("font-size", "6px")
-      .attr("text-anchor", "middle")
-      .attr("dx", )
+      .attr("text-anchor", "middle");
 
     svg.append("g")
       .attr("class", "y-axis")
@@ -136,10 +174,6 @@ class DetailedGraph extends React.Component<Props> {
     }
 
     return "red";
-  }
-
-  private createUniqueKey(item: DetailedRecord): string {
-    return item.tags.join("-");
   }
 };
 
