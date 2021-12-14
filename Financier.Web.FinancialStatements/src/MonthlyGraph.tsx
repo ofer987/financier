@@ -90,6 +90,42 @@ class MonthlyGraph extends React.Component<Props> {
     this.drawChart(this.cumulativeProfits, "cumulativeProfits", "darkblue");
 
     this.drawLegend(["credits", "debits"]);
+
+    document.querySelectorAll(".chart path").forEach(path => {
+      let id = path.id;
+
+      path.addEventListener("mouseover", (event: Event) => {
+        document.querySelectorAll(`.chart > path`)
+          .forEach(element => {
+            if (element.id != id) {
+              element.classList.add("hidden");
+            }
+          });
+
+        document.querySelectorAll(`.chart > text`)
+          .forEach(element => {
+            if (element.id != id) {
+              element.classList.add("hidden");
+            }
+          });
+      });
+
+      path.addEventListener("mouseout", (event: Event) => {
+        document.querySelectorAll(`.chart > path`)
+          .forEach(element => {
+            if (element.id != id) {
+              element.classList.remove("hidden");
+            }
+          });
+
+        document.querySelectorAll(`.chart > text`)
+          .forEach(element => {
+            if (element.id != id) {
+              element.classList.remove("hidden");
+            }
+          });
+      });
+    });
   }
 
   render() {
@@ -145,7 +181,11 @@ class MonthlyGraph extends React.Component<Props> {
     svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-      .call(d3.axisBottom(this.xScale()).ticks(this.width / 40).tickSizeOuter(0));
+      .call(d3.axisBottom(this.xScale())
+        .tickFormat(d3.timeFormat("%b %Y"))
+        .ticks(this.width / 80)
+        .tickSizeOuter(0)
+      );
   }
 
   private drawYAxis() {
@@ -196,6 +236,7 @@ class MonthlyGraph extends React.Component<Props> {
       .attr("stroke-width", 1.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
+      .attr("id", name)
       // @ts-ignore
       .attr("d", this.myLine());
       // .attr("text", name)
@@ -207,6 +248,7 @@ class MonthlyGraph extends React.Component<Props> {
     svg.append("text")
       .datum(values)
       .text(lodash.startCase(name))
+      .attr("id", name)
       .attr("class", "label")
       // .attr("font-size", "0.375em")
       .attr("x", this.width - this.margin.right)

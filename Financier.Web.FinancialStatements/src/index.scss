@@ -131,7 +131,16 @@ body {
 
       .x-axis {
         text {
+          // display: none;
           text-anchor: middle;
+        }
+      }
+
+      path, text {
+        display: block;
+
+        &.hidden {
+          display: none;
         }
       }
 
