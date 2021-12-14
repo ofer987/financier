@@ -29,11 +29,6 @@ interface Props {
   toMonth: number;
 }
 
-// interface CheckedTag {
-//   name: string;
-//   checked: boolean;
-// }
-
 interface CashFlow {
   startAt: string;
   endAt: string;
@@ -54,8 +49,8 @@ interface State {
 }
 
 class MonthlyCashFlow extends React.Component<Props, State> {
-  get listings(): MonthlyRecord[] {
-    return this.state.records || [];
+  get records(): MonthlyRecord[] {
+    return (this.state || { records: [] }).records;
   }
 
   get fromYear(): number {
@@ -63,7 +58,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   get fromMonth(): number {
-    return lodash.toNumber(this.props.fromMonth);
+    return lodash.toNumber(this.props.fromMonth) - 1;
   }
 
   get toYear(): number {
@@ -71,7 +66,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   get toMonth(): number {
-    return lodash.toNumber(this.props.toMonth);
+    return lodash.toNumber(this.props.toMonth) + 1;
   }
 
   private client = new ApolloClient({
@@ -94,7 +89,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     this.client.query<CashFlows>({
       query: gql`
         query {
-          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
+          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth + 1}, toYear: ${this.toYear}, toMonth: ${this.toMonth - 1}) {
             startAt
             endAt
             debitListings {
@@ -107,13 +102,13 @@ class MonthlyCashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
-      const listings = this.toRecords(value.data);
+      const records = this.toRecords(value.data);
 
       // const credits = this.toCreditCashFlowModel(value.data);
       // const debits = this.toDebitCashFlowModel(value.data);
 
       this.setState({
-        records: listings
+        records: records
       });
     });
   }
@@ -169,9 +164,9 @@ class MonthlyCashFlow extends React.Component<Props, State> {
           </div>
         </div>
         <div className="monthly-cashflow">
-          <MonthlyGraph records={this.listings} />
+          <MonthlyGraph records={this.records} />
         </div>
-        <MonthlyValues records={this.listings} />
+        <MonthlyValues records={this.records} />
       </div>
     );
   }
@@ -179,14 +174,14 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   private toRecords(values: CashFlows): Array<MonthlyRecord> {
     const data = values.getMonthlyCashFlows.map(item => { 
       const at = this.toDate(item.startAt);
-      const creditAmounts = item.creditListings.map(listing => listing.amount);
-      const debitAmounts = item.debitListings.map(listing => listing.amount);
+      const credits = item.creditListings.map(listing => listing.amount);
+      const debits = item.debitListings.map(listing => listing.amount);
 
       let credit = 0;
-      credit = _.reduce(creditAmounts, (t, amount) => t + amount);
+      credit = _.reduce(credits, (t, amount) => t + amount);
 
       let debit = 0;
-      debit = _.reduce(creditAmounts, (t, amount) => t + amount);
+      debit = _.reduce(debits, (t, amount) => t + amount);
 
       return {
         year: at.getFullYear(),
