@@ -15,25 +15,23 @@ namespace Financier.Common.Expenses
     {
         private static Regex DateRegex = new Regex(@"\d{8}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public string AccountName { get; private set; }
         public Stream Stream { get; private set; }
         public DateTime PostedAt { get; private set; }
         public string Path { get; private set; }
 
-        protected StatementFile(string accountName, FileInfo file)
+        protected StatementFile(FileInfo file)
         {
             Stream = file.OpenRead();
             Path = file.FullName;
             PostedAt = DateTime.ParseExact(DateRegex.Match(file.Name).Value, "yyyyMMdd", null);
         }
 
-        protected StatementFile(string accountName, string path) : this(accountName, new FileInfo(path))
+        protected StatementFile(string path) : this(new FileInfo(path))
         {
         }
 
-        protected StatementFile(string accountName, Stream stream, DateTime postedAt)
+        protected StatementFile(Stream stream, DateTime postedAt)
         {
-            AccountName = accountName;
             Stream = stream;
             PostedAt = postedAt;
         }
@@ -48,6 +46,8 @@ namespace Financier.Common.Expenses
 
             var card = records[0].GetCard();
             var statement = records[0].GetStatement(PostedAt);
+            Console.WriteLine(this.Path);
+            Console.WriteLine("1");
 
             foreach (var record in records)
             {
@@ -67,6 +67,8 @@ namespace Financier.Common.Expenses
 
                     // Continue to next record
                 }
+
+                Console.WriteLine(2);
             }
         }
 
@@ -75,11 +77,11 @@ namespace Financier.Common.Expenses
             using (var reader = new StreamReader(Stream))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                return PostProcessedRecords(AccountName, csv.GetRecords<T>()).ToArray();
+                return PostProcessedRecords(csv.GetRecords<T>()).ToArray();
             }
         }
 
-        protected virtual IEnumerable<T> PostProcessedRecords(string accountName, IEnumerable<T> records)
+        protected virtual IEnumerable<T> PostProcessedRecords(IEnumerable<T> records)
         {
             return records;
         }

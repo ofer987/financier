@@ -9,12 +9,12 @@ namespace Financier.Common.Expenses.Models
         public override CardTypes CardType => CardTypes.Credit;
 
         [Ignore]
-        public override string AccountName { get; init; }
+        public override string AccountName { get; set; }
 
         [Name("Item #")]
         public override string ItemId { get; set; }
 
-        [Name("Card #")]
+        [Ignore]
         public override string Number { get; set; }
 
         [Name("Transaction Date")]

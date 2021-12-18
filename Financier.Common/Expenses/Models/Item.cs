@@ -210,6 +210,8 @@ namespace Financier.Common.Expenses.Models
         public string Description { get; set; }
 
         [Required]
+        // TODO: Change Amount to integer (i.e., display in cents)
+        // To improve performance
         public decimal Amount { get; set; }
 
         public virtual decimal TheRealAmount

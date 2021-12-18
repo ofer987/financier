@@ -10,7 +10,7 @@ namespace Financier.Common.Expenses.Models
 {
     public abstract class StatementRecord
     {
-        public virtual string AccountName { get; init; }
+        public virtual string AccountName { get; set; }
         public virtual string ItemId { get; set; }
         public virtual string Number { get; set; }
 

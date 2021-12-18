@@ -12,7 +12,7 @@ namespace Financier.Common.Expenses.Models
         public override CardTypes CardType => CardTypes.Bank;
 
         [Ignore]
-        public override string AccountName { get; init; }
+        public override string AccountName { get; set; }
 
         [Ignore]
         public override string ItemId { get; set; }

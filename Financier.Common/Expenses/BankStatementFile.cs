@@ -8,26 +8,31 @@ namespace Financier.Common.Expenses
 {
     public class BankStatementFile : StatementFile<BankStatementRecord>
     {
-        public BankStatementFile(string accountName, Stream stream, DateTime postedAt) : base(accountName, stream, postedAt)
+        public string AccountName { get; private set; }
+
+        public BankStatementFile(string accountName, Stream stream, DateTime postedAt) : base(stream, postedAt)
         {
+            AccountName = accountName;
         }
 
-        public BankStatementFile(string accountName, FileInfo file) : base(accountName, file)
+        public BankStatementFile(string accountName, FileInfo file) : base(file)
         {
+            AccountName = accountName;
         }
 
-        public BankStatementFile(string accountName, string path) : base(accountName, path)
+        public BankStatementFile(string accountName, string path) : base(path)
         {
+            AccountName = accountName;
         }
 
-        protected override IEnumerable<BankStatementRecord> PostProcessedRecords(string accountName, IEnumerable<BankStatementRecord> records)
+        protected override IEnumerable<BankStatementRecord> PostProcessedRecords(IEnumerable<BankStatementRecord> records)
         {
             var counter = 1;
             foreach (var record in records)
             {
                 yield return new BankStatementRecord
                 {
-                    AccountName = accountName,
+                    AccountName = AccountName,
                     ItemId = counter.ToString(),
                     Number = record.Number,
                     FirstBankCardNumber = record.FirstBankCardNumber,

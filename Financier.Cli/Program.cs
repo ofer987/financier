@@ -195,6 +195,10 @@ namespace Financier.Cli
             } catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
+                if (exception.InnerException is not null)
+                {
+                    Console.WriteLine(exception.InnerException);
+                }
             }
 
             try
