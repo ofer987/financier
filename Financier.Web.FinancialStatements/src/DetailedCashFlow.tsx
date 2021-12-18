@@ -6,10 +6,6 @@ import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
-import DetailedValues from "./DetailedValues";
-import DetailedListing from "./DetailedListing";
-import { Listing, ExpenseTypes } from "./Listing";
-import { DetailedGraph } from "./DetailedGraph";
 import {
   ApolloClient,
   InMemoryCache,
@@ -18,10 +14,13 @@ import {
   gql
 } from "@apollo/client";
 
+import DetailedValues from "./DetailedValues";
+import { Amount } from "./Amount";
+import { DetailedRecord } from "./DetailedRecord";
+import { DetailedGraph } from "./DetailedGraph";
+
 // CSS
 import "./index.scss";
-
-// 1. Use a service to retrieve CashFlowItems using GraphQL
 
 interface Props {
   year: number;
@@ -29,9 +28,8 @@ interface Props {
 }
 
 class State {
-  debits: Listing[];
-  credits: Listing[];
-  tags: CheckedTag[];
+  records: DetailedRecord[];
+  checkedTags: CheckedTag[];
 }
 
 interface CheckedTag {
@@ -74,15 +72,13 @@ class DetailedCashFlow extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { debits: [], credits: [], tags: [] };
+    this.state = { records: [], checkedTags: [] };
     this.getData();
   }
 
-  getAllTags(credits: Listing[], debits: Listing[]): CheckedTag[] {
-    const tagsList = credits.map(listing => listing.tags).concat(debits.map(listing => listing.tags));
-
-    let names = tagsList.flatMap(names => names);
-    names = _.uniq(names);
+  public getUncheckedTags(listings: DetailedRecord[]): CheckedTag[] {
+    const tags = listings.flatMap(listing => listing.tags);
+    const names = _.uniq(tags);
 
     return names.map(name => {
       return {
@@ -92,37 +88,47 @@ class DetailedCashFlow extends React.Component<Props, State> {
     });
   }
 
-  enabledTags(): string[] {
-    if (this.state.tags.filter(tag => tag.checked).length == 0) {
-      return this.state.tags.map(tag => tag.name);
+  public enabledTags(): string[] {
+    // Return all tags
+    if (this.state.checkedTags.filter(tag => tag.checked).length == 0) {
+      return [];
     }
 
-    return this.state.tags
+    return this.state.checkedTags
       .filter(tag => tag.checked)
       .map(tag => tag.name);
   }
 
-  allTags(credits: Listing[], debits: Listing[]): string[][] {
-    var creditTags = credits.map(item => item.tags);
-    var debitTags = debits.map(item => item.tags);
-
-    var tags = creditTags.concat(debitTags);
-
-    return _.uniq(tags);
-    return tags;
+  public sortedRecords(): DetailedRecord[] {
+    return lodash
+      .sortBy(this.state.records, record => record.amount.profit)
+      .reverse();
   }
 
-  tags(): string[] {
-    let results = this.allTags(this.state.credits, this.state.debits)
-      .flatMap(tag => tag.flatMap(t => t));
+  public enabledRecords(): DetailedRecord[] {
+    // Return all the records
+    if (this.enabledTags().length == 0) {
+      return this.sortedRecords();
+    }
+
+    // Return only the records that have the checked tag
+    return this.sortedRecords().filter(record => {
+      return record.tags
+        .filter(recordTag => _.contains(this.enabledTags(), recordTag))
+        .length > 0;
+    });
+  }
+
+  public tags(): string[] {
+    let results = this.state.checkedTags.map(tag => tag.name);
     results = _.uniq(results);
     results = _.sortBy(results);
 
     return results;
   }
 
-  getData(): void {
-    // Convert to async/await
+  private getData(): void {
+    // TODO Convert to async/await
     this.client.query<CashFlowResponse>({
       query: gql`
         query {
@@ -145,33 +151,34 @@ class DetailedCashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
-      const credits = this.toCreditCashFlowModel(value.data);
-      const debits = this.toDebitCashFlowModel(value.data);
+      const records = this.toRecords(value.data);
 
       this.setState({
-        credits,
-        debits,
-        tags: this.getAllTags(credits, debits)
+        records,
+        checkedTags: this.getUncheckedTags(records)
       });
     });
   }
 
-  toggleTag(tag: string): void {
-    const currentTags = this.state.tags;
-    const currentTag = currentTags.find(currentTag => currentTag.name == tag);
-    if (typeof (currentTag) != "undefined") {
-      currentTag.checked = !currentTag.checked;
+  private toggleTag(name: string): void {
+    const currentTags = this.state.checkedTags;
+    const selectedTag = currentTags.find(currentTag => currentTag.name == name);
 
-      this.setState({
-        tags: currentTags
-      })
+    if (typeof (selectedTag) == "undefined") {
+      return;
     }
+
+    selectedTag.checked = !selectedTag.checked;
+
+    this.setState({
+      checkedTags: currentTags
+    });
   }
 
-  renderCriteria() {
+  private renderCriteria() {
     return (
       <div className="criteria">
-        <h3>Please Select</h3>
+        <h2>Criteria</h2>
         {
           this.tags().map(tag =>
           <div className="checkbox" key={`checkbox-${tag}`}>
@@ -195,12 +202,11 @@ class DetailedCashFlow extends React.Component<Props, State> {
     );
   }
 
-  render() {
+  public render() {
     return (
       <div className="cash-flow">
-        <h2>Detailed Chart</h2>
-        <h3>Navigation</h3>
-        <div className="navigation">
+        <h2>Navigation</h2>
+        <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
             event.preventDefault();
             window.location.pathname = "/";
@@ -211,35 +217,52 @@ class DetailedCashFlow extends React.Component<Props, State> {
         </div>
         <div className="detailed-cashflow">
           {this.renderCriteria()}
-          <DetailedGraph debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+          <DetailedGraph records={this.enabledRecords()} />
         </div>
-        <DetailedValues debits={this.state.debits} credits={this.state.credits} enabledTags={this.enabledTags()} />
+        <DetailedValues records={this.enabledRecords()}  />
       </div>
     );
   }
 
-  private toDebitCashFlowModel(data: CashFlowResponse): DetailedListing[] {
+  private toRecords(data: CashFlowResponse): DetailedRecord[] {
     var cashFlow = data.getMonthlyCashFlow;
 
-    return cashFlow.debitListings.map(listing => new DetailedListing(
-      this.toDate(cashFlow.startAt),
-      this.toDate(cashFlow.endAt),
-      listing.tags,
-      listing.amount,
-      ExpenseTypes.Debit
-    ));
-  }
+    let results: DetailedRecord[] = cashFlow.debitListings.map(item => {
+      return {
+        // TODO: Should the tags be unique and sorted?
+        tags: item.tags.map(item => item.name),
+        amount: new Amount(0, item.amount)
+      };
+    });
 
-  private toCreditCashFlowModel(data: CashFlowResponse): DetailedListing[] {
-    var cashFlow = data.getMonthlyCashFlow;
+    cashFlow.creditListings.forEach(item => {
+      const creditAmount = new Amount(
+        item.amount,
+        0
+      );
+      const creditTags = item.tags.map(item => item.name);;
+      const creditTagsString = creditTags.join(", ");
 
-    return cashFlow.creditListings.map(listing => new DetailedListing(
-      this.toDate(cashFlow.startAt),
-      this.toDate(cashFlow.endAt),
-      listing.tags,
-      listing.amount,
-      ExpenseTypes.Credit
-    ));
+      let doesRecordExist = false;
+      for (let debitRecord of results) {
+        const debitTagsString = debitRecord.tags.join(", ");
+        if (debitTagsString == creditTagsString) {
+          doesRecordExist = true;
+
+          debitRecord.amount.credit = creditAmount.credit;
+          break;
+        }
+      }
+
+      if (!doesRecordExist) {
+        results.push({
+          tags: creditTags,
+          amount: creditAmount
+        });
+      }
+    });
+
+    return results;
   }
 
   private toDate(input: string): Date {
@@ -249,4 +272,4 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 }
 
-export default DetailedCashFlow;
+export { DetailedCashFlow };

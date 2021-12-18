@@ -8,7 +8,7 @@ interface Props {
   }
 }
 
-const MonthlyRoute = ( props: Props ) => {
+const MonthlyRoute = (props: Props) => {
   return (
     <MonthlyCashFlow {...props.match.params} />
   );

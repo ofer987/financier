@@ -118,13 +118,34 @@ body {
   flex-direction: row;
 
   .graph {
-    width: 75%;
+    width: 100%;
 
     .chart {
+      .label {
+        font-size: 6px;
+      }
+
       .tick {
         font-size: 6px;
+      }
 
+      .x-axis {
         text {
+          // display: none;
+          text-anchor: middle;
+        }
+      }
+
+      path, text {
+        display: block;
+
+        &.hidden {
+          display: none;
+        }
+      }
+
+      .y-axis {
+        .label {
           text-anchor: end;
         }
       }
@@ -138,13 +159,25 @@ body {
   flex-direction: row;
 
   .criteria {
-    width: 25%;
+    width: 20%;
+
+    .checkbox:first-of-type {
+      padding-top: 10px;
+    }
   }
 
   .graph {
-    width: 75%;
+    width: 80%;
 
     .chart {
+      .amount {
+        display: block;
+
+        &.hidden {
+          display: none;
+        }
+      }
+
       .tick {
         font-size: 6px;
 

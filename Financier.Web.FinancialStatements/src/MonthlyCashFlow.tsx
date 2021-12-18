@@ -15,10 +15,9 @@ import {
 } from "@apollo/client";
 
 import MonthlyValues from "./MonthlyValues";
-import MonthlyListing from "./MonthlyListing";
-import NullListing from './NullListing';
-import { Listing, ExpenseTypes } from "./Listing";
-import { MonthlyGraph, MonthlyProp } from "./MonthlyGraph";
+import { Amount } from "./Amount";
+import { MonthlyRecord } from "./MonthlyRecord";
+import { MonthlyGraph } from "./MonthlyGraph";
 
 // CSS
 import "./index.scss";
@@ -28,11 +27,6 @@ interface Props {
   fromMonth: number;
   toYear: number;
   toMonth: number;
-}
-
-interface CheckedTag {
-  name: string;
-  checked: boolean;
 }
 
 interface CashFlow {
@@ -46,21 +40,17 @@ interface CashFlow {
   }[];
 }
 
-interface CashFlowResponse {
+interface CashFlows {
   getMonthlyCashFlows: CashFlow[];
 }
 
-class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
-  get cashFlows(): CashFlow[] {
-    if (!this.state) {
-      return [];
-    }
+interface State {
+  records: MonthlyRecord[];
+}
 
-    if (!this.state.getMonthlyCashFlows) {
-      return [];
-    }
-
-    return this.state.getMonthlyCashFlows;
+class MonthlyCashFlow extends React.Component<Props, State> {
+  get records(): MonthlyRecord[] {
+    return (this.state || { records: [] }).records;
   }
 
   get fromYear(): number {
@@ -68,7 +58,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   }
 
   get fromMonth(): number {
-    return lodash.toNumber(this.props.fromMonth);
+    return lodash.toNumber(this.props.fromMonth) - 1;
   }
 
   get toYear(): number {
@@ -76,7 +66,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   }
 
   get toMonth(): number {
-    return lodash.toNumber(this.props.toMonth);
+    return lodash.toNumber(this.props.toMonth) + 1;
   }
 
   private client = new ApolloClient({
@@ -90,15 +80,16 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   constructor(props: Props) {
     super(props);
 
+    // this.state = new Array<MonthlyListing>();
     this.setData();
   }
 
   setData(): void {
     // Convert to async/await
-    this.client.query<CashFlowResponse>({
+    this.client.query<CashFlows>({
       query: gql`
         query {
-          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
+          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth + 1}, toYear: ${this.toYear}, toMonth: ${this.toMonth - 1}) {
             startAt
             endAt
             debitListings {
@@ -111,10 +102,14 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
         }
       `
     }).then(value => {
-      const credits = this.toCreditCashFlowModel(value.data);
-      const debits = this.toDebitCashFlowModel(value.data);
+      const records = this.toRecords(value.data);
 
-      this.setState(value.data);
+      // const credits = this.toCreditCashFlowModel(value.data);
+      // const debits = this.toDebitCashFlowModel(value.data);
+
+      this.setState({
+        records: records
+      });
     });
   }
 
@@ -154,8 +149,7 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
   render() {
     return (
       <div className="cash-flow">
-        <h2>Monthly Chart</h2>
-        <h3>Navigation</h3>
+        <h2>Navigation</h2>
         <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
             event.preventDefault();
@@ -170,83 +164,125 @@ class MonthlyCashFlow extends React.Component<Props, CashFlowResponse> {
           </div>
         </div>
         <div className="monthly-cashflow">
-          <MonthlyGraph dates={this.cashFlowsByDate()} />
+          <MonthlyGraph records={this.records} />
         </div>
-        <MonthlyValues dates={this.cashFlowsByDate()} dateRange={this.dateRange()} />
+        <MonthlyValues records={this.records} />
       </div>
     );
   }
 
-  private toDebitCashFlowModel(data: CashFlowResponse): Listing[] {
-    const monthlyCashFlows = data.getMonthlyCashFlows;
+  private toRecords(values: CashFlows): Array<MonthlyRecord> {
+    const data = values.getMonthlyCashFlows.map(item => { 
+      const at = this.toDate(item.startAt);
+      const credits = item.creditListings.map(listing => listing.amount);
+      const debits = item.debitListings.map(listing => listing.amount);
 
-    return monthlyCashFlows.map(cashFlow => {
-      const date = this.toDate(cashFlow.startAt)
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const amounts = cashFlow.debitListings.map(listing => listing.amount);
+      let credit = 0;
+      credit = _.reduce(credits, (t, amount) => t + amount);
 
-      let total = 0;
-      total = _.reduce(amounts, (t, amount) => t + amount);
-
-      return new MonthlyListing(year, month, total, ExpenseTypes.Debit);
-    });
-  }
-
-  private toCreditCashFlowModel(data: CashFlowResponse): Listing[] {
-    const monthlyCashFlows = data.getMonthlyCashFlows;
-
-    return monthlyCashFlows.map(cashFlow => {
-      const date = this.toDate(cashFlow.startAt)
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const amounts = cashFlow.creditListings.map(listing => listing.amount);
-
-      let total = 0;
-      total = _.reduce(amounts, (t, amount) => t + amount);
-
-      return new MonthlyListing(year, month, total, ExpenseTypes.Credit);
-    });
-  }
-
-  private cashFlowsByDate(): MonthlyProp[] {
-    return this.cashFlows.map(item => {
-      const date = this.toDate(item.startAt)
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const creditAmounts = item.creditListings.map(listing => listing.amount);
-      const debitAmounts = item.debitListings.map(listing => listing.amount);
-
-      const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount) || 0;
-      const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount) || 0;
-
-      if (creditTotal == 0 && debitTotal == 0) {
-        return {
-          at: date,
-          credit: new NullListing(),
-          debit: new NullListing()
-        };
-      }
+      let debit = 0;
+      debit = _.reduce(debits, (t, amount) => t + amount);
 
       return {
-        at: date,
-        credit: new MonthlyListing(year, month, creditTotal, ExpenseTypes.Credit),
-        debit: new MonthlyListing(year, month, debitTotal, ExpenseTypes.Debit)
-      }
+        year: at.getFullYear(),
+        month: at.getMonth(),
+        amount: new Amount(credit, debit)
+      };
     });
-  }
 
-  private dateRange(): [Date, Date] | undefined {
-    const values = this.cashFlows;
-    if (values.length == 0) {
-      return undefined;
+    // create the results
+    const results: MonthlyRecord[] = [];
+    const startAt = new Date(this.fromYear, this.fromMonth);
+    const endAt = new Date(this.toYear, this.toMonth);
+    for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
+      const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
+      if (typeof (record) == "undefined") {
+        results.push({
+          year: at.getFullYear(),
+          month: at.getMonth(),
+          amount: new Amount(0, 0)
+        });
+      } else {
+        results.push(record);
+      }
     }
 
-    return [
-      this.toDate(values[0].startAt),
-      this.toDate(values[values.length - 1].startAt),
-    ];
+    // Trim the results from the start to the end
+    const firstIndex = results.findIndex(item => item.amount.credit != 0 && item.amount.debit != 0);
+    const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0));
+
+    return results.slice(firstIndex, lastIndex);
   }
+  // private toDebitCashFlowModel(data: CashFlowResponse): Listing[] {
+  //   const monthlyCashFlows = data.getMonthlyCashFlows;
+  //
+  //   return monthlyCashFlows.map(cashFlow => {
+  //     const date = this.toDate(cashFlow.startAt)
+  //     const year = date.getFullYear();
+  //     const month = date.getMonth();
+  //     const amounts = cashFlow.debitListings.map(listing => listing.amount);
+  //
+  //     let total = 0;
+  //     total = _.reduce(amounts, (t, amount) => t + amount);
+  //
+  //     return new MonthlyListing(year, month, total, ExpenseTypes.Debit);
+  //   });
+  // }
+
+  // private toCreditCashFlowModel(data: CashFlowResponse): Listing[] {
+  //   const monthlyCashFlows = data.getMonthlyCashFlows;
+  //
+  //   return monthlyCashFlows.map(cashFlow => {
+  //     const date = this.toDate(cashFlow.startAt)
+  //     const year = date.getFullYear();
+  //     const month = date.getMonth();
+  //     const amounts = cashFlow.creditListings.map(listing => listing.amount);
+  //
+  //     let total = 0;
+  //     total = _.reduce(amounts, (t, amount) => t + amount);
+  //
+  //     return new MonthlyListing(year, month, total, ExpenseTypes.Credit);
+  //   });
+  // }
+
+  // private cashFlowsByDate(): MonthlyProp[] {
+  //   return this.cashFlows.map(item => {
+  //     const date = this.toDate(item.startAt)
+  //     const year = date.getFullYear();
+  //     const month = date.getMonth();
+  //     const creditAmounts = item.creditListings.map(listing => listing.amount);
+  //     const debitAmounts = item.debitListings.map(listing => listing.amount);
+  //
+  //     const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount) || 0;
+  //     const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount) || 0;
+  //
+  //     if (creditTotal == 0 && debitTotal == 0) {
+  //       return {
+  //         at: date,
+  //         credit: new NullListing(),
+  //         debit: new NullListing()
+  //       };
+  //     }
+  //
+  //     return {
+  //       at: date,
+  //       credit: new MonthlyListing(year, month, creditTotal, ExpenseTypes.Credit),
+  //       debit: new MonthlyListing(year, month, debitTotal, ExpenseTypes.Debit)
+  //     }
+  //   });
+  // }
+
+  // private dateRange(): [Date, Date] | undefined {
+  //   const values = this.cashFlows;
+  //   if (values.length == 0) {
+  //     return undefined;
+  //   }
+  //
+  //   return [
+  //     this.toDate(values[0].startAt),
+  //     this.toDate(values[values.length - 1].startAt),
+  //   ];
+  // }
 
   private toDate(input: string): Date {
     const parser = d3.timeParse("%Y-%m-%dT%H:%M:%S");

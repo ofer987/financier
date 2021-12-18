@@ -2,22 +2,41 @@ import * as React from "react";
 import _ from "underscore";
 
 import DetailedValue from "./DetailedValue";
-import { Listing } from "./Listing";
-import NullListing from "./NullListing";
-import FilterableController from "./FilterableController";
+import { DetailedRecord } from "./DetailedRecord";
 
 interface Props {
-  debits: Listing[];
-  credits: Listing[];
-  enabledTags: string[];
+  records: DetailedRecord[];
 }
 
-class DetailedValues extends FilterableController {
+class DetailedValues extends React.Component<Props> {
   decimalCount = 2;
 
-  get accountingFormattedProfit(): string {
-    const profit = (this.totalCredits - this.totalDebits);
+  public get totalCredits(): number {
+    var amounts = this.props.records
+      .map(item => item.amount)
+      .map(item => item.credit);
 
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  public get totalDebits(): number {
+    var amounts = this.props.records
+      .map(item => item.amount)
+      .map(item => item.debit);
+
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  public get totalProfit(): number {
+    var amounts = this.props.records
+      .map(item => item.amount)
+      .map(item => item.profit);
+
+    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+  }
+
+  public get accountingFormattedProfit(): string {
+    const profit = this.totalProfit;
     if (profit >= 0) {
       return profit.toFixed(this.decimalCount);
     }
@@ -25,10 +44,14 @@ class DetailedValues extends FilterableController {
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
 
+  public toKey(value: DetailedRecord): string {
+    return value.tags.join("-");
+  }
+
   render() {
     return (
       <div className="values">
-        <h3>Items</h3>
+        <h2>Items</h2>
         <div className="header">
           <div className="name">Name</div>
           <div className="credits">Credits</div>
@@ -36,8 +59,7 @@ class DetailedValues extends FilterableController {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.enabledCredits.map(listing => <DetailedValue debit={new NullListing()} credit={listing} key={listing.toString()} />)}
-          {this.enabledDebits.map(listing => <DetailedValue debit={listing} credit={new NullListing()} key={listing.toString()} />)}
+          {this.props.records.map(item => <DetailedValue record={item} key={this.toKey(item)} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>

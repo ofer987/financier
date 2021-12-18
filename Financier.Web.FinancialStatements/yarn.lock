@@ -2625,6 +2625,26 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.1.1.tgz#3348564048e7a2d7398c935d466c0414ebb6a669"
   integrity sha512-Z6DoceYb/1xSg5+e+ZlPZ9v0N16ZvZ+wYMraFue4HYrE4ttONKtsvruIRf6t9TBR0YvSOfi1hUU0fJfBLCDYow==
 
+"@ts-nameof/common@^4.2.0":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@ts-nameof/common/-/common-4.2.1.tgz#76e6ab5b4a11c92b2a2a79bf133ae49b57d7efc3"
+  integrity sha512-bWwYOFTTd6Nq7RUqJalIii1su3OyR+N1W0smp5PzHGUVycHuJ7MRiyCQrWgMt1lbbp3GY6cvCttm7Zo5E7A1xQ==
+
+"@ts-nameof/transforms-common@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@ts-nameof/transforms-common/-/transforms-common-4.2.1.tgz#a38c18ef62f921ffcea7b4a9a693cb63301e23d3"
+  integrity sha512-mg6nkkHqNlKU1B15pEtiikSKadJSOxFFWpi7tEVB7Yhjx0PhoTcSe7oxK0fXHZGeoTGF2SMZjmCsGnbtfcgk6w==
+  dependencies:
+    "@ts-nameof/common" "^4.2.0"
+
+"@ts-nameof/transforms-ts@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@ts-nameof/transforms-ts/-/transforms-ts-4.2.1.tgz#a37921017694b75a3bc17fa6519408ee32298efd"
+  integrity sha512-/zI2+DEQ1wvM0UQY5znG4efGbNSyBp+h4pzQZssGcst1748Np92RCWUnGfyV1qDlpIVma4S8Rx5HgkoDLPfMMg==
+  dependencies:
+    "@ts-nameof/common" "^4.2.0"
+    "@ts-nameof/transforms-common" "^4.2.1"
+
 "@types/babel__core@^7.1.7":
   version "7.1.15"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.15.tgz#2ccfb1ad55a02c83f8e0ad327cbc332f55eb1024"
@@ -3177,6 +3197,11 @@
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
   integrity sha512-ipixuVrh2OdNmauvtT51o3d8z12p6LtFW9in7U79der/kwejjdNchQC5UMn5u/KxNoM7VHHOs/l8KS8uHxhODQ==
+
+"@types/ts-nameof@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@types/ts-nameof/-/ts-nameof-4.2.1.tgz#21bd84748601f3a220812152dc9bae7dc3051fa0"
+  integrity sha512-NgMmD70b8NwX6BYhKh70xWkquAow6iq3kRAPp4sMAk4Mre9PrqZgvpq5+JbDLWIJPc4Q9ctkwSQjVAOlfuvlyQ==
 
 "@types/uglify-js@*":
   version "3.13.1"
@@ -14199,6 +14224,15 @@ ts-loader@^9.2.5:
     enhanced-resolve "^5.0.0"
     micromatch "^4.0.0"
     semver "^7.3.4"
+
+ts-nameof@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/ts-nameof/-/ts-nameof-5.0.0.tgz#9ef33e9eeb4e0bf405073be35cf91ddf8952ac62"
+  integrity sha512-KKebM+HvZdtiFLVUtkvTmlJNzmMPMMwzw7yCcTCA5XRmwDupX/JuPEfnXYpu/Bfb8d+voF1ih2fdizqgKSIO+g==
+  dependencies:
+    "@ts-nameof/common" "^4.2.0"
+    "@ts-nameof/transforms-ts" "^4.2.1"
+    glob "^7.1.6"
 
 ts-pnp@^1.1.6:
   version "1.2.0"
