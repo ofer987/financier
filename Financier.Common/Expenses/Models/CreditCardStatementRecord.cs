@@ -14,7 +14,7 @@ namespace Financier.Common.Expenses.Models
         [Name("Item #")]
         public override string ItemId { get; set; }
 
-        [Ignore]
+        [Name("Card #")]
         public override string Number { get; set; }
 
         [Name("Transaction Date")]

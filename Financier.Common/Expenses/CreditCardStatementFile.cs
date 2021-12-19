@@ -21,8 +21,6 @@ namespace Financier.Common.Expenses
         public CreditCardStatementFile(string accountName, FileInfo file) : base(file)
         {
             AccountName = accountName;
-            var creditCardRegex = new Regex(@"(\d+)");
-            Number = creditCardRegex.Match(file.FullName).Name;
         }
 
         public CreditCardStatementFile(string accountName, string path) : base(path)
@@ -37,7 +35,7 @@ namespace Financier.Common.Expenses
                 {
                     AccountName = AccountName,
                     ItemId = record.ItemId,
-                    Number = Number,
+                    Number = record.Number,
                     PostedAt = record.PostedAt,
                     TransactedAt = record.TransactedAt,
                     Amount = record.Amount,

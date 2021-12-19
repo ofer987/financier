@@ -84,7 +84,7 @@ namespace Financier.Common.Expenses.Models
                     var newCard = new Card
                     {
                         Id = Guid.NewGuid(),
-                        Number = CleanNumber(cardNumber),
+                        Number = cardNumber,
                         CardType = CardType,
                         Statements = new List<Statement>(),
                         AccountName = AccountName
