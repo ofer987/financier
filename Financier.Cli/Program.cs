@@ -192,7 +192,8 @@ namespace Financier.Cli
                         new CreditCardStatementFile(statement.AccountName, file).Import();
                     }
                 }
-            } catch (Exception exception)
+            }
+            catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
                 if (exception.InnerException is not null)
@@ -211,7 +212,8 @@ namespace Financier.Cli
                         new BankStatementFile(statement.AccountName, file).Import();
                     }
                 }
-            } catch (Exception exception)
+            }
+            catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
             }

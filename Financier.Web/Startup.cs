@@ -73,7 +73,7 @@ namespace Financier.Web
                 .AddSystemTextJson()
                 // .AddUserContextBuilder(httpContext => httpContext)
                 .AddDataLoader();
-                ;
+            ;
 
             // TODO: use the latest MVC routing
             // Please see

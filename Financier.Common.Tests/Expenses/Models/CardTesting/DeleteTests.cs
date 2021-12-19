@@ -21,7 +21,7 @@ namespace Financier.Common.Tests.Expenses.Models.CardTests
                     .First(card => card.Number == cardNumber)
                     .Delete();
 
-                var afterCount = db.Cards.Count(); 
+                var afterCount = db.Cards.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(expectedCardsRemoved));
             }
@@ -38,7 +38,7 @@ namespace Financier.Common.Tests.Expenses.Models.CardTests
             {
                 beforeCount = db.Statements.Count();
 
-                cards = 
+                cards =
                     (
                      from c in db.Cards
                      where c.Number == cardNumber
@@ -53,7 +53,7 @@ namespace Financier.Common.Tests.Expenses.Models.CardTests
 
             using (var db = new Context())
             {
-                var afterCount = db.Statements.Count(); 
+                var afterCount = db.Statements.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(expectedStatementsRemoved));
             }
