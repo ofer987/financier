@@ -55,8 +55,6 @@ namespace Financier.Web
             services.AddSingleton<ItemQuerySchema>();
             services.AddSingleton<FixedRateMortgageSchema>();
             services.AddSingleton<OneHomeSchema>();
-            services.AddSingleton<PaymentSchema>();
-
 
             // Add GraphQL
             services

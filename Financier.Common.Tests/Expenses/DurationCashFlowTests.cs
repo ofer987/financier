@@ -7,9 +7,9 @@ using NUnit.Framework;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;
 
-namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
+namespace Financier.Common.Tests.Expenses
 {
-    public class GetItemListings : InitializedDatabaseTests
+    public class DurationCashFlowTests : InitializedDatabaseTests
     {
         public static IEnumerable DebitTestCases
         {
@@ -51,7 +51,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
         [Test]
         [TestCaseSource(nameof(DebitTestCases))]
         [TestCaseSource(nameof(CreditTestCases))]
-        public void Test_Expenses_CashFlowHelper_GetItemListings(
+        public void Test_Expenses_DurationCashFlow_GetItemListings(
             int year,
             int month,
             ItemTypes type,
@@ -60,7 +60,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
         {
             var startAt = new DateTime(year, month, 1);
             var endAt = startAt.AddMonths(1);
-            var actual = CashFlowHelper.GetItemListings(startAt, endAt, type);
+            var actual = new DurationCashFlow(startAt, endAt).GetItemListings(type);
 
             var actualItems = actual
                 .SelectMany(item => item.Items);
