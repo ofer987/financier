@@ -172,7 +172,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   private toRecords(values: CashFlows): Array<MonthlyRecord> {
-    const data = values.getMonthlyCashFlows.map(item => { 
+    const data = values.getMonthlyCashFlows.map(item => {
       const at = this.toDate(item.startAt);
       const credits = item.creditListings.map(listing => listing.amount);
       const debits = item.debitListings.map(listing => listing.amount);
@@ -196,7 +196,11 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     const endAt = new Date(this.toYear, this.toMonth);
     for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
       const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
-      if (typeof (record) == "undefined") {
+      if (false
+        || typeof (record) == "undefined"
+        || typeof (record.amount.credit) == "undefined"
+        || typeof (record.amount.debit) == "undefined"
+      ) {
         results.push({
           year: at.getFullYear(),
           month: at.getMonth(),
