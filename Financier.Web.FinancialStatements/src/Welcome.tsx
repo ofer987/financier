@@ -63,7 +63,7 @@ class Welcome extends React.Component<Props, State> {
 
     this.state = {
       isValid: true,
-      startDate: new Date(),
+      startDate: this.getInitialStartDate(),
       endDate: new Date()
     };
   }
