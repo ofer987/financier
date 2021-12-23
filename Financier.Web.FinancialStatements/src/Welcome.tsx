@@ -137,7 +137,8 @@ class Welcome extends React.Component<Props, State> {
               <div className="name">From</div>
               <DatePicker
                 id="start-date-picker"
-                selected={this.startDate}
+                inline={true}
+                selected={this.getInitialStartDate()}
                 dateFormat="LLLL/yyyy"
                 showMonthYearPicker
                 // @ts-ignore
@@ -150,6 +151,7 @@ class Welcome extends React.Component<Props, State> {
               <div className="name">To</div>
               <DatePicker
                 id="end-date-picker"
+                inline={true}
                 selected={this.endDate}
                 dateFormat="LLLL/yyyy"
                 showMonthYearPicker
@@ -165,6 +167,15 @@ class Welcome extends React.Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  private getInitialStartDate(): Date {
+    let date = new Date();
+    let year = date.getFullYear() - 5;
+    let month = date.getMonth();
+    console.log(`${year}: ${month}`);
+
+    return new Date(year, month);
   }
 }
 
