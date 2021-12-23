@@ -13,7 +13,11 @@ interface State {
 
 class Welcome extends React.Component<Props, State> {
   get isValid() {
-    return (parseInt(`${this.endYear}${this.endMonth}`) >= parseInt(`${this.startYear}${this.startMonth}`));
+    if (this.endDate < this.startDate) {
+      return false;
+    }
+
+    return true;
   }
 
   get isMonthlyChartButtonEnabled() {
