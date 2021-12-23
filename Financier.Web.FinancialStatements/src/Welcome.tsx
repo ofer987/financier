@@ -138,7 +138,7 @@ class Welcome extends React.Component<Props, State> {
         <div className="date-range">
           <div className="date-picker start">
             <div className="container">
-              <div className="name">From</div>
+              <h2 className="name">From</h2>
               <DatePicker
                 id="start-date-picker"
                 inline={true}
@@ -152,7 +152,7 @@ class Welcome extends React.Component<Props, State> {
           </div>
           <div className="date-picker end">
             <div className="container">
-              <div className="name">To</div>
+              <h2 className="name">To</h2>
               <DatePicker
                 id="end-date-picker"
                 inline={true}
