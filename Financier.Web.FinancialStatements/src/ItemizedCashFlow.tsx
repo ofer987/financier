@@ -23,7 +23,8 @@ import { DetailedGraph } from "./DetailedGraph";
 import "./index.scss";
 
 interface Props {
-  postedAt: Date;
+  year: number;
+  month: number;
   tagNames: string[];
 }
 
@@ -42,24 +43,30 @@ interface ItemResponse {
 
 class ItemizedCashFlow extends React.Component<Props, State> {
   public get year(): number {
-    return this.props.postedAt.getFullYear();
+    return this.props.year;
   }
 
   public get month(): number {
-    return this.props.postedAt.getMonth();
+    return this.props.month;
+  }
+
+  public get at(): Date {
+    return new Date(this.year, this.month - 1, 1); 
   }
 
   public get postedAt(): string {
-    const year = d3TimeFormat.timeFormat("%Y")(this.props.postedAt);
-    const month = d3TimeFormat.timeFormat("%m")(this.props.postedAt);
+    const year = d3TimeFormat.timeFormat("%Y")(this.at);
+    const month = d3TimeFormat.timeFormat("%m")(this.at);
 
-    return `${year}-${month}-01`;
+    return `"${year}-${month}-01"`;
   }
 
   public get tagNames(): string {
-    return this.props.tagNames
+    const names = this.props.tagNames
       .map(item => `"${item}"`)
       .join(", ");
+
+    return `[${names}]`;
   }
 
   public get records(): ItemizedRecord[] {
@@ -114,9 +121,9 @@ class ItemizedCashFlow extends React.Component<Props, State> {
     return (
       <div className="button detailed-cashflow" key={`detailed-view-${year}-${month + 1}`} onClick={(event) => {
         event.preventDefault();
-        window.location.pathname = `/detailed-view/from-year/${year}/from-month/1`;
+        window.location.pathname = `/detailed-view/year/${year}/month/${month}`;
       }}>
-        Return to {d3TimeFormat.timeFormat(`%B %Y`)} Detailed Charts    </div>
+        Return to {d3TimeFormat.timeFormat(`%B %Y`)(this.at)} Detailed Charts    </div>
     );
   }
 
@@ -133,7 +140,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
           </div>
           {this.renderDetailedNavigation(this.year, this.month)}
         </div>
-        <ItemizedValues records={this.records} />
+        <ItemizedValues records={this.sortedRecords()} />
       </div>
     );
   }
@@ -142,10 +149,17 @@ class ItemizedCashFlow extends React.Component<Props, State> {
     const items = data.itemsByTagNamesAndPostedAt;
 
     let results: ItemizedRecord[] = items.map(item => {
+      let amount: Amount;
+      if (item.amount < 0) {
+        amount = new Amount(0 - item.amount, 0);
+      } else {
+        amount = new Amount(0, item.amount);
+      }
+
       return {
         name: item.description,
         at: item.postedAt,
-        amount: new Amount(item.amount, 0),
+        amount: amount,
         tags: this.props.tagNames
       };
     });
@@ -154,4 +168,4 @@ class ItemizedCashFlow extends React.Component<Props, State> {
   }
 }
 
-export { ItemizedCashFlow };
+export { ItemizedCashFlow, Props };
