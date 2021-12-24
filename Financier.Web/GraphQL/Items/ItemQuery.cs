@@ -16,6 +16,7 @@ namespace Financier.Web.GraphQL.Items
             public static string FromYear = "fromYear";
             public static string ToMonth = "toMonth";
             public static string ToYear = "toYear";
+            public static string PostedAt = "postedAt";
         }
 
         public ItemQuery()
@@ -67,6 +68,29 @@ namespace Financier.Web.GraphQL.Items
                 {
                     var tagIds = context.GetArgument<List<Guid>>("tagIds");
                     return Item.GetByTagIds(tagIds);
+                }
+            );
+
+            Field<ListGraphType<ItemType>>(
+                "itemsByTagNamesAndPostedAt",
+                arguments: new QueryArguments(
+                    new QueryArgument<ListGraphType<NonNullGraphType<StringGraphType>>>
+                    {
+                        Name = Keys.TagNames
+                    },
+                    new QueryArgument<NonNullGraphType<DateGraphType>>
+                    {
+                        Name = Keys.PostedAt
+                    }
+                ),
+                resolve: context =>
+                {
+                    var tagNames = context.GetArgument<List<string>>(Keys.TagNames);
+                    var postedAt = context.GetArgument<DateTime>(Keys.PostedAt);
+                    var fromDate = new DateTime(postedAt.Year, postedAt.Month, 1);
+                    var toDate = fromDate.AddMonths(1);
+
+                    return Item.GetAllBy(fromDate, toDate, tagNames);
                 }
             );
         }
