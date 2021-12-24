@@ -183,7 +183,7 @@ class MonthlyGraph extends React.Component<Props> {
       .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
       .call(d3.axisBottom(this.xScale())
         .tickFormat(d3.timeFormat("%b %Y"))
-        .ticks(this.width / 80)
+        .ticks(this.width / 60)
         .tickSizeOuter(0)
       );
   }

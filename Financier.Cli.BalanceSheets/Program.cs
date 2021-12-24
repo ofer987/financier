@@ -6,7 +6,6 @@ using Financier.Common.Models;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.BalanceSheets;
 using Financier.Common.Expenses.Actions;
-using Financier.Common.Expenses.Models;
 
 // TODO: rename to Real Estate?
 namespace Financier.Cli.BalanceSheets

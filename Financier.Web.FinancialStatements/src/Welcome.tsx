@@ -13,7 +13,11 @@ interface State {
 
 class Welcome extends React.Component<Props, State> {
   get isValid() {
-    return (parseInt(`${this.endYear}${this.endMonth}`) >= parseInt(`${this.startYear}${this.startMonth}`));
+    if (this.endDate < this.startDate) {
+      return false;
+    }
+
+    return true;
   }
 
   get isMonthlyChartButtonEnabled() {
@@ -59,7 +63,7 @@ class Welcome extends React.Component<Props, State> {
 
     this.state = {
       isValid: true,
-      startDate: new Date(),
+      startDate: this.getInitialStartDate(),
       endDate: new Date()
     };
   }
@@ -134,10 +138,11 @@ class Welcome extends React.Component<Props, State> {
         <div className="date-range">
           <div className="date-picker start">
             <div className="container">
-              <div className="name">From</div>
+              <h2 className="name">From</h2>
               <DatePicker
                 id="start-date-picker"
-                selected={this.startDate}
+                inline={true}
+                selected={this.getInitialStartDate()}
                 dateFormat="LLLL/yyyy"
                 showMonthYearPicker
                 // @ts-ignore
@@ -147,9 +152,10 @@ class Welcome extends React.Component<Props, State> {
           </div>
           <div className="date-picker end">
             <div className="container">
-              <div className="name">To</div>
+              <h2 className="name">To</h2>
               <DatePicker
                 id="end-date-picker"
+                inline={true}
                 selected={this.endDate}
                 dateFormat="LLLL/yyyy"
                 showMonthYearPicker
@@ -165,6 +171,15 @@ class Welcome extends React.Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  private getInitialStartDate(): Date {
+    let date = new Date();
+    let year = date.getFullYear() - 5;
+    let month = date.getMonth();
+    console.log(`${year}: ${month}`);
+
+    return new Date(year, month);
   }
 }
 

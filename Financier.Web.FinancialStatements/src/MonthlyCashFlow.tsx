@@ -58,7 +58,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   get fromMonth(): number {
-    return lodash.toNumber(this.props.fromMonth) - 1;
+    return lodash.toNumber(this.props.fromMonth);
   }
 
   get toYear(): number {
@@ -66,7 +66,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   get toMonth(): number {
-    return lodash.toNumber(this.props.toMonth) + 1;
+    return lodash.toNumber(this.props.toMonth);
   }
 
   private client = new ApolloClient({
@@ -89,7 +89,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     this.client.query<CashFlows>({
       query: gql`
         query {
-          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth + 1}, toYear: ${this.toYear}, toMonth: ${this.toMonth - 1}) {
+          getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
             startAt
             endAt
             debitListings {
@@ -172,7 +172,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   private toRecords(values: CashFlows): Array<MonthlyRecord> {
-    const data = values.getMonthlyCashFlows.map(item => { 
+    const data = values.getMonthlyCashFlows.map(item => {
       const at = this.toDate(item.startAt);
       const credits = item.creditListings.map(listing => listing.amount);
       const debits = item.debitListings.map(listing => listing.amount);
@@ -192,11 +192,15 @@ class MonthlyCashFlow extends React.Component<Props, State> {
 
     // create the results
     const results: MonthlyRecord[] = [];
-    const startAt = new Date(this.fromYear, this.fromMonth);
-    const endAt = new Date(this.toYear, this.toMonth);
+    const startAt = new Date(this.fromYear, this.fromMonth - 1);
+    const endAt = new Date(this.toYear, this.toMonth - 1);
     for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
       const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
-      if (typeof (record) == "undefined") {
+      if (false
+        || typeof (record) == "undefined"
+        || typeof (record.amount.credit) == "undefined"
+        || typeof (record.amount.debit) == "undefined"
+      ) {
         results.push({
           year: at.getFullYear(),
           month: at.getMonth(),
@@ -209,7 +213,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
 
     // Trim the results from the start to the end
     const firstIndex = results.findIndex(item => item.amount.credit != 0 && item.amount.debit != 0);
-    const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0));
+    const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0)) + 1;
 
     return results.slice(firstIndex, lastIndex);
   }

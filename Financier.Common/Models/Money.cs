@@ -36,6 +36,7 @@ namespace Financier.Common.Models
         public static Money Zero = new Money(0.00M, DateTime.MinValue);
 
         public DateTime At { get; }
+
         private decimal val;
         public decimal Value
         {

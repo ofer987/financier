@@ -29,7 +29,7 @@ class MonthlyValue extends React.Component<Props> {
   }
 
   public get month(): number {
-    return this.props.record.month + 1;
+    return this.props.record.month;
   }
 
   public get credit(): number {
@@ -51,8 +51,9 @@ class MonthlyValue extends React.Component<Props> {
   }
 
   public render() {
+    let month = this.month + 1;
     return (
-      <div className="item" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, this.month)}>
+      <div className="item" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
         <div className="name">
           {this.name}
         </div>
@@ -70,7 +71,7 @@ class MonthlyValue extends React.Component<Props> {
   }
 
   private navigateToDetailedView(year: number, month: number) {
-    window.location.pathname = `/detailed-view/year/${this.year}/month/${this.month}`;
+    window.location.pathname = `/detailed-view/year/${year}/month/${month}`;
   }
 }
 
