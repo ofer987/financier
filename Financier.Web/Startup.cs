@@ -67,7 +67,6 @@ namespace Financier.Web
                         // TODO: should depend whether is dev environment
                         // options.ExposeExceptions = true;
                     })
-                .AddGraphTypes(typeof(ItemSchema))
                 .AddSystemTextJson()
                 // .AddUserContextBuilder(httpContext => httpContext)
                 .AddDataLoader();
