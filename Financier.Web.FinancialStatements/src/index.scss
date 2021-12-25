@@ -166,8 +166,14 @@ body {
   .criteria {
     width: 20%;
 
-    .checkbox:first-of-type {
-      padding-top: 10px;
+    .checkbox {
+      input, label {
+        cursor: pointer;
+      }
+
+      &:first-of-type {
+        padding-top: 10px;
+      }
     }
   }
 
