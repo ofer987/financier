@@ -123,7 +123,8 @@ class ItemizedCashFlow extends React.Component<Props, State> {
         event.preventDefault();
         window.location.pathname = `/detailed-view/year/${year}/month/${month}`;
       }}>
-        Return to {d3TimeFormat.timeFormat(`%B %Y`)(this.at)} Detailed Charts    </div>
+        Return to {d3TimeFormat.timeFormat(`%B %Y`)(this.at)} Detailed Charts
+      </div>
     );
   }
 
