@@ -51,7 +51,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
   }
 
   public get at(): Date {
-    return new Date(this.year, this.month - 1, 1); 
+    return new Date(this.year, this.month - 1, 1);
   }
 
   public get postedAt(): string {

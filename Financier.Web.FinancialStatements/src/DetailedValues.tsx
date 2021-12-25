@@ -5,11 +5,21 @@ import DetailedValue from "./DetailedValue";
 import { DetailedRecord } from "./DetailedRecord";
 
 interface Props {
+  year: number;
+  month: number;
   records: DetailedRecord[];
 }
 
 class DetailedValues extends React.Component<Props> {
   decimalCount = 2;
+
+  public get year(): number {
+    return this.props.year;
+  }
+
+  public get month(): number {
+    return this.props.month;
+  }
 
   public get totalCredits(): number {
     var amounts = this.props.records
@@ -59,7 +69,7 @@ class DetailedValues extends React.Component<Props> {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.props.records.map(item => <DetailedValue record={item} key={this.toKey(item)} />)}
+          {this.props.records.map(item => <DetailedValue record={item} key={this.toKey(item)} year={this.year} month={this.month} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>

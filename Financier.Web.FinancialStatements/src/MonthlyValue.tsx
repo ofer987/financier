@@ -53,7 +53,7 @@ class MonthlyValue extends React.Component<Props> {
   public render() {
     let month = this.month + 1;
     return (
-      <div className="item" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
+      <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
         <div className="name">
           {this.name}
         </div>

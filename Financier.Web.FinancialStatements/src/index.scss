@@ -227,6 +227,11 @@ body {
     .item {
       text-color: black;
       color: black;
+      cursor: default;
+
+      &.clickable {
+        cursor: pointer;
+      }
     }
 
     .item:hover {
@@ -311,6 +316,5 @@ body {
 
     justify-content: space-between;
     text-align: left;
-
   }
 }

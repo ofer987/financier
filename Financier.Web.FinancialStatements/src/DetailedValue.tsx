@@ -4,15 +4,31 @@ import lodash from "lodash";
 import { DetailedRecord } from "./DetailedRecord";
 
 interface Props {
+  year: number;
+  month: number;
   record: DetailedRecord;
 }
 
 class DetailedValue extends React.Component<Props> {
   decimalCount = 2;
 
+  public get year(): number {
+    return this.props.year;
+  }
+
+  public get month(): number {
+    return this.props.month;
+  }
+
+  public get tagNames(): string {
+    return this.props.record.tags
+      .map(item => item.trim())
+      .join(",");
+  }
+
   render() {
     return (
-      <div className="item" id={this.name} key={this.name}>
+      <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToItemizedView(this.year, this.month)}>
         <div className="name">
           {this.name}
         </div>
@@ -50,6 +66,12 @@ class DetailedValue extends React.Component<Props> {
     }
 
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
+  }
+
+  private navigateToItemizedView(year: number, month: number): void {
+    window.location.pathname = `/itemized-view/year/${year}/month/${month}/tagNames/${this.tagNames}`;
+
+    return;
   }
 }
 
