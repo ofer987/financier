@@ -324,3 +324,128 @@ body {
     text-align: left;
   }
 }
+
+.itemized-values {
+  .header {
+    div {
+      font-size: 20px;
+      width: 15%;
+    }
+
+    div:first-child {
+      width: 39%;
+
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    div:last-child {
+    }
+
+    display: flex;
+    flex-flow: wrap;
+
+    justify-content: space-between;
+    text-align: left;
+
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+  }
+
+  .items {
+    .item {
+      text-color: black;
+      color: black;
+      cursor: default;
+
+      &.clickable {
+        cursor: pointer;
+      }
+    }
+
+    .item:hover {
+      color: white;
+      background-color: darkgrey;
+    }
+
+    .item:first-child {
+      div {
+        padding: 7px 0px 2px 0px;
+      }
+
+      div:first-child {
+        padding: 7px 0px 2px 0px;
+      }
+    }
+
+    .item {
+      div {
+        padding: 2px 0px 2px 0px;
+        width: 15%;
+        font-family: monospace;
+      }
+
+      div:first-child {
+        width: 39%;
+
+        padding: 2px 0px 2px 0px;
+        border-right-color: black;
+        border-right-style: solid;
+        border-right-width: 1px;
+      }
+
+      div:last-child {
+        padding-right: 0px;
+      }
+
+      display: flex;
+      flex-flow: wrap;
+      flex-direction: row;
+
+      justify-content: space-between;
+      text-align: left;
+
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      border-bottom-color: blue;
+    }
+  }
+
+  .total {
+    &:hover {
+      color: white;
+      background-color: darkgrey;
+    }
+
+    div {
+      padding: 7px 0px 2px 0px;
+      width: 15%;
+      font-family: monospace;
+    }
+
+    div:first-child {
+      width: 39%;
+
+      padding: 7px 0px 2px 0px;
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    div:last-child {
+      padding-right: 0px;
+    }
+
+    display: flex;
+
+    flex-flow: wrap;
+    flex-direction: row;
+
+    font-size: 20px;
+
+    justify-content: space-between;
+    text-align: left;
+  }
+}

@@ -50,10 +50,11 @@ class ItemizedValues extends React.Component<Props> {
 
   render() {
     return (
-      <div className="values">
+      <div className="itemized-values">
         <h2>Items</h2>
         <div className="header">
           <div className="name">Name</div>
+          <div className="tags">Tags</div>
           <div className="credits">Credits</div>
           <div className="debits">Debits</div>
           <div className="profit">Profit (Deficit)</div>
@@ -63,6 +64,7 @@ class ItemizedValues extends React.Component<Props> {
         </div>
         <div className="total">
           <div className="name">Total</div>
+          <div className="tags"></div>
           <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
           <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
           <div className="profit">{this.accountingFormattedProfit}</div>
