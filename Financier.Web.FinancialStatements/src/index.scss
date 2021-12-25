@@ -101,7 +101,7 @@ body {
         &.disabled {
           border-color: grey;
           color: grey;
-          cursor: initial;
+          cursor: not-allowed;
         }
       }
     }
