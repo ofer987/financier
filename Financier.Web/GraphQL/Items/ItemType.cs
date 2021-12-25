@@ -1,3 +1,5 @@
+using System.Linq;
+
 using GraphQL.DataLoader;
 using GraphQL.Types;
 
@@ -14,6 +16,7 @@ namespace Financier.Web.GraphQL.Items
             Field(t => t.PostedAt, nullable: false, type: typeof(DateGraphType));
             Field(t => t.Amount, nullable: false, type: typeof(DecimalGraphType));
             Field(t => t.ItemId, nullable: false, type: typeof(StringGraphType));
+            Field("tags", t => t.Tags.Select(tag => tag.Name), nullable: false, type: typeof(ListGraphType<StringGraphType>));
         }
     }
 }

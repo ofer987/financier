@@ -38,6 +38,7 @@ interface ItemResponse {
     description: string;
     postedAt: Date;
     amount: number;
+    tags: string[];
   }[]
 }
 
@@ -105,6 +106,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
             postedAt
             amount
             itemId
+            tags
           }
         }
       `
@@ -161,7 +163,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
         name: item.description,
         at: item.postedAt,
         amount: amount,
-        tags: this.props.tagNames
+        tags: lodash.sortBy(item.tags)
       };
     });
 
