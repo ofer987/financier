@@ -1,6 +1,6 @@
 import * as React from "react";
 import _  from "underscore";
-import { startCase } from "lodash";
+import * as lodash from "lodash";
 import { ItemizedRecord } from "./ItemizedRecord";
 
 interface Props {
@@ -38,7 +38,7 @@ class ItemizedValue extends React.Component<Props> {
 
   get tags(): string {
     return this.props.record.tags
-      .map(tag => startCase(tag))
+      .map(tag => lodash.startCase(tag))
       .join(", ");
   }
 

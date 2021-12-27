@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": "types",
+    "typeRoots": ["types"],
     "sourceMap": true,
     "target": "es5",
     "jsx": "react",
