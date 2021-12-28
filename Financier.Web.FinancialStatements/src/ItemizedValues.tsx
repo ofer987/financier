@@ -1,25 +1,15 @@
 import * as React from "react";
 import _ from "underscore";
 
-import DetailedValue from "./DetailedValue";
-import { DetailedRecord } from "./DetailedRecord";
+import ItemizedValue from "./ItemizedValue";
+import { ItemizedRecord } from "./ItemizedRecord";
 
 interface Props {
-  year: number;
-  month: number;
-  records: DetailedRecord[];
+  records: ItemizedRecord[];
 }
 
-class DetailedValues extends React.Component<Props> {
+class ItemizedValues extends React.Component<Props> {
   decimalCount = 2;
-
-  public get year(): number {
-    return this.props.year;
-  }
-
-  public get month(): number {
-    return this.props.month;
-  }
 
   public get totalCredits(): number {
     var amounts = this.props.records
@@ -54,25 +44,27 @@ class DetailedValues extends React.Component<Props> {
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
 
-  public toKey(value: DetailedRecord): string {
-    return value.tags.join("-");
+  public toKey(record: ItemizedRecord): string {
+    return `${record.name}-${record.at}`;
   }
 
   render() {
     return (
-      <div className="values">
+      <div className="itemized-values">
         <h2>Items</h2>
         <div className="header">
           <div className="name">Name</div>
+          <div className="tags">Tags</div>
           <div className="credits">Credits</div>
           <div className="debits">Debits</div>
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.props.records.map(item => <DetailedValue record={item} key={this.toKey(item)} year={this.year} month={this.month} />)}
+          {this.props.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
+          <div className="tags"></div>
           <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
           <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
           <div className="profit">{this.accountingFormattedProfit}</div>
@@ -82,4 +74,4 @@ class DetailedValues extends React.Component<Props> {
   }
 }
 
-export default DetailedValues;
+export default ItemizedValues;

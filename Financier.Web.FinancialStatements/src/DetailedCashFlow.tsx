@@ -219,7 +219,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
           {this.renderCriteria()}
           <DetailedGraph records={this.enabledRecords()} />
         </div>
-        <DetailedValues records={this.enabledRecords()}  />
+        <DetailedValues records={this.enabledRecords()} year={this.year} month={this.month}  />
       </div>
     );
   }

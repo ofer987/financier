@@ -6,6 +6,7 @@ import Welcome from "./Welcome";
 import WelcomeError from "./WelcomeError";
 import MonthlyRoute from "./MonthlyRoute";
 import DetailedRoute from "./DetailedRoute";
+import ItemizedRoute from "./ItemizedRoute";
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
       <Router>
         <Switch>
           <WelcomeError>
+            <Route path="/itemized-view/year/:year/month/:month/tagNames/:tags" component={ItemizedRoute}>
+            </Route>
             <Route path="/detailed-view/year/:year/month/:month" component={DetailedRoute}>
             </Route>
             <Route path="/monthly-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth" component={MonthlyRoute} />

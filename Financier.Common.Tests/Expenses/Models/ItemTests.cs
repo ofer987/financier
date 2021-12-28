@@ -1,12 +1,84 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
+using Financier.Common.Expenses.Models;
 using TagModel = Financier.Common.Expenses.Models.Tag;
 
 namespace Financier.Common.Tests.Expenses.Models
 {
     public class ItemTests : InitializedDatabaseTests
     {
+        public static IEnumerable TagNameTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 7, 1),
+                    Enumerable.Empty<string>(),
+                    Enumerable.Empty<string>()
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 7, 1),
+                    new[] { "salary" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.EdithSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId
+                    }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 8, 1),
+                    new[] { "salary" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.EdithSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.ChildCareBenefit.ItemId
+                    }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 7, 1),
+                    new DateTime(2019, 8, 1),
+                    new[] { "salary" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.ChildCareBenefit.ItemId
+                    }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 7, 1),
+                    new DateTime(2019, 8, 1),
+                    new[] { "salary", "coffee" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.Coffee.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.ChildCareBenefit.ItemId
+                    }
+                );
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(TagNameTestCases))]
+        public void Test_Item_GetAllBy(DateTime fromDate, DateTime toDate, IEnumerable<string> tagNames, IEnumerable<string> expected)
+        {
+            var actual = Item.GetAllBy(fromDate, toDate, tagNames)
+                .Select(item => item.ItemId);
+
+            Assert.That(actual, Is.EquivalentTo(expected));
+        }
+
         [Test]
         [TestCase(
             FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId,

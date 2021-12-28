@@ -1,36 +1,23 @@
 import * as React from "react";
 import _  from "underscore";
-import lodash from "lodash";
-import { DetailedRecord } from "./DetailedRecord";
+import * as lodash from "lodash";
+import { ItemizedRecord } from "./ItemizedRecord";
 
 interface Props {
-  year: number;
-  month: number;
-  record: DetailedRecord;
+  record: ItemizedRecord;
 }
 
-class DetailedValue extends React.Component<Props> {
+class ItemizedValue extends React.Component<Props> {
   decimalCount = 2;
-
-  public get year(): number {
-    return this.props.year;
-  }
-
-  public get month(): number {
-    return this.props.month;
-  }
-
-  public get tagNames(): string {
-    return this.props.record.tags
-      .map(item => item.trim())
-      .join(",");
-  }
 
   render() {
     return (
-      <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToItemizedView(this.year, this.month)}>
+      <div className="item" id={this.name} key={this.name}>
         <div className="name">
           {this.name}
+        </div>
+        <div className="tags">
+          {this.tags}
         </div>
         <div className="credit">
           {this.credit}
@@ -46,7 +33,11 @@ class DetailedValue extends React.Component<Props> {
   }
 
   get name(): string {
-    return _.uniq(this.props.record.tags)
+    return this.props.record.name;
+  }
+
+  get tags(): string {
+    return this.props.record.tags
       .map(tag => lodash.startCase(tag))
       .join(", ");
   }
@@ -67,12 +58,6 @@ class DetailedValue extends React.Component<Props> {
 
     return `(${(0 - profit).toFixed(this.decimalCount)})`;
   }
-
-  private navigateToItemizedView(year: number, month: number): void {
-    window.location.pathname = `/itemized-view/year/${year}/month/${month}/tagNames/${this.tagNames}`;
-
-    return;
-  }
 }
 
-export default DetailedValue;
+export default ItemizedValue;

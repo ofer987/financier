@@ -101,7 +101,7 @@ body {
         &.disabled {
           border-color: grey;
           color: grey;
-          cursor: initial;
+          cursor: not-allowed;
         }
       }
     }
@@ -166,8 +166,14 @@ body {
   .criteria {
     width: 20%;
 
-    .checkbox:first-of-type {
-      padding-top: 10px;
+    .checkbox {
+      input, label {
+        cursor: pointer;
+      }
+
+      &:first-of-type {
+        padding-top: 10px;
+      }
     }
   }
 
@@ -194,11 +200,11 @@ body {
   }
 }
 
-.values {
+@mixin values($width) {
   .header {
     div {
       font-size: 20px;
-      width: 20%;
+      width: $width;
     }
 
     div:first-child {
@@ -227,6 +233,11 @@ body {
     .item {
       text-color: black;
       color: black;
+      cursor: default;
+
+      &.clickable {
+        cursor: pointer;
+      }
     }
 
     .item:hover {
@@ -247,7 +258,7 @@ body {
     .item {
       div {
         padding: 2px 0px 2px 0px;
-        width: 20%;
+        width: $width;
         font-family: monospace;
       }
 
@@ -285,7 +296,7 @@ body {
 
     div {
       padding: 7px 0px 2px 0px;
-      width: 20%;
+      width: $width;
       font-family: monospace;
     }
 
@@ -311,6 +322,14 @@ body {
 
     justify-content: space-between;
     text-align: left;
-
   }
+}
+
+// TODO: Move into a mixin!
+.values {
+  @include values(20%);
+}
+
+.itemized-values {
+  @include values(15%);
 }
