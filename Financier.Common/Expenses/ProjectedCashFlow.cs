@@ -6,22 +6,26 @@ using Microsoft.EntityFrameworkCore;
 using Financier.Common.Expenses.Models;
 using Financier.Common.Extensions;
 
-// TODO: Remove hardcoded filter tag names and replace with functions
-
 namespace Financier.Common.Expenses
 {
-    public class ProjectedCashFlow : DurationCashFlow
+    public class ProjectedCashFlow
     {
-        // public DateTime ProjectedAt { get; private set; }
+        public DateTime StartAt { get; protected set; }
+        public DateTime EndAt { get; protected set; }
+
+        public IDictionary<(int, int), decimal> CreditListings { get; protected set; } = new Dictionary<(int, int), decimal>();
+        public IDictionary<(int, int), decimal> DebitListings { get; protected set; } = new Dictionary<(int, int), decimal>();
+
+        public decimal TotalCreditAmount { get; private set; }
+        public decimal TotalDebitAmount { get; private set; }
+
         public decimal AverageCreditAmount { get; private set; }
         public decimal AverageDebitAmount { get; private set; }
 
-        public ProjectedCashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold)
+        public ProjectedCashFlow(DateTime startAt, DateTime endAt)
         {
             StartAt = startAt;
             EndAt = endAt;
-            // ProjectedAt = projectedAt;
-            Threshold = threshold;
 
             Validate();
             Init();
@@ -34,13 +38,15 @@ namespace Financier.Common.Expenses
             {
                 throw new ArgumentException($"Can only display past debits and credits, i.e., before {this.EndAt}");
             }
+            var creditAmount = this.CreditListings[(year, month)];
+            var debitAmount = this.DebitListings[(year, month)];
 
             return new MonthlyListing
             {
                 Year = year,
                 Month = month,
-                CreditAmount = this.AverageCreditAmount,
-                DebitAmount = this.AverageDebitAmount
+                CreditAmount = creditAmount,
+                DebitAmount = debitAmount
             };
         }
 
@@ -69,31 +75,51 @@ namespace Financier.Common.Expenses
             }
         }
 
-        protected override void Init()
+        protected void Init()
         {
-            SetCredits();
-            SetDebits();
+            this.CreditListings = GetItems(ItemTypes.Credit);
+            this.DebitListings = GetItems(ItemTypes.Debit);
 
-            SetAverageCredit();
-            SetAverageDebit();
-        }
+            this.TotalCreditAmount = this.CreditListings
+                .Select(listing => listing.Value)
+                .Aggregate(0.00M, (total, amount) => total + amount);
 
-        private void SetAverageCredit()
-        {
+            this.TotalDebitAmount = this.DebitListings
+                .Select(listing => listing.Value)
+                .Aggregate(0.00M, (total, amount) => total + amount);
+
             var monthsApart = 0
                 + (this.EndAt.Year * 12 - this.StartAt.Year * 12)
                 + (this.EndAt.Month - this.StartAt.Month);
 
-            this.AverageCreditAmount = this.CreditAmountTotal / monthsApart;
+            this.AverageCreditAmount = this.TotalCreditAmount / monthsApart;
+            this.AverageDebitAmount = this.TotalDebitAmount / monthsApart;
         }
 
-        private void SetAverageDebit()
+        private IDictionary<(int, int), decimal> GetItems(ItemTypes itemType)
         {
-            var monthsApart = 0
-                + (this.EndAt.Year * 12 - this.StartAt.Year * 12)
-                + (this.EndAt.Month - this.StartAt.Month);
+            IList<Item> items;
+            using (var db = new Context())
+            {
+                items = db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .Where(item => item.PostedAt >= StartAt)
+                    .Where(item => item.PostedAt < EndAt)
+                    .Where(item =>
+                        false
+                        || itemType == ItemTypes.Debit && item.Amount >= 0
+                        || itemType == ItemTypes.Credit && item.Amount < 0)
+                    .AsEnumerable()
+                    .Reject(item => item.Tags.HasInternalTransfer())
+                    .ToArray();
+            }
 
-            this.AverageDebitAmount = this.DebitAmountTotal / monthsApart;
+            var results = items
+                .GroupBy(item => (item.PostedAt.Year, item.PostedAt.Month), item => item.TheRealAmount)
+                .ToDictionary(item => item.Key, item => item.Aggregate(0.00M, (total, amount) => total + amount));
+
+            return results;
         }
     }
 }

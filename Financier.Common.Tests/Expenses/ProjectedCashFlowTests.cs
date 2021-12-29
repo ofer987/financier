@@ -119,7 +119,7 @@ namespace Financier.Common.Tests.Expenses
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
-            Assert.That(cashFlow.GetProjectedCreditAt(projectedAt), Is.EqualTo(expectedAmount));
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).CreditAmount, Is.EqualTo(expectedAmount));
         }
 
         [Test]
@@ -131,8 +131,8 @@ namespace Financier.Common.Tests.Expenses
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
-            Assert.That(() => cashFlow.GetProjectedCreditAt(projectedAt), Throws.ArgumentException);
-            Assert.That(() => cashFlow.GetProjectedDebitAt(projectedAt), (Throws.ArgumentException));
+            Assert.That(() => cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month), Throws.ArgumentException);
+            Assert.That(() => cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month), (Throws.ArgumentException));
         }
 
         [Test]
@@ -145,7 +145,7 @@ namespace Financier.Common.Tests.Expenses
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
-            Assert.That(cashFlow.GetProjectedDebitAt(projectedAt), Is.EqualTo(expectedAmount));
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).DebitAmount, Is.EqualTo(expectedAmount));
         }
     }
 }
