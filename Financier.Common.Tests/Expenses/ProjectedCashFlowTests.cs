@@ -111,7 +111,7 @@ namespace Financier.Common.Tests.Expenses
 
         [Test]
         [TestCaseSource(nameof(CreditProjectionCases))]
-        public void Test_Expenses_ProjectedCashFlow_GetProjectedCreditAt(
+        public void Test_Expenses_ProjectedCashFlow_GetProjectedMonthlyListing_Credit(
             DateTime startAt,
             DateTime endAt,
             DateTime projectedAt,
@@ -119,12 +119,12 @@ namespace Financier.Common.Tests.Expenses
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
-            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).CreditAmount, Is.EqualTo(expectedAmount));
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Credit, Is.EqualTo(expectedAmount));
         }
 
         [Test]
         [TestCaseSource(nameof(FutureProjectionFailCases))]
-        public void Test_Expenses_ProjectedCashFlow_GetProjectedCreditAt_Fails(
+        public void Test_Expenses_ProjectedCashFlow_GetProjectedMonthlyListing_Fails(
             DateTime startAt,
             DateTime endAt,
             DateTime projectedAt)
@@ -132,12 +132,11 @@ namespace Financier.Common.Tests.Expenses
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
             Assert.That(() => cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month), Throws.ArgumentException);
-            Assert.That(() => cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month), (Throws.ArgumentException));
         }
 
         [Test]
         [TestCaseSource(nameof(DebitProjectionCases))]
-        public void Test_Expenses_ProjectedCashFlow_GetProjectedDebitAt(
+        public void Test_Expenses_ProjectedCashFlow_GetProjectedMonthlyListing_Debit(
             DateTime startAt,
             DateTime endAt,
             DateTime projectedAt,
@@ -145,7 +144,7 @@ namespace Financier.Common.Tests.Expenses
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
-            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).DebitAmount, Is.EqualTo(expectedAmount));
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Debit, Is.EqualTo(expectedAmount));
         }
     }
 }

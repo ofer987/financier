@@ -11,8 +11,8 @@ namespace Financier.Web.GraphQL.CashFlows
         {
             Field(t => t.Year, nullable: false, type: typeof(IntGraphType));
             Field(t => t.Month, nullable: false, type: typeof(IntGraphType));
-            Field(t => t.CreditAmount, nullable: false, type: typeof(ListGraphType<DecimalGraphType>));
-            Field(t => t.DebitAmount, nullable: false, type: typeof(ListGraphType<DecimalGraphType>));
+            Field(t => t.Credit, nullable: false, type: typeof(ListGraphType<DecimalGraphType>));
+            Field(t => t.Debit, nullable: false, type: typeof(ListGraphType<DecimalGraphType>));
             Field(t => t.Profit, nullable: false, type: typeof(ListGraphType<DecimalGraphType>));
         }
     }

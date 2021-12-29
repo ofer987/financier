@@ -45,8 +45,8 @@ namespace Financier.Common.Expenses
             {
                 Year = year,
                 Month = month,
-                CreditAmount = creditAmount,
-                DebitAmount = debitAmount
+                Credit = creditAmount,
+                Debit = debitAmount
             };
         }
 
@@ -62,8 +62,8 @@ namespace Financier.Common.Expenses
             {
                 Year = year,
                 Month = month,
-                CreditAmount = this.AverageCreditAmount,
-                DebitAmount = this.AverageDebitAmount
+                Credit = this.AverageCreditAmount,
+                Debit = this.AverageDebitAmount
             };
         }
 
