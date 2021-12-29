@@ -20,14 +20,14 @@ namespace Financier.Web.GraphQL.CashFlows
             public static string ToYear = "toYear";
             public static string ToMonth = "toMonth";
 
-            // public static string ToProjectYear = "toProjectedYear";
-            // public static string ToProjectMonth = "toProjectedMonth";
+            public static string ProjectedToYear = "projectedToYear";
+            public static string ProjectedToMonth = "projectedToMonth";
         }
 
         public ProjectedCashFlowQuery()
         {
-            Field<ListGraphType<CashFlowType>>(
-                "getMonthlyCashFlows",
+            Field<ListGraphType<ProjectedCashFlowType>>(
+                "getMonthlyProjectedCashFlows",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
@@ -44,6 +44,14 @@ namespace Financier.Web.GraphQL.CashFlows
                     new QueryArgument<NonNullGraphType<IntGraphType>>
                     {
                         Name = Keys.ToMonth
+                    },
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.ProjectedToYear
+                    },
+                    new QueryArgument<NonNullGraphType<IntGraphType>>
+                    {
+                        Name = Keys.ProjectedToMonth
                     }
                 ),
                 resolve: context =>
@@ -53,27 +61,21 @@ namespace Financier.Web.GraphQL.CashFlows
                     var toYear = context.GetArgument<int>(Keys.ToYear);
                     var toMonth = context.GetArgument<int>(Keys.ToMonth);
 
+                    var projectedToYear = context.GetArgument<int>(Keys.ProjectedToYear);
+                    var projectedToMonth = context.GetArgument<int>(Keys.ProjectedToMonth);
+
                     var fromDate = new DateTime(fromYear, fromMonth, 1);
                     var toDate = new DateTime(toYear, toMonth, 1);
+                    var finalProjectedDate = new DateTime(projectedToYear, projectedToMonth, 1);
+                    var projectedDates = GetProjectedDates(toDate, finalProjectedDate).ToList();
 
                     // Should this be converted to an array?
-                    return GetMonthlyAnalysis(fromDate, toDate).ToList();
-                }
-            );
+                    var existingValues = GetMonthlyAnalysis(fromDate, toDate).ToList();
+                    // var projections = new ProjectedCashFlow(fromDate, toDate);
+                    // var projectedValues = GetMonthlyProjections(projectedDates).ToList();
 
-            Field<CashFlowType>(
-                "getYearlyCashFlow",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<IntGraphType>>
-                    {
-                        Name = Keys.Year
-                    }
-                ),
-                resolve: context =>
-                {
-                    var year = context.GetArgument<int>(Keys.Year);
-
-                    return new YearlyCashFlow(year);
+                    return projectedDates
+                        .Select(date => this.GetMonthlyProjection(projections, date));
                 }
             );
         }
@@ -96,6 +98,24 @@ namespace Financier.Web.GraphQL.CashFlows
                 System.Console.WriteLine($"{date.Year}.{date.Month}");
                 yield return new MonthlyCashFlow(date.Year, date.Month);
             }
+        }
+
+        private IEnumerable<DateTime> GetProjectedDates(DateTime fromDate, DateTime toDate)
+        {
+            for (var date = fromDate; date <= toDate; date = date.AddMonths(1))
+            {
+                yield return date;
+            }
+        }
+
+        private MonthlyListing GetMonthlyProjection(ProjectedCashFlow cashFlowProjection, DateTime at)
+        {
+            // for (var date = cashFlowProjection.EndAt; date <= at; date = date.AddMonths(1))
+            // {
+            return cashFlowProjection.GetProjectedMonthlyListing(at);
+            // }
+
+            // return Enumerable.Empty<MonthlyListing>();
         }
     }
 }

@@ -27,24 +27,38 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        public decimal GetProjectedCreditAt(DateTime at)
+        public MonthlyListing GetMonthlyListing(int year, int month)
         {
-            if (at <= this.EndAt)
+            var at = new DateTime(year, month, 1);
+            if (at > this.EndAt)
             {
-                throw new ArgumentException($"Can only project credit in the future, i.e., after {this.EndAt}", nameof(at));
+                throw new ArgumentException($"Can only display past debits and credits, i.e., before {this.EndAt}");
             }
 
-            return this.AverageCreditAmount;
+            return new MonthlyListing
+            {
+                Year = year,
+                Month = month,
+                CreditAmount = this.AverageCreditAmount,
+                DebitAmount = this.AverageDebitAmount
+            };
         }
 
-        public decimal GetProjectedDebitAt(DateTime at)
+        public MonthlyListing GetProjectedMonthlyListing(int year, int month)
         {
+            var at = new DateTime(year, month, 1);
             if (at <= this.EndAt)
             {
-                throw new ArgumentException($"Can only project debit in the future, i.e., after {this.EndAt}", nameof(at));
+                throw new ArgumentException($"Can only project debit in the future, i.e., after {this.EndAt}");
             }
 
-            return this.AverageDebitAmount;
+            return new MonthlyListing
+            {
+                Year = year,
+                Month = month,
+                CreditAmount = this.AverageCreditAmount,
+                DebitAmount = this.AverageDebitAmount
+            };
         }
 
         protected void Validate()
