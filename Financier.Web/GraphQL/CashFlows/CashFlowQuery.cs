@@ -154,32 +154,20 @@ namespace Financier.Web.GraphQL.CashFlows
                     var projectedToMonth = context.GetArgument<int>(Keys.ProjectedToMonth);
 
                     var fromDate = new DateTime(fromYear, fromMonth, 1);
-                    var toDate = new DateTime(toYear, toMonth, 1);
-                    var finalProjectedDate = new DateTime(projectedToYear, projectedToMonth, 1);
-                    // var cashFlow = new ProjectedCashFlow(
-                    // var projectedDates = GetProjectedDates(toDate, finalProjectedDate).ToList();
+                    var toDate = new DateTime(toYear, toMonth, 1).AddMonths(1);
+                    var finalProjectedDate = new DateTime(projectedToYear, projectedToMonth, 1).AddMonths(1);
 
                     var cashflows = new ProjectedCashFlow(fromDate, toDate);
 
-                    // Should this be converted to an array?
                     var existingListings = this.GetExistingDates(fromDate, toDate)
                         .Select(date => cashflows.GetMonthlyListing(date.Year, date.Month));
 
-                    var projectedListings = this.GetProjectedDates(toDate, finalProjectedDate)
+                    var projectedListings = this.GetProjectedDates(cashflows.EndAt, finalProjectedDate)
                         .Select(date => cashflows.GetProjectedMonthlyListing(date.Year, date.Month));
-
-                    // var existingMonthlyCashFlows = cashflows.GetMonthlyListing( GetMonthlyCashFlows(fromDate, toDate);
-                    // var predictedMonthlyCashFlows = GetMonthlyProjections(fromDate, toDate, finalProjectedDate);
 
                     return existingListings
                         .Concat(projectedListings)
                         .ToList();
-
-                    // return existingMonthlyCashFlows.Concat(predictedMonthlyCashFlows).ToList();
-                    // var projectedValues = GetMonthlyProjections(projectedDates).ToList();
-
-                    // return projectedDates
-                    //     .Select(date => this.GetMonthlyProjection(projections, date));
                 }
             );
         }
@@ -199,14 +187,13 @@ namespace Financier.Web.GraphQL.CashFlows
 
             for (; date <= endDate; date = date.AddMonths(1))
             {
-                System.Console.WriteLine($"{date.Year}.{date.Month}");
                 yield return new MonthlyCashFlow(date.Year, date.Month);
             }
         }
 
         private IEnumerable<DateTime> GetExistingDates(DateTime startAt, DateTime endAt)
         {
-            for (var date = startAt; date <= endAt; date = date.AddMonths(1))
+            for (var date = startAt; date < endAt; date = date.AddMonths(1))
             {
                 yield return date;
             }
@@ -214,7 +201,7 @@ namespace Financier.Web.GraphQL.CashFlows
 
         private IEnumerable<DateTime> GetProjectedDates(DateTime endAt, DateTime projectedFinalAt)
         {
-            for (var date = endAt; date <= projectedFinalAt; date = date.AddMonths(1))
+            for (var date = endAt; date < projectedFinalAt; date = date.AddMonths(1))
             {
                 yield return date;
             }

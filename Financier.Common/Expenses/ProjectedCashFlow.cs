@@ -53,9 +53,9 @@ namespace Financier.Common.Expenses
         public MonthlyListing GetProjectedMonthlyListing(int year, int month)
         {
             var at = new DateTime(year, month, 1);
-            if (at <= this.EndAt)
+            if (at < this.EndAt)
             {
-                throw new ArgumentException($"Can only project debit in the future, i.e., after {this.EndAt}");
+                throw new ArgumentException($"Can only project debits and credits after {this.EndAt.AddDays(-1)}");
             }
 
             return new MonthlyListing

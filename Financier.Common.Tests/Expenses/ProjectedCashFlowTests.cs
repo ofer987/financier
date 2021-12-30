@@ -59,7 +59,7 @@ namespace Financier.Common.Tests.Expenses
                 yield return new TestCaseData(
                     new DateTime(2019, 9, 1),
                     new DateTime(2019, 10, 1),
-                    new DateTime(2019, 10, 1)
+                    new DateTime(2019, 9, 1)
                 );
 
                 yield return new TestCaseData(
