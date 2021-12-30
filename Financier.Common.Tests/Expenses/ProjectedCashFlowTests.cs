@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections;
 using NUnit.Framework;
 
 using Financier.Common.Expenses;
-using Financier.Common.Expenses.Models;
 
 namespace Financier.Common.Tests.Expenses
 {
