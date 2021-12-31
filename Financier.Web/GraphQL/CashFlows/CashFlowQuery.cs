@@ -64,7 +64,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 }
             );
 
-            Field<ListGraphType<CashFlowType>>(
+            Field<ListGraphType<MonthlyListingType>>(
                 "getMonthlyCashFlows",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>>
@@ -86,16 +86,22 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var fromYear = context.GetArgument<int>(Keys.FromYear);
-                    var fromMonth = context.GetArgument<int>(Keys.FromMonth);
-                    var toYear = context.GetArgument<int>(Keys.ToYear);
-                    var toMonth = context.GetArgument<int>(Keys.ToMonth);
+                    var startYear = context.GetArgument<int>(Keys.FromYear);
+                    var startMonth = context.GetArgument<int>(Keys.FromMonth);
+                    var endYear = context.GetArgument<int>(Keys.ToYear);
+                    var endMonth = context.GetArgument<int>(Keys.ToMonth);
 
-                    var fromDate = new DateTime(fromYear, fromMonth, 1);
-                    var toDate = new DateTime(toYear, toMonth, 1);
+                    var startAt = new DateTime(startYear, startMonth, 1);
+                    var endAt = new DateTime(endYear, endMonth, 1).AddMonths(1);
 
                     // Should this be converted to an array?
-                    return GetMonthlyAnalysis(fromDate, toDate).ToList();
+                    var cashFlow = new ProjectedCashFlow(startAt, endAt);
+                    var dates = this.GetExistingDates(startAt, endAt);
+
+                    return dates
+                        .Select(date => cashFlow.GetMonthlyListing(date.Year, date.Month))
+                        .ToList();
+                    // return GetMonthlyAnalysis(startAt, endAt).ToList();
                 }
             );
 
