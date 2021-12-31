@@ -95,12 +95,13 @@ namespace Financier.Web.GraphQL.CashFlows
                     var endAt = new DateTime(endYear, endMonth, 1).AddMonths(1);
 
                     // Should this be converted to an array?
-                    var cashFlow = new ProjectedCashFlow(startAt, endAt);
-                    var dates = this.GetExistingDates(startAt, endAt);
-
-                    return dates
-                        .Select(date => cashFlow.GetMonthlyListing(date.Year, date.Month))
+                    // var cashFlow = new ProjectedCashFlow(startAt, endAt);
+                    return this.GetExistingMonthlyListings(startAt, endAt)
                         .ToList();
+                    //
+                    // return dates
+                    //     .Select(date => cashFlow.GetMonthlyListing(date.Year, date.Month))
+                    //     .ToList();
                     // return GetMonthlyAnalysis(startAt, endAt).ToList();
                 }
             );
@@ -163,13 +164,11 @@ namespace Financier.Web.GraphQL.CashFlows
                     var toDate = new DateTime(toYear, toMonth, 1).AddMonths(1);
                     var finalProjectedDate = new DateTime(projectedToYear, projectedToMonth, 1).AddMonths(1);
 
-                    var cashflows = new ProjectedCashFlow(fromDate, toDate);
+                    // var cashflows = new ProjectedCashFlow(fromDate, toDate);
 
-                    var existingListings = this.GetExistingDates(fromDate, toDate)
-                        .Select(date => cashflows.GetMonthlyListing(date.Year, date.Month));
+                    var existingListings = this.GetExistingMonthlyListings(fromDate, toDate);
 
-                    var projectedListings = this.GetProjectedDates(cashflows.EndAt, finalProjectedDate)
-                        .Select(date => cashflows.GetProjectedMonthlyListing(date.Year, date.Month));
+                    var projectedListings = this.GetProjectedMonthlyListings(fromDate, toDate, finalProjectedDate);
 
                     return existingListings
                         .Concat(projectedListings)
@@ -205,11 +204,53 @@ namespace Financier.Web.GraphQL.CashFlows
             }
         }
 
-        private IEnumerable<DateTime> GetProjectedDates(DateTime endAt, DateTime projectedFinalAt)
+        private IEnumerable<MonthlyListing> GetExistingMonthlyListings(DateTime startAt, DateTime endAt)
         {
+            var cashFlow = new ProjectedCashFlow(startAt, endAt);
+            for (var date = startAt; date < endAt; date = date.AddMonths(1))
+            {
+                MonthlyListing result;
+                try
+                {
+                    result = cashFlow.GetMonthlyListing(date.Year, date.Month);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+
+                    continue;
+                }
+
+                yield return result;
+            }
+        }
+
+        // private IEnumerable<DateTime> GetProjectedDates(DateTime endAt, DateTime projectedFinalAt)
+        // {
+        //     for (var date = endAt; date < projectedFinalAt; date = date.AddMonths(1))
+        //     {
+        //         yield return date;
+        //     }
+        // }
+
+        private IEnumerable<MonthlyListing> GetProjectedMonthlyListings(DateTime startAt, DateTime endAt, DateTime projectedFinalAt)
+        {
+            var cashFlow = new ProjectedCashFlow(startAt, endAt);
             for (var date = endAt; date < projectedFinalAt; date = date.AddMonths(1))
             {
-                yield return date;
+                MonthlyListing result;
+                try
+                {
+                    result = cashFlow.GetProjectedMonthlyListing(date.Year, date.Month);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+
+                    continue;
+                }
+
+                yield return result;;
             }
         }
     }

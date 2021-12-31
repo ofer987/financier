@@ -30,14 +30,11 @@ interface Props {
 }
 
 interface CashFlow {
-  startAt: string;
-  endAt: string;
-  debitListings: {
-    amount: number;
-  }[];
-  creditListings: {
-    amount: number;
-  }[];
+  year: number;
+  month: number;
+  debit: number;
+  credit: number;
+  profit: number;
 }
 
 interface CashFlows {
@@ -90,14 +87,11 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       query: gql`
         query {
           getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
-            startAt
-            endAt
-            debitListings {
-              amount
-            }
-            creditListings {
-              amount
-            }
+            year
+            month
+            debit
+            credit
+            profit
           }
         }
       `
@@ -173,49 +167,51 @@ class MonthlyCashFlow extends React.Component<Props, State> {
 
   private toRecords(values: CashFlows): Array<MonthlyRecord> {
     const data = values.getMonthlyCashFlows.map(item => {
-      const at = this.toDate(item.startAt);
-      const credits = item.creditListings.map(listing => listing.amount);
-      const debits = item.debitListings.map(listing => listing.amount);
-
-      let credit = 0;
-      credit = _.reduce(credits, (t, amount) => t + amount);
-
-      let debit = 0;
-      debit = _.reduce(debits, (t, amount) => t + amount);
+      // const at = new Date(item.year, item.month - 1);
+      // const credits = item.creditListings.map(listing => listing.amount);
+      // const debits = item.debitListings.map(listing => listing.amount);
+      //
+      // let credit = 0;
+      // credit = _.reduce(credits, (t, amount) => t + amount);
+      //
+      // let debit = 0;
+      // debit = _.reduce(debits, (t, amount) => t + amount);
 
       return {
-        year: at.getFullYear(),
-        month: at.getMonth(),
-        amount: new Amount(credit, debit)
+        year: item.year,
+        month: item.month - 1,
+        amount: new Amount(item.credit, item.debit)
       };
     });
 
+    return data;
+
     // create the results
-    const results: MonthlyRecord[] = [];
-    const startAt = new Date(this.fromYear, this.fromMonth - 1);
-    const endAt = new Date(this.toYear, this.toMonth - 1);
-    for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
-      const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
-      if (false
-        || typeof (record) == "undefined"
-        || typeof (record.amount.credit) == "undefined"
-        || typeof (record.amount.debit) == "undefined"
-      ) {
-        results.push({
-          year: at.getFullYear(),
-          month: at.getMonth(),
-          amount: new Amount(0, 0)
-        });
-      } else {
-        results.push(record);
-      }
-    }
-
-    // Trim the results from the start to the end
-    const firstIndex = results.findIndex(item => item.amount.credit != 0 && item.amount.debit != 0);
-    const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0)) + 1;
-
-    return results.slice(firstIndex, lastIndex);
+    // const results: MonthlyRecord[] = [];
+    // const startAt = new Date(this.fromYear, this.fromMonth - 1);
+    // const endAt = new Date(this.toYear, this.toMonth - 1);
+    // for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
+    //   const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
+    //   if (false
+    //     || typeof (record) == "undefined"
+    //     || typeof (record.amount.credit) == "undefined"
+    //     || typeof (record.amount.debit) == "undefined"
+    //   ) {
+    //     results.push({
+    //       year: at.getFullYear(),
+    //       month: at.getMonth(),
+    //       amount: new Amount(0, 0)
+    //     });
+    //   } else {
+    //     results.push(record);
+    //   }
+    // }
+    //
+    // // Trim the results from the start to the end
+    // const firstIndex = results.findIndex(item => item.amount.credit != 0 && item.amount.debit != 0);
+    // const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0)) + 1;
+    //
+    // return results.slice(firstIndex, lastIndex);
   }
   // private toDebitCashFlowModel(data: CashFlowResponse): Listing[] {
   //   const monthlyCashFlows = data.getMonthlyCashFlows;
