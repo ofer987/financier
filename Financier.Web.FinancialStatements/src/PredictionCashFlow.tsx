@@ -19,24 +19,14 @@ import MonthlyValues from "./MonthlyValues";
 import { Amount } from "./Amount";
 import { MonthlyRecord } from "./MonthlyRecord";
 import { MonthlyGraph } from "./MonthlyGraph";
+import { MonthlyCashFlow, Props as MonthlyProps, CashFlow } from "./MonthlyCashFlow";
 
 // CSS
 import "./index.scss";
 
-interface Props {
-  fromYear: number;
-  fromMonth: number;
-  toYear: number;
-  toMonth: number;
-}
-
-interface CashFlow {
-  isPrediction: boolean;
-  year: number;
-  month: number;
-  debit: number;
-  credit: number;
-  profit: number;
+interface Props extends MonthlyProps {
+  predictionYear: number;
+  predictionMonth: number;
 }
 
 interface CashFlows {
@@ -48,7 +38,7 @@ interface State {
   predictionDate: Date;
 }
 
-class MonthlyCashFlow extends React.Component<Props, State> {
+class PredictionCashFlow extends React.Component<Props, State> {
   setPredictionDate(newDate: Date): void {
     this.setState({
       predictionDate: newDate
@@ -108,7 +98,6 @@ class MonthlyCashFlow extends React.Component<Props, State> {
       query: gql`
         query {
           getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
-            isPrediction
             year
             month
             debit
@@ -118,7 +107,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
-      const records = this.toRecords(value.data);
+      const records = this.toRecords(value.data.getMonthlyCashFlows);
 
       this.setState({
         records: records,
@@ -188,9 +177,10 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     );
   }
 
-  private toRecords(values: CashFlows): Array<MonthlyRecord> {
-    const results = values.getMonthlyCashFlows.map(item => {
+  private toRecords(values: CashFlow[]): Array<MonthlyRecord> {
+    const results = values.map(item => {
       return {
+        isPrediction: item.isPrediction,
         year: item.year,
         month: item.month - 1,
         amount: new Amount(item.credit, item.debit)
@@ -208,4 +198,4 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 }
 
-export { MonthlyCashFlow, Props, CashFlow };
+export { PredictionCashFlow, Props };

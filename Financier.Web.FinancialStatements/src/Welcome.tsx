@@ -157,6 +157,7 @@ class Welcome extends React.Component<Props, State> {
                 id="end-date-picker"
                 inline={true}
                 selected={this.endDate}
+                minDate={this.startDate}
                 dateFormat="LLLL/yyyy"
                 showMonthYearPicker
                 // @ts-ignore
