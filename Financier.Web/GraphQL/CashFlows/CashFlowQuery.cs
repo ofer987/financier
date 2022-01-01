@@ -92,7 +92,7 @@ namespace Financier.Web.GraphQL.CashFlows
                     var endMonth = context.GetArgument<int>(Keys.ToMonth);
 
                     var startAt = new DateTime(startYear, startMonth, 1);
-                    var endAt = new DateTime(endYear, endMonth, 1).AddMonths(1);
+                    var endAt = new DateTime(endYear, endMonth, 1);
 
                     // Should this be converted to an array?
                     // var cashFlow = new ProjectedCashFlow(startAt, endAt);
@@ -204,17 +204,17 @@ namespace Financier.Web.GraphQL.CashFlows
             }
         }
 
-        private IEnumerable<MonthlyListing> GetExistingMonthlyListings(DateTime startAt, DateTime endAt)
+        private IEnumerable<IMonthlyListing> GetExistingMonthlyListings(DateTime startAt, DateTime endAt)
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
             for (var date = startAt; date < endAt; date = date.AddMonths(1))
             {
-                MonthlyListing result;
+                IMonthlyListing result;
                 try
                 {
                     result = cashFlow.GetMonthlyListing(date.Year, date.Month);
                 }
-                catch (Exception exception)
+                catch (ArgumentException exception)
                 {
                     Console.WriteLine(exception);
 
@@ -233,24 +233,24 @@ namespace Financier.Web.GraphQL.CashFlows
         //     }
         // }
 
-        private IEnumerable<MonthlyListing> GetProjectedMonthlyListings(DateTime startAt, DateTime endAt, DateTime projectedFinalAt)
+        private IEnumerable<IMonthlyListing> GetProjectedMonthlyListings(DateTime startAt, DateTime endAt, DateTime projectedFinalAt)
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
             for (var date = endAt; date < projectedFinalAt; date = date.AddMonths(1))
             {
-                MonthlyListing result;
+                IMonthlyListing result;
                 try
                 {
                     result = cashFlow.GetProjectedMonthlyListing(date.Year, date.Month);
                 }
-                catch (Exception exception)
+                catch (ArgumentException exception)
                 {
                     Console.WriteLine(exception);
 
                     continue;
                 }
 
-                yield return result;;
+                yield return result;
             }
         }
     }

@@ -31,18 +31,38 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        public MonthlyListing GetMonthlyListing(int year, int month)
+        public IMonthlyListing GetMonthlyListing(int year, int month)
         {
             var at = new DateTime(year, month, 1);
             if (at > this.EndAt)
             {
                 throw new ArgumentException($"Can only display past debits and credits, i.e., before {this.EndAt}");
             }
-            var creditAmount = this.CreditListings[(year, month)];
-            var debitAmount = this.DebitListings[(year, month)];
+
+            var creditsExist = true;
+            decimal creditAmount;
+            if (!this.CreditListings.TryGetValue((year, month), out creditAmount))
+            {
+                creditsExist = false;
+                creditAmount = 0.00M;
+            }
+
+            var debitsExist = true;
+            decimal debitAmount;
+            if (!this.DebitListings.TryGetValue((year, month), out debitAmount))
+            {
+                debitsExist = false;
+                debitAmount = 0.00M;
+            }
+
+            if (!creditsExist && !debitsExist)
+            {
+                throw new ArgumentException($"There are no credits and no debits for {at.ToString("MMMM yyyy")}");
+            }
 
             return new MonthlyListing
             {
+                IsPrediction = false,
                 Year = year,
                 Month = month,
                 Credit = creditAmount,
@@ -50,7 +70,7 @@ namespace Financier.Common.Expenses
             };
         }
 
-        public MonthlyListing GetProjectedMonthlyListing(int year, int month)
+        public IMonthlyListing GetProjectedMonthlyListing(int year, int month)
         {
             var at = new DateTime(year, month, 1);
             if (at < this.EndAt)
@@ -60,6 +80,7 @@ namespace Financier.Common.Expenses
 
             return new MonthlyListing
             {
+                IsPrediction = true,
                 Year = year,
                 Month = month,
                 Credit = this.AverageCreditAmount,
