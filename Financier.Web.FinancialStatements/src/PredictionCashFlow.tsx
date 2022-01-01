@@ -30,16 +30,20 @@ import "./index.scss";
 // }
 
 interface CashFlows {
-  getMonthlyCashFlows: CashFlow[];
+  getMonthlyProjectedCashFlows: CashFlow[];
 }
 
 class PredictionCashFlow extends MonthlyCashFlow {
+  public get initialPredictionDate(): Date {
+    return new Date(this.predictionYear, this.predictionMonth - 1);
+  }
+
   public get predictionMonth(): number {
-    return this.props.predictionYear;
+    return this.props.predictionMonth;
   }
 
   public get predictionYear(): number {
-    return this.props.predictionMonth;
+    return this.props.predictionYear;
   }
 
   constructor(props: Props) {
@@ -54,7 +58,7 @@ class PredictionCashFlow extends MonthlyCashFlow {
     this.client.query<CashFlows>({
       query: gql`
         query {
-          getPredictedMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}, toPredictedMonth: ${this.predictionMonth}, toPredictedYear: ${this.predictionYear}) {
+          getMonthlyProjectedCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}, projectedToYear: ${this.predictionYear}, projectedToMonth: ${this.predictionMonth}) {
             isPrediction
             year
             month
@@ -65,11 +69,11 @@ class PredictionCashFlow extends MonthlyCashFlow {
         }
       `
     }).then(value => {
-      const records = this.toRecords(value.data.getMonthlyCashFlows);
+      const records = this.toRecords(value.data.getMonthlyProjectedCashFlows);
 
       this.setState({
         records: records,
-        selectedPredictionDate: new Date(this.predictionYear, this.predictionMonth - 1)
+        selectedPredictionDate: this.initialPredictionDate
       });
     });
   }

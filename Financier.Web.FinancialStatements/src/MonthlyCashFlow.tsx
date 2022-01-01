@@ -161,7 +161,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
             <DatePicker
               id="prediction-date-picker"
               inline={true}
-              selected={this.toDate}
+              selected={this.selectedPredictionDate}
               dateFormat="LLLL/yyyy"
               minDate={new Date(this.toYear, this.toMonth)}
               showMonthYearPicker

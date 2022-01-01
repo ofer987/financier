@@ -21,7 +21,7 @@ function App() {
             <Route path="/detailed-view/year/:year/month/:month" component={DetailedRoute}>
             </Route>
             <Route path="/monthly-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth" component={MonthlyRoute} />
-            <Route path="/prediction-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth/prediction-year/:predictionYear}/prediction-month/:predictionMonth" component={PredictionRoute} />
+            <Route path="/prediction-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth/prediction-year/:predictionYear/prediction-month/:predictionMonth" component={PredictionRoute} />
             <Route exact path="/">
               <Welcome />
             </Route>

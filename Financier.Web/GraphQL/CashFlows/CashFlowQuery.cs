@@ -168,7 +168,7 @@ namespace Financier.Web.GraphQL.CashFlows
 
                     var existingListings = this.GetExistingMonthlyListings(fromDate, toDate);
 
-                    var projectedListings = this.GetProjectedMonthlyListings(fromDate, toDate, finalProjectedDate);
+                    var projectedListings = this.GetProjectedMonthlyListings(fromDate, toDate.AddMonths(-2), finalProjectedDate);
 
                     return existingListings
                         .Concat(projectedListings)
