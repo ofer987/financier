@@ -24,6 +24,8 @@ import { MonthlyGraph } from "./MonthlyGraph";
 import "./index.scss";
 
 interface Props {
+  predictionYear: number;
+  predictionMonth: number;
   fromYear: number;
   fromMonth: number;
   toYear: number;
@@ -45,13 +47,13 @@ interface CashFlows {
 
 interface State {
   records: MonthlyRecord[];
-  predictionDate: Date;
+  selectedPredictionDate: Date;
 }
 
 class MonthlyCashFlow extends React.Component<Props, State> {
-  setPredictionDate(newDate: Date): void {
+  setSelectedPredictionDate(newDate: Date): void {
     this.setState({
-      predictionDate: newDate
+      selectedPredictionDate: newDate
     });
   }
 
@@ -59,8 +61,8 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     return new Date(this.toYear, this.toMonth);
   }
 
-  get predictionDate(): Date {
-    return (this.state || { predictionDate: new Date() }).predictionDate;
+  get selectedPredictionDate(): Date {
+    return (this.state || { selectedPredictionDate: new Date() }).selectedPredictionDate;
   }
 
   get records(): MonthlyRecord[] {
@@ -87,7 +89,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     return new Date(this.toYear, this.toMonth - 1);
   }
 
-  private client = new ApolloClient({
+  protected client = new ApolloClient({
     uri: "https://localhost:5003/graphql/cash-flows",
     cache: new InMemoryCache(),
     headers: {
@@ -102,7 +104,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     this.setData();
   }
 
-  setData(): void {
+  protected setData(): void {
     // Convert to async/await
     this.client.query<CashFlows>({
       query: gql`
@@ -118,11 +120,11 @@ class MonthlyCashFlow extends React.Component<Props, State> {
         }
       `
     }).then(value => {
-      const records = this.toRecords(value.data);
+      const records = this.toRecords(value.data.getMonthlyCashFlows);
 
       this.setState({
         records: records,
-        predictionDate: this.initialPredictionDate
+        selectedPredictionDate: this.initialPredictionDate
       });
     });
   }
@@ -164,15 +166,15 @@ class MonthlyCashFlow extends React.Component<Props, State> {
               minDate={new Date(this.toYear, this.toMonth)}
               showMonthYearPicker
               // @ts-ignore
-              onChange={(date) => this.setPredictionDate(date)}
+              onChange={(date) => this.setSelectedPredictionDate(date)}
             />
           </div>
           <div className={`button monthly-chart`} onClick={(event) => {
             event.preventDefault();
 
-            window.location.pathname = `/prediction-view/from-year/${this.fromYear}/from-month/${this.fromMonth}/to-year/${this.toYear}/to-month/${this.toMonth}/prediction-year/${this.predictionDate.getFullYear()}/prediction-month/${this.predictionDate.getMonth() + 1}`;
+            window.location.pathname = `/prediction-view/from-year/${this.fromYear}/from-month/${this.fromMonth}/to-year/${this.toYear}/to-month/${this.toMonth}/prediction-year/${this.selectedPredictionDate.getFullYear()}/prediction-month/${this.selectedPredictionDate.getMonth() + 1}`;
           }}>
-            View Prediction Chart to {this.toDateString(this.predictionDate)}
+            View Prediction Chart to {this.toDateString(this.selectedPredictionDate)}
           </div>
           <div className="yearly-navigation">
             {lodash.range(this.fromYear, this.toYear + 1, 1).map((year: number) => {
@@ -188,9 +190,10 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     );
   }
 
-  private toRecords(values: CashFlows): Array<MonthlyRecord> {
-    const results = values.getMonthlyCashFlows.map(item => {
+  protected toRecords(values: CashFlow[]): Array<MonthlyRecord> {
+    const results = values.map(item => {
       return {
+        isPrediction: item.isPrediction,
         year: item.year,
         month: item.month - 1,
         amount: new Amount(item.credit, item.debit)
@@ -208,4 +211,4 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 }
 
-export { MonthlyCashFlow, Props, CashFlow };
+export { MonthlyCashFlow, Props, State, CashFlow };
