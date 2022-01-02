@@ -21,7 +21,7 @@ interface Value {
 }
 
 class MonthlyGraph extends React.Component<Props> {
-  width = 500;
+  width = 600;
   height = 300;
 
   margin = {
