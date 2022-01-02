@@ -8,6 +8,7 @@ using Financier.Common.Extensions;
 
 namespace Financier.Common.Expenses
 {
+    // TODO Rename to MonthlyCashFlow
     public class ProjectedCashFlow
     {
         public DateTime StartAt { get; protected set; }
@@ -57,9 +58,8 @@ namespace Financier.Common.Expenses
                 return new NullMonthlyListing();
             }
 
-            return new MonthlyListing
+            return new ExistingMonthlyListing
             {
-                IsPrediction = false,
                 Year = year,
                 Month = month,
                 Credit = creditAmount,
@@ -75,9 +75,8 @@ namespace Financier.Common.Expenses
                 throw new ArgumentException($"Can only project debits and credits after {this.EndAt.AddDays(-1)}");
             }
 
-            return new MonthlyListing
+            return new PredictionMonthlyListing
             {
-                IsPrediction = true,
                 Year = year,
                 Month = month,
                 Credit = this.AverageCreditAmount,
