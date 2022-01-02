@@ -32,7 +32,7 @@ namespace Financier.Common.Tests.Expenses
             }
         }
 
-        public static IEnumerable CreditProjectionCases
+        public static IEnumerable ProjectionCases
         {
             get
             {
@@ -40,14 +40,16 @@ namespace Financier.Common.Tests.Expenses
                     new DateTime(2019, 7, 1),
                     new DateTime(2019, 8, 1),
                     new DateTime(2019, 9, 1),
-                    2800.00M
+                    2800.00M,
+                    98.25M + 4.20M + 10.00M
                 );
 
                 yield return new TestCaseData(
                     new DateTime(2019, 7, 1),
                     new DateTime(2019, 10, 1),
                     new DateTime(2019, 11, 1),
-                    (1000000M + 2000M + 800M) / 3
+                    (1000000M + 2000M + 800M) / 3,
+                    (98.25M + 4.20M + 10.00M) / 3
                 );
             }
         }
@@ -76,26 +78,6 @@ namespace Financier.Common.Tests.Expenses
             }
         }
 
-        public static IEnumerable DebitProjectionCases
-        {
-            get
-            {
-                yield return new TestCaseData(
-                    new DateTime(2019, 7, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 9, 1),
-                    98.25M + 4.20M + 10.00M
-                );
-
-                yield return new TestCaseData(
-                    new DateTime(2019, 7, 1),
-                    new DateTime(2019, 10, 1),
-                    new DateTime(2019, 11, 1),
-                    (98.25M + 4.20M + 10.00M) / 3
-                );
-            }
-        }
-
         [Test]
         [TestCaseSource(nameof(ProjectionFailCases))]
         public void Test_Expenses_ProjectedCashFlow_Fails(
@@ -107,16 +89,19 @@ namespace Financier.Common.Tests.Expenses
         }
 
         [Test]
-        [TestCaseSource(nameof(CreditProjectionCases))]
-        public void Test_Expenses_ProjectedCashFlow_GetProjectedMonthlyListing_Credit(
+        [TestCaseSource(nameof(ProjectionCases))]
+        public void Test_Expenses_ProjectedCashFlow_GetProjectedMonthlyListing(
             DateTime startAt,
             DateTime endAt,
             DateTime projectedAt,
-            decimal expectedAmount)
+            decimal expectedCreditAmount,
+            decimal expectedDebitAmount)
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
-            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Credit, Is.EqualTo(expectedAmount));
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).IsPrediction, Is.True);
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Credit, Is.EqualTo(expectedCreditAmount));
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Debit, Is.EqualTo(expectedDebitAmount));
         }
 
         [Test]
@@ -129,19 +114,6 @@ namespace Financier.Common.Tests.Expenses
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
             Assert.That(() => cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month), Throws.ArgumentException);
-        }
-
-        [Test]
-        [TestCaseSource(nameof(DebitProjectionCases))]
-        public void Test_Expenses_ProjectedCashFlow_GetProjectedMonthlyListing_Debit(
-            DateTime startAt,
-            DateTime endAt,
-            DateTime projectedAt,
-            decimal expectedAmount)
-        {
-            var cashFlow = new ProjectedCashFlow(startAt, endAt);
-
-            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Debit, Is.EqualTo(expectedAmount));
         }
     }
 }
