@@ -15,7 +15,7 @@ namespace Financier.Common.Tests.Expenses.Models.ItemTesting
                 new DateTime(2019, 6, 1),
                 new DateTime(2019, 7, 1),
                 new DateTime(2019, 8, 1),
-                new DateTime(2019, 9, 1),
+                new DateTime(2019, 10, 1),
             };
 
             Assert.That(actual, Is.EquivalentTo(expected));
