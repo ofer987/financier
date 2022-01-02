@@ -37,6 +37,14 @@ namespace Financier.Common.Tests.Expenses
             get
             {
                 yield return new TestCaseData(
+                    new DateTime(2019, 6, 1),
+                    new DateTime(2019, 8, 1),
+                    new DateTime(2019, 9, 1),
+                    (2000.00M + 1000.00M + 800.00M + 2800.00M) / 2,
+                    (300000.00M + 300000.00M + 300000.00M + 104.50M + 4.20M + 98.25M + 4.20M + 10.00M) / 2
+                );
+
+                yield return new TestCaseData(
                     new DateTime(2019, 7, 1),
                     new DateTime(2019, 8, 1),
                     new DateTime(2019, 9, 1),
