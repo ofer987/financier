@@ -70,8 +70,6 @@ namespace Financier.Common.Tests.Expenses
             }
         }
 
-        // TODO add more failure test cases so it fails for
-        // 1. GetMonthlyListing that does not exist
         public static IEnumerable ExistingMonthlyCases
         {
             get
@@ -83,13 +81,17 @@ namespace Financier.Common.Tests.Expenses
                     2000.00M + 800.00M,
                     10.00M + 98.25M + 4.20M
                 );
+            }
+        }
 
+        public static IEnumerable NullMonthlyCases
+        {
+            get
+            {
                 yield return new TestCaseData(
                     new DateTime(2019, 6, 1),
                     new DateTime(2019, 11, 1),
-                    new DateTime(2019, 9, 1),
-                    0.00M,
-                    0.00M
+                    new DateTime(2019, 9, 1)
                 );
 
             }
@@ -170,6 +172,22 @@ namespace Financier.Common.Tests.Expenses
             Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).IsPrediction, Is.False);
             Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).Credit, Is.EqualTo(expectedCreditAmount));
             Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).Debit, Is.EqualTo(expectedDebitAmount));
+            Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).IsNull, Is.False);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(NullMonthlyCases))]
+        public void Test_Expenses_ProjectedCashFlow_GetExistingMonthlyListing_Null(
+            DateTime startAt,
+            DateTime endAt,
+            DateTime at)
+        {
+            var cashFlow = new ProjectedCashFlow(startAt, endAt);
+
+            Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).IsPrediction, Is.False);
+            Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).IsNull, Is.True);
+            Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).Credit, Is.EqualTo(0.00M));
+            Assert.That(cashFlow.GetMonthlyListing(at.Year, at.Month).Debit, Is.EqualTo(0.00M));
         }
 
         [Test]
@@ -184,6 +202,7 @@ namespace Financier.Common.Tests.Expenses
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
 
             Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).IsPrediction, Is.True);
+            Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).IsNull, Is.False);
             Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Credit, Is.EqualTo(expectedCreditAmount));
             Assert.That(cashFlow.GetProjectedMonthlyListing(projectedAt.Year, projectedAt.Month).Debit, Is.EqualTo(expectedDebitAmount));
         }
