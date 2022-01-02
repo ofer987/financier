@@ -89,6 +89,7 @@ class MonthlyGraph extends React.Component<Props> {
     this.drawViewBox();
     this.drawXAxis();
     this.drawYAxis();
+
     this.drawChart(this.credits, "credits", "rgba(0, 0, 0, 1)", "rgba(0, 0, 0, 0.2)");
     this.drawChart(this.debits, "debits", "rgba(255, 0, 0, 1)", "rgba(255, 0, 0, 0.2)");
     this.drawChart(this.profits, "profits", "rgba(0, 0, 255, 1)", "rgba(0, 0, 255, 0.2)");
@@ -99,7 +100,7 @@ class MonthlyGraph extends React.Component<Props> {
     document.querySelectorAll(".chart path").forEach(path => {
       let id = path.id;
 
-      path.addEventListener("mouseover", (event: Event) => {
+      path.addEventListener("mouseover", (_event: Event) => {
         document.querySelectorAll(`.chart > path`)
           .forEach(element => {
             if (element.id != id) {
@@ -115,7 +116,7 @@ class MonthlyGraph extends React.Component<Props> {
           });
       });
 
-      path.addEventListener("mouseout", (event: Event) => {
+      path.addEventListener("mouseout", (_event: Event) => {
         document.querySelectorAll(`.chart > path`)
           .forEach(element => {
             if (element.id != id) {
@@ -214,7 +215,7 @@ class MonthlyGraph extends React.Component<Props> {
     const svg = d3.select("svg.chart");
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    let box = svg.append("rect")
+    svg.append("rect")
       .attr("y", 0)
       .attr("x", 0)
       .attr("rx", 0)
@@ -222,7 +223,7 @@ class MonthlyGraph extends React.Component<Props> {
       .selectAll("g")
       .data(names)
       .append("title")
-        .text(text => names[0]);
+        .text(_text => names[0]);
   }
 
   private drawViewBox() {
@@ -234,7 +235,7 @@ class MonthlyGraph extends React.Component<Props> {
   private drawChart(values: Value[], name: string, colourOne: string, colourTwo: string) {
     const svg = d3.select("svg.chart");
 
-    let existingPath = svg.append("path")
+    svg.append("path")
       .datum(values.filter(item => !item.isPrediction))
       .attr("fill", "none")
       .attr("stroke", colourOne)
@@ -256,7 +257,7 @@ class MonthlyGraph extends React.Component<Props> {
       .filter(item => item.isPrediction)
       .forEach(item => predictedValues.push(item));;
 
-    let predictionLine = svg.append("path")
+    svg.append("path")
       .datum(predictedValues)
       .attr("fill", "none")
       .attr("stroke", colourTwo)
@@ -273,28 +274,10 @@ class MonthlyGraph extends React.Component<Props> {
       .text(lodash.startCase(name))
       .attr("id", name)
       .attr("class", "label")
-      // .attr("font-size", "0.375em")
       .attr("x", this.width - this.margin.right)
       .attr("dx", "0.25em")
       .attr("y", y)
       .attr("dy", "0.25em");
-
-    // svg.append("g")
-    //   .append("text")
-    //   .append(name);
-
-    // @ts-ignore
-    // alert(_.startCase(name));
-    // svg.append("text")
-    //   // @ts-ignore
-    //   .attr("text", _.startCase(name));
-  }
-
-  private getName(at: Date): string {
-    const year = at.getFullYear();
-    const month = d3TimeFormat.timeFormat("%B")(at);
-
-    return `${year} - ${month}`;
   }
 };
 
