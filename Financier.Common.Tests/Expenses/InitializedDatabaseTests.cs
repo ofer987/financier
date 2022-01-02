@@ -203,15 +203,15 @@ namespace Financier.Common.Tests.Expenses
                             new[] { internalTag, savingsTag }
                             );
 
-                    var septemberStatement = Factories.CreateSimpleStatement(savingsCard, FactoryData.Accounts.Dan.Cards.Savings.Statements.September.PostedAt);
+                    var octoberStatement = Factories.CreateSimpleStatement(savingsCard, FactoryData.Accounts.Dan.Cards.Savings.Statements.October.PostedAt);
                     Factories.CreateItemWithTags(
-                            septemberStatement,
-                            FactoryData.Accounts.Dan.Cards.Savings.Statements.September.Items.DanSalary.ItemId,
-                            FactoryData.Accounts.Dan.Cards.Savings.Statements.September.Items.DanSalary.Description,
-                            FactoryData.Accounts.Dan.Cards.Savings.Statements.September.Items.DanSalary.PostedAt,
-                            FactoryData.Accounts.Dan.Cards.Savings.Statements.September.Items.DanSalary.Amount,
-                            new[] { salaryTag }
-                            );
+                        octoberStatement,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.October.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.October.Items.DanSalary.Description,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.October.Items.DanSalary.PostedAt,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.October.Items.DanSalary.Amount,
+                        new[] { salaryTag }
+                    );
                 }
             }
         }

@@ -24,11 +24,8 @@ namespace Financier.Common.Expenses
 
         public ProjectedCashFlow(DateTime startAt, DateTime endAt)
         {
-            StartAt = startAt;
-            EndAt = endAt;
-
-            Validate();
-            Init();
+            Validate(startAt, endAt);
+            Init(startAt, endAt);
         }
 
         public IMonthlyListing GetMonthlyListing(int year, int month)
@@ -57,7 +54,7 @@ namespace Financier.Common.Expenses
 
             if (!creditsExist && !debitsExist)
             {
-                throw new ArgumentException($"There are no credits and no debits for {at.ToString("MMMM yyyy")}");
+                return new NullMonthlyListing();
             }
 
             return new MonthlyListing
@@ -88,18 +85,18 @@ namespace Financier.Common.Expenses
             };
         }
 
-        protected void Validate()
+        private void Validate(DateTime startAt, DateTime endAt)
         {
-            if (this.StartAt.AddMonths(1) > this.EndAt)
+            if (startAt.AddMonths(1) > endAt)
             {
-                throw new ArgumentException($"EndAt {this.EndAt} should be at least one month ahead of StartAt ({this.StartAt})", nameof(this.EndAt));
+                throw new ArgumentException($"EndAt {endAt} should be at least one month ahead of StartAt ({startAt})", nameof(endAt));
             }
         }
 
-        protected void Init()
+        private void Init(DateTime startAt, DateTime endAt)
         {
-            this.CreditListings = GetItems(ItemTypes.Credit);
-            this.DebitListings = GetItems(ItemTypes.Debit);
+            this.CreditListings = GetItems(ItemTypes.Credit, startAt, endAt);
+            this.DebitListings = GetItems(ItemTypes.Debit, startAt, endAt);
 
             this.TotalCreditAmount = this.CreditListings
                 .Select(listing => listing.Value)
@@ -109,6 +106,18 @@ namespace Financier.Common.Expenses
                 .Select(listing => listing.Value)
                 .Aggregate(0.00M, (total, amount) => total + amount);
 
+            this.StartAt = this.CreditListings.Concat(this.DebitListings)
+                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1))
+                .OrderBy(item => item)
+                .DefaultIfEmpty(startAt)
+                .FirstOrDefault();
+
+            this.EndAt = this.CreditListings.Concat(this.DebitListings)
+                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1).AddMonths(1))
+                .OrderBy(item => item)
+                .DefaultIfEmpty(endAt)
+                .LastOrDefault();
+
             var monthsApart = 0
                 + (this.EndAt.Year * 12 - this.StartAt.Year * 12)
                 + (this.EndAt.Month - this.StartAt.Month);
@@ -117,7 +126,7 @@ namespace Financier.Common.Expenses
             this.AverageDebitAmount = this.TotalDebitAmount / monthsApart;
         }
 
-        private IDictionary<(int, int), decimal> GetItems(ItemTypes itemType)
+        private IDictionary<(int, int), decimal> GetItems(ItemTypes itemType, DateTime startAt, DateTime endAt)
         {
             IList<Item> items;
             using (var db = new Context())
@@ -125,8 +134,8 @@ namespace Financier.Common.Expenses
                 items = db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
-                    .Where(item => item.PostedAt >= StartAt)
-                    .Where(item => item.PostedAt < EndAt)
+                    .Where(item => item.PostedAt >= startAt)
+                    .Where(item => item.PostedAt < endAt)
                     .Where(item =>
                         false
                         || itemType == ItemTypes.Debit && item.Amount >= 0
