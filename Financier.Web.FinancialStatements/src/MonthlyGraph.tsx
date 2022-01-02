@@ -17,6 +17,7 @@ interface Props {
 interface Value {
   date: Date;
   value: number;
+  isPrediction: boolean;
 }
 
 class MonthlyGraph extends React.Component<Props> {
@@ -38,7 +39,8 @@ class MonthlyGraph extends React.Component<Props> {
 
       return {
         date: profit.date,
-        value: accumulator
+        value: accumulator,
+        isPrediction: profit.isPrediction
       };
     });
   }
@@ -47,7 +49,8 @@ class MonthlyGraph extends React.Component<Props> {
     return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.amount.profit
+        value: item.amount.profit,
+        isPrediction: item.isPrediction
       };
     });
   }
@@ -56,7 +59,8 @@ class MonthlyGraph extends React.Component<Props> {
     return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.amount.credit
+        value: item.amount.credit,
+        isPrediction: item.isPrediction
       };
     });
   }
@@ -65,7 +69,8 @@ class MonthlyGraph extends React.Component<Props> {
     return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.amount.debit
+        value: item.amount.debit,
+        isPrediction: item.isPrediction
       };
     });
   }
@@ -84,10 +89,10 @@ class MonthlyGraph extends React.Component<Props> {
     this.drawViewBox();
     this.drawXAxis();
     this.drawYAxis();
-    this.drawChart(this.credits, "credits", "black");
-    this.drawChart(this.debits, "debits", "red");
-    this.drawChart(this.profits, "profits", "blue");
-    this.drawChart(this.cumulativeProfits, "cumulativeProfits", "darkblue");
+    this.drawChart(this.credits, "credits", "rgba(0, 0, 0, 1)", "rgba(0, 0, 0, 0.2)");
+    this.drawChart(this.debits, "debits", "rgba(255, 0, 0, 1)", "rgba(255, 0, 0, 0.2)");
+    this.drawChart(this.profits, "profits", "rgba(0, 0, 255, 1)", "rgba(0, 0, 255, 0.2)");
+    this.drawChart(this.cumulativeProfits, "cumulativeProfits", "rgba(0, 255, 0, 1)", "rgba(0, 255, 0, 0.2)");
 
     this.drawLegend(["credits", "debits"]);
 
@@ -226,13 +231,13 @@ class MonthlyGraph extends React.Component<Props> {
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
   }
 
-  private drawChart(values: Value[], name: string, colour: string) {
+  private drawChart(values: Value[], name: string, colourOne: string, colourTwo: string) {
     const svg = d3.select("svg.chart");
 
-    let path = svg.append("path")
-      .datum(values)
+    let existingPath = svg.append("path")
+      .datum(values.filter(item => !item.isPrediction))
       .attr("fill", "none")
-      .attr("stroke", colour)
+      .attr("stroke", colourOne)
       .attr("stroke-width", 1.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
@@ -243,6 +248,24 @@ class MonthlyGraph extends React.Component<Props> {
       // .call(text => text.append("tspan")
       //   .attr("x", -6)
       //   .attr("y", "1.15em"));
+
+    let lastExistingValue = lodash.last(values.filter(item => !item.isPrediction))
+    let predictedValues = [lastExistingValue];
+
+    values
+      .filter(item => item.isPrediction)
+      .forEach(item => predictedValues.push(item));;
+
+    let predictionLine = svg.append("path")
+      .datum(predictedValues)
+      .attr("fill", "none")
+      .attr("stroke", colourTwo)
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("id", name)
+      // @ts-ignore
+      .attr("d", this.myLine());
 
     let y = this.yScale()(values[values.length - 1].value)
     svg.append("text")
