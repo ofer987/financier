@@ -168,7 +168,7 @@ namespace Financier.Web.GraphQL.CashFlows
 
                     var existingListings = this.GetExistingMonthlyListings(fromDate, toDate);
 
-                    var projectedListings = this.GetProjectedMonthlyListings(fromDate, toDate.AddMonths(-2), finalProjectedDate);
+                    var projectedListings = this.GetProjectedMonthlyListings(fromDate, toDate, finalProjectedDate);
 
                     return existingListings
                         .Concat(projectedListings)
@@ -207,7 +207,7 @@ namespace Financier.Web.GraphQL.CashFlows
         private IEnumerable<IMonthlyListing> GetExistingMonthlyListings(DateTime startAt, DateTime endAt)
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
-            for (var date = startAt; date < endAt; date = date.AddMonths(1))
+            for (var date = cashFlow.StartAt; date < cashFlow.EndAt; date = date.AddMonths(1))
             {
                 IMonthlyListing result;
                 try
@@ -236,7 +236,7 @@ namespace Financier.Web.GraphQL.CashFlows
         private IEnumerable<IMonthlyListing> GetProjectedMonthlyListings(DateTime startAt, DateTime endAt, DateTime projectedFinalAt)
         {
             var cashFlow = new ProjectedCashFlow(startAt, endAt);
-            for (var date = endAt; date < projectedFinalAt; date = date.AddMonths(1))
+            for (var date = cashFlow.EndAt; date < projectedFinalAt; date = date.AddMonths(1))
             {
                 IMonthlyListing result;
                 try
