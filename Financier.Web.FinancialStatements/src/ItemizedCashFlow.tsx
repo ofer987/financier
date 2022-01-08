@@ -36,7 +36,7 @@ interface ItemResponse {
   itemsByTagNamesAndPostedAt: {
     id: string;
     description: string;
-    postedAt: Date;
+    postedAt: string;
     amount: number;
     tags: string[];
   }[]

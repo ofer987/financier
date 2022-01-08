@@ -1,6 +1,6 @@
 import * as React from "react";
 import _  from "underscore";
-import * as lodash from "lodash";
+import lodash from "lodash";
 import { ItemizedRecord } from "./ItemizedRecord";
 
 interface Props {
@@ -39,7 +39,7 @@ class ItemizedValue extends React.Component<Props> {
     return this.props.record.name;
   }
 
-  get at(): Date {
+  get at(): string {
     return this.props.record.at;
   }
 
