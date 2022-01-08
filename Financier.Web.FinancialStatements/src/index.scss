@@ -151,6 +151,12 @@ body {
         }
       }
 
+      text {
+        &.hidden {
+          opacity: 20%;
+        }
+      }
+
       .y-axis {
         .label {
           text-anchor: end;
