@@ -11,8 +11,12 @@ interface Props {
 class ItemizedValues extends React.Component<Props> {
   decimalCount = 2;
 
+  public get records(): ItemizedRecord[] {
+    return _.sortBy(this.props.records, item => item.at);
+  }
+
   public get totalCredits(): number {
-    var amounts = this.props.records
+    var amounts = this.records
       .map(item => item.amount)
       .map(item => item.credit);
 
@@ -20,7 +24,7 @@ class ItemizedValues extends React.Component<Props> {
   }
 
   public get totalDebits(): number {
-    var amounts = this.props.records
+    var amounts = this.records
       .map(item => item.amount)
       .map(item => item.debit);
 
@@ -28,7 +32,7 @@ class ItemizedValues extends React.Component<Props> {
   }
 
   public get totalProfit(): number {
-    var amounts = this.props.records
+    var amounts = this.records
       .map(item => item.amount)
       .map(item => item.profit);
 
@@ -53,6 +57,7 @@ class ItemizedValues extends React.Component<Props> {
       <div className="itemized-values">
         <h2>Items</h2>
         <div className="header">
+          <div className="at">At</div>
           <div className="name">Name</div>
           <div className="tags">Tags</div>
           <div className="credits">Credits</div>
@@ -60,10 +65,11 @@ class ItemizedValues extends React.Component<Props> {
           <div className="profit">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.props.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
+          {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
         </div>
         <div className="total">
-          <div className="name">Total</div>
+          <div className="at">Total</div>
+          <div className="name"></div>
           <div className="tags"></div>
           <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
           <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>

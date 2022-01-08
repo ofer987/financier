@@ -13,6 +13,9 @@ class ItemizedValue extends React.Component<Props> {
   render() {
     return (
       <div className="item" id={this.name} key={this.name}>
+        <div className="at">
+          {this.at}
+        </div>
         <div className="name">
           {this.name}
         </div>
@@ -34,6 +37,10 @@ class ItemizedValue extends React.Component<Props> {
 
   get name(): string {
     return this.props.record.name;
+  }
+
+  get at(): Date {
+    return this.props.record.at;
   }
 
   get tags(): string {

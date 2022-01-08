@@ -4,6 +4,7 @@ using GraphQL;
 using GraphQL.Types;
 
 using Financier.Common.Expenses.Models;
+using Financier.Common.Extensions;
 
 namespace Financier.Web.GraphQL.Items
 {
@@ -90,7 +91,8 @@ namespace Financier.Web.GraphQL.Items
                     var fromDate = new DateTime(postedAt.Year, postedAt.Month, 1);
                     var toDate = fromDate.AddMonths(1);
 
-                    return Item.GetAllBy(fromDate, toDate, tagNames);
+                    return Item.GetAllBy(fromDate, toDate, tagNames)
+                        .Reject(item => item.Tags.HasInternalTransfer());
                 }
             );
         }
