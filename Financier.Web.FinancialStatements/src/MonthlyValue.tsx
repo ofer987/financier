@@ -60,38 +60,35 @@ class MonthlyValue extends React.Component<Props> {
     if (!this.isPrediction) {
       return (
         <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
-          <div className="name">
-            {this.name}
-          </div>
-          <div className="credit number">
-            {this.credit.toFixed(this.decimalCount)}
-          </div>
-          <div className="debit number">
-            {this.debit.toFixed(this.decimalCount)}
-          </div>
-          <div className="profit number">
-            {this.accountingFormattedProfit}
-          </div>
+          {this.renderChildren()}
         </div>
       );
     } else {
       return (
         <div className="item not-clickable" id={this.name} key={this.name}>
-          <div className="name">
-            {this.name}
-          </div>
-          <div className="credit number">
-            {this.credit.toFixed(this.decimalCount)}
-          </div>
-          <div className="debit number">
-            {this.debit.toFixed(this.decimalCount)}
-          </div>
-          <div className="profit number">
-            {this.accountingFormattedProfit}
-          </div>
+          {this.renderChildren()}
         </div>
       );
     }
+  }
+
+  private renderChildren() {
+    return (
+      <>
+        <div className="name">
+          {this.name}
+        </div>
+        <div className="credit number">
+          {this.credit.toFixed(this.decimalCount)}
+        </div>
+        <div className="debit number">
+          {this.debit.toFixed(this.decimalCount)}
+        </div>
+        <div className="profit number">
+          {this.accountingFormattedProfit}
+        </div>
+      </>
+    );
   }
 
   private navigateToDetailedView(year: number, month: number): void {
