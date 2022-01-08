@@ -3,11 +3,7 @@ import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3";
 import * as d3Shape from "d3-shape";
-import * as d3Scale from "d3-scale";
-import * as d3Format from "d3-format";
-import * as d3TimeFormat from "d3-time-format";
 
-import { Amount } from "./Amount";
 import { MonthlyRecord } from "./MonthlyRecord";
 
 interface Props {
@@ -76,8 +72,6 @@ class MonthlyGraph extends React.Component<Props> {
   }
 
   componentDidUpdate() {
-    const data = this.props;
-
     // Remove existing chart elements (if exist)
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
