@@ -47,9 +47,9 @@ class MonthlyValues extends React.Component<Props> {
         <h2>Items</h2>
         <div className="header">
           <div className="name">When</div>
-          <div className="credits">Credits</div>
-          <div className="debits">Debits</div>
-          <div className="profit">Profit (Deficit)</div>
+          <div className="credits number">Credits</div>
+          <div className="debits number">Debits</div>
+          <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
@@ -59,47 +59,13 @@ class MonthlyValues extends React.Component<Props> {
         </div>
         <div className="total">
           <div className="name">Total</div>
-          <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
-          <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
-          <div className="profit">{this.accountingFormattedProfit}</div>
+          <div className="credits number">{this.totalCredits.toFixed(this.decimalCount)}</div>
+          <div className="debits number">{this.totalDebits.toFixed(this.decimalCount)}</div>
+          <div className="profit number">{this.accountingFormattedProfit}</div>
         </div>
       </div>
     );
   }
-
-  // private dates(): { year: number, month: number }[] {
-  //   const startYear = this.props[0].year;
-  //   const endYear = this.props[this.props.length - 1].year;
-  //
-  //   let results: { year: number, month: number }[] = [];
-  //   for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
-  //     results.push({
-  //       year: at.getFullYear(),
-  //       month: at.getMonth() + 1
-  //     });
-  //   }
-  //
-  //   return results;
-  // }
-
-  // private isMonthValid(at: Date): boolean {
-  //   const foundProp = this.props.dates
-  //     .find(date => {
-  //       return true
-  //         && date.year == at.getFullYear()
-  //         && date.month == at.getMonth()
-  //     });
-  //
-  //   if (typeof (foundProp) == "undefined") {
-  //     return false;
-  //   }
-  //
-  //   if (foundProp.listing.isNull) {
-  //     return false;
-  //   }
-  //
-  //   return true;
-  // }
 }
 
 export default MonthlyValues;

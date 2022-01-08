@@ -60,9 +60,9 @@ class ItemizedValues extends React.Component<Props> {
           <div className="at">At</div>
           <div className="name">Name</div>
           <div className="tags">Tags</div>
-          <div className="credits">Credits</div>
-          <div className="debits">Debits</div>
-          <div className="profit">Profit (Deficit)</div>
+          <div className="credits number">Credits</div>
+          <div className="debits number">Debits</div>
+          <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
           {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
@@ -71,9 +71,9 @@ class ItemizedValues extends React.Component<Props> {
           <div className="at">Total</div>
           <div className="name"></div>
           <div className="tags"></div>
-          <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
-          <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
-          <div className="profit">{this.accountingFormattedProfit}</div>
+          <div className="credits number">{this.totalCredits.toFixed(this.decimalCount)}</div>
+          <div className="debits number">{this.totalDebits.toFixed(this.decimalCount)}</div>
+          <div className="profit number">{this.accountingFormattedProfit}</div>
         </div>
       </div>
     );

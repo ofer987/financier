@@ -232,6 +232,10 @@ body {
       padding-right: 0px;
     }
 
+    div.number {
+      text-align: right;
+    }
+
     display: flex;
 
     text-align: left;
@@ -283,6 +287,10 @@ body {
         width: $last-child-width;
       }
 
+      div.number {
+        text-align: right;
+      }
+
       display: flex;
       flex-direction: row;
       text-align: left;
@@ -314,6 +322,10 @@ body {
       border-right-width: 1px;
     }
 
+    div.number {
+      text-align: right;
+    }
+
     div:last-child {
       padding-right: 0px;
       width: $last-child-width;
@@ -332,5 +344,5 @@ body {
 }
 
 .itemized-values {
-  @include values(8%, 18%, 19%);
+  @include values(8%, 18.4%, 18.4%);
 }

@@ -63,13 +63,13 @@ class MonthlyValue extends React.Component<Props> {
           <div className="name">
             {this.name}
           </div>
-          <div className="credit">
+          <div className="credit number">
             {this.credit.toFixed(this.decimalCount)}
           </div>
-          <div className="debit">
+          <div className="debit number">
             {this.debit.toFixed(this.decimalCount)}
           </div>
-          <div className="profit">
+          <div className="profit number">
             {this.accountingFormattedProfit}
           </div>
         </div>
@@ -80,13 +80,13 @@ class MonthlyValue extends React.Component<Props> {
           <div className="name">
             {this.name}
           </div>
-          <div className="credit">
+          <div className="credit number">
             {this.credit.toFixed(this.decimalCount)}
           </div>
-          <div className="debit">
+          <div className="debit number">
             {this.debit.toFixed(this.decimalCount)}
           </div>
-          <div className="profit">
+          <div className="profit number">
             {this.accountingFormattedProfit}
           </div>
         </div>

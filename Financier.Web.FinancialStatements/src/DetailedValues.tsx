@@ -64,18 +64,18 @@ class DetailedValues extends React.Component<Props> {
         <h2>Items</h2>
         <div className="header">
           <div className="name">Name</div>
-          <div className="credits">Credits</div>
-          <div className="debits">Debits</div>
-          <div className="profit">Profit (Deficit)</div>
+          <div className="credits number">Credits</div>
+          <div className="debits number">Debits</div>
+          <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
           {this.props.records.map(item => <DetailedValue record={item} key={this.toKey(item)} year={this.year} month={this.month} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>
-          <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
-          <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
-          <div className="profit">{this.accountingFormattedProfit}</div>
+          <div className="credits number">{this.totalCredits.toFixed(this.decimalCount)}</div>
+          <div className="debits number">{this.totalDebits.toFixed(this.decimalCount)}</div>
+          <div className="profit number">{this.accountingFormattedProfit}</div>
         </div>
       </div>
     );
