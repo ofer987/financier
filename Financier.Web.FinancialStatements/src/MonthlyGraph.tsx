@@ -94,12 +94,11 @@ class MonthlyGraph extends React.Component<Props> {
     let red = (o?: number): string => `rgba(255, 0, 0, ${o ?? 1})`;
     let blue = (o?: number): string => `rgba(0, 0, 255, ${o ?? 1})`;
     let green = (o?: number): string => `rgba(0, 255, 0, ${o ?? 1})`;
-    let opacity = 0.3;
 
-    this.drawChart(this.credits, "credits", black(), black(opacity));
-    this.drawChart(this.debits, "debits", red(), red(opacity));
-    this.drawChart(this.profits, "profits", blue(), blue(opacity));
-    this.drawChart(this.cumulativeProfits, "cumulativeProfits", green(), green(opacity));
+    this.drawChart(this.credits, "credits", black());
+    this.drawChart(this.debits, "debits", red());
+    this.drawChart(this.profits, "profits", blue());
+    this.drawChart(this.cumulativeProfits, "cumulativeProfits", green());
 
     this.drawLegend(["credits", "debits"]);
 
@@ -238,7 +237,7 @@ class MonthlyGraph extends React.Component<Props> {
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
   }
 
-  private drawChart(values: Value[], name: string, colourOne: string, colourTwo: string) {
+  private drawChart(values: Value[], name: string, colourOne: string) {
     const svg = d3.select("svg.chart");
 
     svg.append("path")
@@ -266,10 +265,11 @@ class MonthlyGraph extends React.Component<Props> {
     svg.append("path")
       .datum(predictedValues)
       .attr("fill", "none")
-      .attr("stroke", colourTwo)
+      .attr("stroke", colourOne)
       .attr("stroke-width", 2.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
+      .attr("stroke-dasharray", 4)
       .attr("id", name)
       // @ts-ignore
       .attr("d", this.myLine());
