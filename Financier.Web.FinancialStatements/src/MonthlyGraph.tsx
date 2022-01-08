@@ -90,10 +90,16 @@ class MonthlyGraph extends React.Component<Props> {
     this.drawXAxis();
     this.drawYAxis();
 
-    this.drawChart(this.credits, "credits", "rgba(0, 0, 0, 1)", "rgba(0, 0, 0, 0.2)");
-    this.drawChart(this.debits, "debits", "rgba(255, 0, 0, 1)", "rgba(255, 0, 0, 0.2)");
-    this.drawChart(this.profits, "profits", "rgba(0, 0, 255, 1)", "rgba(0, 0, 255, 0.2)");
-    this.drawChart(this.cumulativeProfits, "cumulativeProfits", "rgba(0, 255, 0, 1)", "rgba(0, 255, 0, 0.2)");
+    let black = (o?: number): string => `rgba(0, 0, 0, ${o ?? 1})`;
+    let red = (o?: number): string => `rgba(255, 0, 0, ${o ?? 1})`;
+    let blue = (o?: number): string => `rgba(0, 0, 255, ${o ?? 1})`;
+    let green = (o?: number): string => `rgba(0, 255, 0, ${o ?? 1})`;
+    let opacity = 0.3;
+
+    this.drawChart(this.credits, "credits", black(), black(opacity));
+    this.drawChart(this.debits, "debits", red(), red(opacity));
+    this.drawChart(this.profits, "profits", blue(), blue(opacity));
+    this.drawChart(this.cumulativeProfits, "cumulativeProfits", green(), green(opacity));
 
     this.drawLegend(["credits", "debits"]);
 

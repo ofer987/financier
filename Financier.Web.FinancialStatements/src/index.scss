@@ -141,11 +141,13 @@ body {
         }
       }
 
-      path, text {
+      path {
         display: block;
 
         &.hidden {
-          display: none;
+          display: block;
+          stroke: rgba(125, 125, 125, 0.2);
+          stroke-dasharray: 4;
         }
       }
 
