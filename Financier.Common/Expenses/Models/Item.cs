@@ -66,7 +66,7 @@ namespace Financier.Common.Expenses.Models
             }
 
             return items
-                .Where(item => selectedTagNames.Any(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
+                .Where(item => selectedTagNames.All(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
                 .ToArray();
         }
 
