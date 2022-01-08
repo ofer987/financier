@@ -245,7 +245,7 @@ class MonthlyGraph extends React.Component<Props> {
       .datum(values.filter(item => !item.isPrediction))
       .attr("fill", "none")
       .attr("stroke", colourOne)
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("id", name)
@@ -267,7 +267,7 @@ class MonthlyGraph extends React.Component<Props> {
       .datum(predictedValues)
       .attr("fill", "none")
       .attr("stroke", colourTwo)
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("id", name)
@@ -281,7 +281,7 @@ class MonthlyGraph extends React.Component<Props> {
       .attr("id", name)
       .attr("class", "label")
       .attr("x", this.width - this.margin.right)
-      .attr("dx", "0.25em")
+      .attr("dx", "0.75em")
       .attr("y", y)
       .attr("dy", "0.25em");
   }
