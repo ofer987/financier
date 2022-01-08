@@ -320,18 +320,15 @@ body {
     }
 
     display: flex;
-
     flex-direction: row;
-
     font-size: 20px;
-
     text-align: left;
   }
 }
 
 // TODO: Move into a mixin!
 .values {
-  @include values(8%, 18%, 19%);
+  @include values(40%, 20%, 20%);
 }
 
 .itemized-values {
