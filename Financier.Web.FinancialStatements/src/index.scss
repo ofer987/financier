@@ -250,6 +250,10 @@ body {
       &.clickable {
         cursor: pointer;
       }
+
+      &.not-clickable {
+        cursor: not-allowed;
+      }
     }
 
     .item:hover {
@@ -257,12 +261,6 @@ body {
       background-color: darkgrey;
     }
 
-    .item:first-child {
-      div {
-        padding-top: 7px;
-        padding-bottom: 2px;
-      }
-    }
 
     .item {
       div {
@@ -287,7 +285,6 @@ body {
 
       display: flex;
       flex-direction: row;
-
       text-align: left;
 
       border-bottom-width: 1px;

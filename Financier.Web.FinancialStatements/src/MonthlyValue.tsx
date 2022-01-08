@@ -24,6 +24,10 @@ class MonthlyValue extends React.Component<Props> {
     return `${year} - ${monthName}`;
   }
 
+  public get isPrediction(): boolean {
+    return this.props.record.isPrediction;
+  }
+
   public get year(): number {
     return this.props.record.year;
   }
@@ -52,25 +56,45 @@ class MonthlyValue extends React.Component<Props> {
 
   public render() {
     let month = this.month + 1;
-    return (
-      <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
-        <div className="name">
-          {this.name}
+
+    if (!this.isPrediction) {
+      return (
+        <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
+          <div className="name">
+            {this.name}
+          </div>
+          <div className="credit">
+            {this.credit.toFixed(this.decimalCount)}
+          </div>
+          <div className="debit">
+            {this.debit.toFixed(this.decimalCount)}
+          </div>
+          <div className="profit">
+            {this.accountingFormattedProfit}
+          </div>
         </div>
-        <div className="credit">
-          {this.credit.toFixed(this.decimalCount)}
+      );
+    } else {
+      return (
+        <div className="item not-clickable" id={this.name} key={this.name}>
+          <div className="name">
+            {this.name}
+          </div>
+          <div className="credit">
+            {this.credit.toFixed(this.decimalCount)}
+          </div>
+          <div className="debit">
+            {this.debit.toFixed(this.decimalCount)}
+          </div>
+          <div className="profit">
+            {this.accountingFormattedProfit}
+          </div>
         </div>
-        <div className="debit">
-          {this.debit.toFixed(this.decimalCount)}
-        </div>
-        <div className="profit">
-          {this.accountingFormattedProfit}
-        </div>
-      </div>
-    )
+      );
+    }
   }
 
-  private navigateToDetailedView(year: number, month: number) {
+  private navigateToDetailedView(year: number, month: number): void {
     window.location.pathname = `/detailed-view/year/${year}/month/${month}`;
   }
 }
