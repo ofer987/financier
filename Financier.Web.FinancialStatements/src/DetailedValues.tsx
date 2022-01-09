@@ -51,18 +51,13 @@ class DetailedValues extends React.Component<Props> {
 
   public get accountingFormattedProfit(): string {
     let profit = this.totalProfit;
-    let result: string;
 
-    if (profit >= 0) {
+    if (profit < 0) {
       profit = 0 - profit;
-    }
-    result = this.formatted(profit);
-
-    if (profit >= 0) {
-      return result;
+      return `(${this.formatted(profit)})`;
     }
 
-    return `(${result})`;
+    return this.formatted(profit);
   }
 
   private formatted(value: number): string {
