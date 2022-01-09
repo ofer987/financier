@@ -52,20 +52,31 @@ class DetailedValue extends React.Component<Props> {
   }
 
   get credit(): string {
-    return this.props.record.amount.credit.toFixed(2);
+    return this.formatted(this.props.record.amount.credit);
   }
 
   get debit(): string {
-    return this.props.record.amount.debit.toFixed(2);
+    return this.formatted(this.props.record.amount.debit);
   }
 
-  get accountingFormattedProfit(): string {
-    const profit = this.props.record.amount.profit;
+  private get accountingFormattedProfit(): string {
+    let profit = this.props.record.amount.profit;
+    let result: string;
+
     if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
+      profit = 0 - profit;
+    }
+    result = this.formatted(profit);
+
+    if (profit >= 0) {
+      return result;
     }
 
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+    return `(${result})`;
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   private navigateToItemizedView(year: number, month: number): void {

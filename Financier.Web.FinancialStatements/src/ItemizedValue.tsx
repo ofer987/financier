@@ -72,7 +72,7 @@ class ItemizedValue extends React.Component<Props> {
 
     return `(${result})`;
   }
-  
+
   private formatted(value: number): string {
     return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }

@@ -9,10 +9,8 @@ interface Props {
 }
 
 class ItemizedValues extends React.Component<Props> {
-  decimalCount = 2;
-
   public get records(): ItemizedRecord[] {
-    return _.sortBy(this.props.records, item => item.at);
+    return this.props.records;
   }
 
   public get totalCredits(): string {

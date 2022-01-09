@@ -1,6 +1,5 @@
 import * as React from "react";
 import _  from "underscore";
-import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
 
 import { MonthlyRecord } from "./MonthlyRecord";
@@ -14,8 +13,6 @@ interface Props {
 }
 
 class MonthlyValue extends React.Component<Props> {
-  private decimalCount = 2;
-
   public get name(): string {
     const at = new Date(this.year, this.month);
     const year = this.year;
@@ -36,22 +33,12 @@ class MonthlyValue extends React.Component<Props> {
     return this.props.record.month;
   }
 
-  public get credit(): number {
-    return this.props.record.amount.credit;
+  public get credit(): string {
+    return this.formatted(this.props.record.amount.credit);
   }
 
-  public get debit(): number {
-    return this.props.record.amount.debit;
-  }
-
-  public get accountingFormattedProfit(): string {
-    const profit = (this.credit - this.debit);
-
-    if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
-    }
-
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+  public get debit(): string {
+    return this.formatted(this.props.record.amount.debit);
   }
 
   public render() {
@@ -79,16 +66,36 @@ class MonthlyValue extends React.Component<Props> {
           {this.name}
         </div>
         <div className="credit number">
-          {this.credit.toFixed(this.decimalCount)}
+          {this.credit}
         </div>
         <div className="debit number">
-          {this.debit.toFixed(this.decimalCount)}
+          {this.debit}
         </div>
         <div className="profit number">
           {this.accountingFormattedProfit}
         </div>
       </>
     );
+  }
+
+  private get accountingFormattedProfit(): string {
+    let profit = this.props.record.amount.profit;
+    let result: string;
+
+    if (profit >= 0) {
+      profit = 0 - profit;
+    }
+    result = this.formatted(profit);
+
+    if (profit >= 0) {
+      return result;
+    }
+
+    return `(${result})`;
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   private navigateToDetailedView(year: number, month: number): void {
