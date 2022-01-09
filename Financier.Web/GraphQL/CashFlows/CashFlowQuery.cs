@@ -43,7 +43,7 @@ namespace Financier.Web.GraphQL.CashFlows
                     var year = context.GetArgument<int>(Keys.Year);
                     var month = context.GetArgument<int>(Keys.Month);
 
-                    return new MonthlyCashFlow(year, month);
+                    return new MonthlyCashFlow(year, month, 0);
                 }
             );
 
