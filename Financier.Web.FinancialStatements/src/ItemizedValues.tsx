@@ -15,20 +15,22 @@ class ItemizedValues extends React.Component<Props> {
     return _.sortBy(this.props.records, item => item.at);
   }
 
-  public get totalCredits(): number {
-    var amounts = this.records
+  public get totalCredits(): string {
+    let amounts = this.records
       .map(item => item.amount)
       .map(item => item.credit);
 
-    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+    const total = _.reduce(amounts, (total, amount) => total + amount) || 0;
+    return this.formatted(total);
   }
 
-  public get totalDebits(): number {
+  public get totalDebits(): string {
     var amounts = this.records
       .map(item => item.amount)
       .map(item => item.debit);
 
-    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+    const total = _.reduce(amounts, (total, amount) => total + amount) || 0;
+    return this.formatted(total);
   }
 
   public get totalProfit(): number {
@@ -40,12 +42,23 @@ class ItemizedValues extends React.Component<Props> {
   }
 
   public get accountingFormattedProfit(): string {
-    const profit = this.totalProfit;
+    let profit = this.totalProfit;
+    let result: string;
+
     if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
+      profit = 0 - profit;
+    }
+    result = this.formatted(profit);
+
+    if (profit >= 0) {
+      return result;
     }
 
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+    return `(${result})`;
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   public toKey(record: ItemizedRecord): string {
@@ -71,8 +84,8 @@ class ItemizedValues extends React.Component<Props> {
           <div className="at">Total</div>
           <div className="name"></div>
           <div className="tags"></div>
-          <div className="credits number">{this.totalCredits.toFixed(this.decimalCount)}</div>
-          <div className="debits number">{this.totalDebits.toFixed(this.decimalCount)}</div>
+          <div className="credits number">{this.totalCredits}</div>
+          <div className="debits number">{this.totalDebits}</div>
           <div className="profit number">{this.accountingFormattedProfit}</div>
         </div>
       </div>

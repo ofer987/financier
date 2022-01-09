@@ -8,6 +8,7 @@ import MonthlyRoute from "./MonthlyRoute";
 import PredictionRoute from "./PredictionRoute";
 import DetailedRoute from "./DetailedRoute";
 import ItemizedRoute from "./ItemizedRoute";
+import AllItemsRoute from './AllItemsRoute';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             </Route>
             <Route path="/monthly-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth" component={MonthlyRoute} />
             <Route path="/prediction-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth/prediction-year/:predictionYear/prediction-month/:predictionMonth" component={PredictionRoute} />
+            <Route path="/allitems-view/from-year/:fromYear/from-month/:fromMonth/to-year/:toYear/to-month/:toMonth" component={AllItemsRoute} />
             <Route exact path="/">
               <Welcome />
             </Route>
