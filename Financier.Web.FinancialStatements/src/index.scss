@@ -291,6 +291,16 @@ body {
         text-align: right;
       }
 
+      .tags {
+        &.displayed {
+          display: block;
+        }
+
+        &.none {
+          display: none;
+        }
+      }
+
       display: flex;
       flex-direction: row;
       text-align: left;
