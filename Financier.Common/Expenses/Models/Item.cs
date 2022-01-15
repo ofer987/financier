@@ -51,6 +51,10 @@ namespace Financier.Common.Expenses.Models
 
         public static IEnumerable<Item> GetAllBy(DateTime from, DateTime to, IEnumerable<string> selectedTagNames)
         {
+            if (selectedTagNames.Empty()) {
+                return Enumerable.Empty<Item>();
+            }
+
             IEnumerable<Item> items;
             using (var db = new Context())
             {
@@ -67,27 +71,13 @@ namespace Financier.Common.Expenses.Models
 
             return items
                 .Where(item => selectedTagNames.All(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
+                .Where(item => item.Tags.Select(tag => tag.Name).All(tagName => selectedTagNames.Any(selectedTagName => selectedTagName == tagName)))
                 .ToArray();
         }
 
         public static IEnumerable<Item> GetBy(DateTime from, DateTime to, IEnumerable<string> selectedTagNames)
         {
-            IEnumerable<Item> items;
-            using (var db = new Context())
-            {
-                items = db.Items
-                    .Include(item => item.ItemTags)
-                        .ThenInclude(it => it.Tag)
-                    .AsEnumerable()
-                    // Can this be placed outside of the Context?
-                    .Where(item => item.PostedAt >= from)
-                    .Where(item => item.PostedAt < to)
-                    // Is this line even necessary?
-                    .ToArray();
-            }
-
-            return items
-                .Where(item => selectedTagNames.All(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
+            return GetAllBy(from, to, selectedTagNames)
                 .Reject(item => item.Tags.HasInternalTransfer())
                 .ToArray();
         }
