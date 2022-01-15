@@ -41,7 +41,6 @@ class MonthlyValues extends React.Component<Props> {
 
   public get accountingFormattedProfit(): string {
     let profit = this.totalProfit;
-    let result: string;
 
     if (profit < 0) {
       profit = 0 - profit;

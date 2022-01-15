@@ -99,8 +99,7 @@ class AllItemsCashFlow extends React.Component<Props, State> {
 
   public sortedRecords(): ItemizedRecord[] {
     return lodash
-      .sortBy(this.state.records, record => record.amount.profit)
-      .reverse();
+      .sortBy(this.state.records, record => record.at);
   }
 
   private getData(): void {

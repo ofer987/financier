@@ -124,6 +124,13 @@ class Welcome extends React.Component<Props, State> {
         }}>
           View Detailed Chart
         </div>
+        <div className="button allitems-chart enabled" onClick={(event) => {
+          event.preventDefault();
+
+          window.location.pathname = `/allitems-view/from-year/${this.startYear}/from-month/${this.startMonth}/to-year/${this.endYear}/to-month/${this.endMonth}`;
+        }}>
+          View All Items
+        </div>
       </div>
     );
   }
