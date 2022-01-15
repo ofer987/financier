@@ -11,6 +11,44 @@ namespace Financier.Common.Tests.Expenses.Models
 {
     public class ItemTests : InitializedDatabaseTests
     {
+        public static IEnumerable GetAllByTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 7, 1),
+                    Enumerable.Empty<string>(),
+                    Enumerable.Empty<string>()
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 8, 1),
+                    new[] { "credit-card-payment", "internal" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.CreditCardPayment.ItemId,
+                        FactoryData.Accounts.Dan.Cards.DanCard.Statements.July.Items.CreditCardPayment.ItemId,
+                        FactoryData.Accounts.Ron.Cards.RonCard.Statements.Crazy.Items.CreditCardPayment.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanCreditCardPayment.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.CrazyCreditCardPayment.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanCreditCardPayment.ItemId,
+                    }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 7, 1),
+                    new[] { "salary" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.DanSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.EdithSalary.ItemId,
+                        FactoryData.Accounts.Dan.Cards.Savings.Statements.June.Items.ChildCareBenefit.ItemId
+                    }
+                );
+            }
+        }
+
         public static IEnumerable TagNameTestCases
         {
             get
@@ -19,6 +57,13 @@ namespace Financier.Common.Tests.Expenses.Models
                     new DateTime(2019, 5, 1),
                     new DateTime(2019, 7, 1),
                     Enumerable.Empty<string>(),
+                    Enumerable.Empty<string>()
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 8, 1),
+                    new[] { "internal" },
                     Enumerable.Empty<string>()
                 );
 
@@ -98,6 +143,16 @@ namespace Financier.Common.Tests.Expenses.Models
                     Enumerable.Empty<string>()
                 );
             }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetAllByTestCases))]
+        public void Test_Item_GetAllBy(DateTime fromDate, DateTime toDate, IEnumerable<string> tagNames, IEnumerable<string> expected)
+        {
+            var actual = Item.GetAllBy(fromDate, toDate, tagNames)
+                .Select(item => item.ItemId);
+
+            Assert.That(actual, Is.EquivalentTo(expected));
         }
 
         [Test]
