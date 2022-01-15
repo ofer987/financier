@@ -16,7 +16,8 @@ class DetailedGraph extends React.Component<Props> {
   height = 500;
 
   margin = {
-    top: 10,
+    topLabel: 6,
+    top: 20,
     right: 0,
     bottom: 100,
     left: 40,
@@ -83,7 +84,7 @@ class DetailedGraph extends React.Component<Props> {
   private yScale(data: DetailedRecord[]) {
     return d3.scaleLinear()
       .domain([0, d3.max(data, d => this.absoluteProfit(d.amount.profit))])
-      // .nice(5)
+      .nice(5)
       .range([this.height - this.margin.bottom, this.margin.top]);
   }
 
@@ -112,8 +113,8 @@ class DetailedGraph extends React.Component<Props> {
     bar.join("rect")
       .attr("id", d => d.tags.join("-"))
       .attr("fill", "rgba(0, 0, 0, 0)")
-      .attr("x", (d, i) => this.xScale(data)(d.tags.join(", ")))
-      .attr("y", d => 0)
+      .attr("x", (d, _i) => this.xScale(data)(d.tags.join(", ")))
+      .attr("y", _d => 0)
       .attr("height", d => this.yScale(data)(this.absoluteProfit(d.amount.profit)))
       .attr("width", this.xScale(data).bandwidth());
 
@@ -140,8 +141,9 @@ class DetailedGraph extends React.Component<Props> {
       .call(d3.axisLeft(this.yScale(data)))
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
-        .attr("y", "-2em")
-        .attr("dy", "-0.25em")
+        .attr("x", 0)
+        .attr("y", `-${2 * this.margin.topLabel}px`)
+        .attr("dy", 0)
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
         .attr("class", "label")
