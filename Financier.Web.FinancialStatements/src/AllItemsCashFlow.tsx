@@ -167,6 +167,7 @@ class AllItemsCashFlow extends React.Component<Props, State> {
       }
 
       return {
+        id: item.id,
         name: item.description,
         at: item.postedAt,
         amount: amount,
