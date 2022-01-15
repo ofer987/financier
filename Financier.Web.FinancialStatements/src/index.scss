@@ -247,7 +247,6 @@ body {
 
   .items {
     .item {
-      text-color: black;
       color: black;
       cursor: default;
 
@@ -267,13 +266,13 @@ body {
 
 
     .item {
-      div {
+      div, input {
         padding: 2px 10px 2px 10px;
         width: $width;
         font-family: monospace;
       }
 
-      div:first-child {
+      :first-child {
         width: $first-child-width;
 
         padding: 2px 10px 2px 0px;
@@ -282,16 +281,30 @@ body {
         border-right-width: 1px;
       }
 
-      div:last-child {
+      :last-child {
         padding-right: 0px;
         width: $last-child-width;
       }
 
-      div.number {
+      .number {
         text-align: right;
       }
 
+      input.tags {
+        border: none;
+        color: white;
+        background-color: grey;
+      }
+
       .tags {
+        &.non-interactive {
+          cursor: pointer;
+        }
+
+        &.interactive {
+          font-family: monospace;
+        }
+
         &.displayed {
           display: block;
         }
