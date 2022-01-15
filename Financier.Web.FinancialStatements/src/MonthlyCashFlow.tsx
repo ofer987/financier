@@ -3,6 +3,7 @@
 // import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import DatePicker from "react-datepicker";
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3-time-format";
@@ -23,6 +24,8 @@ import { MonthlyGraph } from "./MonthlyGraph";
 import "./index.scss";
 
 interface Props {
+  predictionYear: number;
+  predictionMonth: number;
   fromYear: number;
   fromMonth: number;
   toYear: number;
@@ -30,14 +33,12 @@ interface Props {
 }
 
 interface CashFlow {
-  startAt: string;
-  endAt: string;
-  debitListings: {
-    amount: number;
-  }[];
-  creditListings: {
-    amount: number;
-  }[];
+  isPrediction: boolean;
+  year: number;
+  month: number;
+  debit: number;
+  credit: number;
+  profit: number;
 }
 
 interface CashFlows {
@@ -46,9 +47,24 @@ interface CashFlows {
 
 interface State {
   records: MonthlyRecord[];
+  selectedPredictionDate: Date;
 }
 
 class MonthlyCashFlow extends React.Component<Props, State> {
+  setSelectedPredictionDate(newDate: Date): void {
+    this.setState({
+      selectedPredictionDate: newDate
+    });
+  }
+
+  get initialPredictionDate(): Date {
+    return new Date(this.toYear, this.toMonth);
+  }
+
+  get selectedPredictionDate(): Date {
+    return (this.state || { selectedPredictionDate: new Date() }).selectedPredictionDate;
+  }
+
   get records(): MonthlyRecord[] {
     return (this.state || { records: [] }).records;
   }
@@ -69,7 +85,11 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     return lodash.toNumber(this.props.toMonth);
   }
 
-  private client = new ApolloClient({
+  get toDate(): Date {
+    return new Date(this.toYear, this.toMonth - 1);
+  }
+
+  protected client = new ApolloClient({
     uri: "https://localhost:5003/graphql/cash-flows",
     cache: new InMemoryCache(),
     headers: {
@@ -84,50 +104,30 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     this.setData();
   }
 
-  setData(): void {
+  protected setData(): void {
     // Convert to async/await
     this.client.query<CashFlows>({
       query: gql`
         query {
           getMonthlyCashFlows(fromYear: ${this.fromYear}, fromMonth: ${this.fromMonth}, toYear: ${this.toYear}, toMonth: ${this.toMonth}) {
-            startAt
-            endAt
-            debitListings {
-              amount
-            }
-            creditListings {
-              amount
-            }
+            isPrediction
+            year
+            month
+            debit
+            credit
+            profit
           }
         }
       `
     }).then(value => {
-      const records = this.toRecords(value.data);
-
-      // const credits = this.toCreditCashFlowModel(value.data);
-      // const debits = this.toDebitCashFlowModel(value.data);
+      const records = this.toRecords(value.data.getMonthlyCashFlows);
 
       this.setState({
-        records: records
+        records: records,
+        selectedPredictionDate: this.initialPredictionDate
       });
     });
   }
-
-  // renderCriteria() {
-  //   return (
-  //     <div className="criteria">
-  //       <h2>Please Select</h2>
-  //       {
-  //         this.tags().map(tag =>
-  //         <div className="checkbox">
-  //           <input id={`${tag}`} type="checkbox" name={tag} onClick={() => this.toggleTag(tag)} />
-  //           <label htmlFor={`${tag}`}>{lodash.startCase(tag)}</label>
-  //         </div>
-  //         )
-  //       }
-  //     </div>
-  //   )
-  // }
 
   public navigatetoDifferentRange(event: Event) {
     event.preventDefault();
@@ -157,6 +157,25 @@ class MonthlyCashFlow extends React.Component<Props, State> {
           }}>
             Select a Different Time Range
           </div>
+          <div className="predictions">
+            <DatePicker
+              id="prediction-date-picker"
+              inline={true}
+              selected={this.selectedPredictionDate}
+              dateFormat="LLLL/yyyy"
+              minDate={new Date(this.toYear, this.toMonth)}
+              showMonthYearPicker
+              // @ts-ignore
+              onChange={(date) => this.setSelectedPredictionDate(date)}
+            />
+          </div>
+          <div className={`button monthly-chart`} onClick={(event) => {
+            event.preventDefault();
+
+            window.location.pathname = `/prediction-view/from-year/${this.fromYear}/from-month/${this.fromMonth}/to-year/${this.toYear}/to-month/${this.toMonth}/prediction-year/${this.selectedPredictionDate.getFullYear()}/prediction-month/${this.selectedPredictionDate.getMonth() + 1}`;
+          }}>
+            View Prediction Chart to {this.toDateString(this.selectedPredictionDate)}
+          </div>
           <div className="yearly-navigation">
             {lodash.range(this.fromYear, this.toYear + 1, 1).map((year: number) => {
               return this.renderMonthlyNavigation(year);
@@ -171,128 +190,25 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     );
   }
 
-  private toRecords(values: CashFlows): Array<MonthlyRecord> {
-    const data = values.getMonthlyCashFlows.map(item => {
-      const at = this.toDate(item.startAt);
-      const credits = item.creditListings.map(listing => listing.amount);
-      const debits = item.debitListings.map(listing => listing.amount);
-
-      let credit = 0;
-      credit = _.reduce(credits, (t, amount) => t + amount);
-
-      let debit = 0;
-      debit = _.reduce(debits, (t, amount) => t + amount);
-
+  protected toRecords(values: CashFlow[]): Array<MonthlyRecord> {
+    const results = values.map(item => {
       return {
-        year: at.getFullYear(),
-        month: at.getMonth(),
-        amount: new Amount(credit, debit)
+        isPrediction: item.isPrediction,
+        year: item.year,
+        month: item.month - 1,
+        amount: new Amount(item.credit, item.debit)
       };
+
     });
 
-    // create the results
-    const results: MonthlyRecord[] = [];
-    const startAt = new Date(this.fromYear, this.fromMonth - 1);
-    const endAt = new Date(this.toYear, this.toMonth - 1);
-    for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
-      const record = data.find(item => item.year == at.getFullYear() && item.month == at.getMonth())
-      if (false
-        || typeof (record) == "undefined"
-        || typeof (record.amount.credit) == "undefined"
-        || typeof (record.amount.debit) == "undefined"
-      ) {
-        results.push({
-          year: at.getFullYear(),
-          month: at.getMonth(),
-          amount: new Amount(0, 0)
-        });
-      } else {
-        results.push(record);
-      }
-    }
-
-    // Trim the results from the start to the end
-    const firstIndex = results.findIndex(item => item.amount.credit != 0 && item.amount.debit != 0);
-    const lastIndex = _.findLastIndex(results, (item => item.amount.credit != 0 && item.amount.debit != 0)) + 1;
-
-    return results.slice(firstIndex, lastIndex);
+    return results;
   }
-  // private toDebitCashFlowModel(data: CashFlowResponse): Listing[] {
-  //   const monthlyCashFlows = data.getMonthlyCashFlows;
-  //
-  //   return monthlyCashFlows.map(cashFlow => {
-  //     const date = this.toDate(cashFlow.startAt)
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth();
-  //     const amounts = cashFlow.debitListings.map(listing => listing.amount);
-  //
-  //     let total = 0;
-  //     total = _.reduce(amounts, (t, amount) => t + amount);
-  //
-  //     return new MonthlyListing(year, month, total, ExpenseTypes.Debit);
-  //   });
-  // }
 
-  // private toCreditCashFlowModel(data: CashFlowResponse): Listing[] {
-  //   const monthlyCashFlows = data.getMonthlyCashFlows;
-  //
-  //   return monthlyCashFlows.map(cashFlow => {
-  //     const date = this.toDate(cashFlow.startAt)
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth();
-  //     const amounts = cashFlow.creditListings.map(listing => listing.amount);
-  //
-  //     let total = 0;
-  //     total = _.reduce(amounts, (t, amount) => t + amount);
-  //
-  //     return new MonthlyListing(year, month, total, ExpenseTypes.Credit);
-  //   });
-  // }
+  private toDateString(input: Date): string {
+    const formatter = d3.timeFormat("%B %Y");
 
-  // private cashFlowsByDate(): MonthlyProp[] {
-  //   return this.cashFlows.map(item => {
-  //     const date = this.toDate(item.startAt)
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth();
-  //     const creditAmounts = item.creditListings.map(listing => listing.amount);
-  //     const debitAmounts = item.debitListings.map(listing => listing.amount);
-  //
-  //     const creditTotal = _.reduce(creditAmounts, (t, amount) => t + amount) || 0;
-  //     const debitTotal = _.reduce(debitAmounts, (t, amount) => t + amount) || 0;
-  //
-  //     if (creditTotal == 0 && debitTotal == 0) {
-  //       return {
-  //         at: date,
-  //         credit: new NullListing(),
-  //         debit: new NullListing()
-  //       };
-  //     }
-  //
-  //     return {
-  //       at: date,
-  //       credit: new MonthlyListing(year, month, creditTotal, ExpenseTypes.Credit),
-  //       debit: new MonthlyListing(year, month, debitTotal, ExpenseTypes.Debit)
-  //     }
-  //   });
-  // }
-
-  // private dateRange(): [Date, Date] | undefined {
-  //   const values = this.cashFlows;
-  //   if (values.length == 0) {
-  //     return undefined;
-  //   }
-  //
-  //   return [
-  //     this.toDate(values[0].startAt),
-  //     this.toDate(values[values.length - 1].startAt),
-  //   ];
-  // }
-
-  private toDate(input: string): Date {
-    const parser = d3.timeParse("%Y-%m-%dT%H:%M:%S");
-
-    return parser(input);
+    return formatter(input);
   }
 }
 
-export { MonthlyCashFlow, Props };
+export { MonthlyCashFlow, Props, State, CashFlow };

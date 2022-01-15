@@ -141,11 +141,19 @@ body {
         }
       }
 
-      path, text {
+      path {
         display: block;
 
         &.hidden {
-          display: none;
+          display: block;
+          stroke: rgba(125, 125, 125, 0.2);
+          stroke-dasharray: 4;
+        }
+      }
+
+      text {
+        &.hidden {
+          opacity: 20%;
         }
       }
 
@@ -200,28 +208,36 @@ body {
   }
 }
 
-@mixin values($width) {
+@mixin values($first-child-width, $width, $last-child-width) {
   .header {
     div {
       font-size: 20px;
       width: $width;
+      padding-left: 10px;
+      padding-right: 10px;
     }
 
     div:first-child {
-      width: 39%;
+      width: $first-child-width;
 
+      padding-left: 0px;
+      padding-right: 10px;
       border-right-color: black;
       border-right-style: solid;
       border-right-width: 1px;
     }
 
     div:last-child {
+      width: $last-child-width;
+      padding-right: 0px;
+    }
+
+    div.number {
+      text-align: right;
     }
 
     display: flex;
-    flex-flow: wrap;
 
-    justify-content: space-between;
     text-align: left;
 
     border-bottom-width: 2px;
@@ -238,6 +254,10 @@ body {
       &.clickable {
         cursor: pointer;
       }
+
+      &.not-clickable {
+        cursor: not-allowed;
+      }
     }
 
     .item:hover {
@@ -245,27 +265,18 @@ body {
       background-color: darkgrey;
     }
 
-    .item:first-child {
-      div {
-        padding: 7px 0px 2px 0px;
-      }
-
-      div:first-child {
-        padding: 7px 0px 2px 0px;
-      }
-    }
 
     .item {
       div {
-        padding: 2px 0px 2px 0px;
+        padding: 2px 10px 2px 10px;
         width: $width;
         font-family: monospace;
       }
 
       div:first-child {
-        width: 39%;
+        width: $first-child-width;
 
-        padding: 2px 0px 2px 0px;
+        padding: 2px 10px 2px 0px;
         border-right-color: black;
         border-right-style: solid;
         border-right-width: 1px;
@@ -273,13 +284,15 @@ body {
 
       div:last-child {
         padding-right: 0px;
+        width: $last-child-width;
+      }
+
+      div.number {
+        text-align: right;
       }
 
       display: flex;
-      flex-flow: wrap;
       flex-direction: row;
-
-      justify-content: space-between;
       text-align: left;
 
       border-bottom-width: 1px;
@@ -295,41 +308,41 @@ body {
     }
 
     div {
-      padding: 7px 0px 2px 0px;
+      padding: 7px 10px 2px 10px;
       width: $width;
       font-family: monospace;
     }
 
     div:first-child {
-      width: 39%;
+      width: $first-child-width;
 
-      padding: 7px 0px 2px 0px;
+      padding: 7px 10px 2px 0px;
       border-right-color: black;
       border-right-style: solid;
       border-right-width: 1px;
     }
 
+    div.number {
+      text-align: right;
+    }
+
     div:last-child {
       padding-right: 0px;
+      width: $last-child-width;
     }
 
     display: flex;
-
-    flex-flow: wrap;
     flex-direction: row;
-
     font-size: 20px;
-
-    justify-content: space-between;
     text-align: left;
   }
 }
 
 // TODO: Move into a mixin!
 .values {
-  @include values(20%);
+  @include values(40%, 20%, 20%);
 }
 
 .itemized-values {
-  @include values(15%);
+  @include values(8%, 18.4%, 18.4%);
 }

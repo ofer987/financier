@@ -3,11 +3,7 @@ import _ from "underscore";
 import lodash from "lodash";
 import * as d3 from "d3";
 import * as d3Shape from "d3-shape";
-import * as d3Scale from "d3-scale";
-import * as d3Format from "d3-format";
-import * as d3TimeFormat from "d3-time-format";
 
-import { Amount } from "./Amount";
 import { MonthlyRecord } from "./MonthlyRecord";
 
 interface Props {
@@ -17,10 +13,11 @@ interface Props {
 interface Value {
   date: Date;
   value: number;
+  isPrediction: boolean;
 }
 
 class MonthlyGraph extends React.Component<Props> {
-  width = 500;
+  width = 600;
   height = 300;
 
   margin = {
@@ -38,7 +35,8 @@ class MonthlyGraph extends React.Component<Props> {
 
       return {
         date: profit.date,
-        value: accumulator
+        value: accumulator,
+        isPrediction: profit.isPrediction
       };
     });
   }
@@ -47,7 +45,8 @@ class MonthlyGraph extends React.Component<Props> {
     return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.amount.profit
+        value: item.amount.profit,
+        isPrediction: item.isPrediction
       };
     });
   }
@@ -56,7 +55,8 @@ class MonthlyGraph extends React.Component<Props> {
     return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.amount.credit
+        value: item.amount.credit,
+        isPrediction: item.isPrediction
       };
     });
   }
@@ -65,14 +65,13 @@ class MonthlyGraph extends React.Component<Props> {
     return this.props.records.map(item => {
       return {
         date: new Date(item.year, item.month, 1),
-        value: item.amount.debit
+        value: item.amount.debit,
+        isPrediction: item.isPrediction
       };
     });
   }
 
   componentDidUpdate() {
-    const data = this.props;
-
     // Remove existing chart elements (if exist)
     document.querySelectorAll(".graph .chart g").forEach(node => node.remove());
 
@@ -84,17 +83,23 @@ class MonthlyGraph extends React.Component<Props> {
     this.drawViewBox();
     this.drawXAxis();
     this.drawYAxis();
-    this.drawChart(this.credits, "credits", "black");
-    this.drawChart(this.debits, "debits", "red");
-    this.drawChart(this.profits, "profits", "blue");
-    this.drawChart(this.cumulativeProfits, "cumulativeProfits", "darkblue");
+
+    let black = (o?: number): string => `rgba(0, 0, 0, ${o ?? 1})`;
+    let red = (o?: number): string => `rgba(255, 0, 0, ${o ?? 1})`;
+    let blue = (o?: number): string => `rgba(0, 0, 255, ${o ?? 1})`;
+    let green = (o?: number): string => `rgba(0, 255, 0, ${o ?? 1})`;
+
+    this.drawChart(this.credits, "credits", black());
+    this.drawChart(this.debits, "debits", red());
+    this.drawChart(this.profits, "profits", blue());
+    this.drawChart(this.cumulativeProfits, "cumulativeProfits", green());
 
     this.drawLegend(["credits", "debits"]);
 
     document.querySelectorAll(".chart path").forEach(path => {
       let id = path.id;
 
-      path.addEventListener("mouseover", (event: Event) => {
+      path.addEventListener("mouseover", (_event: Event) => {
         document.querySelectorAll(`.chart > path`)
           .forEach(element => {
             if (element.id != id) {
@@ -110,7 +115,7 @@ class MonthlyGraph extends React.Component<Props> {
           });
       });
 
-      path.addEventListener("mouseout", (event: Event) => {
+      path.addEventListener("mouseout", (_event: Event) => {
         document.querySelectorAll(`.chart > path`)
           .forEach(element => {
             if (element.id != id) {
@@ -209,7 +214,7 @@ class MonthlyGraph extends React.Component<Props> {
     const svg = d3.select("svg.chart");
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
 
-    let box = svg.append("rect")
+    svg.append("rect")
       .attr("y", 0)
       .attr("x", 0)
       .attr("rx", 0)
@@ -217,7 +222,7 @@ class MonthlyGraph extends React.Component<Props> {
       .selectAll("g")
       .data(names)
       .append("title")
-        .text(text => names[0]);
+        .text(_text => names[0]);
   }
 
   private drawViewBox() {
@@ -226,14 +231,14 @@ class MonthlyGraph extends React.Component<Props> {
     svg.attr("viewBox", `0, 0, ${this.width}, ${this.height}`);
   }
 
-  private drawChart(values: Value[], name: string, colour: string) {
+  private drawChart(values: Value[], name: string, colourOne: string) {
     const svg = d3.select("svg.chart");
 
-    let path = svg.append("path")
-      .datum(values)
+    svg.append("path")
+      .datum(values.filter(item => !item.isPrediction))
       .attr("fill", "none")
-      .attr("stroke", colour)
-      .attr("stroke-width", 1.5)
+      .attr("stroke", colourOne)
+      .attr("stroke-width", 2.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("id", name)
@@ -244,34 +249,35 @@ class MonthlyGraph extends React.Component<Props> {
       //   .attr("x", -6)
       //   .attr("y", "1.15em"));
 
+    let lastExistingValue = lodash.last(values.filter(item => !item.isPrediction))
+    let predictedValues = [lastExistingValue];
+
+    values
+      .filter(item => item.isPrediction)
+      .forEach(item => predictedValues.push(item));;
+
+    svg.append("path")
+      .datum(predictedValues)
+      .attr("fill", "none")
+      .attr("stroke", colourOne)
+      .attr("stroke-width", 2.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-dasharray", 4)
+      .attr("id", name)
+      // @ts-ignore
+      .attr("d", this.myLine());
+
     let y = this.yScale()(values[values.length - 1].value)
     svg.append("text")
       .datum(values)
       .text(lodash.startCase(name))
       .attr("id", name)
       .attr("class", "label")
-      // .attr("font-size", "0.375em")
       .attr("x", this.width - this.margin.right)
-      .attr("dx", "0.25em")
+      .attr("dx", "0.75em")
       .attr("y", y)
       .attr("dy", "0.25em");
-
-    // svg.append("g")
-    //   .append("text")
-    //   .append(name);
-
-    // @ts-ignore
-    // alert(_.startCase(name));
-    // svg.append("text")
-    //   // @ts-ignore
-    //   .attr("text", _.startCase(name));
-  }
-
-  private getName(at: Date): string {
-    const year = at.getFullYear();
-    const month = d3TimeFormat.timeFormat("%B")(at);
-
-    return `${year} - ${month}`;
   }
 };
 

@@ -9,26 +9,30 @@ interface Props {
 }
 
 class ItemizedValues extends React.Component<Props> {
-  decimalCount = 2;
+  public get records(): ItemizedRecord[] {
+    return this.props.records;
+  }
 
-  public get totalCredits(): number {
-    var amounts = this.props.records
+  public get totalCredits(): string {
+    let amounts = this.records
       .map(item => item.amount)
       .map(item => item.credit);
 
-    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+    const total = _.reduce(amounts, (total, amount) => total + amount) || 0;
+    return this.formatted(total);
   }
 
-  public get totalDebits(): number {
-    var amounts = this.props.records
+  public get totalDebits(): string {
+    var amounts = this.records
       .map(item => item.amount)
       .map(item => item.debit);
 
-    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+    const total = _.reduce(amounts, (total, amount) => total + amount) || 0;
+    return this.formatted(total);
   }
 
   public get totalProfit(): number {
-    var amounts = this.props.records
+    var amounts = this.records
       .map(item => item.amount)
       .map(item => item.profit);
 
@@ -36,12 +40,18 @@ class ItemizedValues extends React.Component<Props> {
   }
 
   public get accountingFormattedProfit(): string {
-    const profit = this.totalProfit;
-    if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
+    let profit = this.totalProfit;
+
+    if (profit < 0) {
+      profit = 0 - profit;
+      return `(${this.formatted(profit)})`;
     }
 
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+    return this.formatted(profit);
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   public toKey(record: ItemizedRecord): string {
@@ -53,21 +63,23 @@ class ItemizedValues extends React.Component<Props> {
       <div className="itemized-values">
         <h2>Items</h2>
         <div className="header">
+          <div className="at">At</div>
           <div className="name">Name</div>
           <div className="tags">Tags</div>
-          <div className="credits">Credits</div>
-          <div className="debits">Debits</div>
-          <div className="profit">Profit (Deficit)</div>
+          <div className="credits number">Credits</div>
+          <div className="debits number">Debits</div>
+          <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.props.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
+          {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
         </div>
         <div className="total">
-          <div className="name">Total</div>
+          <div className="at">Total</div>
+          <div className="name"></div>
           <div className="tags"></div>
-          <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
-          <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
-          <div className="profit">{this.accountingFormattedProfit}</div>
+          <div className="credits number">{this.totalCredits}</div>
+          <div className="debits number">{this.totalDebits}</div>
+          <div className="profit number">{this.accountingFormattedProfit}</div>
         </div>
       </div>
     );

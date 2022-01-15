@@ -32,13 +32,13 @@ class DetailedValue extends React.Component<Props> {
         <div className="name">
           {this.name}
         </div>
-        <div className="credit">
+        <div className="credit number">
           {this.credit}
         </div>
-        <div className="debit">
+        <div className="debit number">
           {this.debit}
         </div>
-        <div className="profit">
+        <div className="profit number">
           {this.accountingFormattedProfit}
         </div>
       </div>
@@ -52,20 +52,26 @@ class DetailedValue extends React.Component<Props> {
   }
 
   get credit(): string {
-    return this.props.record.amount.credit.toFixed(2);
+    return this.formatted(this.props.record.amount.credit);
   }
 
   get debit(): string {
-    return this.props.record.amount.debit.toFixed(2);
+    return this.formatted(this.props.record.amount.debit);
   }
 
-  get accountingFormattedProfit(): string {
-    const profit = this.props.record.amount.profit;
-    if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
+  private get accountingFormattedProfit(): string {
+    let profit = this.props.record.amount.profit;
+
+    if (profit < 0) {
+      profit = 0 - profit;
+      return `(${this.formatted(profit)})`;
     }
 
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+    return this.formatted(profit);
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   private navigateToItemizedView(year: number, month: number): void {

@@ -2,30 +2,27 @@
 
 // import 'react-app-polyfill/ie11';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import _ from "underscore";
 import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
 import {
   ApolloClient,
   InMemoryCache,
-  ApolloProvider,
-  useQuery,
   gql
 } from "@apollo/client";
 
 import ItemizedValues from "./ItemizedValues";
 import { Amount } from "./Amount";
 import { ItemizedRecord } from "./ItemizedRecord";
-import { DetailedGraph } from "./DetailedGraph";
 
 // CSS
 import "./index.scss";
 
 interface Props {
-  year: number;
-  month: number;
-  tagNames: string[];
+  fromYear: number;
+  fromMonth: number;
+  toYear: number;
+  toMonth: number;
 }
 
 class State {
@@ -33,7 +30,7 @@ class State {
 }
 
 interface ItemResponse {
-  itemsByTagNamesAndPostedAt: {
+  itemsByPostedAt: {
     id: string;
     description: string;
     postedAt: string;
@@ -42,32 +39,43 @@ interface ItemResponse {
   }[]
 }
 
-class ItemizedCashFlow extends React.Component<Props, State> {
-  public get year(): number {
-    return this.props.year;
+class AllItemsCashFlow extends React.Component<Props, State> {
+  public get fromYear(): number {
+    return this.props.fromYear;
   }
 
-  public get month(): number {
-    return this.props.month;
+  public get fromMonth(): number {
+    return this.props.fromMonth;
   }
 
-  public get at(): Date {
-    return new Date(this.year, this.month - 1, 1);
+  public get fromDate(): Date {
+    return new Date(this.fromYear, this.fromMonth - 1, 1);
   }
 
-  public get postedAt(): string {
-    const year = d3TimeFormat.timeFormat("%Y")(this.at);
-    const month = d3TimeFormat.timeFormat("%m")(this.at);
+  public get fromPostedDate(): string {
+    const year = d3TimeFormat.timeFormat("%Y")(this.fromDate);
+    const month = d3TimeFormat.timeFormat("%m")(this.fromDate);
 
     return `"${year}-${month}-01"`;
   }
 
-  public get tagNames(): string {
-    const names = this.props.tagNames
-      .map(item => `"${item}"`)
-      .join(", ");
+  public get toYear(): number {
+    return this.props.toYear;
+  }
 
-    return `[${names}]`;
+  public get toMonth(): number {
+    return this.props.toMonth;
+  }
+
+  public get toDate(): Date {
+    return new Date(this.toYear, this.toMonth, 1);
+  }
+
+  public get toPostedDate(): string {
+    const year = d3TimeFormat.timeFormat("%Y")(this.toDate);
+    const month = d3TimeFormat.timeFormat("%m")(this.toDate);
+
+    return `"${year}-${month}-01"`;
   }
 
   public get records(): ItemizedRecord[] {
@@ -91,8 +99,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
 
   public sortedRecords(): ItemizedRecord[] {
     return lodash
-      .sortBy(this.state.records, record => record.amount.profit)
-      .reverse();
+      .sortBy(this.state.records, record => record.at);
   }
 
   private getData(): void {
@@ -100,7 +107,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
     this.client.query<ItemResponse>({
       query: gql`
         query {
-          itemsByTagNamesAndPostedAt(tagNames: ${this.tagNames}, postedAt: ${this.postedAt}) {
+          itemsByPostedAt(fromDate: ${this.fromPostedDate}, toDate: ${this.toPostedDate}) {
             id,
             description,
             postedAt
@@ -125,7 +132,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
         event.preventDefault();
         window.location.pathname = `/detailed-view/year/${year}/month/${month}`;
       }}>
-        Return to {d3TimeFormat.timeFormat(`%B %Y`)(this.at)} Detailed Charts
+        Return to {d3TimeFormat.timeFormat(`%B %Y`)(this.fromDate)} Detailed Charts
       </div>
     );
   }
@@ -141,7 +148,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
           }}>
             Select a Different Time Range
           </div>
-          {this.renderDetailedNavigation(this.year, this.month)}
+          {this.renderDetailedNavigation(this.fromYear, this.fromMonth)}
         </div>
         <ItemizedValues records={this.sortedRecords()} />
       </div>
@@ -149,7 +156,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
   }
 
   private toRecords(data: ItemResponse): ItemizedRecord[] {
-    const items = data.itemsByTagNamesAndPostedAt;
+    const items = data.itemsByPostedAt;
 
     let results: ItemizedRecord[] = items.map(item => {
       let amount: Amount;
@@ -171,4 +178,4 @@ class ItemizedCashFlow extends React.Component<Props, State> {
   }
 }
 
-export { ItemizedCashFlow, Props };
+export { AllItemsCashFlow, Props };

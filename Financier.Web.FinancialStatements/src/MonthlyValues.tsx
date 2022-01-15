@@ -9,36 +9,45 @@ interface Props {
 }
 
 class MonthlyValues extends React.Component<Props> {
-  private decimalCount = 2;
-
   public get records(): MonthlyRecord[] {
     return this.props.records;
   }
 
-  public get totalCredits(): number {
-    var amounts = this.records
+  public get totalCredits(): string {
+    const amounts = this.records
       .map(item => item.amount)
       .map(item => item.credit);
 
-    return _.reduce(amounts, (total, amount) => total + amount) || 0;
+    const total =_.reduce(amounts, (total, amount) => total + amount) || 0;
+    return this.formatted(total);
   }
 
-  public get totalDebits(): number {
+  public get totalDebits(): string {
     var amounts = this.records
       .map(item => item.amount)
       .map(item => item.debit);
+
+    const total = _.reduce(amounts, (total, amount) => total + amount) || 0;
+    return this.formatted(total);
+  }
+
+  public get totalProfit(): number {
+    var amounts = this.records
+      .map(item => item.amount)
+      .map(item => item.profit);
 
     return _.reduce(amounts, (total, amount) => total + amount) || 0;
   }
 
   public get accountingFormattedProfit(): string {
-    const profit = (this.totalCredits - this.totalDebits);
+    let profit = this.totalProfit;
 
-    if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
+    if (profit < 0) {
+      profit = 0 - profit;
+      return `(${this.formatted(profit)})`;
     }
 
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+    return this.formatted(profit);
   }
 
   public render() {
@@ -47,9 +56,9 @@ class MonthlyValues extends React.Component<Props> {
         <h2>Items</h2>
         <div className="header">
           <div className="name">When</div>
-          <div className="credits">Credits</div>
-          <div className="debits">Debits</div>
-          <div className="profit">Profit (Deficit)</div>
+          <div className="credits number">Credits</div>
+          <div className="debits number">Debits</div>
+          <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
@@ -59,47 +68,17 @@ class MonthlyValues extends React.Component<Props> {
         </div>
         <div className="total">
           <div className="name">Total</div>
-          <div className="credits">{this.totalCredits.toFixed(this.decimalCount)}</div>
-          <div className="debits">{this.totalDebits.toFixed(this.decimalCount)}</div>
-          <div className="profit">{this.accountingFormattedProfit}</div>
+          <div className="credits number">{this.totalCredits}</div>
+          <div className="debits number">{this.totalDebits}</div>
+          <div className="profit number">{this.accountingFormattedProfit}</div>
         </div>
       </div>
     );
   }
 
-  // private dates(): { year: number, month: number }[] {
-  //   const startYear = this.props[0].year;
-  //   const endYear = this.props[this.props.length - 1].year;
-  //
-  //   let results: { year: number, month: number }[] = [];
-  //   for (let at = startAt; at <= endAt; at = new Date(at.setMonth(at.getMonth() + 1))) {
-  //     results.push({
-  //       year: at.getFullYear(),
-  //       month: at.getMonth() + 1
-  //     });
-  //   }
-  //
-  //   return results;
-  // }
-
-  // private isMonthValid(at: Date): boolean {
-  //   const foundProp = this.props.dates
-  //     .find(date => {
-  //       return true
-  //         && date.year == at.getFullYear()
-  //         && date.month == at.getMonth()
-  //     });
-  //
-  //   if (typeof (foundProp) == "undefined") {
-  //     return false;
-  //   }
-  //
-  //   if (foundProp.listing.isNull) {
-  //     return false;
-  //   }
-  //
-  //   return true;
-  // }
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 }
 
 export default MonthlyValues;

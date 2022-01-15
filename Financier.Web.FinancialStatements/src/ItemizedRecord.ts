@@ -2,7 +2,7 @@ import { Amount } from "./Amount";
 
 interface ItemizedRecord {
   name: string;
-  at: Date;
+  at: string;
   amount: Amount;
   tags: string[];
 }

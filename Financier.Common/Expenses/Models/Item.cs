@@ -66,7 +66,29 @@ namespace Financier.Common.Expenses.Models
             }
 
             return items
-                .Where(item => selectedTagNames.Any(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
+                .Where(item => selectedTagNames.All(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
+                .ToArray();
+        }
+
+        public static IEnumerable<Item> GetBy(DateTime from, DateTime to, IEnumerable<string> selectedTagNames)
+        {
+            IEnumerable<Item> items;
+            using (var db = new Context())
+            {
+                items = db.Items
+                    .Include(item => item.ItemTags)
+                        .ThenInclude(it => it.Tag)
+                    .AsEnumerable()
+                    // Can this be placed outside of the Context?
+                    .Where(item => item.PostedAt >= from)
+                    .Where(item => item.PostedAt < to)
+                    // Is this line even necessary?
+                    .ToArray();
+            }
+
+            return items
+                .Where(item => selectedTagNames.All(selectedTagName => item.Tags.Any(tag => tag.Name == selectedTagName)))
+                .Reject(item => item.Tags.HasInternalTransfer())
                 .ToArray();
         }
 

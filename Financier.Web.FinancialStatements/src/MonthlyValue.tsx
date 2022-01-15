@@ -1,6 +1,5 @@
 import * as React from "react";
 import _  from "underscore";
-import lodash from "lodash";
 import * as d3TimeFormat from "d3-time-format";
 
 import { MonthlyRecord } from "./MonthlyRecord";
@@ -14,14 +13,16 @@ interface Props {
 }
 
 class MonthlyValue extends React.Component<Props> {
-  private decimalCount = 2;
-
   public get name(): string {
     const at = new Date(this.year, this.month);
     const year = this.year;
     const monthName = d3TimeFormat.timeFormat("%B")(at);
 
     return `${year} - ${monthName}`;
+  }
+
+  public get isPrediction(): boolean {
+    return this.props.record.isPrediction;
   }
 
   public get year(): number {
@@ -32,45 +33,66 @@ class MonthlyValue extends React.Component<Props> {
     return this.props.record.month;
   }
 
-  public get credit(): number {
-    return this.props.record.amount.credit;
+  public get credit(): string {
+    return this.formatted(this.props.record.amount.credit);
   }
 
-  public get debit(): number {
-    return this.props.record.amount.debit;
-  }
-
-  public get accountingFormattedProfit(): string {
-    const profit = (this.credit - this.debit);
-
-    if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
-    }
-
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+  public get debit(): string {
+    return this.formatted(this.props.record.amount.debit);
   }
 
   public render() {
     let month = this.month + 1;
+
+    if (!this.isPrediction) {
+      return (
+        <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
+          {this.renderChildren()}
+        </div>
+      );
+    } else {
+      return (
+        <div className="item not-clickable" id={this.name} key={this.name}>
+          {this.renderChildren()}
+        </div>
+      );
+    }
+  }
+
+  private renderChildren() {
     return (
-      <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
+      <>
         <div className="name">
           {this.name}
         </div>
-        <div className="credit">
-          {this.credit.toFixed(this.decimalCount)}
+        <div className="credit number">
+          {this.credit}
         </div>
-        <div className="debit">
-          {this.debit.toFixed(this.decimalCount)}
+        <div className="debit number">
+          {this.debit}
         </div>
-        <div className="profit">
+        <div className="profit number">
           {this.accountingFormattedProfit}
         </div>
-      </div>
-    )
+      </>
+    );
   }
 
-  private navigateToDetailedView(year: number, month: number) {
+  private get accountingFormattedProfit(): string {
+    let profit = this.props.record.amount.profit;
+
+    if (profit < 0) {
+      profit = 0 - profit;
+      return `(${this.formatted(profit)})`;
+    }
+    return this.formatted(profit);
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  private navigateToDetailedView(year: number, month: number): void {
     window.location.pathname = `/detailed-view/year/${year}/month/${month}`;
   }
 }

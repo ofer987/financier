@@ -1,6 +1,6 @@
 import * as React from "react";
 import _  from "underscore";
-import * as lodash from "lodash";
+import lodash from "lodash";
 import { ItemizedRecord } from "./ItemizedRecord";
 
 interface Props {
@@ -13,19 +13,22 @@ class ItemizedValue extends React.Component<Props> {
   render() {
     return (
       <div className="item" id={this.name} key={this.name}>
+        <div className="at">
+          {this.at}
+        </div>
         <div className="name">
           {this.name}
         </div>
         <div className="tags">
           {this.tags}
         </div>
-        <div className="credit">
+        <div className="credit number">
           {this.credit}
         </div>
-        <div className="debit">
+        <div className="debit number">
           {this.debit}
         </div>
-        <div className="profit">
+        <div className="profit number">
           {this.accountingFormattedProfit}
         </div>
       </div>
@@ -36,6 +39,10 @@ class ItemizedValue extends React.Component<Props> {
     return this.props.record.name;
   }
 
+  get at(): string {
+    return this.props.record.at;
+  }
+
   get tags(): string {
     return this.props.record.tags
       .map(tag => lodash.startCase(tag))
@@ -43,20 +50,26 @@ class ItemizedValue extends React.Component<Props> {
   }
 
   get credit(): string {
-    return this.props.record.amount.credit.toFixed(2);
+    return this.formatted(this.props.record.amount.credit);
   }
 
   get debit(): string {
-    return this.props.record.amount.debit.toFixed(2);
+    return this.formatted(this.props.record.amount.debit);
   }
 
-  get accountingFormattedProfit(): string {
-    const profit = this.props.record.amount.profit;
-    if (profit >= 0) {
-      return profit.toFixed(this.decimalCount);
+  private get accountingFormattedProfit(): string {
+    let profit = this.props.record.amount.profit;
+
+    if (profit < 0) {
+      profit = 0 - profit;
+      return `(${this.formatted(profit)})`;
     }
 
-    return `(${(0 - profit).toFixed(this.decimalCount)})`;
+    return this.formatted(profit);
+  }
+
+  private formatted(value: number): string {
+    return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 }
 
