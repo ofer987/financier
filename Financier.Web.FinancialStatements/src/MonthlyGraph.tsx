@@ -21,7 +21,8 @@ class MonthlyGraph extends React.Component<Props> {
   height = 300;
 
   margin = {
-    top: 10,
+    topLabel: 6,
+    top: 20,
     right: 100,
     bottom: 20,
     left: 40,
@@ -202,7 +203,9 @@ class MonthlyGraph extends React.Component<Props> {
       .call(d3.axisLeft(this.yScale()))
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
-        .attr("y", "-2em")
+        .attr("x", 0)
+        .attr("y", `-${2 * this.margin.topLabel}px`)
+        .attr("dy", 0)
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
         .attr("class", "label")
