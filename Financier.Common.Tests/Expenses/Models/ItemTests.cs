@@ -57,23 +57,54 @@ namespace Financier.Common.Tests.Expenses.Models
                 );
 
                 yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 7, 1),
+                    new[] { "fun", "fast" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Porsche.ItemId
+                    }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 5, 1),
+                    new DateTime(2019, 7, 1),
+                    new[] { "fun" },
+                    new[] {
+                        FactoryData.Accounts.Dan.Cards.DanCard.Statements.June.Items.Ferrari.ItemId
+                    }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 7, 1),
+                    new DateTime(2019, 10, 1),
+                    new[] { "fun", "fast" },
+                    Enumerable.Empty<string>()
+                );
+
+                yield return new TestCaseData(
                     new DateTime(2019, 7, 1),
                     new DateTime(2019, 8, 1),
-                    new[] { "salary", "coffee" },
+                    new[] { "salary" },
                     new[] {
-                        FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.Coffee.ItemId,
                         FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.DanSalary.ItemId,
                         FactoryData.Accounts.Dan.Cards.Savings.Statements.July.Items.ChildCareBenefit.ItemId
                     }
+                );
+
+                yield return new TestCaseData(
+                    new DateTime(2019, 7, 1),
+                    new DateTime(2019, 8, 1),
+                    new[] { "salary", "coffee" },
+                    Enumerable.Empty<string>()
                 );
             }
         }
 
         [Test]
         [TestCaseSource(nameof(TagNameTestCases))]
-        public void Test_Item_GetAllBy(DateTime fromDate, DateTime toDate, IEnumerable<string> tagNames, IEnumerable<string> expected)
+        public void Test_Item_GetBy(DateTime fromDate, DateTime toDate, IEnumerable<string> tagNames, IEnumerable<string> expected)
         {
-            var actual = Item.GetAllBy(fromDate, toDate, tagNames)
+            var actual = Item.GetBy(fromDate, toDate, tagNames)
                 .Select(item => item.ItemId);
 
             Assert.That(actual, Is.EquivalentTo(expected));
