@@ -30,7 +30,7 @@ namespace Financier.Web.Controllers
 
         private IEnumerable<MonthlyCashFlow> GetStatements(int year, int startMonth, int endMonth)
         {
-            for (var i = startMonth; i <= endMonth; i += 1) 
+            for (var i = startMonth; i <= endMonth; i += 1)
             {
                 yield return new MonthlyCashFlow(year, i);
             }

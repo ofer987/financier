@@ -22,13 +22,13 @@ namespace Financier.Web.ViewModels
                 switch (Type)
                 {
                     case Financier.Common.Expenses.Models.ItemTypes.Credit:
-                    {
-                        return "flex-credit";
-                    }
+                        {
+                            return "flex-credit";
+                        }
                     default:
-                    {
-                        return "flex-debit";
-                    }
+                        {
+                            return "flex-debit";
+                        }
                 }
             }
         }

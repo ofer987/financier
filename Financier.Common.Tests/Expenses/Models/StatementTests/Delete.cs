@@ -19,9 +19,9 @@ namespace Financier.Common.Tests.Expenses.Models.StatementTests
                 // var statements = db.Cards
                 //     .Include(card => card.Statements)
                 //     .First(card => card.Number == cardNumber);
-                    // .SelectMany(card => card.Statements);
+                // .SelectMany(card => card.Statements);
 
-                var statements = 
+                var statements =
                     from stmts in db.Statements
                     join cards in db.Cards on stmts.CardId equals cards.Id
                     where cards.Number == cardNumber
@@ -31,10 +31,10 @@ namespace Financier.Common.Tests.Expenses.Models.StatementTests
                 {
                     statement.Delete();
                 }
-                    // .ForEach(stmt => Console.WriteLine(stmt.Id))
-                    // .ForEach(stmt => stmt.Delete());
+                // .ForEach(stmt => Console.WriteLine(stmt.Id))
+                // .ForEach(stmt => stmt.Delete());
 
-                var afterCount = db.Statements.Count(); 
+                var afterCount = db.Statements.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(expectedRemoved));
             }
@@ -54,7 +54,7 @@ namespace Financier.Common.Tests.Expenses.Models.StatementTests
                 //     .First(card => card.Number == cardNumber);
                 // .SelectMany(card => card.Statements);
 
-                var statements = 
+                var statements =
                     from stmts in db.Statements
                     join cards in db.Cards on stmts.CardId equals cards.Id
                     where cards.Number == cardNumber
@@ -67,7 +67,7 @@ namespace Financier.Common.Tests.Expenses.Models.StatementTests
                 // .ForEach(stmt => Console.WriteLine(stmt.Id))
                 // .ForEach(stmt => stmt.Delete());
 
-                var afterCount = db.Items.Count(); 
+                var afterCount = db.Items.Count();
 
                 Assert.That(beforeCount - afterCount, Is.EqualTo(expectedRemoved));
             }

@@ -51,7 +51,8 @@ namespace Financier.Common.Expenses.Models
 
         public static IEnumerable<Item> GetAllBy(DateTime from, DateTime to, IEnumerable<string> selectedTagNames)
         {
-            if (selectedTagNames.Empty()) {
+            if (selectedTagNames.Empty())
+            {
                 return Enumerable.Empty<Item>();
             }
 

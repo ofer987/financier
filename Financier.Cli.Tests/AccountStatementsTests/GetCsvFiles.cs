@@ -19,8 +19,8 @@ namespace Financier.Cli.Tests.AccountStatementsTests
             var files = Financier.Cli.AccountStatements.GetAccountStatementsList(path)
                 .SelectMany(statement => statement.CsvFiles);
 
-            var expected = new [] 
-            { 
+            var expected = new[]
+            {
                 new FileInfo(Path.Join(Path.Join(path, "123345"), "20181103.csv")),
                 new FileInfo(Path.Join(Path.Join(path, "123345"), "20181203.csv"))
             };

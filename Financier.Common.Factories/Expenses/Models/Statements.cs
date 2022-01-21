@@ -8,7 +8,7 @@ namespace Financier.Common
     {
         public static Statement NewStatement(Card card, DateTime postedAt)
         {
-            return new Statement 
+            return new Statement
             {
                 Id = Guid.NewGuid(),
                 CardId = card.Id,

@@ -22,13 +22,13 @@ namespace Financier.Common.Models
             }
             else if (targetAt > sourceAt)
             {
-                for (totalYears = 0; sourceAt.AddYears(totalYears) <= targetAt; totalYears += 1);
+                for (totalYears = 0; sourceAt.AddYears(totalYears) <= targetAt; totalYears += 1) ;
 
                 totalYears -= 1;
             }
             else
             {
-                for (totalYears = -1; sourceAt.AddYears(totalYears) >= targetAt; totalYears -= 1);
+                for (totalYears = -1; sourceAt.AddYears(totalYears) >= targetAt; totalYears -= 1) ;
 
                 totalYears += 1;
             }
