@@ -34,7 +34,7 @@ namespace Financier.Common.Tests.Models
             return Success.GetHashCode() + Score.GetHashCode();
         }
 
-        public override bool Equals([AllowNull]object obj)
+        public override bool Equals([AllowNull] object obj)
         {
             var other = obj as Model;
             if (other is null)
@@ -70,7 +70,7 @@ namespace Financier.Common.Tests.Models
     {
         public static IEnumerable GetTestCases_Success()
         {
-            yield return new TestCaseData 
+            yield return new TestCaseData
             (
                  "{\"success\": true, \"score\": 0.9}",
                  new Model

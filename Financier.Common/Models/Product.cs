@@ -13,8 +13,8 @@ namespace Financier.Common.Models
         public const decimal YearlyInflationRate = 2.00M;
         public const decimal YearlyValuationRate = 5.00M;
 
-        public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0/12) - 1;
-        public double MonthlyValuationRate => Math.Pow(Convert.ToDouble(YearlyValuationRate) / 100, 1.0/12) - 1;
+        public double MonthlyInflationRate => Math.Pow(Convert.ToDouble(YearlyInflationRate) / 100, 1.0 / 12) - 1;
+        public double MonthlyValuationRate => Math.Pow(Convert.ToDouble(YearlyValuationRate) / 100, 1.0 / 12) - 1;
 
         public Guid Id { get; }
         public string Name { get; }

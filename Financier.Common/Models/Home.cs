@@ -26,7 +26,7 @@ namespace Financier.Common.Models
         public override decimal GetPurchasePrice(decimal price)
         {
             return 0.00M
-                + new HomePurchaseStrategy(price, PurchasedAt).GetReturnedPrice() 
+                + new HomePurchaseStrategy(price, PurchasedAt).GetReturnedPrice()
                 + Financing.GetPurchasePrice(price);
         }
 
