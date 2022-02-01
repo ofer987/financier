@@ -5,6 +5,7 @@
     <LangVersion>10.0</LangVersion>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <Nullable>enable</Nullable>
+    <UserSecretsId>aspnet-web-561053CB-D259-4000-BC72-29EEF6CA19CC</UserSecretsId>
   </PropertyGroup>
 
 
