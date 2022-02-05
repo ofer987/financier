@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Server;
 using AspNetCore.RouteAnalyzer;
 
@@ -18,6 +20,8 @@ using Financier.Web.GraphQL.ItemQueries;
 using Financier.Web.GraphQL.Items;
 using Financier.Web.GraphQL.Activities;
 using Financier.Web.Data;
+
+using GraphDI = GraphQL.MicrosoftDI;
 
 namespace Financier.Web
 {
@@ -58,24 +62,26 @@ namespace Financier.Web
             services.AddSingleton<FixedRateMortgageSchema>();
             services.AddSingleton<OneHomeSchema>();
             services.AddSingleton<IdentityDataContext>();
-            services.AddAuthenticationCore();
-            services.AddAuthorizationCore();
+            services.AddLogging();
+            // services.AddAuthenticationCore();
+            // services.AddAuthorizationCore();
 
             // Add GraphQL
-            services
-                .AddGraphQL((options, provider) =>
+            GraphDI.GraphQLBuilderExtensions.AddGraphQL(services)
+                .ConfigureExecution(options =>
                     {
                         options.EnableMetrics = true;
 
-                        var logger = provider.GetRequiredService<ILogger<Startup>>();
-                        options.UnhandledExceptionDelegate = (context) => logger.LogError($"Error occurred: {context.OriginalException.Message}");
+                        var logger = options.RequestServices?.GetRequiredService<ILogger<Startup>>();
+                        // var logger = options.RequestServices.GetRequiredService<ILogger<Startup>>();
                         // TODO: should depend whether is dev environment
-                        // options.ExposeExceptions = true;
+                        options.UnhandledExceptionDelegate = (context) => logger?.LogError($"Error occurred: {context.OriginalException.Message}");
                     })
-                .AddGraphTypes(typeof(ItemSchema))
+                .AddGraphTypes(typeof(ItemSchema).Assembly)
                 .AddSystemTextJson()
-                // .AddUserContextBuilder(httpContext => httpContext)
-                .AddDataLoader();
+                .AddErrorInfoProvider(options => options.ExposeExceptionStackTrace = true)
+                .AddWebSockets()
+                .AddDataLoader()
             ;
 
             // TODO: use the latest MVC routing
@@ -101,6 +107,7 @@ namespace Financier.Web
             });
 
             services.AddLogging();
+            services.AddDbContext<IdentityDataContext>();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<IdentityDataContext>();
             services.AddRazorPages();
