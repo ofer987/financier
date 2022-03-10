@@ -86,6 +86,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
+                    Console.WriteLine("Hello2");
                     var startYear = context.GetArgument<int>(Keys.FromYear);
                     var startMonth = context.GetArgument<int>(Keys.FromMonth);
                     var endYear = context.GetArgument<int>(Keys.ToYear);
@@ -96,6 +97,7 @@ namespace Financier.Web.GraphQL.CashFlows
 
                     // Should this be converted to an array?
                     // var cashFlow = new ProjectedCashFlow(startAt, endAt);
+                    Console.WriteLine("Hello");
                     return this.GetExistingMonthlyListings(startAt, endAt)
                         .ToList();
                     //

@@ -50,6 +50,7 @@ namespace Financier.Web.GraphQL.Activities
                 ),
                 resolve: context =>
                 {
+                    Console.WriteLine("Hello");
                     var purchasedAt = GetInitiatedAt(context);
                     var purchasePrice = GetPurchasePrice(context);
                     var downPayment = GetDownPayment(context);

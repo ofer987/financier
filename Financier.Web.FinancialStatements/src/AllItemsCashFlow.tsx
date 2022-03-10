@@ -10,6 +10,7 @@ import {
   InMemoryCache,
   gql
 } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
 
 import ItemizedValues from "./ItemizedValues";
 import { Amount } from "./Amount";
@@ -82,13 +83,27 @@ class AllItemsCashFlow extends React.Component<Props, State> {
     return this.state.records;
   }
 
-  private client = new ApolloClient({
-    uri: "https://localhost:5003/graphql/items",
-    cache: new InMemoryCache(),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
+  // private client: ApolloClient;
+  //
+  private get client() {
+    const link = setContext((_, { existingHeaders }) => {
+      const token = localStorage.getItem("token");
+
+      return {
+        uri: "https://localhost:5003/graphql/items",
+        headers: {
+          ...existingHeaders,
+          "Content-Type": "application/json",
+          authorization: token ? `Bearer ${token}` : ""
+        }
+      };
+    });
+
+    return new ApolloClient({
+      cache: new InMemoryCache(),
+      link: link
+    });
+  }
 
   constructor(props: Props) {
     super(props);

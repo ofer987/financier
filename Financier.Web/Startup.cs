@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Server;
+using GraphQL.Execution;
+using GraphQL.SystemReactive;
 using AspNetCore.RouteAnalyzer;
 
 using Financier.Common;
@@ -55,32 +57,43 @@ namespace Financier.Web
             });
 
             // services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+            services.AddRouting();
             services.AddSingleton<CashFlowSchema>();
             services.AddSingleton<ItemSchema>();
             services.AddSingleton<TagSchema>();
             services.AddSingleton<ItemQuerySchema>();
             services.AddSingleton<FixedRateMortgageSchema>();
             services.AddSingleton<OneHomeSchema>();
-            services.AddSingleton<IdentityDataContext>();
-            services.AddLogging();
+            // services.AddLogging();
             // services.AddAuthenticationCore();
             // services.AddAuthorizationCore();
+            // services.AddSingleton<IDocumentExecuter, SubscriptionDocumentExecuter>();
+            // services.AddSingleton<IGraphQLExecuter, BasicGraphQLExecuter<CashFlowSchema>>();
 
             // Add GraphQL
             GraphDI.GraphQLBuilderExtensions.AddGraphQL(services)
+                .AddServer(true)
+                .AddSubscriptionDocumentExecuter()
                 .ConfigureExecution(options =>
-                    {
-                        options.EnableMetrics = true;
+                {
+                    options.EnableMetrics = true;
 
-                        var logger = options.RequestServices?.GetRequiredService<ILogger<Startup>>();
-                        // var logger = options.RequestServices.GetRequiredService<ILogger<Startup>>();
-                        // TODO: should depend whether is dev environment
-                        options.UnhandledExceptionDelegate = (context) => logger?.LogError($"Error occurred: {context.OriginalException.Message}");
-                    })
+                    var logger = options.RequestServices?.GetRequiredService<ILogger<Startup>>();
+                    // var logger = options.RequestServices.GetRequiredService<ILogger<Startup>>();
+                    // TODO: should depend whether is dev environment
+                    options.UnhandledExceptionDelegate = (context) => logger?.LogError($"Error occurred: {context.OriginalException.Message}\nStack Trace: {context.OriginalException.StackTrace}");
+                })
+                .AddDefaultEndpointSelectorPolicy()
+                .AddSchema<CashFlowSchema>()
+                .AddSchema<ItemSchema>()
+                .AddSchema<TagSchema>()
+                .AddSchema<ItemQuerySchema>()
+                .AddSchema<FixedRateMortgageSchema>()
+                .AddSchema<OneHomeSchema>()
+                .AddGraphTypes(typeof(CashFlowSchema).Assembly)
                 .AddGraphTypes(typeof(ItemSchema).Assembly)
                 .AddSystemTextJson()
                 .AddErrorInfoProvider(options => options.ExposeExceptionStackTrace = true)
-                .AddWebSockets()
                 .AddDataLoader()
             ;
 
@@ -92,8 +105,8 @@ namespace Financier.Web
                 .AddMvc(options => options.EnableEndpointRouting = false);
             // .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //
-            services
-                .AddRouteAnalyzer();
+            // services
+            //     .AddRouteAnalyzer();
 
             services.AddCors(options =>
             {
@@ -120,13 +133,14 @@ namespace Financier.Web
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors(DevelopmentPolicy);
+                app.UseHttpsRedirection();
             }
             else
             {
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-                // app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
             }
 
             app.UseStaticFiles();
@@ -134,7 +148,15 @@ namespace Financier.Web
 
             app.UseGraphQLPlayground();
 
+            // app.UseGraphQL<TagSchema>("/graphql/tags");
+            // app.UseGraphQL<ItemSchema>("/graphql/items");
+            // app.UseGraphQL<CashFlowSchema>("/graphql/cash-flows");
+            // app.UseGraphQL<ItemQuerySchema>("/graphql/item-queries");
+            // app.UseGraphQL<OneHomeSchema>("/graphql/one-home");
+
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(routes =>
             {
                 routes.MapGraphQLPlayground();
@@ -146,16 +168,13 @@ namespace Financier.Web
                 routes.MapGraphQL<OneHomeSchema>("/graphql/one-home");
             });
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             // app.MapRazorPages();
 
             // Please note that some of these routes are deprecated
             // TODO: Remove the deprecated routes
             app.UseMvc(routes =>
             {
-                routes.MapRouteAnalyzer("/routes");
+                // routes.MapRouteAnalyzer("/routes");
             });
         }
     }
