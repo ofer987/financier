@@ -21,8 +21,10 @@ using Microsoft.AspNetCore.Identity;
 
 using GraphQL;
 using GraphQL.Server;
+using GraphQL.Types;
 using Financier.Web.Auth.GraphQL.CashFlows;
 
+using Financier.Web.Auth;
 using Financier.Web.Auth.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,20 +40,34 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddRazorPages();
 
 builder.Services.AddSingleton<CashFlowSchema>();
-builder.Services
-    .AddGraphQL((options, provider) =>
-            {
-            options.EnableMetrics = true;
-
-            var logger = provider.GetRequiredService<ILogger<Program>>();
-            options.UnhandledExceptionDelegate = (context) => logger.LogError($"Error occurred: {context.OriginalException.Message}");
-            // TODO: should depend whether is dev environment
-            // options.ExposeExceptions = true;
-            })
+GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(builder.Services)
+    .AddServer(true, options => options.EnableMetrics = true)
+    .AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
     .AddSystemTextJson()
-        // .AddUserContextBuilder(httpContext => httpContext)
-        .AddDataLoader();
-        ;
+    .AddErrorInfoProvider(options => {
+        options.ExposeExtensions = true;
+        options.ExposeExceptionStackTrace = true;
+    })
+    .AddSchema<CashFlowSchema>()
+    .AddGraphTypes(typeof(CashFlowSchema).Assembly);
+
+builder.Services.AddSingleton<CashFlowSchema>();
+builder.Services.AddLogging(builder => builder.AddConsole());
+builder.Services.AddHttpContextAccessor();
+
+    // .AddGraphQL((options, provider) =>
+    //         {
+    //         options.EnableMetrics = true;
+    //
+    //         var logger = provider.GetRequiredService<ILogger<Program>>();
+    //         options.UnhandledExceptionDelegate = (context) => logger.LogError($"Error occurred: {context.OriginalException.Message}");
+    //         // TODO: should depend whether is dev environment
+    //         // options.ExposeExceptions = true;
+    //         })
+    // .AddSystemTextJson()
+    //     // .AddUserContextBuilder(httpContext => httpContext)
+    //     .AddDataLoader();
+    //     ;
 
 var app = builder.Build();
 
@@ -59,6 +75,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -66,6 +83,12 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseEndpoints(routes => {
+    routes.MapGraphQLPlayground();
+
+    routes.MapGraphQL<CashFlowSchema>("/graphql/cash-flows");
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
