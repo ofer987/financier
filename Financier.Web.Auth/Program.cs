@@ -19,6 +19,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
+using GraphQL;
+using GraphQL.Server;
+using Financier.Web.Auth.GraphQL.CashFlows;
+
 using Financier.Web.Auth.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +36,22 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
+
+builder.Services.AddSingleton<CashFlowSchema>();
+builder.Services
+    .AddGraphQL((options, provider) =>
+            {
+            options.EnableMetrics = true;
+
+            var logger = provider.GetRequiredService<ILogger<Program>>();
+            options.UnhandledExceptionDelegate = (context) => logger.LogError($"Error occurred: {context.OriginalException.Message}");
+            // TODO: should depend whether is dev environment
+            // options.ExposeExceptions = true;
+            })
+    .AddSystemTextJson()
+        // .AddUserContextBuilder(httpContext => httpContext)
+        .AddDataLoader();
+        ;
 
 var app = builder.Build();
 
