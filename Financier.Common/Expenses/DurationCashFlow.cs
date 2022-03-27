@@ -15,8 +15,34 @@ namespace Financier.Common.Expenses
         public decimal Threshold { get; protected set; }
         protected const decimal DefaultThreshold = 0.05M;
 
-        public DateTime StartAt { get; protected set; }
-        public DateTime EndAt { get; protected set; }
+        private DateTime _startAt;
+        public DateTime StartAt
+        {
+            get { return _startAt; }
+
+            protected set
+            {
+                _startAt = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0, DateTimeKind.Utc);
+            }
+        }
+        private DateTime _endAt;
+        public DateTime EndAt
+        {
+            get { return _endAt; }
+
+            protected set
+            {
+                _endAt = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0, DateTimeKind.Utc);
+            }
+        }
+
+        public int StartYear { get; protected set; }
+        public int StartMonth { get; protected set; }
+        public int StartDay { get; protected set; }
+
+        public int EndYear { get; protected set; }
+        public int EndMonth { get; protected set; }
+        public int EndDay { get; protected set; }
 
         public IReadOnlyList<ItemListing> CreditListings { get; protected set; } = Enumerable.Empty<ItemListing>().ToList();
         public IReadOnlyList<ItemListing> DebitListings { get; protected set; } = Enumerable.Empty<ItemListing>().ToList();
