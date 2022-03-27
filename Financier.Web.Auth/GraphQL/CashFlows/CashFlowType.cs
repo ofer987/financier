@@ -1,4 +1,3 @@
-using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using Financier.Common.Expenses;
@@ -8,7 +7,7 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
 {
     public class CashFlowType : ObjectGraphType<DurationCashFlow>
     {
-        public CashFlowType(IDataLoaderContextAccessor dataLoaderAccessor)
+        public CashFlowType()
         {
             Field(t => t.StartAt, nullable: false, type: typeof(DateTimeGraphType));
             Field(t => t.EndAt, nullable: false, type: typeof(DateTimeGraphType));

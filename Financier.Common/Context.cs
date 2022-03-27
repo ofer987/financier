@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 using Financier.Common.Expenses.Models;
@@ -165,7 +166,8 @@ namespace Financier.Common
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging(true);
-            // optionsBuilder.LogTo(System.Console.WriteLine);
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             if (!optionsBuilder.IsConfigured)
             {
                 switch (Environment)
