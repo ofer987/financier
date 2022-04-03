@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+curl 'https://localhost:7240/graphql' \
+  --silent \
+  -X 'POST' \
+  -H 'Content-Type: application/json' \
+  -H 'Pragma: no-cache' \
+  -H 'Accept: */*, application/json' \
+  -H 'Accept-Language: en-CA,en-US;q=0.9,en;q=0.8' \
+  -H 'Accept-Encoding: gzip, deflate, br' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Host: localhost:7240' \
+  -H 'Origin: https://localhost:7240' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15' \
+  -H 'Connection: keep-alive' \
+  -H 'Referer: https://localhost:7240/ui/playground' \
+  -H 'Content-Length: 240' \
+  -H 'Cookie: .AspNetCore.Identity.Application=CfDJ8HznDsNOJARArE0cVt2hxh4lq8fTEZBYSwyQVLD3vj7cHrmk79PsFQn6gJZ7eXmuTmBrfsCG50lLve0PtD3zrb6i_F9KlibLTqEaBCjXGGxQSIZagTdJRBmBP16pGEnbdgFeHQAHfcTOTIIYjeUuB9gyInbk9HIVLHjQkheoFYddmlOnOIIIRvTlK-SBiXgR8pXmzktZ5EM-YQkYCuEF9FJOFtIJWJo1usrdvy9QSjH5pdc4KKMP5NRBStfxyexUxfysgGinwoMRj-eM1G8SqOC8Wm3hmHdEH_G-S2YJxv4oA1sGVD0x2_zPwIkwIkwil_FKEHrFVEkWOay0D7wCbkHVJrGyTWjK8IDeTTIdzAXWo4-IDpEmKCEWL7KYZsEDoOYXX9zmRzmYFKxXzs-qtxB8y0dPm9BJqWJ4fcBIIaRdGVe9Gf_DxQw6JzXBsPQXz-Xo_ujak8vD0xlvX2Se4O_zd9kj_CikxpOzqVKb048mcsCDwNnbVNC4xmFTlDCtuw_fAyLO21VWFuCL7zmU9DJ9c0jpPTDRpTIMMSwSTyhQEezb8QaUveZLIIsn6LovxGrwHrn-VzTZ2XE7zO4AIPZkMRLP-_zdV4YCQOHU3JGNtWgUrAW2UCEFNoUypXJBbzo4xCKOhkVQilDR5lPhP-LRG1t5jdmKnCsT7J1Xn2i57ORWfhtIb2qNML-UFmw2iag0PJfjFtLAc2CBAiOiepq2sqF2q1FaZd-oXkxIur-4; .AspNetCore.Antiforgery.P1qwsYjbejU=CfDJ8HznDsNOJARArE0cVt2hxh4rg6QtDQ3ZCDvSuUebeenOwiEf_IfvHZpDU_81o9VFBBIikqHUgOWM1YWg5zt-v6o3LAaLOE2GkKeNUia48rvH5NrPKysj5Vqg7iJX3X3atO3qyjLWpH-5S-d3dfeiq1Q' \
+  --data-binary '{"operationName":null,"variables":{},"query":"{\n  getYearlyCashFlow(year: 2020) {\n    startAt\n    endAt\n    creditListings {\n      tags {\n        name\n      }\n      amount\n    }\n    debitListings {\n      amount\n    }\n  }\n}\n"}';
