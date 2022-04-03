@@ -5,7 +5,7 @@ using GraphQL;
 using GraphQL.Server;
 using Financier.Web.Auth.GraphQL.CashFlows;
 
-using Financier.Web.Auth;
+using Financier.Web.Auth.GraphQL;
 using Financier.Web.Auth.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +23,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<CashFlowSchema>();
 GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(builder.Services)
     .AddServer(true, options => options.EnableMetrics = true)
-    .AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
+    .AddUserContextBuilder(context => new UserContext { User = context.User })
     .AddSystemTextJson()
     .AddErrorInfoProvider(options => {
         options.ExposeExtensions = true;

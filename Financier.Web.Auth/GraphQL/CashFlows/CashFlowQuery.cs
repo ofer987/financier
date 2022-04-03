@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+using System.Security.Principal;
 
 using GraphQL;
 using GraphQL.Types;
@@ -118,9 +115,13 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
+                    var userContext = context.UserContext as UserContext;
+                    if (userContext is null || !IsLoggedIn(userContext))
+                    {
+                        throw new UnauthorizedAccessException();
+                    }
+
                     var year = context.GetArgument<int>(Keys.Year);
-                    var userContext = (GraphQLUserContext) context.UserContext;
-                    var name = userContext.User?.Identity?.Name ?? "no name";
 
                     return new YearlyCashFlow(year);
                 }
@@ -181,21 +182,14 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
             );
         }
 
-        protected bool IsLoggedIn(IResolveFieldContext<object?> context)
+        protected bool IsLoggedIn(UserContext context)
         {
-            if (context is not GraphQLUserContext)
-            {
-                return false;
-            }
-
-            var userContext = context as GraphQLUserContext;
-
-            return userContext?.User?.Identity is not null;
+            return Account(context).IsAuthenticated;
         }
 
-        protected ClaimsPrincipal? LoggedInIdentity(IResolveFieldContext<object?> context)
+        protected IIdentity Account(UserContext context)
         {
-            return (context as GraphQLUserContext)?.User;
+            return context.User.Identity ?? new NullIdentity();
         }
 
         private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(int year)
