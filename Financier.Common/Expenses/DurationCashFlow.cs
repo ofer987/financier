@@ -99,14 +99,19 @@ namespace Financier.Common.Expenses
             using (var db = new Context())
             {
                 items = db.Items
+                    .Include(item => item.Statement)
+                        .ThenInclude(stmt => stmt.Card)
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
                     .Where(item => item.PostedAt >= StartAt)
                     .Where(item => item.PostedAt < EndAt)
                     .Where(item =>
-                            false
-                            || itemType == ItemTypes.Debit && item.Amount >= 0
-                            || itemType == ItemTypes.Credit && item.Amount < 0)
+                            item.Statement.Card.AccountName == AccountName
+                            && (
+                                false
+                                || itemType == ItemTypes.Debit && item.Amount >= 0
+                                || itemType == ItemTypes.Credit && item.Amount < 0)
+                            )
                     .AsEnumerable()
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
