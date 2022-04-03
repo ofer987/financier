@@ -158,15 +158,11 @@ namespace Financier.Common
                 .WithOne(it => it.Tag)
                 .HasForeignKey(it => it.TagId)
                 .OnDelete(DeleteBehavior.ClientCascade);
-
-            // builder.Entity<ItemTag>()
-            //     .HasKey(it => new { it.ItemId, it.TagId });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging(true);
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             if (!optionsBuilder.IsConfigured)
             {
