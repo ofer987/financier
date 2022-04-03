@@ -90,7 +90,7 @@ namespace Financier.Web.GraphQL.Items
                 {
                     var tagNames = context.GetArgument<List<string>>(Keys.TagNames);
                     var postedAt = context.GetArgument<DateTime>(Keys.PostedAt);
-                    var fromDate = new DateTime(postedAt.Year, postedAt.Month, 1);
+                    var fromDate = new DateTime(postedAt.Year, postedAt.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                     var toDate = fromDate.AddMonths(1);
 
                     return Item.GetBy(fromDate, toDate, tagNames);
@@ -113,6 +113,10 @@ namespace Financier.Web.GraphQL.Items
                 {
                     var fromDate = context.GetArgument<DateTime>(Keys.FromDate);
                     var toDate = context.GetArgument<DateTime>(Keys.ToDate);
+
+                    // Is this necessary?
+                    fromDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0, DateTimeKind.Utc);
+                    toDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 0, 0, 0, DateTimeKind.Utc);
 
                     return Item.GetAllBy(fromDate, toDate);
                 }
