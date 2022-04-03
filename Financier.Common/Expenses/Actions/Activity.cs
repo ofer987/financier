@@ -8,6 +8,7 @@ namespace Financier.Common.Expenses.Actions
 {
     public class Activity : ICashFlow
     {
+        public string AccountName { get; set; }
         public DateTime InitiatedAt { get; }
         public decimal InitialCash { get; set; }
         public decimal InitialDebt { get; set; }
@@ -32,20 +33,24 @@ namespace Financier.Common.Expenses.Actions
 
         private Dictionary<IProduct, IAction> purchases = new Dictionary<IProduct, IAction>();
 
-        public Activity(DateTime initiatedAt)
+        public Activity(string accountName, DateTime initiatedAt)
         {
+            AccountName = accountName;
             CashFlow = new DummyCashFlow(0.00M);
             InitiatedAt = initiatedAt;
         }
 
-        public Activity(ICashFlow cashFlow, DateTime initiatedAt)
+        public Activity(string accountName, ICashFlow cashFlow, DateTime initiatedAt)
         {
+            AccountName = accountName;
             CashFlow = cashFlow;
             InitiatedAt = initiatedAt;
         }
 
-        public Activity(decimal cash, decimal debt, ICashFlow cashFlow, DateTime initiatedAt)
+        public Activity(string accountName, decimal cash, decimal debt, ICashFlow cashFlow, DateTime initiatedAt)
         {
+            AccountName = accountName;
+
             InitiatedAt = initiatedAt;
             InitialCash = cash;
             InitialDebt = debt;

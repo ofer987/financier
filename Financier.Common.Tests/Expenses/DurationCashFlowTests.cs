@@ -58,9 +58,10 @@ namespace Financier.Common.Tests.Expenses
             decimal expectedAmount,
             IEnumerable<string> expectedItems)
         {
+            var accountName = "Dan";
             var startAt = new DateTime(year, month, 1);
             var endAt = startAt.AddMonths(1);
-            var actual = new DurationCashFlow(startAt, endAt).GetItemListings(type);
+            var actual = new DurationCashFlow(accountName, startAt, endAt).GetItemListings(type);
 
             var actualItems = actual
                 .SelectMany(item => item.Items);

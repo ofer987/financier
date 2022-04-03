@@ -57,7 +57,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
         {
             var startAt = new DateTime(fromYear, fromMonth, 1);
             var endAt = new DateTime(toYear, toMonth, 1);
-            var cashFlow = new DurationCashFlow(startAt, endAt);
+            var cashFlow = new DurationCashFlow("Dan", startAt, endAt);
 
             Assert.That(cashFlow.CreditAmountTotal, Is.EqualTo(expectedCreditAmount));
             Assert.That(cashFlow.DebitAmountTotal, Is.EqualTo(expectedDebitAmount));

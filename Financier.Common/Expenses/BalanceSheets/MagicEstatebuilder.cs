@@ -15,9 +15,9 @@ namespace Financier.Common.Expenses.BalanceSheets
         private DateTime At { get; set; }
         private Activity Result { get; set; }
 
-        public MagicEstateBuilder(ICashFlow cashFlow, DateTime initiatedAt)
+        public MagicEstateBuilder(string accountName, ICashFlow cashFlow, DateTime initiatedAt)
         {
-            Result = new Activity(cashFlow, initiatedAt);
+            Result = new Activity(accountName, cashFlow, initiatedAt);
             InitiatedAt = At = initiatedAt;
         }
 

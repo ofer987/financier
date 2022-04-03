@@ -11,9 +11,9 @@ namespace Financier.Common.Expenses.BalanceSheets
         private DateTime InitiatedAt => Result.InitiatedAt;
         private Activity Result { get; set; }
 
-        public RealEstateBuilder(ICashFlow cashFlow, DateTime at)
+        public RealEstateBuilder(string accountName, ICashFlow cashFlow, DateTime at)
         {
-            Result = new Activity(cashFlow, at);
+            Result = new Activity(accountName, cashFlow, at);
         }
 
         public RealEstateBuilder SetInitialCash(Money cash)

@@ -56,7 +56,7 @@ namespace Financier.Common.Expenses
 
         public override decimal DailyProfit => decimal.Round(ProfitAmountTotal / EndAt.Subtract(StartAt).Days, 2);
 
-        public DurationCashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold)
+        public DurationCashFlow(string accountName, DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : base(accountName)
         {
             StartAt = startAt;
             EndAt = endAt;
@@ -65,7 +65,7 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        protected DurationCashFlow()
+        protected DurationCashFlow(string accountName) : base(accountName)
         {
         }
 
