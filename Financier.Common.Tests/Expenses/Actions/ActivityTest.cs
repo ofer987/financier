@@ -24,6 +24,8 @@ namespace Financier.Common.Tests.Expenses.ActionTests
 
         public DateTime InitiatedAt { get; private set; }
 
+        public string AccountName => "Dan";
+
         [SetUp]
         public void Init()
         {
@@ -32,7 +34,7 @@ namespace Financier.Common.Tests.Expenses.ActionTests
             House = new SimpleProduct("stand", 5000.00M);
             InitiatedAt = new DateTime(2019, 1, 1);
 
-            Subject = new Activity(InitiatedAt);
+            Subject = new Activity(AccountName, InitiatedAt);
         }
 
         [Test]

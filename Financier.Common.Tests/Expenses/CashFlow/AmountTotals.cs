@@ -11,6 +11,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
         public static IEnumerable TestCases
         {
             /*
+             * For Dan:
              * June
              *  Salaries:
              *    2,000
@@ -19,7 +20,6 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
              *  Expenses:
              *    104.5
              *    4.20
-             *    300,000.00
              *    300,000.00
              *    300,000.00
              * July
@@ -33,20 +33,28 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
              * October
              *  Salaries:
              *    1,000,000
+             *
+             * For Ron:
+             * June:
+             *  Salaries:
+             *  Expenses:
+             *    300,000.00
              */
 
             get
             {
-                yield return new TestCaseData(2019, 6, 2019, 7, 3800.00M, 900108.7M, -29876.96M);
-                yield return new TestCaseData(2019, 6, 2019, 9, 6600.00M, 900221.15M, -9713.27M);
-                yield return new TestCaseData(2019, 6, 2019, 11, 1006600.00M, 900221.15M, 695.29M);
-                yield return new TestCaseData(2019, 5, 2019, 9, 6600.00M, 900221.15M, -7265.21M);
-                yield return new TestCaseData(2019, 5, 2019, 6, 0.00M, 0.00M, 0.00M);
+                yield return new TestCaseData("Dan", 2019, 6, 2019, 7, 3800.00M, 600108.7M, -19876.96M);
+                yield return new TestCaseData("Dan", 2019, 6, 2019, 9, 6600.00M, 600221.15M, -6452.40M);
+                yield return new TestCaseData("Dan", 2019, 6, 2019, 11, 1006600.00M, 600221.15M, 2656.07M);
+                yield return new TestCaseData("Dan", 2019, 5, 2019, 9, 6600.00M, 600221.15M, -4826.19M);
+                yield return new TestCaseData("Ron", 2019, 5, 2019, 6, 0.00M, 0.00M, 0.00M);
+                yield return new TestCaseData("Ron", 2019, 6, 2019, 7, 0.00M, 300000.00M, -10000.00M);
             }
         }
 
         [TestCaseSource(nameof(TestCases))]
         public void Test_Expenses_CashFlow_AmountTotals(
+            string accountName,
             int fromYear,
             int fromMonth,
             int toYear,
@@ -57,7 +65,7 @@ namespace Financier.Common.Tests.Expenses.CashFlowHelperTests
         {
             var startAt = new DateTime(fromYear, fromMonth, 1);
             var endAt = new DateTime(toYear, toMonth, 1);
-            var cashFlow = new DurationCashFlow(startAt, endAt);
+            var cashFlow = new DurationCashFlow(accountName, startAt, endAt);
 
             Assert.That(cashFlow.CreditAmountTotal, Is.EqualTo(expectedCreditAmount));
             Assert.That(cashFlow.DebitAmountTotal, Is.EqualTo(expectedDebitAmount));

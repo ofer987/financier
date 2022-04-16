@@ -6,10 +6,12 @@ namespace Financier.Common.Expenses
 {
     public abstract class CashFlow : ICashFlow
     {
+        public string AccountName { get; private set; }
         public virtual decimal DailyProfit => throw new NotImplementedException();
 
-        protected CashFlow()
+        protected CashFlow(string accountName)
         {
+            AccountName = accountName;
         }
 
         public virtual decimal GetCash(IInflation inflation, DateTime startAt, DateTime endAt)

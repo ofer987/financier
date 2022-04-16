@@ -21,12 +21,14 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         [AllowNull]
         public RealEstateBuilder Subject { get; private set; }
 
+        public string AccountName => "Dan";
+
         [SetUp]
         public void Init()
         {
             InitiatedAt = new DateTime(2019, 1, 1);
             CashFlow = new DummyCashFlow(100.00M);
-            Subject = new RealEstateBuilder(CashFlow, InitiatedAt);
+            Subject = new RealEstateBuilder(AccountName, CashFlow, InitiatedAt);
         }
 
         [Test]

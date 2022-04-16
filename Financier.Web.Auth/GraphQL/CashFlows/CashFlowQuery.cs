@@ -3,6 +3,7 @@ using System.Security.Principal;
 using GraphQL;
 using GraphQL.Types;
 
+using Financier.Common.Extensions;
 using Financier.Common.Expenses;
 
 namespace Financier.Web.Auth.GraphQL.CashFlows
@@ -39,10 +40,12 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
+                    var accountName = AssertAuthorizedAccountName(context);
+
                     var year = context.GetArgument<int>(Keys.Year);
                     var month = context.GetArgument<int>(Keys.Month);
 
-                    return new MonthlyCashFlow(year, month, 0);
+                    return new MonthlyCashFlow(accountName, year, month, 0);
                 }
             );
 
@@ -56,10 +59,11 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
+                    var accountName = AssertAuthorizedAccountName(context);
                     var year = context.GetArgument<int>(Keys.Year);
 
                     // Should this be converted to an array?
-                    return GetMonthlyAnalysis(year).ToList();
+                    return GetMonthlyAnalysis(accountName, year).ToList();
                 }
             );
 
@@ -85,6 +89,8 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
+                    var accountName = AssertAuthorizedAccountName(context);
+
                     var startYear = context.GetArgument<int>(Keys.FromYear);
                     var startMonth = context.GetArgument<int>(Keys.FromMonth);
                     var endYear = context.GetArgument<int>(Keys.ToYear);
@@ -95,7 +101,7 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
 
                     // Should this be converted to an array?
                     // var cashFlow = new ProjectedCashFlow(startAt, endAt);
-                    return this.GetExistingMonthlyListings(startAt, endAt)
+                    return this.GetExistingMonthlyListings(accountName, startAt, endAt)
                         .ToList();
                     //
                     // return dates
@@ -115,15 +121,10 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var userContext = context.UserContext as UserContext;
-                    if (userContext is null || !IsLoggedIn(userContext))
-                    {
-                        throw new UnauthorizedAccessException();
-                    }
-
+                    var accountName = AssertAuthorizedAccountName(context);
                     var year = context.GetArgument<int>(Keys.Year);
 
-                    return new YearlyCashFlow(year);
+                    return new YearlyCashFlow(accountName, year);
                 }
             );
 
@@ -157,6 +158,8 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
+                    var accountName = AssertAuthorizedAccountName(context);
+
                     var fromYear = context.GetArgument<int>(Keys.FromYear);
                     var fromMonth = context.GetArgument<int>(Keys.FromMonth);
                     var toYear = context.GetArgument<int>(Keys.ToYear);
@@ -171,9 +174,8 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
 
                     // var cashflows = new ProjectedCashFlow(fromDate, toDate);
 
-                    var existingListings = this.GetExistingMonthlyListings(fromDate, toDate);
-
-                    var projectedListings = this.GetProjectedMonthlyListings(fromDate, toDate, finalProjectedDate);
+                    var existingListings = this.GetExistingMonthlyListings(accountName, fromDate, toDate);
+                    var projectedListings = this.GetProjectedMonthlyListings(accountName, fromDate, toDate, finalProjectedDate);
 
                     return existingListings
                         .Concat(projectedListings)
@@ -182,32 +184,62 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
             );
         }
 
-        protected bool IsLoggedIn(UserContext context)
+        protected string AssertAuthorizedAccountName(IResolveFieldContext<object?> context)
         {
-            return Account(context).IsAuthenticated;
+            var userContext = context.UserContext as UserContext;
+            if (GetAccount(userContext, out var account))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            return account.Name ?? string.Empty;
         }
 
-        protected IIdentity Account(UserContext context)
+        protected bool IsLoggedIn(UserContext? context)
         {
-            return context.User.Identity ?? new NullIdentity();
+            return GetAccount(context).IsAuthenticated;
         }
 
-        private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(int year)
+        protected bool GetAccount(UserContext? context, out IIdentity account)
+        {
+            account = new NullIdentity();
+            var identity = context?.User.Identity;
+            if (identity is null)
+            {
+                return false;
+            }
+
+            if ((identity?.IsAuthenticated ?? false) || (identity?.Name.IsNullOrWhiteSpace() ?? false))
+            {
+                return false;
+            }
+
+            account = identity!;
+
+            return true;
+        }
+
+        protected IIdentity GetAccount(UserContext? context)
+        {
+            return context?.User.Identity ?? new NullIdentity();
+        }
+
+        private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(string accountName, int year)
         {
             for (var month = 1; month <= 12; month += 1)
             {
-                yield return new MonthlyCashFlow(year, month);
+                yield return new MonthlyCashFlow(accountName, year, month);
             }
         }
 
-        private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(DateTime fromDate, DateTime toDate)
+        private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(string accountName, DateTime fromDate, DateTime toDate)
         {
             var date = new DateTime(fromDate.Year, fromDate.Month, 1);
             var endDate = new DateTime(toDate.Year, toDate.Month, 1);
 
             for (; date <= endDate; date = date.AddMonths(1))
             {
-                yield return new MonthlyCashFlow(date.Year, date.Month);
+                yield return new MonthlyCashFlow(accountName, date.Year, date.Month);
             }
         }
 
@@ -219,9 +251,9 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
             }
         }
 
-        private IEnumerable<IMonthlyListing> GetExistingMonthlyListings(DateTime startAt, DateTime endAt)
+        private IEnumerable<IMonthlyListing> GetExistingMonthlyListings(string accountName, DateTime startAt, DateTime endAt)
         {
-            var cashFlow = new ProjectedCashFlow(startAt, endAt);
+            var cashFlow = new ProjectedCashFlow(accountName, startAt, endAt);
             for (var date = cashFlow.StartAt; date < cashFlow.EndAt; date = date.AddMonths(1))
             {
                 IMonthlyListing result;
@@ -248,9 +280,9 @@ namespace Financier.Web.Auth.GraphQL.CashFlows
         //     }
         // }
 
-        private IEnumerable<IMonthlyListing> GetProjectedMonthlyListings(DateTime startAt, DateTime endAt, DateTime projectedFinalAt)
+        private IEnumerable<IMonthlyListing> GetProjectedMonthlyListings(string accountName, DateTime startAt, DateTime endAt, DateTime projectedFinalAt)
         {
-            var cashFlow = new ProjectedCashFlow(startAt, endAt);
+            var cashFlow = new ProjectedCashFlow(accountName, startAt, endAt);
             for (var date = cashFlow.EndAt; date < projectedFinalAt; date = date.AddMonths(1))
             {
                 IMonthlyListing result;

@@ -22,12 +22,14 @@ namespace Financier.Common.Tests.Expenses.BalanceSheets
         [AllowNull]
         public MagicEstateBuilder Subject { get; private set; }
 
+        public string AccountName => "Dan";
+
         [SetUp]
         public void Init()
         {
             InitiatedAt = new DateTime(2019, 1, 1);
             CashFlow = new DummyCashFlow(100.00M);
-            Subject = new MagicEstateBuilder(CashFlow, InitiatedAt);
+            Subject = new MagicEstateBuilder(AccountName, CashFlow, InitiatedAt);
         }
 
         [Test]

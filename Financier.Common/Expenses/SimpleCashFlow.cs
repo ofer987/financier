@@ -10,7 +10,7 @@ namespace Financier.Common.Expenses
         public DateTime EndAt { get; }
         public override decimal DailyProfit { get; }
 
-        public SimpleCashFlow(IEnumerable<decimal> amounts, DateTime startAt, DateTime endAt)
+        public SimpleCashFlow(string accountName, IEnumerable<decimal> amounts, DateTime startAt, DateTime endAt) : base(accountName)
         {
             if (endAt <= startAt)
             {
