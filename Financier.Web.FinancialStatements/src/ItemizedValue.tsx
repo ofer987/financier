@@ -19,7 +19,7 @@ interface State {
 
 class ItemizedValue extends React.Component<Props, State> {
   private client = new ApolloClient({
-    uri: "https://localhost:5003/graphql/items",
+    uri: "https://localhost:7240/graphql/items",
     cache: new InMemoryCache(),
     headers: {
       "Content-Type": "application/json"

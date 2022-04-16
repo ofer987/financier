@@ -90,7 +90,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
   }
 
   protected client = new ApolloClient({
-    uri: "https://localhost:5003/graphql/cash-flows",
+    uri: "https://localhost:7240/graphql/cash-flows",
     cache: new InMemoryCache(),
     headers: {
       "Content-Type": "application/json"
