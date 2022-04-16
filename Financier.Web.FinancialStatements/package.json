@@ -108,6 +108,7 @@
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "merge": "^2.1.1",
+    // TODO move to oidc-client-ts
     "oidc-client": "^1.11.5",
     "react": "^17.0.2",
     "react-datepicker": "^4.4.0",
