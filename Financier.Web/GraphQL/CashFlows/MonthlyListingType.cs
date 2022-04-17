@@ -1,4 +1,3 @@
-using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using Financier.Common.Expenses;
@@ -7,7 +6,7 @@ namespace Financier.Web.GraphQL.CashFlows
 {
     public class MonthlyListingType : ObjectGraphType<IMonthlyListing>
     {
-        public MonthlyListingType(IDataLoaderContextAccessor dataLoaderAccessor)
+        public MonthlyListingType()
         {
             Field(t => t.IsPrediction, nullable: false, type: typeof(BooleanGraphType));
             Field(t => t.Year, nullable: false, type: typeof(IntGraphType));
