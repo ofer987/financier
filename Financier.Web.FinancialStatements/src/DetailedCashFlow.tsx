@@ -18,6 +18,7 @@ import DetailedValues from "./DetailedValues";
 import { Amount } from "./Amount";
 import { DetailedRecord } from "./DetailedRecord";
 import { DetailedGraph } from "./DetailedGraph";
+import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants"
 
 // CSS
 import "./index.scss";
@@ -62,7 +63,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
   }
 
   private client = new ApolloClient({
-    uri: "https://localhost:7240/graphql/cash-flows",
+    uri: `https://localhost:${Constants.Port}/graphql/cash-flows`,
     cache: new InMemoryCache(),
     headers: {
       "Content-Type": "application/json"

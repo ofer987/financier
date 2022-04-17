@@ -18,6 +18,7 @@ import ItemizedValues from "./ItemizedValues";
 import { Amount } from "./Amount";
 import { ItemizedRecord } from "./ItemizedRecord";
 import { DetailedGraph } from "./DetailedGraph";
+import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants"
 
 // CSS
 import "./index.scss";
@@ -75,7 +76,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
   }
 
   private client = new ApolloClient({
-    uri: "https://localhost:7240/graphql/items",
+    uri: `https://localhost:${Constants.Port}/graphql/items`,
     cache: new InMemoryCache(),
     headers: {
       "Content-Type": "application/json"

@@ -8,6 +8,7 @@ import {
 } from "@apollo/client";
 
 import { ItemizedRecord } from "./ItemizedRecord";
+import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants";
 
 interface Props {
   record: ItemizedRecord;
@@ -19,7 +20,7 @@ interface State {
 
 class ItemizedValue extends React.Component<Props, State> {
   private client = new ApolloClient({
-    uri: "https://localhost:7240/graphql/items",
+    uri: `https://localhost:${Constants.Port}/graphql/items`,
     cache: new InMemoryCache(),
     headers: {
       "Content-Type": "application/json"
