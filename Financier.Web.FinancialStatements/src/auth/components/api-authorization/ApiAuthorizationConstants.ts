@@ -1,4 +1,5 @@
-export const ApplicationName = 'FooBarAuth';
+export const ApplicationName = "Financier";
+export const Port = 7240;
 
 export const QueryParameterNames = {
   ReturnUrl: 'returnUrl',
