@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+const spawn = require('child_process').spawn;
+const path = require('path');
+
+const baseFolder =
+  process.env.APPDATA !== undefined && process.env.APPDATA !== ''
+    ? `${process.env.APPDATA}/ASP.NET/https`
+    : `${process.env.HOME}/.aspnet/https`;
+
+const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
+const certificateName = certificateArg ? certificateArg.groups.value : process.env.npm_package_name;
+
+if (!certificateName) {
+  console.error('Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.')
+  process.exit(-1);
+}
+
+const keyFilePath = "/Users/ofer987/.aspnet/https/foobarauth.key"
+const certFilePath = "/Users/ofer987/.aspnet/https/foobarauth.pem"
+
+console.log(keyFilePath);
+console.log(certFilePath);
+
+const PORT = 44456;
+
+// spawn(`ws --spa index.html --hostname=localhost --port=${PORT} --https --key=${keyFilePath} --cert=${certFilePath}`);
+// spawn(`ws --spa index.html --hostname=localhost --port=${PORT} --https`, [], { stdio: 'inherit' }).on('exit', (code) => process.exit(code));
+
+spawn('ws', [
+    '--spa',
+    'index.html',
+    '--hostname=localhost',
+    `--port=${PORT}`,
+    '--https',
+    `--key=${keyFilePath}`,
+    `--cert=${certFilePath}`
+  ], { stdio: 'inherit' })
+  .on('exit', (code) => process.exit(code));
