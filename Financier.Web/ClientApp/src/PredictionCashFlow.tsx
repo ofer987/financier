@@ -24,6 +24,9 @@ import { MonthlyCashFlow, Props, State, CashFlow } from "./MonthlyCashFlow";
 // CSS
 import "./index.scss";
 
+interface PredictionProps extends Props {
+}
+
 interface CashFlows {
   getMonthlyProjectedCashFlows: CashFlow[];
 }
@@ -74,4 +77,4 @@ class PredictionCashFlow extends MonthlyCashFlow {
   }
 }
 
-export { PredictionCashFlow, Props };
+export { PredictionCashFlow, PredictionProps };

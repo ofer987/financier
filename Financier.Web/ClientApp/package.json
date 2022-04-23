@@ -79,13 +79,11 @@
   },
   "scripts": {
     "prestart": "node aspnetcore-https && node aspnetcore-react",
-    "start": "webpack --env mode=development && ws --spa index.html --hostname=localhost --port=44458",
+    "start": "rimraf ./build && react-scripts start",
+    "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/",
-    "build-and-watch": "webpack --env mode=development",
-    "build": "webpack --env mode=production",
-    "start-server": "ws --spa index.html --hostname=localhost --port=8001"
+    "lint": "eslint ./src/"
   },
   "eslintConfig": {
     "extends": [

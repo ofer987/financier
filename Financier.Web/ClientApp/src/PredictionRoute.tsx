@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { PredictionCashFlow, Props as PredictionProps } from "./PredictionCashFlow";
+import { PredictionCashFlow, PredictionProps } from "./PredictionCashFlow";
 
 interface Props {
   match: {
