@@ -14,14 +14,14 @@ namespace Financier.Common.Tests.Expenses
             {
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 9, 1),
-                    new DateTime(2019, 9, 15)
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 15, 0, 0, 0, DateTimeKind.Utc)
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 9, 1),
-                    new DateTime(2019, 9, 30)
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 30, 0, 0, 0, DateTimeKind.Utc)
                 );
             }
         }
@@ -32,54 +32,54 @@ namespace Financier.Common.Tests.Expenses
             {
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 5, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 9, 1),
+                    new DateTime(2019, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
                     (2000.00M + 1000.00M + 800.00M + 2800.00M) / 2,
                     (300000.00M + 300000.00M + 104.50M + 4.20M + 98.25M + 4.20M + 10.00M) / 2
                 );
 
                 yield return new TestCaseData(
                     "Ron",
-                    new DateTime(2019, 5, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 9, 1),
+                    new DateTime(2019, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
                     0.00M / 1,
                     (300000.00M) / 1
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 9, 1),
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
                     (2000.00M + 1000.00M + 800.00M + 2800.00M) / 2,
                     (300000.00M + 300000.00M + 104.50M + 4.20M + 98.25M + 4.20M + 10.00M) / 2
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 7, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 9, 1),
+                    new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
                     2800.00M,
                     98.25M + 4.20M + 10.00M
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 7, 1),
-                    new DateTime(2019, 10, 1),
-                    new DateTime(2019, 11, 1),
+                    new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 10, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 11, 1, 0, 0, 0, DateTimeKind.Utc),
                     (2000.00M + 800.00M) / 1,
                     (98.25M + 4.20M + 10.00M) / 1
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 7, 1),
-                    new DateTime(2019, 11, 1),
-                    new DateTime(2019, 12, 1),
+                    new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 11, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 12, 1, 0, 0, 0, DateTimeKind.Utc),
                     (2000.00M + 800.00M + 1000000.00M) / 4,
                     (98.25M + 4.20M + 10.00M) / 4
                 );
@@ -92,9 +92,9 @@ namespace Financier.Common.Tests.Expenses
             {
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 5, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 7, 1),
+                    new DateTime(2019, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc),
                     2000.00M + 800.00M,
                     10.00M + 98.25M + 4.20M
                 );
@@ -107,9 +107,9 @@ namespace Financier.Common.Tests.Expenses
             {
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 11, 1),
-                    new DateTime(2019, 9, 1)
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 11, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
 
             }
@@ -121,16 +121,16 @@ namespace Financier.Common.Tests.Expenses
             {
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 9, 1),
-                    new DateTime(2019, 10, 1),
-                    new DateTime(2019, 9, 1)
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 10, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 7, 1),
-                    new DateTime(2019, 10, 1),
-                    new DateTime(2019, 6, 1)
+                    new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 10, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
             }
         }
@@ -141,34 +141,34 @@ namespace Financier.Common.Tests.Expenses
             {
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 8, 1)
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 5, 1),
-                    new DateTime(2019, 8, 1),
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 8, 1)
+                    new DateTime(2019, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 12, 1),
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 11, 1)
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 12, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 11, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
 
                 yield return new TestCaseData(
                     "Dan",
-                    new DateTime(2019, 4, 1),
-                    new DateTime(2019, 12, 1),
-                    new DateTime(2019, 6, 1),
-                    new DateTime(2019, 11, 1)
+                    new DateTime(2019, 4, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 12, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                    new DateTime(2019, 11, 1, 0, 0, 0, DateTimeKind.Utc)
                 );
             }
         }

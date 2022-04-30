@@ -10,19 +10,23 @@ namespace Financier.Common
     {
         public static Item NewItem(Statement statement, string itemId, string description, DateTime at, decimal amount)
         {
+            var utcAt = DateTime.SpecifyKind(at, DateTimeKind.Utc);
+
             return new Item
             {
                 StatementId = statement.Id,
                 ItemId = itemId,
                 Amount = amount,
                 Description = description,
-                PostedAt = at,
-                TransactedAt = at
+                PostedAt = utcAt,
+                TransactedAt = utcAt
             };
         }
 
         public static Item CreateItemWithoutTags(Statement statement, string itemId, string description, DateTime at, decimal amount)
         {
+            var utcAt = DateTime.SpecifyKind(at, DateTimeKind.Utc);
+
             using (var db = new Context())
             {
                 return new Item(
@@ -30,7 +34,7 @@ namespace Financier.Common
                     statementId: statement.Id,
                     itemId: itemId,
                     description: description,
-                    at: at,
+                    at: utcAt,
                     amount: amount
                 );
             }
@@ -38,6 +42,8 @@ namespace Financier.Common
 
         public static Item CreateItemWithTags(Statement statement, string itemId, string description, DateTime at, decimal amount, IEnumerable<Tag> tags)
         {
+            var utcAt = DateTime.SpecifyKind(at, DateTimeKind.Utc);
+
             Item item;
             using (var db = new Context())
             {
@@ -45,7 +51,7 @@ namespace Financier.Common
                     statement,
                     itemId,
                     description,
-                    at,
+                    utcAt,
                     amount
                 );
                 db.Items.Add(item);

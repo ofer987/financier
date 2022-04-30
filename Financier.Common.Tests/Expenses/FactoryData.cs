@@ -20,7 +20,7 @@ namespace Financier.Common.Tests.Expenses
                         {
                             public class June
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 6, 30);
+                                public static DateTime PostedAt = new DateTime(2019, 6, 30, 0, 0, 0, DateTimeKind.Utc);
                                 public class Items
                                 {
                                     public class DanSalary
@@ -28,8 +28,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "gfhkj35hkls";
                                         public const decimal Amount = -2000.00M;
                                         public const string Description = "Dan Salary";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 6);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 6, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class EdithSalary
@@ -37,8 +37,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "347js9";
                                         public const decimal Amount = -1000.00M;
                                         public const string Description = "Edith Salary";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 23);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 23);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 23, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 23, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class Groceries
@@ -46,8 +46,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 104.50M;
                                         public const string Description = "Fresco";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 5);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class Coffee
@@ -55,8 +55,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 4.20M;
                                         public const string Description = "IQ";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 15);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 15);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 15, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 15, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class DanCreditCardPayment
@@ -64,8 +64,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 967.15M;
                                         public const string Description = "Transfer to Dan Credit Card";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 22);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class CrazyCreditCardPayment
@@ -73,8 +73,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 35000.00M;
                                         public const string Description = "Transfer to Crazy Credit Card";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 22);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class ChildCareBenefit
@@ -82,15 +82,15 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "898ghg";
                                         public const decimal Amount = -800.00M;
                                         public const string Description = "Federal Childcare Benefit";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 23);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 23);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 23, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 23, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
 
                             public class July
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 7, 31);
+                                public static DateTime PostedAt = new DateTime(2019, 7, 31, 0, 0, 0, DateTimeKind.Utc);
                                 public class Items
                                 {
                                     public class DanSalary
@@ -98,8 +98,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "fdjg65201j";
                                         public const decimal Amount = -2000.00M;
                                         public const string Description = "Dan Salary";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 6);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 5);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 6, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 5, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class Groceries
@@ -107,8 +107,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 98.25M;
                                         public const string Description = "Your Community Grocer";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 8);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 7);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 8, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 7, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class Coffee
@@ -116,8 +116,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 4.20M;
                                         public const string Description = "IQ";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 14);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 14);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 14, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 14, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class DanCreditCardPayment
@@ -125,8 +125,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 600000.00M;
                                         public const string Description = "Transfer to Dan Credit Card";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 22);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 22);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 22, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 22, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class ChildCareBenefit
@@ -134,15 +134,15 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "34h52";
                                         public const decimal Amount = -800.00M;
                                         public const string Description = "Federal Childcare Benefit";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 23);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 23);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 23, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 23, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
 
                             public class August
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 8, 31);
+                                public static DateTime PostedAt = new DateTime(2019, 8, 31, 0, 0, 0, DateTimeKind.Utc);
                                 public class Items
                                 {
                                     public class Transfer
@@ -150,15 +150,15 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "fdhgfjkfhgd778g7d8";
                                         public const decimal Amount = -20.00M;
                                         public const string Description = "An internal transfer";
-                                        public static DateTime PostedAt = new DateTime(2019, 8, 16);
-                                        public static DateTime TransactedAt = new DateTime(2019, 8, 15);
+                                        public static DateTime PostedAt = new DateTime(2019, 8, 16, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 8, 15, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
 
                             public class October
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 10, 31);
+                                public static DateTime PostedAt = new DateTime(2019, 10, 31, 0, 0, 0, DateTimeKind.Utc);
                                 public class Items
                                 {
                                     public class DanSalary
@@ -166,8 +166,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "ghfjdkg8341";
                                         public const decimal Amount = -1000000.00M;
                                         public const string Description = "Dan Mega Salary";
-                                        public static DateTime PostedAt = new DateTime(2019, 10, 21);
-                                        public static DateTime TransactedAt = new DateTime(2019, 10, 21);
+                                        public static DateTime PostedAt = new DateTime(2019, 10, 21, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 10, 21, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
@@ -182,7 +182,7 @@ namespace Financier.Common.Tests.Expenses
                         {
                             public class June
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 7, 1);
+                                public static DateTime PostedAt = new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc);
                                 public class Items
                                 {
                                     public class Porsche
@@ -190,8 +190,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "1234";
                                         public const decimal Amount = 300000.00M;
                                         public const string Description = "Porsche 911";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 5);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class Porsche912
@@ -199,8 +199,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "1235";
                                         public const decimal Amount = 300912.00M;
                                         public const string Description = "Welcome to Porsche 912 Thank you!";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 12);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 12);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 12, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 12, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class Ferrari
@@ -208,8 +208,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "458487";
                                         public const decimal Amount = 300000.00M;
                                         public const string Description = "Ferrari";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 5);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class CreditCardPayment
@@ -217,15 +217,15 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = -967.15M;
                                         public const string Description = "Thank you!";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 22);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
 
                             public class July
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 8, 1);
+                                public static DateTime PostedAt = new DateTime(2019, 8, 1, 0, 0, 0, DateTimeKind.Utc);
                                 public class Items
                                 {
                                     public class Lunch
@@ -233,8 +233,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = 10.00M;
                                         public const string Description = "Golden Star";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 17);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 17);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 17, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 17, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class CreditCardPayment
@@ -242,8 +242,8 @@ namespace Financier.Common.Tests.Expenses
                                         public static string ItemId = Guid.NewGuid().ToString();
                                         public const decimal Amount = -600000.00M;
                                         public const string Description = "Thank you!";
-                                        public static DateTime PostedAt = new DateTime(2019, 7, 22);
-                                        public static DateTime TransactedAt = new DateTime(2019, 7, 22);
+                                        public static DateTime PostedAt = new DateTime(2019, 7, 22, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 7, 22, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
@@ -266,7 +266,7 @@ namespace Financier.Common.Tests.Expenses
                         {
                             public class Crazy
                             {
-                                public static DateTime PostedAt = new DateTime(2019, 7, 1);
+                                public static DateTime PostedAt = new DateTime(2019, 7, 1, 0, 0, 0, DateTimeKind.Utc);
 
                                 public class Items
                                 {
@@ -275,8 +275,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "9481";
                                         public const decimal Amount = 300000.00M;
                                         public const string Description = "Lambo";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 5);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 5, 0, 0, 0, DateTimeKind.Utc);
                                     }
 
                                     public class CreditCardPayment
@@ -284,8 +284,8 @@ namespace Financier.Common.Tests.Expenses
                                         public const string ItemId = "3674654849";
                                         public const decimal Amount = -35000.00M;
                                         public const string Description = "Thank you!";
-                                        public static DateTime PostedAt = new DateTime(2019, 6, 22);
-                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22);
+                                        public static DateTime PostedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
+                                        public static DateTime TransactedAt = new DateTime(2019, 6, 22, 0, 0, 0, DateTimeKind.Utc);
                                     }
                                 }
                             }
