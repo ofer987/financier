@@ -1,5 +1,5 @@
 using System.Security.Principal;
-
+using System.Security.Claims;
 using GraphQL;
 using GraphQL.Types;
 
@@ -187,12 +187,8 @@ namespace Financier.Web.GraphQL.CashFlows
         protected string AssertAuthorizedAccountName(IResolveFieldContext<object?> context)
         {
             var userContext = context.UserContext as UserContext;
-            if (GetAccount(userContext, out var account))
-            {
-                throw new UnauthorizedAccessException();
-            }
 
-            return account.Name ?? string.Empty;
+            return GetEmail(userContext);
         }
 
         protected bool IsLoggedIn(UserContext? context)
@@ -200,23 +196,15 @@ namespace Financier.Web.GraphQL.CashFlows
             return GetAccount(context).IsAuthenticated;
         }
 
-        protected bool GetAccount(UserContext? context, out IIdentity account)
+        protected string GetEmail(UserContext? context)
         {
-            account = new NullIdentity();
-            var identity = context?.User.Identity;
-            if (identity is null)
+            var identity = context?.User.Identity as ClaimsIdentity;
+            if (identity is null || !identity.HasClaim(item => item.Type == "email"))
             {
-                return false;
+                throw new UnauthorizedAccessException("User is not authenticated");
             }
 
-            if ((identity?.IsAuthenticated ?? false) || (identity?.Name.IsNullOrWhiteSpace() ?? false))
-            {
-                return false;
-            }
-
-            account = identity!;
-
-            return true;
+            return identity.FindFirst("email")!.Value;
         }
 
         protected IIdentity GetAccount(UserContext? context)
