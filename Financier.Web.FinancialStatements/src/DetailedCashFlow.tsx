@@ -18,7 +18,7 @@ import DetailedValues from "./DetailedValues";
 import { Amount } from "./Amount";
 import { DetailedRecord } from "./DetailedRecord";
 import { DetailedGraph } from "./DetailedGraph";
-import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants"
+import * as Constants from "./Constants";
 
 // CSS
 import "./index.scss";
@@ -26,6 +26,7 @@ import "./index.scss";
 interface Props {
   year: number;
   month: number;
+  token: string;
 }
 
 class State {
@@ -66,7 +67,8 @@ class DetailedCashFlow extends React.Component<Props, State> {
     uri: `https://localhost:${Constants.Port}/graphql/cash-flows`,
     cache: new InMemoryCache(),
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authentication": `Bearer ${this.props.token}`
     }
   });
 

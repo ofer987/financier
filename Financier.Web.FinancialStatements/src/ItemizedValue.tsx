@@ -8,7 +8,7 @@ import {
 } from "@apollo/client";
 
 import { ItemizedRecord } from "./ItemizedRecord";
-import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants";
+import * as Constants from "./Constants";
 
 interface Props {
   record: ItemizedRecord;

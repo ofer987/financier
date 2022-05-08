@@ -14,7 +14,7 @@ import {
 import ItemizedValues from "./ItemizedValues";
 import { Amount } from "./Amount";
 import { ItemizedRecord } from "./ItemizedRecord";
-import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants"
+import * as Constants from "./Constants";
 
 // CSS
 import "./index.scss";
@@ -24,6 +24,7 @@ interface Props {
   fromMonth: number;
   toYear: number;
   toMonth: number;
+  token: string;
 }
 
 class State {
@@ -87,7 +88,8 @@ class AllItemsCashFlow extends React.Component<Props, State> {
     uri: `https://localhost:${Constants.Port}/graphql/items`,
     cache: new InMemoryCache(),
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${this.props.token}`
     }
   });
 

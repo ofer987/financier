@@ -22,7 +22,7 @@ const certFilePath = "/Users/ofer987/.aspnet/https/foobarauth.pem"
 console.log(keyFilePath);
 console.log(certFilePath);
 
-const PORT = 44456;
+const PORT = 7168;
 
 // spawn(`ws --spa index.html --hostname=localhost --port=${PORT} --https --key=${keyFilePath} --cert=${certFilePath}`);
 // spawn(`ws --spa index.html --hostname=localhost --port=${PORT} --https`, [], { stdio: 'inherit' }).on('exit', (code) => process.exit(code));

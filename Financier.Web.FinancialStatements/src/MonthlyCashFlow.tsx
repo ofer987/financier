@@ -19,7 +19,7 @@ import MonthlyValues from "./MonthlyValues";
 import { Amount } from "./Amount";
 import { MonthlyRecord } from "./MonthlyRecord";
 import { MonthlyGraph } from "./MonthlyGraph";
-import * as Constants from "./auth/components/api-authorization/ApiAuthorizationConstants"
+import * as Constants from "./Constants";
 
 // CSS
 import "./index.scss";
@@ -31,7 +31,12 @@ interface Props {
   fromMonth: number;
   toYear: number;
   toMonth: number;
+  token: string;
 }
+
+// interface AuthProps extends AuthContextProps {
+//   ...Props
+// }
 
 interface CashFlow {
   isPrediction: boolean;
@@ -94,7 +99,8 @@ class MonthlyCashFlow extends React.Component<Props, State> {
     uri: `https://localhost:${Constants.Port}/graphql/cash-flows`,
     cache: new InMemoryCache(),
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${this.props.token}`
     }
   });
 

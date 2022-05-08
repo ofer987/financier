@@ -13,15 +13,13 @@
   "scripts": {
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "prestart": "node aspnetcore-https && node aspnetcore-react",
     "build-dev": "webpack --env mode=development",
     "build": "webpack --env mode=production",
     "start-server": "./start-server"
   },
   "peerDependencies": {},
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
   "prettier": {
     "printWidth": 80,
@@ -92,16 +90,14 @@
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "merge": "^2.1.1",
-    "oidc-client": "^1.11.5",
+    "oidc-client-ts": "^2.0.3",
     "react": "^17.0.2",
     "react-datepicker": "^4.4.0",
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
+    "react-oidc-context": "^2.1.0",
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "^5.0.1",
-    "reactstrap": "^9.0.2",
-    "rimraf": "^3.0.2",
     "underscore": "^1.13.1",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.5.3",
@@ -115,5 +111,17 @@
     "workbox-routing": "^6.5.3",
     "workbox-strategies": "^6.5.3",
     "workbox-streams": "^6.5.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
