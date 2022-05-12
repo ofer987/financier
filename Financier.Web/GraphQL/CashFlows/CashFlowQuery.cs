@@ -40,7 +40,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var accountName = AssertAuthorizedAccountName(context);
+                    var accountName = GetEmail(context);
 
                     var year = context.GetArgument<int>(Keys.Year);
                     var month = context.GetArgument<int>(Keys.Month);
@@ -59,7 +59,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var accountName = AssertAuthorizedAccountName(context);
+                    var accountName = GetEmail(context);
                     var year = context.GetArgument<int>(Keys.Year);
 
                     // Should this be converted to an array?
@@ -89,7 +89,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var accountName = AssertAuthorizedAccountName(context);
+                    var accountName = GetEmail(context);
 
                     var startYear = context.GetArgument<int>(Keys.FromYear);
                     var startMonth = context.GetArgument<int>(Keys.FromMonth);
@@ -121,7 +121,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var accountName = AssertAuthorizedAccountName(context);
+                    var accountName = GetEmail(context);
                     var year = context.GetArgument<int>(Keys.Year);
 
                     return new YearlyCashFlow(accountName, year);
@@ -158,7 +158,7 @@ namespace Financier.Web.GraphQL.CashFlows
                 ),
                 resolve: context =>
                 {
-                    var accountName = AssertAuthorizedAccountName(context);
+                    var accountName = GetEmail(context);
 
                     var fromYear = context.GetArgument<int>(Keys.FromYear);
                     var fromMonth = context.GetArgument<int>(Keys.FromMonth);
@@ -184,32 +184,16 @@ namespace Financier.Web.GraphQL.CashFlows
             );
         }
 
-        protected string AssertAuthorizedAccountName(IResolveFieldContext<object?> context)
+        protected string GetEmail(IResolveFieldContext<object?> context)
         {
-            var userContext = context.UserContext as UserContext;
+            var userContext = (context.UserContext as UserContext) ?? throw new UnauthorizedAccessException("User is not authenticated");
 
-            return GetEmail(userContext);
-        }
-
-        protected bool IsLoggedIn(UserContext? context)
-        {
-            return GetAccount(context).IsAuthenticated;
-        }
-
-        protected string GetEmail(UserContext? context)
-        {
-            var identity = context?.User.Identity as ClaimsIdentity;
-            if (identity is null || !identity.HasClaim(item => item.Type == "email"))
+            if (!userContext.IsAuthenticated)
             {
                 throw new UnauthorizedAccessException("User is not authenticated");
             }
 
-            return identity.FindFirst("email")!.Value;
-        }
-
-        protected IIdentity GetAccount(UserContext? context)
-        {
-            return context?.User.Identity ?? new NullIdentity();
+            return userContext.Email;
         }
 
         private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(string accountName, int year)
