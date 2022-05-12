@@ -69,6 +69,18 @@ function App() {
       <>
         <h1 className="main-header">Financier</h1>
 
+        <div className="navigation">
+          <div>Account</div>
+
+          <div className="button enabled" onClick={async () => {
+            await auth.removeUser()
+
+            window.location.pathname = "/";
+          }}>
+            Log out
+          </div>
+        </div>
+
         <Router>
           <Switch>
             <Route path="/login">
@@ -95,7 +107,11 @@ function App() {
     <>
       <h1 className="main-header">Financier</h1>
       <div className="navigation centred">
-        <div className="button enabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
+        <div className="button enabled" onClick={async () => {
+          await auth.signinRedirect();
+        }}>
+          Log in
+        </div>
       </div>
     </>
   );
