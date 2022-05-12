@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
-using Microsoft.EntityFrameworkCore;
 
 using GraphQL;
 using GraphQL.DI;
@@ -27,27 +24,6 @@ using Financier.Web.GraphQL.CashFlows;
 const string DevelopmentPolicy = "CORS_POLICY_LOCALHOST";
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-// Identity
-// Do I really need this?
-// Because I am doing authentication via Google
-builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-builder.Services.AddAuthentication()
-    .AddIdentityServerJwt();
-
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
 
 // GraphQL
 builder.Services.AddSingleton<CashFlowSchema>();
@@ -99,9 +75,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseEndpoints(routes => {
     routes.MapGraphQLPlayground();
 
@@ -109,12 +82,5 @@ app.UseEndpoints(routes => {
 });
 
 app.UseGraphQL<CashFlowSchema>();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
-app.MapRazorPages();
-
-app.MapFallbackToFile("index.html");
 
 app.Run();
