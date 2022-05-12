@@ -3,7 +3,6 @@ using System.Security.Claims;
 using GraphQL;
 using GraphQL.Types;
 
-using Financier.Common.Extensions;
 using Financier.Common.Expenses;
 
 namespace Financier.Web.GraphQL.CashFlows
