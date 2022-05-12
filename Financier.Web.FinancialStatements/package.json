@@ -13,7 +13,7 @@
   "scripts": {
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "build-dev": "webpack --env mode=development",
+    "build-dev": "webpack watch --env mode=development",
     "build": "webpack --env mode=production",
     "start-server": "./start-server"
   },
