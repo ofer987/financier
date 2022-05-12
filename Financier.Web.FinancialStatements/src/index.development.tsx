@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AuthProvider } from "react-oidc-context";
+import { User } from "oidc-client-ts";
 
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration.js';
 
@@ -14,7 +15,13 @@ const oidcConfig = {
   client_id: "866988055772-91t42ig7ti5sj27hk3d45b945mp8vku6.apps.googleusercontent.com",
   redirect_uri: "https://localhost:7168",
   scope: "openid profile email",
-  client_secret: "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"
+  client_secret: "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",
+  onSigninCallback: (_user: User) => {
+    window.location.search = "";
+    window.location.hash = "";
+
+    return;
+  }
 };
 
 const root = document.querySelector(".root");

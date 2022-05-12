@@ -27,6 +27,37 @@ body {
   }
 }
 
+.navigation {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+  column-gap: 30px;
+
+  &.centred {
+    justify-content: space-around;
+  }
+
+  .button {
+    padding: 0.75em 0.375em;
+    border: solid;
+    border-width: 1.5px;
+    width: 14em;
+    text-align: center;
+
+    &.enabled {
+      border-color: blue;
+      color: blue;
+      cursor: pointer;
+    }
+
+    &.disabled {
+      border-color: grey;
+      color: grey;
+      cursor: not-allowed;
+    }
+  }
+}
+
 .time-navigation {
   display: flex;
   flex-flow: wrap;
@@ -78,33 +109,6 @@ body {
 
   .submission {
     padding-top: 100px;
-
-    .navigation {
-      display: flex;
-      flex-flow: wrap;
-      flex-direction: row;
-      column-gap: 30px;
-
-      .button {
-        padding: 0.75em 0.375em;
-        border: solid;
-        border-width: 1.5px;
-        width: 14em;
-        text-align: center;
-
-        &.enabled {
-          border-color: blue;
-          color: blue;
-          cursor: pointer;
-        }
-
-        &.disabled {
-          border-color: grey;
-          color: grey;
-          cursor: not-allowed;
-        }
-      }
-    }
 
     a {
       font-size: 16px;

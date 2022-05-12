@@ -17,12 +17,21 @@ function App() {
     return (
       <>
         <h1 className="main-header">Financier</h1>
+        <div className="navigation centred">
+          <div className="button disabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
+        </div>
+
         <div>Signing you in</div>
       </>
     );
     case "signoutRedirect":
     return (
       <>
+        <h1 className="main-header">Financier</h1>
+        <div className="navigation centred">
+          <div className="button disabled">Log in</div>
+        </div>
+
         <div>Signing you out</div>
       </>
     );
@@ -32,8 +41,11 @@ function App() {
     return (
       <>
         <h1 className="main-header">Financier</h1>
+        <div className="navigation centred">
+          <div className="button disabled">Log in</div>
+        </div>
 
-        <div>Is loading</div>;
+        <div>Is loading</div>
       </>
     )
   }
@@ -42,8 +54,12 @@ function App() {
     return (
       <>
         <h1 className="main-header">Financier</h1>
+        <div className="navigation centred">
+          <div className="button enabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
+        </div>
 
-        <div>There is an error {auth.error.message}</div>
+        <div>There is an error</div>
+        <div>{auth.error.message}</div>
       </>
     );
   }
@@ -75,7 +91,14 @@ function App() {
     );
   }
 
-  return <button onClick={() => {alert("hello"); void auth.signinRedirect()}}>Log in</button>;
+  return (
+    <>
+      <h1 className="main-header">Financier</h1>
+      <div className="navigation centred">
+        <div className="button enabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
+      </div>
+    </>
+  );
 }
 
 export default App;
