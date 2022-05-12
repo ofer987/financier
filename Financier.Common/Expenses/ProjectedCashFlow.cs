@@ -26,7 +26,6 @@ namespace Financier.Common.Expenses
 
         public ProjectedCashFlow(string accountName, DateTime startAt, DateTime endAt)
         {
-            Console.WriteLine(accountName);
             Validate(startAt, endAt);
             Init(accountName, startAt, endAt);
         }
