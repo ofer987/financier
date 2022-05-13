@@ -1,5 +1,3 @@
-using System.Security.Principal;
-using System.Security.Claims;
 using GraphQL;
 using GraphQL.Types;
 
@@ -7,7 +5,7 @@ using Financier.Common.Expenses;
 
 namespace Financier.Web.GraphQL.CashFlows
 {
-    public class CashFlowQuery : ObjectGraphType
+    public class CashFlowQuery : AuthenticatedObjectGraphType
     {
         public static class Keys
         {
@@ -181,18 +179,6 @@ namespace Financier.Web.GraphQL.CashFlows
                         .ToList();
                 }
             );
-        }
-
-        protected string GetEmail(IResolveFieldContext<object?> context)
-        {
-            var userContext = (context.UserContext as UserContext) ?? throw new UnauthorizedAccessException("User is not authenticated");
-
-            if (!userContext.IsAuthenticated)
-            {
-                throw new UnauthorizedAccessException("User is not authenticated");
-            }
-
-            return userContext.Email;
         }
 
         private IEnumerable<DurationCashFlow> GetMonthlyAnalysis(string accountName, int year)

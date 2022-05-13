@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using GraphQL;
 using GraphQL.Types;
 
@@ -7,7 +5,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Web.GraphQL.Items
 {
-    public class ItemQuery : ObjectGraphType
+    public class ItemQuery : AuthenticatedObjectGraphType
     {
         public static class Keys
         {
@@ -122,18 +120,6 @@ namespace Financier.Web.GraphQL.Items
                     return Item.GetAllBy(accountName, fromDate, toDate);
                 }
             );
-        }
-
-        protected string GetEmail(IResolveFieldContext<object?> context)
-        {
-            var userContext = (context.UserContext as UserContext) ?? throw new UnauthorizedAccessException("User is not authenticated");
-
-            if (!userContext.IsAuthenticated)
-            {
-                throw new UnauthorizedAccessException("User is not authenticated");
-            }
-
-            return userContext.Email;
         }
     }
 }

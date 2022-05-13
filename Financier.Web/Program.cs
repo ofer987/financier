@@ -10,6 +10,7 @@ using GraphQL;
 using GraphQL.DI;
 using GraphQL.Server.Authorization.AspNetCore;
 using GraphQL.Server.Transports.AspNetCore;
+using GraphQL.Instrumentation;
 using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.MicrosoftDI;
@@ -27,8 +28,9 @@ const string DevelopmentPolicy = "CORS_POLICY_LOCALHOST";
 var builder = WebApplication.CreateBuilder(args);
 
 // GraphQL
-builder.Services.AddSingleton<CashFlowSchema>();
-builder.Services.AddSingleton<ItemSchema>();
+builder.Services.AddSingleton<IFieldMiddleware, UserContextMiddleware>();
+builder.Services.AddSingleton<ISchema, CashFlowSchema>();
+builder.Services.AddSingleton<ISchema, ItemSchema>();
 builder.Services.AddGraphQL(builder => builder
     .AddHttpMiddleware<CashFlowSchema>()
     .AddHttpMiddleware<ItemSchema>()

@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Financier.Common.Extensions;
 namespace Financier.Web.GraphQL;
 
-public class UserContext : Dictionary<string, object>
+public class UserContext : Dictionary<string, object?>
 {
     public UserContext(string authenticationValue)
     {
