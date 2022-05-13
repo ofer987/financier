@@ -119,7 +119,7 @@ namespace Financier.Web.GraphQL.Items
                     fromDate = DateTime.SpecifyKind(fromDate, DateTimeKind.Utc);
                     toDate = DateTime.SpecifyKind(toDate, DateTimeKind.Utc);
 
-                    return Item.GetAllBy(fromDate, toDate);
+                    return Item.GetAllBy(accountName, fromDate, toDate);
                 }
             );
         }
