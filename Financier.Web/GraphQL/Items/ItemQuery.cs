@@ -116,8 +116,8 @@ namespace Financier.Web.GraphQL.Items
                     var toDate = context.GetArgument<DateTime>(Keys.ToDate);
 
                     // Is this necessary?
-                    fromDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0, DateTimeKind.Utc);
-                    toDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 0, 0, 0, DateTimeKind.Utc);
+                    fromDate = DateTime.SpecifyKind(fromDate, DateTimeKind.Utc);
+                    toDate = DateTime.SpecifyKind(toDate, DateTimeKind.Utc);
 
                     return Item.GetAllBy(fromDate, toDate);
                 }

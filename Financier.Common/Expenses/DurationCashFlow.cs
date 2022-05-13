@@ -22,7 +22,7 @@ namespace Financier.Common.Expenses
 
             protected set
             {
-                _startAt = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0, DateTimeKind.Utc);
+                _startAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
             }
         }
         private DateTime _endAt;
@@ -32,7 +32,7 @@ namespace Financier.Common.Expenses
 
             protected set
             {
-                _endAt = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0, DateTimeKind.Utc);
+                _endAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
             }
         }
 
