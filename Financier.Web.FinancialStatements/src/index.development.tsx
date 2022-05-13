@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AuthProvider } from "react-oidc-context";
-import { User } from "oidc-client-ts";
+import { User, WebStorageStateStore } from "oidc-client-ts";
 
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration.js';
 
@@ -16,6 +16,7 @@ const oidcConfig = {
   redirect_uri: "https://localhost:7168",
   scope: "openid profile email",
   client_secret: "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",
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
   onSigninCallback: (_user: User) => {
     window.location.search = "";
     window.location.hash = "";
