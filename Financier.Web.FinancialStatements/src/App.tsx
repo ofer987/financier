@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter as Router, Switch, Route, useParams, useLocation, useRouteMatch, Link, NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
+import AccountNavigation from "./AccountNavigation";
 import Welcome from "./Welcome";
 import MonthlyRoute from "./MonthlyRoute";
 import PredictionRoute from "./PredictionRoute";
@@ -12,73 +13,13 @@ import AllItemsRoute from './AllItemsRoute';
 function App() {
   const auth = useAuth();
 
-  switch (auth.activeNavigator) {
-    case "signinSilent":
-    return (
-      <>
-        <h1 className="main-header">Financier</h1>
-        <div className="navigation centred">
-          <div className="button disabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
-        </div>
-
-        <div>Signing you in</div>
-      </>
-    );
-    case "signoutRedirect":
-    return (
-      <>
-        <h1 className="main-header">Financier</h1>
-        <div className="navigation centred">
-          <div className="button disabled">Log in</div>
-        </div>
-
-        <div>Signing you out</div>
-      </>
-    );
-  }
-
-  if (auth.isLoading) {
-    return (
-      <>
-        <h1 className="main-header">Financier</h1>
-        <div className="navigation centred">
-          <div className="button disabled">Log in</div>
-        </div>
-
-        <div>Is loading</div>
-      </>
-    )
-  }
-
-  if (auth.error) {
-    return (
-      <>
-        <h1 className="main-header">Financier</h1>
-        <div className="navigation centred">
-          <div className="button enabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
-        </div>
-
-        <div>There is an error</div>
-        <div>{auth.error.message}</div>
-      </>
-    );
-  }
-
   if (auth.isAuthenticated) {
     return (
       <>
         <h1 className="main-header">Financier</h1>
 
-        <div className="navigation">
-          <div>Account</div>
-
-          <div className="button enabled" onClick={async () => {
-            await auth.removeUser()
-
-            window.location.pathname = "/";
-          }}>
-            Log out
-          </div>
+        <div className="account-navigation">
+          <AccountNavigation />
         </div>
 
         <Router>
@@ -106,12 +47,9 @@ function App() {
   return (
     <>
       <h1 className="main-header">Financier</h1>
-      <div className="navigation centred">
-        <div className="button enabled" onClick={async () => {
-          await auth.signinRedirect();
-        }}>
-          Log in
-        </div>
+
+      <div className="account-navigation">
+        <AccountNavigation />
       </div>
     </>
   );
