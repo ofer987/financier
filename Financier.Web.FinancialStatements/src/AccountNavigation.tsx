@@ -2,26 +2,24 @@ import * as React from 'react';
 import { BrowserRouter as Router, Switch, Route, useParams, useLocation, useRouteMatch, Link, NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
-function Navigation() {
+function AccountNavigation() {
   const auth = useAuth();
 
   if (auth.isAuthenticated) {
     return (
       <>
-        <div className="navigation">
-          <div className="buttons">
-            <div className="button disabled">Account</div>
-            <div className="button enabled" onClick={async () => {
-              await auth.removeUser()
+        <div className="buttons">
+          <div className="button disabled">Account</div>
+          <div className="button enabled" onClick={async () => {
+            await auth.removeUser()
 
-              window.location.pathname = "/";
-            }}>
-              Log out
-            </div>
+            window.location.pathname = "/";
+          }}>
+            Log out
           </div>
+        </div>
 
-          <div className="content">
-          </div>
+        <div className="content">
         </div>
       </>
     );
@@ -31,28 +29,24 @@ function Navigation() {
     case "signinSilent":
     return (
       <>
-        <div className="navigation">
-          <div className="buttons">
-            <div className="button disabled">Log in</div>
-          </div>
+        <div className="buttons">
+          <div className="button disabled">Log in</div>
+        </div>
 
-          <div className="content">
-            <div>Signing you in2</div>
-          </div>
+        <div className="content">
+          <div>Signing you in2</div>
         </div>
       </>
     );
     case "signoutRedirect":
     return (
       <>
-        <div className="navigation">
-          <div className="buttons">
-            <div className="button disabled">Log in</div>
-          </div>
+        <div className="buttons">
+          <div className="button disabled">Log in</div>
+        </div>
 
-          <div className="content">
-            <div>Signing you out</div>
-          </div>
+        <div className="content">
+          <div>Signing you out</div>
         </div>
       </>
     );
@@ -61,14 +55,12 @@ function Navigation() {
   if (auth.isLoading) {
     return (
       <>
-        <div className="navigation">
-          <div className="buttons">
-            <div className="button disabled">Log in</div>
-          </div>
+        <div className="buttons">
+          <div className="button disabled">Log in</div>
+        </div>
 
-          <div className="content">
-            <div>Signing you in</div>
-          </div>
+        <div className="content">
+          <div>Signing you in</div>
         </div>
       </>
     );
@@ -77,15 +69,13 @@ function Navigation() {
   if (auth.error) {
     return (
       <>
-        <div className="navigation">
-          <div className="buttons">
-            <div className="button enabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
-          </div>
+        <div className="buttons">
+          <div className="button enabled" onClick={() => {auth.signinRedirect()}}>Log in</div>
+        </div>
 
-          <div className="content">
-            <div>There is an error</div>
-            <div>{auth.error.message}</div>
-          </div>
+        <div className="content">
+          <div>There is an error</div>
+          <div>{auth.error.message}</div>
         </div>
       </>
     );
@@ -93,20 +83,18 @@ function Navigation() {
 
   return (
     <>
-      <div className="navigation">
-        <div className="buttons">
-          <div className="button enabled" onClick={async () => {
-            await auth.signinRedirect();
-          }}>
-            Log in
-          </div>
+      <div className="buttons">
+        <div className="button enabled" onClick={async () => {
+          await auth.signinRedirect();
+        }}>
+          Log in
         </div>
+      </div>
 
-        <div className="content">
-        </div>
+      <div className="content">
       </div>
     </>
   );
 }
 
-export default Navigation;
+export default AccountNavigation;
