@@ -68,7 +68,7 @@ class DetailedCashFlow extends React.Component<Props, State> {
     cache: new InMemoryCache(),
     headers: {
       "Content-Type": "application/json",
-      "Authentication": `Bearer ${this.props.token}`
+      "Authorization": `Bearer ${this.props.token}`
     }
   });
 
