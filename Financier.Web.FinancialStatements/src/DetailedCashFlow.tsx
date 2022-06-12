@@ -21,7 +21,7 @@ import { DetailedGraph } from "./DetailedGraph";
 import * as Constants from "./Constants";
 
 // CSS
-import "./DetailedGraph.scss";
+import "./DetailedCashFlow.scss";
 
 interface Props {
   year: number;
@@ -220,7 +220,9 @@ class DetailedCashFlow extends React.Component<Props, State> {
         </div>
         <div className="results">
           {this.renderCriteria()}
-          <DetailedGraph records={this.enabledRecords()} />
+          <div className="graph">
+            <DetailedGraph records={this.enabledRecords()} />
+          </div>
         </div>
         <DetailedValues records={this.enabledRecords()} year={this.year} month={this.month}  />
       </div>

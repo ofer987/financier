@@ -6,6 +6,7 @@ import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 
 import { DetailedRecord } from "./DetailedRecord";
+import "./DetailedGraph.scss";
 
 interface Props {
   records: DetailedRecord[];
