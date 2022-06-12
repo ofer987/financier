@@ -4,6 +4,8 @@ import _ from "underscore";
 import DetailedValue from "./DetailedValue";
 import { DetailedRecord } from "./DetailedRecord";
 
+import "./DetailedValues.scss";
+
 interface Props {
   year: number;
   month: number;
@@ -70,7 +72,7 @@ class DetailedValues extends React.Component<Props> {
 
   render() {
     return (
-      <div className="values">
+      <div className="DetailedValues">
         <h2>Items</h2>
         <div className="header">
           <div className="name">Name</div>

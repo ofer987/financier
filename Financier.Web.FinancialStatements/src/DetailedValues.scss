@@ -1,0 +1,5 @@
+@import "mixins/values.scss";
+
+.DetailedValues {
+  @include values(40%, 20%, 20%);
+}

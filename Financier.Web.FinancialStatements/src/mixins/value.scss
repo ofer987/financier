@@ -1,0 +1,78 @@
+@mixin value($first-child-width, $width, $last-child-width) {
+  .item {
+    color: black;
+    cursor: default;
+
+    &.clickable {
+      cursor: pointer;
+    }
+
+    &.not-clickable {
+      cursor: not-allowed;
+    }
+  }
+
+  .item:hover {
+    color: white;
+    background-color: darkgrey;
+  }
+
+
+  .item {
+    div, input {
+      padding: 2px 10px 2px 10px;
+      width: $width;
+      font-family: monospace;
+    }
+
+    :first-child {
+      width: $first-child-width;
+
+      padding: 2px 10px 2px 0px;
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    :last-child {
+      padding-right: 0px;
+      width: $last-child-width;
+    }
+
+    .number {
+      text-align: right;
+    }
+
+    input.tags {
+      border: none;
+      color: white;
+      background-color: grey;
+    }
+
+    .tags {
+      &.non-interactive {
+        cursor: pointer;
+      }
+
+      &.interactive {
+        font-family: monospace;
+      }
+
+      &.displayed {
+        display: block;
+      }
+
+      &.none {
+        display: none;
+      }
+    }
+
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: blue;
+  }
+}

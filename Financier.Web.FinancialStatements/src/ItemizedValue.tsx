@@ -10,7 +10,7 @@ import {
 import { ItemizedRecord } from "./ItemizedRecord";
 import * as Constants from "./Constants";
 
-import "./ItemizedValues.scss";
+import "./ItemizedValue.scss";
 
 interface Props {
   record: ItemizedRecord;
@@ -50,18 +50,20 @@ class ItemizedValue extends React.Component<Props, State> {
   render() {
     return (
       <div className="ItemizedValue" id={this.name} key={this.key}>
-        <div className="at">
-          {this.at}
-        </div>
-        <div className="name">
-          {this.name}
-        </div>
-        <div key={`${this.key}-div`} className={`tags non-interactive ${this.areTagsInteractive ? "none": "displayed"}`} onMouseMove={event => {
-          event.preventDefault();
+        <div className="item">
+          <div className="at">
+            {this.at}
+          </div>
+          <div className="name">
+            {this.name}
+          </div>
+          <div key={`${this.key}-div`} className={`tags non-interactive ${this.areTagsInteractive ? "none": "displayed"}`} onMouseMove={event => {
+            event.preventDefault();
 
-          this.areTagsInteractive = true;
-        }}>
-          {this.tags}
+            this.areTagsInteractive = true;
+          }}>
+            {this.tags}
+          </div>
         </div>
         <input key={`${this.key}-input`} type="text" defaultValue={this.tags} className={`tags interactive ${this.areTagsInteractive ? "displayed": "none"}`} onMouseOut={_event => this.areTagsInteractive = false} onKeyDown={event => {
           if (event.code == "Enter") {

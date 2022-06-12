@@ -62,7 +62,7 @@ class ItemizedValues extends React.Component<Props> {
 
   render() {
     return (
-      <div className="Itemized-Values">
+      <div className="ItemizedValues">
         <h2>Items</h2>
         <div className="header">
           <div className="at">At</div>
