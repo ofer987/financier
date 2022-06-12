@@ -57,7 +57,7 @@ class ItemizedValues extends React.Component<Props> {
   }
 
   public toKey(record: ItemizedRecord): string {
-    return `${record.name}-${record.at}`;
+    return `${record.id}-${record.name}-${record.at}`;
   }
 
   render() {

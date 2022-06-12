@@ -57,42 +57,22 @@ class ItemizedValue extends React.Component<Props, State> {
           <div className="name">
             {this.name}
           </div>
-          <div key={`${this.key}-div`} className={`tags non-interactive ${this.areTagsInteractive ? "none": "displayed"}`} onMouseMove={event => {
+          <div id={`${this.key}-div`} className={`tags non-interactive ${this.areTagsInteractive ? "none": "displayed"}`} onMouseMove={event => {
             event.preventDefault();
 
             this.areTagsInteractive = true;
           }}>
             {this.tags}
           </div>
-        </div>
-        <input key={`${this.key}-input`} type="text" defaultValue={this.tags} className={`tags interactive ${this.areTagsInteractive ? "displayed": "none"}`} onMouseOut={_event => this.areTagsInteractive = false} onKeyDown={event => {
-          if (event.code == "Enter") {
-            let newTagsString = event.currentTarget.value.trim();
-
-            // Validate the tags
-            if (newTagsString == "") {
-              alert(`new tags are empty. Reverting to ${this.tags}`);
-            }
-
-            const newTags = newTagsString.split(",")
-              .map(item => item.trim())
-              .map(item => lodash.kebabCase(item));
-
-            this.changeTags(newTags, (value: string) => {
-              event.currentTarget.textContent = value;
-            });
-
-            this.areTagsInteractive = false;
-          }
-        }} />
-        <div className="credit number">
-          {this.credit}
-        </div>
-        <div className="debit number">
-          {this.debit}
-        </div>
-        <div className="profit number">
-          {this.accountingFormattedProfit}
+          <div className="credit number">
+            {this.credit}
+          </div>
+          <div className="debit number">
+            {this.debit}
+          </div>
+          <div className="profit number">
+            {this.accountingFormattedProfit}
+          </div>
         </div>
       </div>
     )
@@ -103,7 +83,7 @@ class ItemizedValue extends React.Component<Props, State> {
   }
 
   get key(): string {
-    return `${this.name}-${this.at}`;
+    return `${this.id}-${this.name}-${this.at}`;
   }
 
   get name(): string {
