@@ -4,6 +4,8 @@ import _ from "underscore";
 import ItemizedValue from "./ItemizedValue";
 import { ItemizedRecord } from "./ItemizedRecord";
 
+import "./ItemizedValues.scss";
+
 interface Props {
   records: ItemizedRecord[];
 }
@@ -60,7 +62,7 @@ class ItemizedValues extends React.Component<Props> {
 
   render() {
     return (
-      <div className="itemized-values">
+      <div className="Itemized-Values">
         <h2>Items</h2>
         <div className="header">
           <div className="at">At</div>
