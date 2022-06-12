@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto-Regular.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px;
+}
+
+.WelcomeError {
+  .error {
+    background-color: red;
+    color: white;
+    font-size: 1em;
+    height: 1.25em;
+    width: 32em;;
+  }
+}

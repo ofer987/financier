@@ -22,7 +22,7 @@ import { MonthlyGraph } from "./MonthlyGraph";
 import * as Constants from "./Constants";
 
 // CSS
-import "./index.scss";
+import "./MonthlyCashFlow.scss";
 
 interface Props {
   predictionYear: number;
@@ -155,7 +155,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="cash-flow">
+      <div className="MonthlyCashFlow">
         <h2>Navigation</h2>
         <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
@@ -189,7 +189,7 @@ class MonthlyCashFlow extends React.Component<Props, State> {
             })}
           </div>
         </div>
-        <div className="monthly-cashflow">
+        <div className="results">
           <MonthlyGraph records={this.records} />
         </div>
         <MonthlyValues records={this.records} />

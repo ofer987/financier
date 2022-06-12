@@ -43,7 +43,7 @@ class DetailedGraph extends React.Component<Props> {
 
   render() {
     return (
-      <div className="graph">
+      <div className="DetailedGraph">
         <h2>Graph</h2>
         <svg className="chart" />
       </div>

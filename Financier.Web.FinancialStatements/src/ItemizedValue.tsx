@@ -10,6 +10,8 @@ import {
 import { ItemizedRecord } from "./ItemizedRecord";
 import * as Constants from "./Constants";
 
+import "./ItemizedValues.scss";
+
 interface Props {
   record: ItemizedRecord;
 }
@@ -47,7 +49,7 @@ class ItemizedValue extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="item" id={this.name} key={this.key}>
+      <div className="ItemizedValue" id={this.name} key={this.key}>
         <div className="at">
           {this.at}
         </div>

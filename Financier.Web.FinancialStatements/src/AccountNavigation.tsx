@@ -7,7 +7,7 @@ function AccountNavigation() {
 
   if (auth.isAuthenticated) {
     return (
-      <>
+      <div className="account-navigation">
         <div className="buttons">
           <div className="button disabled">Account</div>
           <div className="button enabled" onClick={async () => {
@@ -21,7 +21,7 @@ function AccountNavigation() {
 
         <div className="content">
         </div>
-      </>
+      </div>
     );
   }
 
