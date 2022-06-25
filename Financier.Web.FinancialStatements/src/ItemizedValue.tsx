@@ -14,6 +14,7 @@ import "./ItemizedValue.scss";
 
 interface Props {
   record: ItemizedRecord;
+  token: string;
 }
 
 interface State {
@@ -25,7 +26,8 @@ class ItemizedValue extends React.Component<Props, State> {
     uri: `https://localhost:${Constants.Port}/graphql/items`,
     cache: new InMemoryCache(),
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${this.props.token}`
     }
   });
 

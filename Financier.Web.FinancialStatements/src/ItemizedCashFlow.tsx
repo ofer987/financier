@@ -146,7 +146,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
           </div>
           {this.renderDetailedNavigation(this.year, this.month)}
         </div>
-        <ItemizedValues records={this.sortedRecords()} />
+        <ItemizedValues records={this.sortedRecords()} token={this.props.token} />
       </div>
     );
   }

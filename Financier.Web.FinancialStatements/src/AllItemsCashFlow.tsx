@@ -153,7 +153,7 @@ class AllItemsCashFlow extends React.Component<Props, State> {
           </div>
           {this.renderDetailedNavigation(this.fromYear, this.fromMonth)}
         </div>
-        <ItemizedValues records={this.sortedRecords()} />
+        <ItemizedValues records={this.sortedRecords()} token={this.props.token} />
       </div>
     );
   }

@@ -8,6 +8,7 @@ import "./ItemizedValues.scss";
 
 interface Props {
   records: ItemizedRecord[];
+  token: string;
 }
 
 class ItemizedValues extends React.Component<Props> {
@@ -73,7 +74,7 @@ class ItemizedValues extends React.Component<Props> {
           <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
+          {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} token={this.props.token} />)}
         </div>
         <div className="total">
           <div className="at">Total</div>
