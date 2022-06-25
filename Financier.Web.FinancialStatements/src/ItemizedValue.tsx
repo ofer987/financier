@@ -30,7 +30,7 @@ class ItemizedValue extends React.Component<Props, State> {
   });
 
   private get areTagsInteractive(): boolean {
-    return this.state.areTagsInteractive;
+    return this.state?.areTagsInteractive ?? false;
   }
 
   private set areTagsInteractive(value: boolean) {
@@ -39,17 +39,24 @@ class ItemizedValue extends React.Component<Props, State> {
     });
   }
 
+  // private toggleInteractiveTags(event: any): void {
+  //   event.preventDefault();
+  //
+  //   debugger;
+  //   this.areTagsInteractive = !this.areTagsInteractive;
+  // }
+
   constructor(props: Props) {
     super(props);
 
     this.state = {
       areTagsInteractive: false
-    };
+    }
   }
 
   render() {
     return (
-      <div className="ItemizedValue" id={this.name} key={this.key}>
+      <div className="ItemizedValue" id={this.name} key={this.key} onMouseEnter={_event => this.areTagsInteractive = true} onMouseLeave={_event => this.areTagsInteractive = false}>
         <div className="item">
           <div className="at">
             {this.at}
@@ -57,13 +64,16 @@ class ItemizedValue extends React.Component<Props, State> {
           <div className="name">
             {this.name}
           </div>
-          <div id={`${this.key}-div`} className={`tags non-interactive ${this.areTagsInteractive ? "none": "displayed"}`} onMouseMove={event => {
+          <input id={`${this.key}-div`} className={`tags ${this.areTagsInteractive ? "interactive" : ""}`} type="text" defaultValue={this.tags} onKeyDown={event => {
+            if (event.key !== "Enter") {
+              return;
+            }
+
             event.preventDefault();
 
-            this.areTagsInteractive = true;
-          }}>
-            {this.tags}
-          </div>
+            let value = event.currentTarget.value.trim();
+            let newTags = value.split(",")
+          }} />
           <div className="credit number">
             {this.credit}
           </div>
