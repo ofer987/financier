@@ -3,8 +3,8 @@
     div {
       font-size: 1.25em;
       width: $width;
-      padding-left: 2px;
-      padding-right: 2px;
+      padding-left: 4px;
+      padding-right: 4px;
     }
 
     div:first-child {
@@ -44,7 +44,7 @@
     }
 
     div {
-      padding: 7px 2px;
+      padding: 7px 4px;
       width: $width;
       font-family: monospace;
     }
@@ -52,7 +52,7 @@
     div:first-child {
       width: $first-child-width;
 
-      padding: 7px 2px;
+      padding: 7px 4px;
       border-right-color: black;
       border-right-style: solid;
       border-right-width: 1px;
