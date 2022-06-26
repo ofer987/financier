@@ -1,6 +1,5 @@
 import * as React from "react";
-import _  from "underscore";
-import lodash from "lodash";
+import _, { isUndefined }  from "underscore";
 import {
   ApolloClient,
   InMemoryCache,
@@ -41,13 +40,6 @@ class ItemizedValue extends React.Component<Props, State> {
     });
   }
 
-  // private toggleInteractiveTags(event: any): void {
-  //   event.preventDefault();
-  //
-  //   debugger;
-  //   this.areTagsInteractive = !this.areTagsInteractive;
-  // }
-
   constructor(props: Props) {
     super(props);
 
@@ -75,6 +67,8 @@ class ItemizedValue extends React.Component<Props, State> {
 
             let value = event.currentTarget.value.trim();
             let newTags = value.split(",")
+
+            this.changeTags(newTags, value => alert(`success changing to tags: ${value}`));
           }} />
           <div className="credit number">
             {this.credit}
@@ -108,7 +102,6 @@ class ItemizedValue extends React.Component<Props, State> {
 
   get tags(): string {
     return this.props.record.tags
-      .map(tag => lodash.startCase(tag))
       .join(", ");
   }
 
@@ -135,7 +128,7 @@ class ItemizedValue extends React.Component<Props, State> {
     return value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  private changeTags(value: string[], success: Function): void {
+  private changeTags(value: string[], onSuccess?: (argA: string) => void): void {
     this.client.mutate<boolean>({
       mutation: gql`
         mutation($itemId: ID!, $tagNames: [String]!) {
@@ -149,9 +142,9 @@ class ItemizedValue extends React.Component<Props, State> {
     }).catch(error => {
       alert(error);
     }).then(_result => {
-      alert(`success changing to tags: ${value}`);
-
-      success(value);
+      if (!isUndefined(onSuccess)) {
+        onSuccess(value.join(", "));
+      }
     });
   }
 }
