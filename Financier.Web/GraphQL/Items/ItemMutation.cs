@@ -33,11 +33,17 @@ namespace Financier.Web.GraphQL.Items
                     var newTags = context.GetArgument<IEnumerable<string>>(Arguments.NewTags);
 
                     var item = Item.Get(itemId);
-                    item.UpdateTags(newTags);
 
-                    // TODO: replace BooleanGraphType with a GraphType that
-                    // returns null
-                    return true;
+                    try
+                    {
+                        item.UpdateTags(newTags);
+
+                        return true;
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new ArgumentException(exception.Message);
+                    }
                 }
             );
         }
