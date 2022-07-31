@@ -1,15 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 using GraphQL;
-using GraphQL.DI;
-using GraphQL.Server.Authorization.AspNetCore;
-using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Instrumentation;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -17,8 +6,6 @@ using GraphQL.MicrosoftDI;
 using GraphQL.SystemTextJson;
 
 using Financier.Common;
-using Financier.Web.Data;
-using Financier.Web.Models;
 using Financier.Web.GraphQL;
 using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.Items;
@@ -34,9 +21,7 @@ builder.Services.AddSingleton<ISchema, ItemSchema>();
 builder.Services.AddGraphQL(builder => builder
     .AddHttpMiddleware<CashFlowSchema>()
     .AddHttpMiddleware<ItemSchema>()
-    .AddUserContextBuilder(context => {
-        return new UserContext(context.Request.Headers.Authorization.First());
-    })
+    .AddUserContextBuilder(c => new UserContext(c.Request.Headers.Authorization.First()))
     .AddSystemTextJson()
     .AddErrorInfoProvider(options => {
         options.ExposeExtensions = true;
