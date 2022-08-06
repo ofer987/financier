@@ -13,16 +13,10 @@ import "./index.scss";
 const oidcConfig = {
   authority: "https://accounts.google.com/",
   client_id: "866988055772-91t42ig7ti5sj27hk3d45b945mp8vku6.apps.googleusercontent.com",
-  redirect_uri: "https://localhost:7168",
+  redirect_uri: "https://localhost:7168/login",
   scope: "openid profile email",
-  client_secret: "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",
-  userStore: new WebStorageStateStore({ store: window.localStorage }),
-  onSigninCallback: (_user: User) => {
-    window.location.search = "";
-    window.location.hash = "";
-
-    return;
-  }
+  client_secret: "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",
+  userStore: new WebStorageStateStore({ store: window.localStorage })
 };
 
 const root = document.querySelector(".root");
