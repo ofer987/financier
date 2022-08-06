@@ -5129,6 +5129,21 @@ oidc-client-ts@^2.0.3:
     crypto-js "^4.1.1"
     jwt-decode "^3.1.2"
 
+oidc-client-ts@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/oidc-client-ts/-/oidc-client-ts-2.0.5.tgz#1c36d4dca16e16cc6a96484050522dbdb3e023b2"
+  integrity sha512-OXIuuLU2iSEtLblM+xR6+SE0GWjyUMVH6HtKpvZnV2AQt0irWZ+yAXGVB8EgNBu0lAQ/UN40EIme+uC0p7WwKw==
+  dependencies:
+    crypto-js "^4.1.1"
+    jwt-decode "^3.1.2"
+
+oidc-react@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/oidc-react/-/oidc-react-2.0.0.tgz#612bdf2e86d1d4b6ab05126067ac0e902556ca7a"
+  integrity sha512-AoLOMiNnTo6eUF6VejRigcQiT2r0+Db4MUaYsi9N3S+XLHwqLTwusJOTK8gnWWH3sB4LVdp8bPVoPqDyIajb8A==
+  dependencies:
+    oidc-client-ts "^2.0.5"
+
 on-finished@^2.3.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.4.1.tgz#58c8c44116e54845ad57f14ab10b03533184ac3f"

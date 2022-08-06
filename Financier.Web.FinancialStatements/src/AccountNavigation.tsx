@@ -4,6 +4,7 @@ import { useAuth } from "react-oidc-context";
 
 function AccountNavigation() {
   const auth = useAuth();
+  auth.settings.extraQueryParams["google_code"] = new URL(window.location.toString()).searchParams["code"];
 
   if (auth.isAuthenticated) {
     return (
@@ -82,6 +83,8 @@ function AccountNavigation() {
   }
 
   return (
+    // Make a fetch request to OAuth2 server
+    // new fetch()
     <>
       <div className="buttons">
         <div className="button enabled" onClick={async () => {

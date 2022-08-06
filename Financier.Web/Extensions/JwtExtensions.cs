@@ -6,17 +6,17 @@ namespace Financier.Web.Extensions;
 
 public static class JwtExtensions
 {
-    public static bool IsTokenValid(this JwtSecurityToken self, string publicKey)
+    public static bool IsTokenValid(this JwtSecurityToken self, string rawJwt, string publicKey)
     {
-        var tokenParts = self.RawCiphertext.Split('.');
+        var tokenParts = rawJwt.Split('.');
 
         var rsa = new RSACryptoServiceProvider();
         rsa.ImportParameters(
-                new RSAParameters() {
-                Modulus = FromBase64Url(publicKey),
-                Exponent = FromBase64Url("AQAB"),
-                }
-                );
+                new RSAParameters()
+                {
+                    Modulus = FromBase64Url(publicKey),
+                    Exponent = FromBase64Url("AQAB"),
+                });
 
         var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(tokenParts[0] + '.' + tokenParts[1]));

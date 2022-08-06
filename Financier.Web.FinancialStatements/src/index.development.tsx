@@ -11,11 +11,11 @@ import App from "./App";
 import "./index.scss";
 
 const oidcConfig = {
-  authority: "https://accounts.google.com/",
-  client_id: "866988055772-91t42ig7ti5sj27hk3d45b945mp8vku6.apps.googleusercontent.com",
-  redirect_uri: "https://localhost:7168/login",
-  scope: "openid profile email",
-  client_secret: "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",
+  authority: "http://localhost:7240",
+  client_id: "financier_client_0.0.1",
+  redirect_uri: "https://localhost:7168/app",
+  // scope: "openid profile email",
+  // client_secret: "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",
   userStore: new WebStorageStateStore({ store: window.localStorage })
 };
 
