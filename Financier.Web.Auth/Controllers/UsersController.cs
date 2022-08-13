@@ -9,7 +9,7 @@ using Financier.Web.Auth.Models;
 
 namespace Financier.Web.Auth.Controllers;
 
-public class UsersController
+public class UsersController : Controller
 {
     private const string PRIVATE_KEY_PATH = "financier_rsa.pem";
     private const string PUBLIC_KEY_PATH = "financier_rsa.pub.pem";
@@ -20,8 +20,9 @@ public class UsersController
     }
 
     [HttpPost]
-    public string Create(User user)
+    public string Create([FromBody] User user)
     {
+        Console.WriteLine(user.Name);
         return CreateJwtToken(user.Name);
     }
 
@@ -34,10 +35,15 @@ public class UsersController
         var privateKey = ReadKey(PRIVATE_KEY_PATH);
         var publicKey = ReadKey(PUBLIC_KEY_PATH);
         var rsa = new RS256Algorithm(publicKey, privateKey);
+        // var certifcationPath = "root.cert";
+        // var certificate = new X509Certificate(certifcationPath);
+        // var rsa = new RS256Algorithm(new X509Certificate2(certificate));
 
         var result = JwtBuilder.Create()
             .WithAlgorithm(rsa)
+            // TODO: change to true?
             .WithVerifySignature(false)
+            .AddHeader("kid", "1549e0aef574d1c7bdd136c202b8d290580b165c")
             .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds())
             .AddClaim("email", name)
             .Encode();
@@ -48,7 +54,7 @@ public class UsersController
     private RSA ReadKey(string path)
     {
         var result = RSA.Create();
-        var text = File.ReadAllText(path);
+        var text = System.IO.File.ReadAllText(path);
 
         result.ImportFromPem(text);
 
