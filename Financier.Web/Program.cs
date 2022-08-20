@@ -23,7 +23,8 @@ builder.Services.AddGraphQL(builder => builder
     .AddHttpMiddleware<ItemSchema>()
     .AddUserContextBuilder(c => new UserContext(c.Request.Headers.Authorization.First()))
     .AddSystemTextJson()
-    .AddErrorInfoProvider(options => {
+    .AddErrorInfoProvider(options =>
+    {
         options.ExposeExtensions = true;
         options.ExposeExceptionStackTrace = true;
     })
@@ -32,8 +33,20 @@ builder.Services.AddGraphQL(builder => builder
     .AddGraphTypes(typeof(CashFlowSchema).Assembly)
 );
 
+// JWT Authentication
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:5001";
+        options.TokenValidationParameters.ValidateAudience = false;
+    });
+
+// TODO Add JWT Authorization
+// Maybe use api scope?
+
 // CORS
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy(
         DevelopmentPolicy,
         builder => builder
@@ -65,7 +78,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseEndpoints(routes => {
+app.UseEndpoints(routes =>
+{
     routes.MapGraphQLPlayground();
 
     routes.MapGraphQL<CashFlowSchema>("/graphql/cash-flows");

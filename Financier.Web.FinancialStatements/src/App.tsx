@@ -16,12 +16,6 @@ function App() {
   if (auth.isAuthenticated) {
     return (
       <>
-        <h1 className="main-header">Financier</h1>
-
-        <div className="account-navigation">
-          <AccountNavigation />
-        </div>
-
         <Router>
           <Switch>
             <Route path="/login">
@@ -42,48 +36,12 @@ function App() {
         </Router>
       </>
     );
+  } else {
+    return (
+      <>
+      </>
+    );
   }
-
-  const loginUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth?client_id=866988055772-91t42ig7ti5sj27hk3d45b945mp8vku6.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A7168%2Fredirect&response_type=code&scope=openid+profile+email&state=ab55a44afc64406eaddbd53330ffd435&code_challenge=hJ7oAGl3ZtIWBGm402y6IAKnLbcuAWjTThh2J64SvxQ&code_challenge_method=S256&response_mode=query");
-  return (
-    <>
-      <h1 className="main-header">Financier</h1>
-      <div className="account-navigation">
-        <Router>
-          <Switch>
-            <Route>
-              <div className="buttons">
-                <div className="button enabled">
-                  <a href={loginUrl.toString()}>
-                    Log in
-                  </a>
-                </div>
-              </div>
-            </Route>
-            <Route path="/login">
-              <div className="buttons">
-                <div className="button enabled">
-                  <a href={loginUrl.toString()}>
-                    Log in
-                  </a>
-                </div>
-              </div>
-            </Route>
-          </Switch>
-        </Router>
-      </div>
-    </>
-  );
-
-  // return (
-  //   <>
-  //     <h1 className="main-header">Financier</h1>
-  //
-  //     <div className="account-navigation">
-  //       <AccountNavigation />
-  //     </div>
-  //   </>
-  // );
 }
 
 export default App;
