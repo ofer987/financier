@@ -1,0 +1,75 @@
+@mixin values($first-child-width, $width, $last-child-width) {
+  .header {
+    div {
+      font-size: 1.25em;
+      width: $width;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    div:first-child {
+      width: $first-child-width;
+
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    div:last-child {
+      width: $last-child-width;
+      padding-right: 0px;
+    }
+
+    div.number {
+      text-align: right;
+    }
+
+    display: flex;
+
+    text-align: left;
+
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+  }
+
+  .items {
+    // Ignore
+  }
+
+  .total {
+    &:hover {
+      color: white;
+      background-color: darkgrey;
+    }
+
+    div {
+      padding: 7px 4px;
+      width: $width;
+      font-family: monospace;
+    }
+
+    div:first-child {
+      width: $first-child-width;
+
+      padding: 7px 4px;
+      border-right-color: black;
+      border-right-style: solid;
+      border-right-width: 1px;
+    }
+
+    div.number {
+      text-align: right;
+    }
+
+    div:last-child {
+      padding-right: 0px;
+      width: $last-child-width;
+    }
+
+    display: flex;
+    flex-direction: row;
+    font-size: 1.25em;
+    text-align: left;
+  }
+}

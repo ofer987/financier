@@ -18,14 +18,16 @@ import ItemizedValues from "./ItemizedValues";
 import { Amount } from "./Amount";
 import { ItemizedRecord } from "./ItemizedRecord";
 import { DetailedGraph } from "./DetailedGraph";
+import * as Constants from "./Constants";
 
 // CSS
-import "./index.scss";
+import "./ItemizedCashFlow.scss";
 
 interface Props {
   year: number;
   month: number;
   tagNames: string[];
+  token: string;
 }
 
 class State {
@@ -75,10 +77,11 @@ class ItemizedCashFlow extends React.Component<Props, State> {
   }
 
   private client = new ApolloClient({
-    uri: "https://localhost:5003/graphql/items",
+    uri: `https://localhost:${Constants.Port}/graphql/items`,
     cache: new InMemoryCache(),
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${this.props.token}`
     }
   });
 
@@ -132,7 +135,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
 
   public render() {
     return (
-      <div className="cash-flow">
+      <div className="ItemizedCashFlow">
         <h2>Navigation</h2>
         <div className="time-navigation">
           <div className="button welcome" onClick={(event) => {
@@ -143,7 +146,7 @@ class ItemizedCashFlow extends React.Component<Props, State> {
           </div>
           {this.renderDetailedNavigation(this.year, this.month)}
         </div>
-        <ItemizedValues records={this.sortedRecords()} />
+        <ItemizedValues records={this.sortedRecords()} token={this.props.token} />
       </div>
     );
   }

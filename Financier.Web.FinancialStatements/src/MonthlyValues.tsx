@@ -4,6 +4,8 @@ import _ from "underscore";
 import MonthlyValue from "./MonthlyValue";
 import { MonthlyRecord } from "./MonthlyRecord";
 
+import "./MonthlyValues.scss";
+
 interface Props {
   records: MonthlyRecord[];
 }
@@ -52,7 +54,7 @@ class MonthlyValues extends React.Component<Props> {
 
   public render() {
     return (
-      <div className="values">
+      <div className="MonthlyValues">
         <h2>Items</h2>
         <div className="header">
           <div className="name">When</div>
@@ -64,7 +66,7 @@ class MonthlyValues extends React.Component<Props> {
           { /* TODO: Display credits and debits should be children of dates (ats) */ }
           { /*this.dates */ }
           {this.records
-            .map(item => <MonthlyValue record={item} />)}
+            .map(item => <MonthlyValue record={item} key={`${item.year}-${item.month}-${item.amount}`} />)}
         </div>
         <div className="total">
           <div className="name">Total</div>

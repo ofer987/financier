@@ -15,8 +15,34 @@ namespace Financier.Common.Expenses
         public decimal Threshold { get; protected set; }
         protected const decimal DefaultThreshold = 0.05M;
 
-        public DateTime StartAt { get; protected set; }
-        public DateTime EndAt { get; protected set; }
+        private DateTime _startAt;
+        public DateTime StartAt
+        {
+            get { return _startAt; }
+
+            protected set
+            {
+                _startAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+            }
+        }
+        private DateTime _endAt;
+        public DateTime EndAt
+        {
+            get { return _endAt; }
+
+            protected set
+            {
+                _endAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+            }
+        }
+
+        public int StartYear { get; protected set; }
+        public int StartMonth { get; protected set; }
+        public int StartDay { get; protected set; }
+
+        public int EndYear { get; protected set; }
+        public int EndMonth { get; protected set; }
+        public int EndDay { get; protected set; }
 
         public IReadOnlyList<ItemListing> CreditListings { get; protected set; } = Enumerable.Empty<ItemListing>().ToList();
         public IReadOnlyList<ItemListing> DebitListings { get; protected set; } = Enumerable.Empty<ItemListing>().ToList();
@@ -30,7 +56,7 @@ namespace Financier.Common.Expenses
 
         public override decimal DailyProfit => decimal.Round(ProfitAmountTotal / EndAt.Subtract(StartAt).Days, 2);
 
-        public DurationCashFlow(DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold)
+        public DurationCashFlow(string accountName, DateTime startAt, DateTime endAt, decimal threshold = DefaultThreshold) : base(accountName)
         {
             StartAt = startAt;
             EndAt = endAt;
@@ -39,7 +65,7 @@ namespace Financier.Common.Expenses
             Init();
         }
 
-        protected DurationCashFlow()
+        protected DurationCashFlow(string accountName) : base(accountName)
         {
         }
 
@@ -73,14 +99,19 @@ namespace Financier.Common.Expenses
             using (var db = new Context())
             {
                 items = db.Items
+                    .Include(item => item.Statement)
+                        .ThenInclude(stmt => stmt.Card)
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
                     .Where(item => item.PostedAt >= StartAt)
                     .Where(item => item.PostedAt < EndAt)
                     .Where(item =>
-                            false
-                            || itemType == ItemTypes.Debit && item.Amount >= 0
-                            || itemType == ItemTypes.Credit && item.Amount < 0)
+                            item.Statement.Card.AccountName == AccountName
+                            && (
+                                false
+                                || itemType == ItemTypes.Debit && item.Amount >= 0
+                                || itemType == ItemTypes.Credit && item.Amount < 0)
+                            )
                     .AsEnumerable()
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();

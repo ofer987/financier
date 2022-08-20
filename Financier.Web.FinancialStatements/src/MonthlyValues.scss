@@ -1,0 +1,5 @@
+@import "mixins/values.scss";
+
+.MonthlyValues {
+  @include values(20%, 20%, 40%);
+}

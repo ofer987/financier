@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import * as d3TimeFormat from "d3-time-format";
+import React from "react";
+import "WelcomeError.scss";
 
 interface Props {}
 
@@ -18,7 +18,7 @@ class WelcomeError extends React.Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, _errorInfo: React.ErrorInfo) {
     this.setState({
       hasError: true,
       message: error.message,
@@ -32,7 +32,7 @@ class WelcomeError extends React.Component<Props, State> {
       });
 
       return (
-        <div>
+        <div className="WelcomeError">
           Oh no, an error! {this.state.message}
           {this.props.children}
         </div>

@@ -125,7 +125,7 @@ namespace Financier.Common.Expenses.Models
 
         protected DateTime ToDateTime(string str)
         {
-            return DateTime.ParseExact(str, "yyyyMMdd", null);
+            return DateTime.SpecifyKind(DateTime.ParseExact(str, "yyyyMMdd", null), DateTimeKind.Utc);
         }
 
         public abstract Item CreateItem(Guid statementId);

@@ -26,7 +26,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
             Id = JuneStatementId,
             CardId = DanCardId,
             Items = new List<Item>(),
-            PostedAt = new DateTime(2025, 7, 1)
+            PostedAt = new DateTime(2025, 7, 1, 0, 0, 0, DateTimeKind.Utc)
         };
 
         public const string PorscheItemId = "1234";
@@ -38,8 +38,8 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
             Description = "Porsche 911",
             ItemId = itemId,
             ItemTags = new List<ItemTag>(),
-            PostedAt = new DateTime(2025, 6, 5),
-            TransactedAt = new DateTime(2025, 6, 5),
+            PostedAt = new DateTime(2025, 6, 5, 0, 0, 0, DateTimeKind.Utc),
+            TransactedAt = new DateTime(2025, 6, 5, 0, 0, 0, DateTimeKind.Utc),
         };
 
         public static Func<string, CreditCardStatementRecord> GetStatementRecord = (itemId) => new CreditCardStatementRecord

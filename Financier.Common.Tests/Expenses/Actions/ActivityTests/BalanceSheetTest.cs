@@ -27,6 +27,8 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
         [AllowNull]
         public Home SecondHome { get; private set; }
 
+        public string AccountName => "Dan";
+
         [SetUp]
         public void Init()
         {
@@ -39,7 +41,7 @@ namespace Financier.Common.Tests.Expenses.Actions.ActivityTests
             var initialDebt = 5000.00M;
 
             CashFlow = new DummyCashFlow(89.86M);
-            Subject = new Activity(initialCash, initialDebt, CashFlow, initiatedAt);
+            Subject = new Activity(AccountName, initialCash, initialDebt, CashFlow, initiatedAt);
 
             {
                 var purchasedAt = initiatedAt;

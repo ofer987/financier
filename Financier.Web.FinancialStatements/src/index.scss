@@ -11,9 +11,9 @@ body {
 }
 
 .main-header {
-  padding: 50px 50px;
+  padding: 3rem 3rem;
   font-family: "Roboto";
-  font-size: 70px;
+  font-size: 4.5em;
   text-align: center;
 }
 
@@ -21,9 +21,56 @@ body {
   .error {
     background-color: red;
     color: white;
-    font-size: 16px;
-    height: 19px;
-    width: 500px;
+    font-size: 1em;
+    height: 1.25em;
+    width: 32em;;
+  }
+}
+
+.account-navigation {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: column;
+  row-gap: 4em;
+
+  .buttons {
+    display: flex;
+    flex-flow: wrap;
+    flex-direction: row;
+    column-gap: 2em;
+
+    justify-content: start;
+  }
+
+  .content {
+    display: flex;
+    flex-flow: wrap;
+    flex-direction: column;
+    row-gap: 1em;
+  }
+}
+
+.button {
+  padding: 0.75em 0.375em;
+  border: solid;
+  border-width: 0.1em;
+  width: 14em;
+  text-align: center;
+
+  border-color: blue;
+  color: blue;
+  cursor: pointer;
+
+  &.enabled {
+    border-color: blue;
+    color: blue;
+    cursor: pointer;
+  }
+
+  &.disabled {
+    border-color: grey;
+    color: grey;
+    cursor: not-allowed;
   }
 }
 
@@ -39,18 +86,6 @@ body {
     flex-direction: row;
     row-gap: 0.5em;
     column-gap: 0.5em;
-  }
-
-  .button {
-    padding: 0.75em 0.375em;
-    border: solid;
-    border-width: 1.5px;
-    width: 14em;
-    text-align: center;
-
-    border-color: blue;
-    color: blue;
-    cursor: pointer;
   }
 }
 
@@ -77,42 +112,42 @@ body {
   }
 
   .submission {
-    padding-top: 100px;
-
-    .navigation {
-      display: flex;
-      flex-flow: wrap;
-      flex-direction: row;
-      column-gap: 30px;
-
-      .button {
-        padding: 0.75em 0.375em;
-        border: solid;
-        border-width: 1.5px;
-        width: 14em;
-        text-align: center;
-
-        &.enabled {
-          border-color: blue;
-          color: blue;
-          cursor: pointer;
-        }
-
-        &.disabled {
-          border-color: grey;
-          color: grey;
-          cursor: not-allowed;
-        }
-      }
-    }
+    padding-top: 6.25em;
 
     a {
-      font-size: 16px;
-      width: 200px;
-      height: 19px;
+      font-size: 1em;
+      width: 12.5em;
+      height: 1.25em;
 
       color: blue;
       text-decoration-line: initial;
+    }
+  }
+}
+
+.navigation {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+  column-gap: 30px;
+
+  .button {
+    padding: 0.75em 0.375em;
+    border: solid;
+    border-width: 1.5px;
+    width: 14em;
+    text-align: center;
+
+    &.enabled {
+      border-color: blue;
+      color: blue;
+      cursor: pointer;
+    }
+
+    &.disabled {
+      border-color: grey;
+      color: grey;
+      cursor: not-allowed;
     }
   }
 }

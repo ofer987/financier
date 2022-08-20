@@ -11,6 +11,7 @@ namespace Financier.Common.Expenses
     // TODO Rename to MonthlyCashFlow
     public class ProjectedCashFlow
     {
+        public string AccountName { get; protected set; }
         public DateTime StartAt { get; protected set; }
         public DateTime EndAt { get; protected set; }
 
@@ -23,15 +24,15 @@ namespace Financier.Common.Expenses
         public decimal AverageCreditAmount { get; private set; }
         public decimal AverageDebitAmount { get; private set; }
 
-        public ProjectedCashFlow(DateTime startAt, DateTime endAt)
+        public ProjectedCashFlow(string accountName, DateTime startAt, DateTime endAt)
         {
             Validate(startAt, endAt);
-            Init(startAt, endAt);
+            Init(accountName, startAt, endAt);
         }
 
         public IMonthlyListing GetMonthlyListing(int year, int month)
         {
-            var at = new DateTime(year, month, 1);
+            var at = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
             if (at > this.EndAt)
             {
                 throw new ArgumentException($"Can only display past debits and credits, i.e., before {this.EndAt}");
@@ -69,7 +70,7 @@ namespace Financier.Common.Expenses
 
         public IMonthlyListing GetProjectedMonthlyListing(int year, int month)
         {
-            var at = new DateTime(year, month, 1);
+            var at = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
             if (at < this.EndAt)
             {
                 throw new ArgumentException($"Can only project debits and credits after {this.EndAt.AddDays(-1)}");
@@ -92,10 +93,14 @@ namespace Financier.Common.Expenses
             }
         }
 
-        private void Init(DateTime startAt, DateTime endAt)
+        private void Init(string accountName, DateTime startAt, DateTime endAt)
         {
-            this.CreditListings = GetItems(ItemTypes.Credit, startAt, endAt);
-            this.DebitListings = GetItems(ItemTypes.Debit, startAt, endAt);
+            startAt = DateTime.SpecifyKind(startAt, DateTimeKind.Utc);
+            endAt = DateTime.SpecifyKind(endAt, DateTimeKind.Utc);
+
+            this.AccountName = accountName;
+            this.CreditListings = GetItems(ItemTypes.Credit, this.AccountName, startAt, endAt);
+            this.DebitListings = GetItems(ItemTypes.Debit, this.AccountName, startAt, endAt);
 
             this.TotalCreditAmount = this.CreditListings
                 .Select(listing => listing.Value)
@@ -106,13 +111,13 @@ namespace Financier.Common.Expenses
                 .Aggregate(0.00M, (total, amount) => total + amount);
 
             this.StartAt = this.CreditListings.Concat(this.DebitListings)
-                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1))
+                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1, 0, 0, 0, DateTimeKind.Utc))
                 .OrderBy(item => item)
                 .DefaultIfEmpty(startAt)
                 .FirstOrDefault();
 
             this.EndAt = this.CreditListings.Concat(this.DebitListings)
-                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1).AddMonths(1))
+                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(1))
                 .OrderBy(item => item)
                 .DefaultIfEmpty(endAt)
                 .LastOrDefault();
@@ -125,7 +130,7 @@ namespace Financier.Common.Expenses
             this.AverageDebitAmount = this.TotalDebitAmount / monthsApart;
         }
 
-        private IDictionary<(int, int), decimal> GetItems(ItemTypes itemType, DateTime startAt, DateTime endAt)
+        private IDictionary<(int, int), decimal> GetItems(ItemTypes itemType, string accountName, DateTime startAt, DateTime endAt)
         {
             IList<Item> items;
             using (var db = new Context())
@@ -133,13 +138,17 @@ namespace Financier.Common.Expenses
                 items = db.Items
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .Include(item => item.Statement)
+                        .ThenInclude(stmt => stmt.Card)
                     .Where(item => item.PostedAt >= startAt)
                     .Where(item => item.PostedAt < endAt)
-                    .Where(item =>
-                        false
-                        || itemType == ItemTypes.Debit && item.Amount >= 0
-                        || itemType == ItemTypes.Credit && item.Amount < 0)
                     .AsEnumerable()
+                    .Where(item =>
+                        item.Statement.Card.AccountName == accountName
+                        && (false
+                            || itemType == ItemTypes.Debit && item.Amount >= 0
+                            || itemType == ItemTypes.Credit && item.Amount < 0)
+                    )
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }

@@ -15,15 +15,18 @@ namespace Financier.Common.Tests.Expenses
         {
             get
             {
-                yield return new TestCaseData(2019, 6, ItemTypes.Debit, 900108.70M, new[] {
+                yield return new TestCaseData("Dan", 2019, 6, ItemTypes.Debit, 600108.70M, new[] {
                     "IQ",
                     "Fresco",
                     "Ferrari",
-                    "Lambo",
                     "Porsche 911"
                 });
 
-                yield return new TestCaseData(2019, 7, ItemTypes.Debit, 112.45M, new[] {
+                yield return new TestCaseData("Ron", 2019, 6, ItemTypes.Debit, 300000.00M, new[] {
+                    "Lambo",
+                });
+
+                yield return new TestCaseData("Dan", 2019, 7, ItemTypes.Debit, 112.45M, new[] {
                     "Golden Star",
                     "Your Community Grocer",
                     "IQ"
@@ -35,13 +38,13 @@ namespace Financier.Common.Tests.Expenses
         {
             get
             {
-                yield return new TestCaseData(2019, 6, ItemTypes.Credit, -3800.00M, new[] {
+                yield return new TestCaseData("Dan", 2019, 6, ItemTypes.Credit, -3800.00M, new[] {
                     "Edith Salary",
                     "Dan Salary",
                     "Federal Childcare Benefit",
                 });
 
-                yield return new TestCaseData(2019, 7, ItemTypes.Credit, -2800.00M, new[] {
+                yield return new TestCaseData("Dan", 2019, 7, ItemTypes.Credit, -2800.00M, new[] {
                     "Dan Salary",
                     "Federal Childcare Benefit",
                 });
@@ -52,6 +55,7 @@ namespace Financier.Common.Tests.Expenses
         [TestCaseSource(nameof(DebitTestCases))]
         [TestCaseSource(nameof(CreditTestCases))]
         public void Test_Expenses_DurationCashFlow_GetItemListings(
+            string accountName,
             int year,
             int month,
             ItemTypes type,
@@ -60,7 +64,7 @@ namespace Financier.Common.Tests.Expenses
         {
             var startAt = new DateTime(year, month, 1);
             var endAt = startAt.AddMonths(1);
-            var actual = new DurationCashFlow(startAt, endAt).GetItemListings(type);
+            var actual = new DurationCashFlow(accountName, startAt, endAt).GetItemListings(type);
 
             var actualItems = actual
                 .SelectMany(item => item.Items);

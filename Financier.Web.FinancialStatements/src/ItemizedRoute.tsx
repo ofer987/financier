@@ -1,5 +1,6 @@
 import * as React from "react";
 import { kebabCase } from "lodash";
+import { useAuth } from "react-oidc-context";
 
 import { ItemizedCashFlow } from "./ItemizedCashFlow";
 
@@ -14,19 +15,28 @@ interface Props {
 }
 
 const ItemizedRoute = (props: Props) => {
-  const year = props.match.params.year;
-  const month = props.match.params.month;
+  const auth = useAuth();
+  const token = auth 
+    ? auth?.user?.id_token 
+    : null;
 
-  console.log(props.match.params.tags);
-  const tags = props.match.params.tags
-    .split(",")
-    .map(item => item.trim())
-    .map(item => kebabCase(item));
-  console.log(tags);
+  if (token) {
+    const year = props.match.params.year;
+    const month = props.match.params.month;
 
-  return (
-    <ItemizedCashFlow year={year} month={month} tagNames={tags} />
-  );
+    console.log(props.match.params.tags);
+    const tags = props.match.params.tags
+      .split(",")
+      .map(item => item.trim())
+      .map(item => kebabCase(item));
+    console.log(tags);
+
+    return (
+      <ItemizedCashFlow token={token} year={year} month={month} tagNames={tags} />
+    );
+  }
+
+  return <></>;
 }
 
 export default ItemizedRoute;

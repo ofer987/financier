@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using GraphQL;
 using GraphQL.Types;
 
@@ -7,7 +5,7 @@ using Financier.Common.Expenses.Models;
 
 namespace Financier.Web.GraphQL.Items
 {
-    public class ItemQuery : ObjectGraphType
+    public class ItemQuery : AuthenticatedObjectGraphType
     {
         public static class Keys
         {
@@ -90,7 +88,7 @@ namespace Financier.Web.GraphQL.Items
                 {
                     var tagNames = context.GetArgument<List<string>>(Keys.TagNames);
                     var postedAt = context.GetArgument<DateTime>(Keys.PostedAt);
-                    var fromDate = new DateTime(postedAt.Year, postedAt.Month, 1);
+                    var fromDate = new DateTime(postedAt.Year, postedAt.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                     var toDate = fromDate.AddMonths(1);
 
                     return Item.GetBy(fromDate, toDate, tagNames);
@@ -111,10 +109,15 @@ namespace Financier.Web.GraphQL.Items
                 ),
                 resolve: context =>
                 {
+                    var accountName = GetEmail(context);
                     var fromDate = context.GetArgument<DateTime>(Keys.FromDate);
                     var toDate = context.GetArgument<DateTime>(Keys.ToDate);
 
-                    return Item.GetAllBy(fromDate, toDate);
+                    // Is this necessary?
+                    fromDate = DateTime.SpecifyKind(fromDate, DateTimeKind.Utc);
+                    toDate = DateTime.SpecifyKind(toDate, DateTimeKind.Utc);
+
+                    return Item.GetAllBy(accountName, fromDate, toDate);
                 }
             );
         }
