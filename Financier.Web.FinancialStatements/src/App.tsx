@@ -16,12 +16,6 @@ function App() {
   if (auth.isAuthenticated) {
     return (
       <>
-        <h1 className="main-header">Financier</h1>
-
-        <div className="account-navigation">
-          <AccountNavigation />
-        </div>
-
         <Router>
           <Switch>
             <Route path="/login">
@@ -42,17 +36,12 @@ function App() {
         </Router>
       </>
     );
+  } else {
+    return (
+      <>
+      </>
+    );
   }
-
-  return (
-    <>
-      <h1 className="main-header">Financier</h1>
-
-      <div className="account-navigation">
-        <AccountNavigation />
-      </div>
-    </>
-  );
 }
 
 export default App;

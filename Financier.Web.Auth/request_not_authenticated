@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-curl 'https://localhost:7240/Identity/Account/Manage' \
-  --silent \
-  -X 'GET' \
-  --head;

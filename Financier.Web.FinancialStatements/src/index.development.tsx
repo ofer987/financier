@@ -6,16 +6,17 @@ import { User, WebStorageStateStore } from "oidc-client-ts";
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration.js';
 
 import App from "./App";
+import AccountNavigation from "./AccountNavigation";
 
 // CSS
 import "./index.scss";
 
 const oidcConfig = {
-  authority: "https://accounts.google.com/",
-  client_id: "866988055772-91t42ig7ti5sj27hk3d45b945mp8vku6.apps.googleusercontent.com",
-  redirect_uri: "https://localhost:7168",
+  authority: "https://localhost:5001",
+  client_id: "financier_client_0.0.1",
+  redirect_uri: "https://localhost:7168/app",
   scope: "openid profile email",
-  client_secret: "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",
+  client_secret: "511536EF-F270-4058-80CA-1C89C192F69A",
   userStore: new WebStorageStateStore({ store: window.localStorage }),
   onSigninCallback: (_user: User) => {
     window.location.search = "";
@@ -28,12 +29,13 @@ const oidcConfig = {
 const root = document.querySelector(".root");
 ReactDOM.render(
   <AuthProvider {...oidcConfig}>
+    <h1 className="main-header">Financier</h1>
+
+    <div className="account-navigation">
+      <AccountNavigation />
+    </div>
+
     <App />
   </AuthProvider>,
   root
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-// serviceWorkerRegistration.unregister();

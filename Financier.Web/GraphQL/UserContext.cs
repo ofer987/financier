@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 
 using Financier.Common.Extensions;
+
 namespace Financier.Web.GraphQL;
 
 public class UserContext : Dictionary<string, object?>

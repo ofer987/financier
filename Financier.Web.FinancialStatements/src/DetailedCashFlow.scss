@@ -7,6 +7,8 @@
 }
 
 .DetailedCashFlow {
+  width: 100%;
+
   .time-navigation {
     display: flex;
     flex-flow: wrap;
@@ -43,24 +45,6 @@
 
     .graph {
       width: 80%;
-
-      .chart {
-        .amount {
-          display: block;
-
-          &.hidden {
-            display: none;
-          }
-        }
-
-        .tick {
-          font-size: 6px;
-
-          text {
-            text-anchor: end;
-          }
-        }
-      }
     }
   }
 }

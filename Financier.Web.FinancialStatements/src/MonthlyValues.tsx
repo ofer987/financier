@@ -4,6 +4,8 @@ import _ from "underscore";
 import MonthlyValue from "./MonthlyValue";
 import { MonthlyRecord } from "./MonthlyRecord";
 
+import "./MonthlyValues.scss";
+
 interface Props {
   records: MonthlyRecord[];
 }
@@ -52,7 +54,7 @@ class MonthlyValues extends React.Component<Props> {
 
   public render() {
     return (
-      <div className="values">
+      <div className="MonthlyValues">
         <h2>Items</h2>
         <div className="header">
           <div className="name">When</div>

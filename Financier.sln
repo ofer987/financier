@@ -17,6 +17,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Cli.Deletion", "F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Web", "Financier.Web\Financier.Web.csproj", "{AF654E50-6818-43A2-9EC6-9AC04197B360}"
 EndProject
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financier.Web.Auth", "Financier.Web.Auth\Financier.Web.Auth.csproj", "{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +117,17 @@ Global
 		{AF654E50-6818-43A2-9EC6-9AC04197B360}.Release|x64.Build.0 = Release|Any CPU
 		{AF654E50-6818-43A2-9EC6-9AC04197B360}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF654E50-6818-43A2-9EC6-9AC04197B360}.Release|x86.Build.0 = Release|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Debug|x64.Build.0 = Debug|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Debug|x86.Build.0 = Debug|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Release|x64.ActiveCfg = Release|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Release|x64.Build.0 = Release|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Release|x86.ActiveCfg = Release|Any CPU
+		{0FC463A1-75C4-4E28-9E7C-7C066ACD8934}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
