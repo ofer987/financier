@@ -1,79 +1,58 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.EntityFrameworkCore;
-using JWT;
-using JWT.Algorithms;
-using JWT.Extensions.AspNetCore;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
+﻿using Financier.Web.Auth;
+using Serilog;
 
-// TODO: place in configuration
-const string PUBLIC_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDY4Y0WuEiY/2EdF+qZCUlgM3mfQ1jpyPYj98+HDpYN8u67QMAS2UQMoab2MeSjkGlSs98x4vFlvmrqxMuu5gWqds27bIe5wjMFrSLk9rWyIdru+UvmUdFVvOsqSj/AE/2bFJH3HNUfC7QcLv0h7LhkT5Rp/q8OgmUepBpQxkO1yMOhv7+pb11lxNUiFpjFRMIn4mKazG4mcZV49HhgGVWLmw04RReGcjR5Nhxt0xbOXUwKN5J8tZbfFk/cy74CUNALhmlnzqI9OduggjOCNyabiJ29RZ7lwPURn9ZlPEwJe95/JS2KrzjNzbmXaUbrhUjtPvyM7uZEX3BdnQNVpgJ8Ug3/M9m8XuWXxJzlUh27g6JaiYdRYFDutSXFetqCYpM0zgHWAxuh1OPXCm3D7qAjPM5HQLza5olWaVzAc1UmErm3XCbuo6BjrYr9NexvuUrvdlxFdszZI/1h54EK0UedGQSeNvaopRROaqpcj6FmogU6m/NxTLwCr0G9DPoGyIs= Financier";
-var privateKey = File.ReadAllText("./financier_rsa");
-var certifcationPath = "root.cert";
-var certificate = new X509Certificate(certifcationPath);
+const string DevelopmentPolicy = "CORS_POLICY_LOCALHOST";
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
-// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//         options.UseSqlite(connectionString));
-// builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-// builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//     .AddEntityFrameworkStores<ApplicationDbContext>();
+Log.Information("Starting up");
 
-builder.Services.AddRazorPages();
-// builder.Services.AddServerSideBlazor();
-// builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddAuthentication(options =>
+    builder.Host.UseSerilog((ctx, lc) => lc
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(ctx.Configuration));
+
+    builder.Services.AddCors(options =>
     {
-        options.DefaultAuthenticateScheme = JwtAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtAuthenticationDefaults.AuthenticationScheme;
+        options.AddPolicy(
+            DevelopmentPolicy,
+            builder => builder
+                .WithOrigins("https://localhost:7168")
+                .AllowAnyHeader()
+                .Build()
+        );
     });
 
-builder.Services.AddSingleton<IAlgorithmFactory>(
-    new RSAlgorithmFactory(() => new X509Certificate2(certificate))
-);
+    var app = builder
+        .ConfigureServices()
+        .ConfigurePipeline();
 
-builder.Services.AddControllers();
+    app.UseCors(DevelopmentPolicy);
 
-// builder.Services.AddSingleton
+    // this seeding is only for the template to bootstrap the DB and users.
+    // in production you will likely want a different approach.
+    if (args.Contains("/seed"))
+    {
+        Log.Information("Seeding database...");
+        SeedData.EnsureSeedData(app);
+        Log.Information("Done seeding database. Exiting.");
+        return;
+    }
 
-var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
+    app.Run();
 }
-else
+catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    Log.Fatal(ex, "Unhandled exception");
 }
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-// TODO: Do we need these?
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-app.MapControllerRoute(
-    name: "User",
-    pattern: "{controller=User}/{action=Index}/{id?}"
-);
-app.MapFallbackToPage("/_Host");
-
-app.Run();
+finally
+{
+    Log.Information("Shut down complete");
+    Log.CloseAndFlush();
+}
