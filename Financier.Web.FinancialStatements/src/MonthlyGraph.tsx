@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import * as d3Shape from "d3-shape";
 
 import { MonthlyRecord } from "./MonthlyRecord";
+import "./MonthlyGraph.scss";
 
 interface Props {
   records: MonthlyRecord[];
@@ -136,9 +137,11 @@ class MonthlyGraph extends React.Component<Props> {
 
   render() {
     return (
-      <div className="graph">
-        <h2>Graph</h2>
-        <svg className="chart" />
+      <div className="MonthlyGraph">
+        <div className="graph">
+          <h2>Graph</h2>
+          <svg className="chart" />
+        </div>
       </div>
     );
   }
@@ -203,7 +206,7 @@ class MonthlyGraph extends React.Component<Props> {
       .call(d3.axisLeft(this.yScale()))
       .call(g => g.select(".domain"))
       .call(g => g.select(".tick:last-of-type text").clone()
-        .attr("x", 0)
+        .attr("x", -8)
         .attr("y", `-${2 * this.margin.topLabel}px`)
         .attr("dy", 0)
         .attr("text-anchor", "start")

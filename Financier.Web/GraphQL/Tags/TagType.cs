@@ -1,4 +1,3 @@
-using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using Financier.Common.Expenses.Models;
@@ -8,7 +7,7 @@ namespace Financier.Web.GraphQL.Tags
 {
     public class TagType : ObjectGraphType<Tag>
     {
-        public TagType(IDataLoaderContextAccessor dataLoaderAccessor)
+        public TagType()
         {
             Field(t => t.Name, nullable: false, type: typeof(StringGraphType));
         }

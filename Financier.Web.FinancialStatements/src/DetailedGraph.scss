@@ -1,0 +1,27 @@
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto-Regular.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px;
+}
+
+.DetailedGraph {
+  .chart {
+    .amount {
+      display: block;
+
+      &.hidden {
+        display: none;
+      }
+    }
+
+    .tick {
+      font-size: 6px;
+
+      text {
+        text-anchor: end;
+      }
+    }
+  }
+}

@@ -46,7 +46,7 @@ namespace Financier.Common.Tests.Expenses
             var statement = danCard.Statements.First();
 
             var itemId = Guid.NewGuid();
-            var item = new Item(itemId, statement.Id, "1", itemDescription, DateTime.Now, 100.40M);
+            var item = new Item(itemId, statement.Id, "1", itemDescription, DateTime.UtcNow, 100.40M);
             using (var db = new Context())
             {
                 db.Items.Add(item);
@@ -92,7 +92,7 @@ namespace Financier.Common.Tests.Expenses
             {
                 i += 1;
 
-                var item = new Item(Guid.NewGuid(), statement.Id, i.ToString(), desc, DateTime.Now, 100.40M);
+                var item = new Item(Guid.NewGuid(), statement.Id, i.ToString(), desc, DateTime.UtcNow, 100.40M);
                 newItems.Add(item);
             }
 
@@ -185,7 +185,7 @@ namespace Financier.Common.Tests.Expenses
             var statement = danCard.Statements.First();
 
             var newItemId = Guid.NewGuid();
-            var newItem = new Item(newItemId, statement.Id, "1", itemDescription, DateTime.Now, 100.40M);
+            var newItem = new Item(newItemId, statement.Id, "1", itemDescription, DateTime.UtcNow, 100.40M);
 
             using (var db = new Context())
             {

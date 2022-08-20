@@ -1,0 +1,5 @@
+@import "mixins/values.scss";
+
+.ItemizedValues {
+  @include values(10%, 18%, 18%);
+}

@@ -35,13 +35,16 @@ namespace Financier.Common.Expenses.Models
             }
         }
 
-        public static IEnumerable<Item> GetAllBy(DateTime from, DateTime to)
+        public static IEnumerable<Item> GetAllBy(string accountName, DateTime from, DateTime to)
         {
             using (var db = new Context())
             {
                 return db.Items
+                    .Include(item => item.Statement)
+                        .ThenInclude(stmt => stmt.Card)
                     .Include(item => item.ItemTags)
                         .ThenInclude(it => it.Tag)
+                    .Where(item => item.Statement.Card.AccountName == accountName)
                     .AsEnumerable()
                     .Where(item => item.PostedAt >= from)
                     .Where(item => item.PostedAt < to)

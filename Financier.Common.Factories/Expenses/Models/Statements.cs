@@ -8,6 +8,8 @@ namespace Financier.Common
     {
         public static Statement NewStatement(Card card, DateTime postedAt)
         {
+            var utcAt = DateTime.SpecifyKind(postedAt, DateTimeKind.Utc);
+
             return new Statement
             {
                 Id = Guid.NewGuid(),

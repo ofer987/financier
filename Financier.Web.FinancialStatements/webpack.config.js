@@ -44,7 +44,7 @@ module.exports = (env) => {
     name: DEVELOPMENT,
     mode: DEVELOPMENT,
     devtool: "inline-source-map",
-    watch: true,
+    watch: false,
     entry: [
       `./src/index.${DEVELOPMENT}.tsx`,
     ],

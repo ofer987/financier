@@ -26,14 +26,14 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                         {
                             public const int Identifier = 1;
                             public static Guid Id = Guid.NewGuid();
-                            public static DateTime PostedAt = new DateTime(2017, 1, 1);
+                            public static DateTime PostedAt = new DateTime(2017, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                         }
 
                         public static class Two
                         {
                             public const int Identifier = 2;
                             public static Guid Id = Guid.NewGuid();
-                            public static DateTime PostedAt = new DateTime(2017, 2, 1);
+                            public static DateTime PostedAt = new DateTime(2017, 2, 1, 0, 0, 0, DateTimeKind.Utc);
                         }
                     }
                 }
@@ -50,14 +50,14 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                         {
                             public const int Identifier = 1;
                             public static Guid Id = Guid.NewGuid();
-                            public static DateTime PostedAt = new DateTime(2017, 1, 1);
+                            public static DateTime PostedAt = new DateTime(2017, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                         }
 
                         public static class Two
                         {
                             public const int Identifier = 2;
                             public static Guid Id = Guid.NewGuid();
-                            public static DateTime PostedAt = new DateTime(2018, 3, 1);
+                            public static DateTime PostedAt = new DateTime(2018, 3, 1, 0, 0, 0, DateTimeKind.Utc);
                         }
                     }
                 }
@@ -149,13 +149,7 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                         db.Statements.Add(statement.Value);
                         db.SaveChanges();
                     }
-
-                    Console.WriteLine("Initialised DB");
                 }
-
-                Console.WriteLine($"Card1.Id is ({Card1.Id})");
-                Console.WriteLine($"Card2.Id is ({Card2.Id})");
-                Console.WriteLine($"CardId is ({CardIdentifier})");
             }
         }
 
@@ -217,8 +211,8 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                 get
                 {
                     // yield return new TestCaseData(1);
-                    yield return new TestFixtureData(Base.Cards.One.Identifier, new DateTime(2015, 1, 1), Guid.NewGuid());
-                    yield return new TestFixtureData(Base.Cards.Two.Identifier, new DateTime(2015, 1, 1), Guid.NewGuid());
+                    yield return new TestFixtureData(Base.Cards.One.Identifier, new DateTime(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc), Guid.NewGuid());
+                    yield return new TestFixtureData(Base.Cards.Two.Identifier, new DateTime(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc), Guid.NewGuid());
                 }
             }
         }
@@ -282,8 +276,8 @@ namespace Financier.Common.Tests.Expenses.CreditCardStatementRecordTests
                 get
                 {
                     // yield return new TestCaseData(1);
-                    yield return new TestFixtureData(Base.Cards.One.Identifier, new DateTime(2017, 1, 1), Base.Cards.One.Statements.One.Id);
-                    yield return new TestFixtureData(Base.Cards.Two.Identifier, new DateTime(2018, 3, 1), Base.Cards.Two.Statements.Two.Id);
+                    yield return new TestFixtureData(Base.Cards.One.Identifier, new DateTime(2017, 1, 1, 0, 0, 0, DateTimeKind.Utc), Base.Cards.One.Statements.One.Id);
+                    yield return new TestFixtureData(Base.Cards.Two.Identifier, new DateTime(2018, 3, 1, 0, 0, 0, DateTimeKind.Utc), Base.Cards.Two.Statements.Two.Id);
                 }
             }
         }

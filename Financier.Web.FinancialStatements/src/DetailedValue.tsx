@@ -3,6 +3,8 @@ import _  from "underscore";
 import lodash from "lodash";
 import { DetailedRecord } from "./DetailedRecord";
 
+import "./DetailedValue.scss";
+
 interface Props {
   year: number;
   month: number;
@@ -28,18 +30,20 @@ class DetailedValue extends React.Component<Props> {
 
   render() {
     return (
-      <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToItemizedView(this.year, this.month)}>
-        <div className="name">
-          {this.name}
-        </div>
-        <div className="credit number">
-          {this.credit}
-        </div>
-        <div className="debit number">
-          {this.debit}
-        </div>
-        <div className="profit number">
-          {this.accountingFormattedProfit}
+      <div className="DetailedValue">
+        <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToItemizedView(this.year, this.month)}>
+          <div className="name">
+            {this.name}
+          </div>
+          <div className="credit number">
+            {this.credit}
+          </div>
+          <div className="debit number">
+            {this.debit}
+          </div>
+          <div className="profit number">
+            {this.accountingFormattedProfit}
+          </div>
         </div>
       </div>
     )

@@ -32,7 +32,7 @@ namespace Financier.Common.Expenses
 
         public IMonthlyListing GetMonthlyListing(int year, int month)
         {
-            var at = new DateTime(year, month, 1);
+            var at = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
             if (at > this.EndAt)
             {
                 throw new ArgumentException($"Can only display past debits and credits, i.e., before {this.EndAt}");
@@ -70,7 +70,7 @@ namespace Financier.Common.Expenses
 
         public IMonthlyListing GetProjectedMonthlyListing(int year, int month)
         {
-            var at = new DateTime(year, month, 1);
+            var at = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
             if (at < this.EndAt)
             {
                 throw new ArgumentException($"Can only project debits and credits after {this.EndAt.AddDays(-1)}");
@@ -95,6 +95,9 @@ namespace Financier.Common.Expenses
 
         private void Init(string accountName, DateTime startAt, DateTime endAt)
         {
+            startAt = DateTime.SpecifyKind(startAt, DateTimeKind.Utc);
+            endAt = DateTime.SpecifyKind(endAt, DateTimeKind.Utc);
+
             this.AccountName = accountName;
             this.CreditListings = GetItems(ItemTypes.Credit, this.AccountName, startAt, endAt);
             this.DebitListings = GetItems(ItemTypes.Debit, this.AccountName, startAt, endAt);
@@ -108,13 +111,13 @@ namespace Financier.Common.Expenses
                 .Aggregate(0.00M, (total, amount) => total + amount);
 
             this.StartAt = this.CreditListings.Concat(this.DebitListings)
-                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1))
+                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1, 0, 0, 0, DateTimeKind.Utc))
                 .OrderBy(item => item)
                 .DefaultIfEmpty(startAt)
                 .FirstOrDefault();
 
             this.EndAt = this.CreditListings.Concat(this.DebitListings)
-                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1).AddMonths(1))
+                .Select(item => new DateTime(item.Key.Item1, item.Key.Item2, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(1))
                 .OrderBy(item => item)
                 .DefaultIfEmpty(endAt)
                 .LastOrDefault();
@@ -139,13 +142,13 @@ namespace Financier.Common.Expenses
                         .ThenInclude(stmt => stmt.Card)
                     .Where(item => item.PostedAt >= startAt)
                     .Where(item => item.PostedAt < endAt)
+                    .AsEnumerable()
                     .Where(item =>
                         item.Statement.Card.AccountName == accountName
                         && (false
                             || itemType == ItemTypes.Debit && item.Amount >= 0
                             || itemType == ItemTypes.Credit && item.Amount < 0)
                     )
-                    .AsEnumerable()
                     .Reject(item => item.Tags.HasInternalTransfer())
                     .ToArray();
             }

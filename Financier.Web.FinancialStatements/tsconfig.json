@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "lib": ["es2020", "dom"],
-    "baseUrl": "types",
     "typeRoots": ["types"],
     "sourceMap": true,
     "target": "es5",

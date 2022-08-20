@@ -23,9 +23,9 @@ namespace Financier.Common.Expenses.Models
 
         public List<Item> Items { get; set; } = new List<Item>();
 
-        public int Year => PostedAt.Year;
+        public int Year => PostedAt.ToUniversalTime().Year;
 
-        public int Month => PostedAt.Month;
+        public int Month => PostedAt.ToUniversalTime().Month;
 
         public void Delete()
         {

@@ -1,69 +1,58 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+﻿using Financier.Web.Auth;
+using Serilog;
 
-using GraphQL;
-using GraphQL.Server;
-using Financier.Web.Auth.GraphQL.CashFlows;
+const string DevelopmentPolicy = "CORS_POLICY_LOCALHOST";
 
-using Financier.Web.Auth.GraphQL;
-using Financier.Web.Auth.Data;
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Information("Starting up");
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages();
-
-builder.Services.AddSingleton<CashFlowSchema>();
-GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(builder.Services)
-    .AddServer(true, options => options.EnableMetrics = true)
-    .AddUserContextBuilder(context => new UserContext { User = context.User })
-    .AddSystemTextJson()
-    .AddErrorInfoProvider(options => {
-        options.ExposeExtensions = true;
-        options.ExposeExceptionStackTrace = true;
-    })
-    .AddSchema<CashFlowSchema>()
-    .AddGraphTypes(typeof(CashFlowSchema).Assembly);
-
-builder.Services.AddSingleton<CashFlowSchema>();
-builder.Services.AddLogging(builder => builder.AddConsole());
-builder.Services.AddHttpContextAccessor();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseMigrationsEndPoint();
-    app.UseDeveloperExceptionPage();
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog((ctx, lc) => lc
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(ctx.Configuration));
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(
+            DevelopmentPolicy,
+            builder => builder
+                .WithOrigins("https://localhost:7168")
+                .AllowAnyHeader()
+                .Build()
+        );
+    });
+
+    var app = builder
+        .ConfigureServices()
+        .ConfigurePipeline();
+
+    app.UseCors(DevelopmentPolicy);
+
+    // this seeding is only for the template to bootstrap the DB and users.
+    // in production you will likely want a different approach.
+    if (args.Contains("/seed"))
+    {
+        Log.Information("Seeding database...");
+        SeedData.EnsureSeedData(app);
+        Log.Information("Done seeding database. Exiting.");
+        return;
+    }
+
+    app.Run();
 }
-else
+catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    Log.Fatal(ex, "Unhandled exception");
 }
-
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseEndpoints(routes => {
-    routes.MapGraphQLPlayground();
-
-    routes.MapGraphQL<CashFlowSchema>("/graphql/cash-flows");
-});
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.MapRazorPages();
-app.UseGraphQL<CashFlowSchema>();
-
-app.Run();
+finally
+{
+    Log.Information("Shut down complete");
+    Log.CloseAndFlush();
+}

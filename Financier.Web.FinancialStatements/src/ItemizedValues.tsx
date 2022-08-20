@@ -4,8 +4,11 @@ import _ from "underscore";
 import ItemizedValue from "./ItemizedValue";
 import { ItemizedRecord } from "./ItemizedRecord";
 
+import "./ItemizedValues.scss";
+
 interface Props {
   records: ItemizedRecord[];
+  token: string;
 }
 
 class ItemizedValues extends React.Component<Props> {
@@ -55,12 +58,12 @@ class ItemizedValues extends React.Component<Props> {
   }
 
   public toKey(record: ItemizedRecord): string {
-    return `${record.name}-${record.at}`;
+    return `${record.id}-${record.name}-${record.at}`;
   }
 
   render() {
     return (
-      <div className="itemized-values">
+      <div className="ItemizedValues">
         <h2>Items</h2>
         <div className="header">
           <div className="at">At</div>
@@ -71,7 +74,7 @@ class ItemizedValues extends React.Component<Props> {
           <div className="profit number">Profit (Deficit)</div>
         </div>
         <div className="items">
-          {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} />)}
+          {this.records.map(item => <ItemizedValue record={item} key={this.toKey(item)} token={this.props.token} />)}
         </div>
         <div className="total">
           <div className="at">Total</div>

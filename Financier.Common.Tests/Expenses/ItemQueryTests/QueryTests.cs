@@ -71,8 +71,8 @@ namespace Financier.Common.Tests.Expenses.ItemQueryTesting
             int monthTo
         )
         {
-            DateTime fro = new DateTime(yearFrom, monthFrom, 1);
-            DateTime to = new DateTime(yearTo, monthTo, 1);
+            DateTime fro = new DateTime(yearFrom, monthFrom, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime to = new DateTime(yearTo, monthTo, 1, 0, 0, 0, DateTimeKind.Utc);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
             var result = new ItemQuery(accountName, tagNames, fro, to, ItemTypes.Debit).GetResults();
@@ -136,8 +136,8 @@ namespace Financier.Common.Tests.Expenses.ItemQueryTesting
             int monthTo
         )
         {
-            DateTime fro = new DateTime(yearFrom, monthFrom, 1);
-            DateTime to = new DateTime(yearTo, monthTo, 1);
+            DateTime fro = new DateTime(yearFrom, monthFrom, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime to = new DateTime(yearTo, monthTo, 1, 0, 0, 0, DateTimeKind.Utc);
 
             var expectedItems = expectedItemIds.Select(itemId => Item.GetByItemId(itemId));
             var result = new ItemQuery(accountName, tagNames, fro, to, ItemTypes.Credit).GetResults();

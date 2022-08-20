@@ -6,6 +6,7 @@ import * as d3Scale from "d3-scale";
 import * as d3Format from "d3-format";
 
 import { DetailedRecord } from "./DetailedRecord";
+import "./DetailedGraph.scss";
 
 interface Props {
   records: DetailedRecord[];
@@ -43,7 +44,7 @@ class DetailedGraph extends React.Component<Props> {
 
   render() {
     return (
-      <div className="graph">
+      <div className="DetailedGraph">
         <h2>Graph</h2>
         <svg className="chart" />
       </div>

@@ -45,7 +45,7 @@ namespace Financier.Common.Tests.Expenses
             get
             {
                 yield return new TestCaseData(
-                    new DateTime(2018, 11, 1),
+                    new DateTime(2018, 11, 1, 0, 0, 0, DateTimeKind.Utc),
                     @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
 1,'5191230192755321',20181101,20181105,13.37,EMA TEI TORONTO ON
         2,'5191230192755321',20181103,20181105,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
@@ -59,7 +59,7 @@ namespace Financier.Common.Tests.Expenses
                               new Statement
                               {
                                   Id = Guid.NewGuid(),
-                                  PostedAt = new DateTime(2018, 11, 1),
+                                  PostedAt = new DateTime(2018, 11, 1, 0, 0, 0, DateTimeKind.Utc),
                                   Items = new List<Item>
                                   {
                                       new Item
@@ -67,16 +67,16 @@ namespace Financier.Common.Tests.Expenses
                                           ItemId = "1",
                                           Amount = 13.37M,
                                           Description = "EMA TEI TORONTO ON",
-                                          TransactedAt = new DateTime(2018, 11, 1),
-                                          PostedAt = new DateTime(2018, 11, 5),
+                                          TransactedAt = new DateTime(2018, 11, 1, 0, 0, 0, DateTimeKind.Utc),
+                                          PostedAt = new DateTime(2018, 11, 5, 0, 0, 0, DateTimeKind.Utc),
                                       },
                                       new Item
                                       {
                                           ItemId = "2",
                                           Amount = 1.46M,
                                           Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
-                                          TransactedAt = new DateTime(2018, 11, 3),
-                                          PostedAt = new DateTime(2018, 11, 5),
+                                          TransactedAt = new DateTime(2018, 11, 3, 0, 0, 0, DateTimeKind.Utc),
+                                          PostedAt = new DateTime(2018, 11, 5, 0, 0, 0, DateTimeKind.Utc),
                                       },
                                   }
                               }
@@ -84,7 +84,7 @@ namespace Financier.Common.Tests.Expenses
                     });
 
                 yield return new TestCaseData(
-                    new DateTime(2018, 6, 1),
+                    new DateTime(2018, 6, 1, 0, 0, 0, DateTimeKind.Utc),
                     @"Item #,Card #,Transaction Date,Posting Date,Transaction Amount,Description
                     1,'6171230192725321',20180601,20180602,13.37,EMA TEI TORONTO ON
                     2,'6171230192725321',20180602,20180605,1.46,APL*ITUNES.COM/BILL 800-263-3394 ON",
@@ -98,7 +98,7 @@ namespace Financier.Common.Tests.Expenses
                             new Statement
                             {
                                 Id = Guid.NewGuid(),
-                                PostedAt = new DateTime(2018, 6, 1),
+                                PostedAt = new DateTime(2018, 6, 1, 0, 0, 0, DateTimeKind.Utc),
                                 Items = new List<Item>
                                 {
                                     new Item
@@ -106,16 +106,16 @@ namespace Financier.Common.Tests.Expenses
                                         ItemId = "1",
                                         Amount = 13.37M,
                                         Description = "EMA TEI TORONTO ON",
-                                        TransactedAt = new DateTime(2018, 6, 1),
-                                        PostedAt = new DateTime(2018, 6, 2),
+                                        TransactedAt = new DateTime(2018, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                                        PostedAt = new DateTime(2018, 6, 2, 0, 0, 0, DateTimeKind.Utc),
                                     },
                                     new Item
                                     {
                                         ItemId = "2",
                                         Amount = 1.46M,
                                         Description = "APL*ITUNES.COM/BILL 800-263-3394 ON",
-                                        TransactedAt = new DateTime(2018, 6, 2),
-                                        PostedAt = new DateTime(2018, 6, 5),
+                                        TransactedAt = new DateTime(2018, 6, 2, 0, 0, 0, DateTimeKind.Utc),
+                                        PostedAt = new DateTime(2018, 6, 5, 0, 0, 0, DateTimeKind.Utc),
                                     },
                                 }
                             }
@@ -251,7 +251,7 @@ namespace Financier.Common.Tests.Expenses
                     {
                         Card = card,
                         Id = Guid.NewGuid(),
-                        PostedAt = new DateTime(2019, 2, 1),
+                        PostedAt = new DateTime(2019, 2, 1, 0, 0, 0, DateTimeKind.Utc),
                         Items = new List<Item>()
                     };
                     db.Statements.Add(newStatement);
@@ -263,7 +263,7 @@ namespace Financier.Common.Tests.Expenses
                     {
                         Card = card,
                         Id = Guid.NewGuid(),
-                        PostedAt = new DateTime(2019, 2, 2),
+                        PostedAt = new DateTime(2019, 2, 2, 0, 0, 0, DateTimeKind.Utc),
                         Items = new List<Item>()
                     };
                     db.Statements.Add(newStatement);
@@ -299,7 +299,7 @@ namespace Financier.Common.Tests.Expenses
                     {
                         Card = card,
                         Id = Guid.NewGuid(),
-                        PostedAt = new DateTime(2019, 2, 1),
+                        PostedAt = new DateTime(2019, 2, 1, 0, 0, 0, DateTimeKind.Utc),
                         Items = new List<Item>()
                     };
                     db.Statements.Add(newStatement);
@@ -353,7 +353,7 @@ namespace Financier.Common.Tests.Expenses
                     {
                         Card = card,
                         Id = Guid.NewGuid(),
-                        PostedAt = new DateTime(2019, 2, 1),
+                        PostedAt = new DateTime(2019, 2, 1, 0, 0, 0, DateTimeKind.Utc),
                         Items = new List<Item>()
                     };
 

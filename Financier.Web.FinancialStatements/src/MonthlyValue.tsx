@@ -4,6 +4,8 @@ import * as d3TimeFormat from "d3-time-format";
 
 import { MonthlyRecord } from "./MonthlyRecord";
 
+import "./MonthlyValue.scss";
+
 // interface Props extends MonthlyProp {
 //   dateRange?: [Date, Date];
 // }
@@ -46,14 +48,18 @@ class MonthlyValue extends React.Component<Props> {
 
     if (!this.isPrediction) {
       return (
-        <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
-          {this.renderChildren()}
+        <div className="MonthlyValue">
+          <div className="item clickable" id={this.name} key={this.name} onClick={() => this.navigateToDetailedView(this.year, month)}>
+            {this.renderChildren()}
+          </div>
         </div>
       );
     } else {
       return (
-        <div className="item not-clickable" id={this.name} key={this.name}>
-          {this.renderChildren()}
+        <div className="MonthlyValue">
+          <div className="item not-clickable" id={this.name} key={this.name}>
+            {this.renderChildren()}
+          </div>
         </div>
       );
     }
