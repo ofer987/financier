@@ -49,6 +49,41 @@ namespace Financier.Web.GraphQL.Mortgages
                     return new FixedRateMortgage(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt);
                 }
             );
+
+            Field<ListGraphType<PaymentGraphType>>(
+                "getMonthlyPayments",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DecimalGraphType>>
+                    {
+                        Name = Keys.BaseValue
+                    },
+                    new QueryArgument<NonNullGraphType<DecimalGraphType>>
+                    {
+                        Name = Keys.InterestRate
+                    },
+                    new QueryArgument<IntGraphType>
+                    {
+                        Name = Keys.AmortisationPeriodInMonths,
+                        DefaultValue = 300
+                    },
+                    new QueryArgument<DateGraphType>
+                    {
+                        Name = Keys.InitiatedAt,
+                        DefaultValue = DateTime.Now
+                    }
+                ),
+                resolve: context =>
+                {
+                    var baseValue = context.GetArgument<decimal>(Keys.BaseValue);
+                    var interestRate = context.GetArgument<decimal>(Keys.InterestRate);
+                    var amortisationPeriodInMonths = context.GetArgument<int>(Keys.AmortisationPeriodInMonths);
+                    var initiatedAt = context.GetArgument<DateTime>(Keys.InitiatedAt);
+
+                    var mortgage = new FixedRateMortgage(baseValue, interestRate, amortisationPeriodInMonths, initiatedAt);
+
+                    return mortgage.GetMonthlyPayments();
+                }
+            );
         }
     }
 }
