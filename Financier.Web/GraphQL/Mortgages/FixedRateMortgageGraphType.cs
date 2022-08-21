@@ -14,7 +14,7 @@ namespace Financier.Web.GraphQL.Mortgages
             Field(t => t.AmortisationPeriodInMonths, nullable: false, type: typeof(IntGraphType));
             Field(t => t.InterestRate, nullable: false, type: typeof(DecimalGraphType));
             Field(t => t.PeriodicMonthlyInterestRate, nullable: false, type: typeof(FloatGraphType));
-            Field(t => t.MonthlyPayment, nullable: false, type: typeof(FloatGraphType));
+            Field("MinimumMonthlyPayment", t => t.MonthlyPayment, nullable: false, type: typeof(FloatGraphType));
         }
     }
 }
