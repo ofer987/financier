@@ -9,6 +9,7 @@ using Financier.Common;
 using Financier.Web.GraphQL;
 using Financier.Web.GraphQL.CashFlows;
 using Financier.Web.GraphQL.Items;
+using Financier.Web.GraphQL.Mortgages;
 
 const string DevelopmentPolicy = "CORS_POLICY_LOCALHOST";
 
@@ -84,9 +85,11 @@ app.UseEndpoints(routes =>
 
     routes.MapGraphQL<CashFlowSchema>("/graphql/cash-flows");
     routes.MapGraphQL<ItemSchema>("/graphql/items");
+    routes.MapGraphQL<FixedRateMortgageSchema>("/graphql/mortgages");
 });
 
 app.UseGraphQL<CashFlowSchema>();
 app.UseGraphQL<ItemSchema>();
+app.UseGraphQL<FixedRateMortgageSchema>();
 
 app.Run();
