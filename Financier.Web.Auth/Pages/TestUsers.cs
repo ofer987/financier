@@ -10,14 +10,14 @@ using Duende.IdentityServer.Test;
 
 namespace Financier.Web.Auth;
 
-public class EmailTestUser : TestUser
-{
-    public string Email { get; set; }
-}
+// public class EmailTestUser : Duende.IdentityServer.Test.TestUser
+// {
+//     public string Email { get; set; }
+// }
 
 public class TestUsers
 {
-    public static List<EmailTestUser> Users
+    public static List<TestUser> Users
     {
         get
         {
@@ -29,9 +29,9 @@ public class TestUsers
                 country = "Germany"
             };
 
-            return new List<EmailTestUser>
+            return new List<TestUser>
             {
-                new EmailTestUser
+                new TestUser
                 {
                     SubjectId = "1",
                     Username = "alice",
@@ -47,7 +47,7 @@ public class TestUsers
                         new Claim(JwtClaimTypes.Address, JsonSerializer.Serialize(address), IdentityServerConstants.ClaimValueTypes.Json)
                     }
                 },
-                new EmailTestUser
+                new TestUser
                 {
                     SubjectId = "2",
                     Username = "bob",

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
-
-using Financier.Common;
 using Financier.Common.Extensions;
 using Financier.Common.Expenses;
 using Financier.Common.Expenses.Models;

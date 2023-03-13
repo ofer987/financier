@@ -9,5 +9,5 @@ namespace Financier.Web.Auth.Models;
 // Add profile data for application users by adding properties to the ApplicationUser class
 public class ApplicationUser : IdentityUser
 {
-    public string Email { get; set; }
+    public override string Email { get; set; }
 }
